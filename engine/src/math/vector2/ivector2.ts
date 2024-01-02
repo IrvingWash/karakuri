@@ -2,6 +2,7 @@ export interface IVector2 {
     readonly x: number;
     readonly y: number;
 
+    set(x: number, y: number): IVector2;
     add(other: IVector2): IVector2;
     toAdded(other: IVector2): IVector2;
     subtract(other: IVector2): IVector2;

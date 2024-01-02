@@ -11,6 +11,13 @@ export class Vector2 implements IVector2 {
         this.y = y;
     }
 
+    public set(x: number, y: number): IVector2 {
+        this.x = x;
+        this.y = y;
+
+        return this;
+    }
+
     public add(other: IVector2): IVector2 {
         this.x += other.x;
         this.y += other.y;

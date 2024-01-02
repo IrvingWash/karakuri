@@ -65,4 +65,36 @@ export class ParticleForceGenerator {
 
         return attractionDirection.scale(attractionMagnitude);
     }
+
+    public static springForce(
+        particle: IParticlePhysics, anchor: IVector2,
+        constant: number,
+        restLength: number,
+    ): IVector2;
+    public static springForce(
+        particle: IParticlePhysics, other: IParticlePhysics,
+        constant: number,
+        restLength: number,
+    ): IVector2;
+    public static springForce(
+        particle: IParticlePhysics, other: IVector2 | IParticlePhysics,
+        constant: number,
+        restLength: number,
+    ): IVector2 {
+        const otherPosition: IVector2 = isVector2(other) ? other : other.getPosition();
+
+        const d = particle.getPosition().toSubtracted(otherPosition);
+
+        const displacement = d.getMagnitude() - restLength;
+
+        const springDirection = d.toNormalized();
+
+        const springMagnitude = -constant * displacement;
+
+        return springDirection.scale(springMagnitude);
+    }
+}
+
+function isVector2(value: unknown | IVector2): value is IVector2 {
+    return value instanceof Vector2;
 }

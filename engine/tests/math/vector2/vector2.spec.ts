@@ -389,4 +389,12 @@ describe("Vector2", () => {
 
         expect(v).toEqual(new Vector2(0, 0));
     });
+
+    it("should set", () => {
+        const v: IVector2 = new Vector2(3, 3);
+
+        v.set(-1, 0);
+
+        expect(v).toEqual(new Vector2(-1, 0));
+    });
 });

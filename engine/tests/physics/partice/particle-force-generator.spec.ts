@@ -3,6 +3,21 @@ import { describe, expect, it } from "@jest/globals";
 import { IParticlePhysics, ParticleForceGenerator, ParticlePhysics } from "../../../src/physics/particle";
 import { IVector2, Vector2 } from "../../../src/math/vector2";
 
+describe("ParticleForceGenerator: Spring force", () => {
+    const anchor = new ParticlePhysics({
+        mass: 0,
+        position: new Vector2(300, 0),
+    });
+
+    const ball = new ParticlePhysics({
+        position: new Vector2(290, 50),
+    });
+
+    const force = ParticleForceGenerator.springForce(ball, anchor, 50, 200);
+
+    expect(force).toEqual(new Vector2(-1461.1613513818404, 7305.806756909202));
+});
+
 describe("ParticleForceGenerator: Gravitation force", () => {
     const sunPosition = new Vector2(1000, 1000);
 
