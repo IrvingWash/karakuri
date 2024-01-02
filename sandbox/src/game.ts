@@ -47,7 +47,7 @@ class Ball extends Behavior {
             return;
         }
 
-        const springForce = ParticleForceGenerator.springForce(particle, anchorParticle, 100, 200);
+        const springForce = ParticleForceGenerator.bungeeForce(particle, anchorParticle, 50, 200);
         const dragForce = ParticleForceGenerator.dragForce(particle, 0.003);
 
         particle.addForce(springForce);
@@ -98,7 +98,7 @@ export async function game(): Promise<void> {
         particle: new Particle({ mass: 10, gravity: new Vector2(0, PIXELS_PER_METER * 10) }),
         sprite: new Sprite({ path: circle, color: [1, 0, 0, 1] }),
         transform: new Transform({
-            position: new Vector2(canvasSize.width / 2, 50),
+            position: new Vector2(canvasSize.width / 2, 0),
             scale: new Vector2(0.5, 0.5),
         }),
         behavior: new Ball(),

@@ -3,6 +3,21 @@ import { describe, expect, it } from "@jest/globals";
 import { IParticlePhysics, ParticleForceGenerator, ParticlePhysics } from "../../../src/physics/particle";
 import { IVector2, Vector2 } from "../../../src/math/vector2";
 
+describe("ParticleForceGenerator: Bungee force", () => {
+    const anchor = new ParticlePhysics({
+        mass: 0,
+        position: new Vector2(300, 0),
+    });
+
+    const ball = new ParticlePhysics({
+        position: new Vector2(290, 50),
+    });
+
+    const force = ParticleForceGenerator.bungeeForce(ball, anchor, 50, 25);
+
+    expect(force).toEqual(new Vector2(254.85483107726998, -1274.2741553863498));
+});
+
 describe("ParticleForceGenerator: Spring force", () => {
     const anchor = new ParticlePhysics({
         mass: 0,

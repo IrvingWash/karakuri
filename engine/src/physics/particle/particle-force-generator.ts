@@ -93,6 +93,22 @@ export class ParticleForceGenerator {
 
         return springDirection.scale(springMagnitude);
     }
+
+    public static bungeeForce(particle: IParticlePhysics, other: IParticlePhysics, constant: number, restLength: number): IVector2 {
+        const d = particle.getPosition().toSubtracted(other.getPosition());
+
+        const displacement = d.getMagnitude();
+
+        if (displacement <= restLength) {
+            return new Vector2();
+        }
+
+        const bungeeMagnitude = -constant * (displacement - restLength);
+
+        const bungeeDirection = d.toNormalized();
+
+        return bungeeDirection.scale(bungeeMagnitude);
+    }
 }
 
 function isVector2(value: unknown | IVector2): value is IVector2 {
