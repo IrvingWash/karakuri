@@ -1,0 +1,53 @@
+name: Rust
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install SDL2
+      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
+    - name: Run build
+      run: cargo build --verbose
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install SDL2
+      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
+    - name: Run tests
+      run: cargo test --verbose
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install SDL2
+      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
+    - name: Run clippy
+      run: cargo clippy -- -D warnings
+
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run rustfmt
+      run: cargo fmt --check
+
+  test_docs:
+    name: Test docs
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run doc tests
+      run: cargo test --doc
