@@ -10,3 +10,8 @@ readme = "../README.md"
 documentation = "https://github.com/IrvingWash/karakuri"
 license = "MIT"
 authors = ["WI"]
+
+[dependencies.sdl2]
+version = "0.36.0"
+default-features = false
+features = ["gfx", "image"]
