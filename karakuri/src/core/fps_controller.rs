@@ -11,16 +11,12 @@ pub struct FpsController {
 }
 
 impl FpsController {
-    pub fn new(
-        timer: TimerSubsystem,
-        target_fps: Option<u32>,
-        min_update_fps: Option<u32>,
-    ) -> Self {
+    pub fn new(timer: TimerSubsystem, target_fps: u32, min_update_fps: u32) -> Self {
         Self {
             timer,
             time_previous_frame: 0,
-            milliseconds_per_frame: MILLISECONDS_PER_MINUTE / target_fps.unwrap_or(30),
-            seconds_per_frame_cap: 1. / min_update_fps.unwrap_or(20) as f64,
+            milliseconds_per_frame: MILLISECONDS_PER_MINUTE / target_fps,
+            seconds_per_frame_cap: 1. / min_update_fps as f64,
         }
     }
 

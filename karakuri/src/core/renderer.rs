@@ -14,15 +14,10 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(
-        sdl: &Sdl,
-        title: &str,
-        resolution: Option<Resolution>,
-        clear_color: Option<Color>,
-    ) -> Self {
-        let window = Self::open_window(sdl, title, resolution.unwrap_or(Resolution::new(800, 600)));
+    pub fn new(sdl: &Sdl, title: &str, resolution: Resolution, clear_color: Color) -> Self {
+        let window = Self::open_window(sdl, title, resolution);
 
-        let clear_color = clear_color.unwrap_or(Color::new(0, 0, 200, 255));
+        let clear_color = clear_color;
 
         Self {
             canvas: Self::create_canvas(window),
