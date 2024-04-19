@@ -1,5 +1,5 @@
-pub use transform_component::TransformComponent;
 pub use name_component::NameComponent;
+pub use transform_component::TransformComponent;
 
-mod transform_component;
 mod name_component;
+mod transform_component;
