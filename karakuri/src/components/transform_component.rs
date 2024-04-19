@@ -1,5 +1,6 @@
 use crate::math::Vector2;
 
+#[derive(Debug)]
 pub struct TransformComponent {
     pub position: Vector2,
     pub scale: Vector2,
