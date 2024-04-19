@@ -1,0 +1,12 @@
+[package]
+name = "karakuri"
+version = "0.0.0"
+edition = "2021"
+publish = true
+description = "2D game engine"
+homepage = "https://github.com/IrvingWash/karakuri"
+repository = "https://github.com/IrvingWash/karakuri.git"
+readme = "../README.md"
+documentation = "https://github.com/IrvingWash/karakuri"
+license = "MIT"
+authors = ["WI"]
