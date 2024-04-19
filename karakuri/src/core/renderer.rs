@@ -1,5 +1,4 @@
 use crate::{
-    logger,
     math::Vector2,
     utils::{Color, Resolution},
 };
@@ -213,7 +212,7 @@ impl Renderer {
             .fullscreen_desktop()
             .build()
             .unwrap_or_else(|e| {
-                logger::log_fatal(format!("Failed to create SDL2 window: {}", e).as_str())
+                panic!("Failed to create SDL2 window: {}", e);
             })
     }
 
@@ -224,7 +223,7 @@ impl Renderer {
             .present_vsync()
             .build()
             .unwrap_or_else(|e| {
-                logger::log_fatal(format!("Failed to create SDL2 canvas: {}", e).as_str())
+                panic!("Failed to create SDL2 canvas: {}", e);
             })
     }
 }
