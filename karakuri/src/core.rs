@@ -1,2 +1,2 @@
-mod fps_controller;
-mod renderer;
+pub mod fps_controller;
+pub mod renderer;

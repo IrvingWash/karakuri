@@ -1,5 +1,6 @@
 use crate::{
     components::{NameComponent, TransformComponent},
+    core::{fps_controller::FpsController, renderer::Renderer},
     Entity,
 };
 
@@ -42,10 +43,15 @@ impl Scene {
         }
     }
 
-    pub fn play(&mut self) {
+    pub fn play(&mut self, fps_controller: &mut FpsController, renderer: &mut Renderer) {
         loop {
+            let _delta_time = fps_controller.cap_framerate();
+
             self.sync_remove();
             self.sync_add();
+
+            renderer.start_frame();
+            renderer.finish_frame();
         }
     }
 
