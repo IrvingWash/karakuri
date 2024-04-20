@@ -1,7 +1,7 @@
 use sdl2::Sdl;
 
 use crate::{
-    core::{FpsController, Renderer},
+    core::{FpsController, InputController, Renderer},
     scene::{ComponentsPayload, Scene},
     utils::{Color, Resolution},
 };
@@ -9,6 +9,7 @@ use crate::{
 pub struct Engine {
     fps_controller: FpsController,
     renderer: Renderer,
+    input_controller: InputController,
     scene: Scene,
 }
 
@@ -31,12 +32,19 @@ impl Engine {
                 target_fps,
                 min_update_fps,
             ),
+            input_controller: InputController::new(
+                sdl.event_pump()
+                    .unwrap_or_else(|e| panic!("Failed to get SDL2 event pump: {}", e)),
+            ),
         }
     }
 
     pub fn start(&mut self) {
-        self.scene
-            .play(&mut self.fps_controller, &mut self.renderer);
+        self.scene.play(
+            &mut self.fps_controller,
+            &mut self.renderer,
+            &mut self.input_controller,
+        );
     }
 
     pub fn add_entity(&mut self, components: ComponentsPayload) {

@@ -1,14 +1,14 @@
 use crate::{
     components::{NameComponent, TransformComponent},
-    core::{FpsController, Renderer},
+    core::{FpsController, InputController, Renderer},
     Entity,
 };
 
 const MAX_ENTITIES: usize = 5000;
 
 pub struct ComponentsPayload {
-    name_component: NameComponent,
-    transform_component: Option<TransformComponent>,
+    pub name_component: NameComponent,
+    pub transform_component: Option<TransformComponent>,
 }
 
 struct EntityToAdd {
@@ -43,9 +43,20 @@ impl Scene {
         }
     }
 
-    pub fn play(&mut self, fps_controller: &mut FpsController, renderer: &mut Renderer) {
+    pub fn play(
+        &mut self,
+        fps_controller: &mut FpsController,
+        renderer: &mut Renderer,
+        input_controller: &mut InputController,
+    ) {
         loop {
             let _delta_time = fps_controller.cap_framerate();
+
+            input_controller.process();
+            let input_result = input_controller.result();
+            if input_result.should_quit {
+                break;
+            }
 
             self.sync_remove();
             self.sync_add();

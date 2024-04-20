@@ -1,4 +1,5 @@
 pub use engine::Engine;
+pub use scene::ComponentsPayload;
 
 pub mod components;
 mod engine;
