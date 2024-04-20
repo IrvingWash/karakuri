@@ -1,5 +1,5 @@
 use crate::{
-    components::{NameComponent, ShapeComponent, TransformComponent},
+    components::{BehaviorComponent, NameComponent, ShapeComponent, TransformComponent},
     core::{FpsController, InputController, Renderer},
     Entity,
 };
@@ -10,6 +10,7 @@ pub struct ComponentsPayload {
     pub name_component: NameComponent,
     pub transform_component: Option<TransformComponent>,
     pub shape_component: Option<ShapeComponent>,
+    pub behavior_component: Option<Box<dyn BehaviorComponent>>,
 }
 
 struct EntityToAdd {
@@ -25,6 +26,7 @@ pub struct Scene {
     name_components: [Option<NameComponent>; MAX_ENTITIES],
     transform_components: [Option<TransformComponent>; MAX_ENTITIES],
     shape_components: [Option<ShapeComponent>; MAX_ENTITIES],
+    behavior_components: [Option<Box<dyn BehaviorComponent>>; MAX_ENTITIES],
 
     entities_to_add: Vec<EntityToAdd>,
     entities_to_remove: Vec<Entity>,
@@ -40,6 +42,7 @@ impl Scene {
             name_components: [(); MAX_ENTITIES].map(|_| None),
             transform_components: [(); MAX_ENTITIES].map(|_| None),
             shape_components: [(); MAX_ENTITIES].map(|_| None),
+            behavior_components: [(); MAX_ENTITIES].map(|_| None),
 
             entities_to_add: Vec::new(),
             entities_to_remove: Vec::new(),
@@ -53,7 +56,7 @@ impl Scene {
         input_controller: &mut InputController,
     ) {
         loop {
-            let _delta_time = fps_controller.cap_framerate();
+            let delta_time = fps_controller.cap_framerate();
 
             input_controller.process();
             let input_result = input_controller.result();
@@ -63,6 +66,18 @@ impl Scene {
 
             self.sync_remove();
             self.sync_add();
+
+            for behavior in &mut self.behavior_components {
+                match behavior {
+                    None => continue,
+                    Some(behavior) => behavior.update(
+                        input_result,
+                        delta_time,
+                        &self.name_components,
+                        &mut self.transform_components,
+                    ),
+                }
+            }
 
             renderer.start_frame();
             for entity in &self.entities {
@@ -98,6 +113,8 @@ impl Scene {
     }
 
     fn sync_add(&mut self) {
+        let mut ids_to_start: Vec<usize> = Vec::new();
+
         for entity_to_add in self.entities_to_add.drain(..) {
             let id = entity_to_add.id;
 
@@ -105,6 +122,18 @@ impl Scene {
             self.name_components[id] = Some(entity_to_add.components.name_component);
             self.transform_components[id] = entity_to_add.components.transform_component;
             self.shape_components[id] = entity_to_add.components.shape_component;
+            self.behavior_components[id] = entity_to_add.components.behavior_component;
+
+            ids_to_start.push(id);
+        }
+
+        for id in ids_to_start {
+            let behavior = &mut self.behavior_components[id];
+
+            match behavior {
+                None => continue,
+                Some(behavior) => behavior.start(&self.name_components),
+            }
         }
     }
 
@@ -120,7 +149,7 @@ impl Scene {
                     has_removed = true;
                 }
 
-                return result;
+                result
             });
 
             if has_removed {
@@ -142,6 +171,7 @@ impl Scene {
                     self.name_components[id] = None;
                     self.transform_components[id] = None;
                     self.shape_components[id] = None;
+                    self.behavior_components[id] = None;
 
                     self.free_ids.push(entity_to_remove.id());
                 }

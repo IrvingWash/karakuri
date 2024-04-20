@@ -17,8 +17,6 @@ impl Renderer {
     pub fn new(sdl: &Sdl, title: &str, resolution: Resolution, clear_color: Color) -> Self {
         let window = Self::open_window(sdl, title, resolution);
 
-        let clear_color = clear_color;
-
         Self {
             canvas: Self::create_canvas(window),
             clear_color: SdlColor::RGBA(

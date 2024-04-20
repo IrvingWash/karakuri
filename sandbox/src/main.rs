@@ -21,6 +21,7 @@ fn main() {
             Color::white(),
             Vector2::new(100., 100.),
         )),
+        behavior_component: None,
     });
 
     engine.start();
