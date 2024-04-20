@@ -24,11 +24,10 @@ fn main() {
             Color::white(),
             Vector2::new(wall_thickness, resolution.height as f64),
         )),
-        transform: Some(TransformComponent::new(
-            Vector2::new(wall_thickness / 2., resolution.height as f64 / 2.),
-            Vector2::new(1., 1.),
-            0.,
-        )),
+        transform: Some(TransformComponent::default().with_position(Vector2::new(
+            wall_thickness / 2.,
+            resolution.height as f64 / 2.,
+        ))),
         behavior: None,
     });
 
@@ -39,11 +38,10 @@ fn main() {
             Color::white(),
             Vector2::new(resolution.width as f64, wall_thickness),
         )),
-        transform: Some(TransformComponent::new(
-            Vector2::new(resolution.width as f64 / 2., wall_thickness / 2.),
-            Vector2::new(1., 1.),
-            0.,
-        )),
+        transform: Some(TransformComponent::default().with_position(Vector2::new(
+            resolution.width as f64 / 2.,
+            wall_thickness / 2.,
+        ))),
         behavior: None,
     });
 
@@ -54,14 +52,10 @@ fn main() {
             Color::white(),
             Vector2::new(wall_thickness, resolution.height as f64),
         )),
-        transform: Some(TransformComponent::new(
-            Vector2::new(
-                resolution.width as f64 - wall_thickness / 2.,
-                resolution.height as f64 / 2.,
-            ),
-            Vector2::new(1., 1.),
-            0.,
-        )),
+        transform: Some(TransformComponent::default().with_position(Vector2::new(
+            resolution.width as f64 - wall_thickness / 2.,
+            resolution.height as f64 / 2.,
+        ))),
         behavior: None,
     });
 
@@ -69,11 +63,10 @@ fn main() {
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("ball")),
         shape: Some(ShapeComponent::new(Color::white(), Vector2::new(10., 10.))),
-        transform: Some(TransformComponent::new(
-            Vector2::new(resolution.width as f64 / 2., resolution.height as f64 / 2.),
-            Vector2::new(1., 1.),
-            0.,
-        )),
+        transform: Some(TransformComponent::default().with_position(Vector2::new(
+            resolution.width as f64 / 2.,
+            resolution.height as f64 / 2.,
+        ))),
         behavior: Some(Box::new(BallBehavior::new())),
     });
 
@@ -81,14 +74,10 @@ fn main() {
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("paddle")),
         shape: Some(ShapeComponent::new(Color::white(), Vector2::new(100., 10.))),
-        transform: Some(TransformComponent::new(
-            Vector2::new(
-                resolution.width as f64 / 2.,
-                resolution.height as f64 - wall_thickness,
-            ),
-            Vector2::new(1., 1.),
-            0.,
-        )),
+        transform: Some(TransformComponent::default().with_position(Vector2::new(
+            resolution.width as f64 / 2.,
+            resolution.height as f64 - wall_thickness,
+        ))),
         behavior: Some(Box::new(PaddleBehavior::new())),
     });
 

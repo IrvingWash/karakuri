@@ -21,4 +21,22 @@ impl TransformComponent {
             rotation,
         }
     }
+
+    pub fn with_position(mut self, position: Vector2) -> TransformComponent {
+        self.position = position;
+
+        self
+    }
+
+    pub fn with_scale(mut self, scale: Vector2) -> TransformComponent {
+        self.scale = scale;
+
+        self
+    }
+
+    pub fn with_rotation(mut self, rotation: f64) -> TransformComponent {
+        self.rotation = rotation;
+
+        self
+    }
 }
