@@ -1,4 +1,4 @@
-use crate::core::InputResult;
+use crate::{core::InputResult, scene::Spawner};
 
 use super::{NameComponent, TransformComponent};
 
@@ -8,6 +8,7 @@ pub trait BehaviorComponent {
         &mut self,
         input_result: &InputResult,
         delta_time: f64,
+        spawner: &mut Spawner,
         name_components: &[Option<NameComponent>],
         transform_components: &mut [Option<TransformComponent>],
     );

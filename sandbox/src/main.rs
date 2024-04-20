@@ -2,7 +2,7 @@ use karakuri::{
     components::{BehaviorComponent, NameComponent, ShapeComponent, TransformComponent},
     math::Vector2,
     utils::{Color, Resolution},
-    ComponentsPayload, Engine, InputResult,
+    ComponentsPayload, Engine, InputResult, Spawner,
 };
 
 fn main() {
@@ -53,6 +53,7 @@ impl BehaviorComponent for Joe {
         &mut self,
         _input_result: &InputResult,
         delta_time: f64,
+        _spawner: &mut Spawner,
         _name_components: &[Option<NameComponent>],
         transform_components: &mut [Option<TransformComponent>],
     ) {

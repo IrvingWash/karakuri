@@ -1,6 +1,6 @@
 pub use core::InputResult;
 pub use engine::Engine;
-pub use scene::ComponentsPayload;
+pub use scene::{ComponentsPayload, Spawner};
 
 pub mod components;
 mod engine;

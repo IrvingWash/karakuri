@@ -13,6 +13,28 @@ pub struct ComponentsPayload {
     pub behavior_component: Option<Box<dyn BehaviorComponent>>,
 }
 
+pub struct Spawner {
+    components_payloads: Vec<ComponentsPayload>,
+    entities_to_remove: Vec<Entity>,
+}
+
+impl Spawner {
+    fn new() -> Spawner {
+        Spawner {
+            components_payloads: Vec::new(),
+            entities_to_remove: Vec::new(),
+        }
+    }
+
+    pub fn add_entity(&mut self, components: ComponentsPayload) {
+        self.components_payloads.push(components);
+    }
+
+    pub fn remove_entity(&mut self, entity: Entity) {
+        self.entities_to_remove.push(entity);
+    }
+}
+
 struct EntityToAdd {
     id: usize,
     components: ComponentsPayload,
@@ -56,6 +78,7 @@ impl Scene {
         input_controller: &mut InputController,
     ) {
         loop {
+            // Prepare
             let delta_time = fps_controller.cap_framerate();
 
             input_controller.process();
@@ -67,18 +90,30 @@ impl Scene {
             self.sync_remove();
             self.sync_add();
 
+            // Update
+            let mut spawner = Spawner::new();
+
             for behavior in &mut self.behavior_components {
                 match behavior {
                     None => continue,
                     Some(behavior) => behavior.update(
                         input_result,
                         delta_time,
+                        &mut spawner,
                         &self.name_components,
                         &mut self.transform_components,
                     ),
                 }
             }
 
+            for components_payload in spawner.components_payloads.drain(..) {
+                self.add_entity(components_payload);
+            }
+            for entity_to_remove in spawner.entities_to_remove.drain(..) {
+                self.entities_to_remove.push(entity_to_remove);
+            }
+
+            // Render
             renderer.start_frame();
             for entity in &self.entities {
                 match entity {
