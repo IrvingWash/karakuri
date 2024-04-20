@@ -1,8 +1,8 @@
 use karakuri::{
-    components::{NameComponent, ShapeComponent, TransformComponent},
+    components::{BehaviorComponent, NameComponent, ShapeComponent, TransformComponent},
     math::Vector2,
     utils::{Color, Resolution},
-    ComponentsPayload, Engine,
+    ComponentsPayload, Engine, InputResult,
 };
 
 fn main() {
@@ -21,8 +21,47 @@ fn main() {
             Color::white(),
             Vector2::new(100., 100.),
         )),
-        behavior_component: None,
+        behavior_component: Some(Box::new(Joe::new())),
     });
 
     engine.start();
+}
+
+struct Joe {
+    id: Option<usize>,
+    speed: Vector2,
+}
+
+impl Joe {
+    fn new() -> Joe {
+        Joe {
+            id: None,
+            speed: Vector2::new(100., 100.),
+        }
+    }
+}
+
+impl BehaviorComponent for Joe {
+    fn start(&mut self, name_components: &[Option<NameComponent>]) {
+        self.id = name_components.iter().position(|name| match name {
+            None => false,
+            Some(name) => name.value() == "Joe",
+        });
+    }
+
+    fn update(
+        &mut self,
+        _input_result: &InputResult,
+        delta_time: f64,
+        _name_components: &[Option<NameComponent>],
+        transform_components: &mut [Option<TransformComponent>],
+    ) {
+        let id = self.id.unwrap();
+
+        transform_components[id]
+            .as_mut()
+            .unwrap()
+            .position
+            .add(&self.speed.to_scaled(delta_time));
+    }
 }

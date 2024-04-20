@@ -1,3 +1,4 @@
+pub use core::InputResult;
 pub use engine::Engine;
 pub use scene::ComponentsPayload;
 
