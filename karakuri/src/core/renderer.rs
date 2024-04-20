@@ -36,6 +36,12 @@ impl Renderer {
         self.canvas.present();
     }
 
+    pub fn resolution(&self) -> Resolution {
+        let (width, height) = self.canvas.window().size();
+
+        Resolution::new(width, height)
+    }
+
     pub fn _line(&mut self, a: &Vector2, b: &Vector2, color: &Color) {
         self.canvas
             .line(
@@ -202,7 +208,7 @@ impl Renderer {
             .window(title, resolution.width, resolution.height)
             .position_centered()
             .borderless()
-            .fullscreen_desktop()
+            .fullscreen()
             .build()
             .unwrap_or_else(|e| {
                 panic!("Failed to create SDL2 window: {}", e);

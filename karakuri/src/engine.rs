@@ -47,6 +47,10 @@ impl Engine {
         );
     }
 
+    pub fn resolution(&self) -> Resolution {
+        self.renderer.resolution()
+    }
+
     pub fn add_entity(&mut self, components: ComponentsPayload) {
         self.scene.add_entity(components);
     }
