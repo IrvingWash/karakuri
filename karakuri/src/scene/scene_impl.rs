@@ -1,6 +1,6 @@
 use crate::{
     components::{NameComponent, TransformComponent},
-    core::{fps_controller::FpsController, renderer::Renderer},
+    core::{FpsController, Renderer},
     Entity,
 };
 
@@ -72,10 +72,6 @@ impl Scene {
         self.entities_to_add.push(EntityToAdd { id, components });
     }
 
-    pub fn remove_entity(&mut self, entity: Entity) {
-        self.entities_to_remove.push(entity);
-    }
-
     fn sync_add(&mut self) {
         for entity_to_add in self.entities_to_add.drain(..) {
             let id = entity_to_add.id;
@@ -88,9 +84,24 @@ impl Scene {
 
     fn sync_remove(&mut self) {
         for entity_to_remove in self.entities_to_remove.drain(..) {
+            let mut has_removed = false;
+
             // Remove from entities to add
-            self.entities_to_add
-                .retain(|entity_to_add| entity_to_add.id != entity_to_remove.id());
+            self.entities_to_add.retain(|entity_to_add| {
+                let result = entity_to_add.id != entity_to_remove.id();
+
+                if result {
+                    has_removed = true;
+                }
+
+                return result;
+            });
+
+            if has_removed {
+                self.free_ids.push(entity_to_remove.id());
+
+                continue;
+            }
 
             // Remove from added entities
             let id = self.entities.iter().position(|entity| match entity {
@@ -100,7 +111,11 @@ impl Scene {
 
             match id {
                 None => (),
-                Some(id) => self.entities[id] = None,
+                Some(id) => {
+                    self.entities[id] = None;
+
+                    self.free_ids.push(entity_to_remove.id());
+                }
             }
         }
     }
