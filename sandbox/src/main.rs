@@ -15,13 +15,13 @@ fn main() {
     );
 
     engine.add_entity(ComponentsPayload {
-        name_component: NameComponent::new(String::from("Joe")),
-        transform_component: Some(TransformComponent::default()),
-        shape_component: Some(ShapeComponent::new(
+        name: NameComponent::new(String::from("Joe")),
+        transform: Some(TransformComponent::default()),
+        shape: Some(ShapeComponent::new(
             Color::white(),
             Vector2::new(100., 100.),
         )),
-        behavior_component: Some(Box::new(Joe::new())),
+        behavior: Some(Box::new(Joe::new())),
     });
 
     engine.start();
@@ -56,6 +56,7 @@ impl BehaviorComponent for Joe {
         _spawner: &mut Spawner,
         _name_components: &[Option<NameComponent>],
         transform_components: &mut [Option<TransformComponent>],
+        _shape_components: &[Option<ShapeComponent>],
     ) {
         let id = self.id.unwrap();
 

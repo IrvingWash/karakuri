@@ -7,10 +7,10 @@ use crate::{
 const MAX_ENTITIES: usize = 5000;
 
 pub struct ComponentsPayload {
-    pub name_component: NameComponent,
-    pub transform_component: Option<TransformComponent>,
-    pub shape_component: Option<ShapeComponent>,
-    pub behavior_component: Option<Box<dyn BehaviorComponent>>,
+    pub name: NameComponent,
+    pub transform: Option<TransformComponent>,
+    pub shape: Option<ShapeComponent>,
+    pub behavior: Option<Box<dyn BehaviorComponent>>,
 }
 
 pub struct Spawner {
@@ -102,6 +102,7 @@ impl Scene {
                         &mut spawner,
                         &self.name_components,
                         &mut self.transform_components,
+                        &self.shape_components,
                     ),
                 }
             }
@@ -154,10 +155,10 @@ impl Scene {
             let id = entity_to_add.id;
 
             self.entities[id] = Some(Entity::new(id));
-            self.name_components[id] = Some(entity_to_add.components.name_component);
-            self.transform_components[id] = entity_to_add.components.transform_component;
-            self.shape_components[id] = entity_to_add.components.shape_component;
-            self.behavior_components[id] = entity_to_add.components.behavior_component;
+            self.name_components[id] = Some(entity_to_add.components.name);
+            self.transform_components[id] = entity_to_add.components.transform;
+            self.shape_components[id] = entity_to_add.components.shape;
+            self.behavior_components[id] = entity_to_add.components.behavior;
 
             ids_to_start.push(id);
         }
