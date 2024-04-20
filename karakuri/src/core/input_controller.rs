@@ -6,6 +6,7 @@ pub struct InputResult {
     pub a: bool,
     pub s: bool,
     pub d: bool,
+    pub space: bool,
 }
 
 impl Default for InputResult {
@@ -22,6 +23,7 @@ impl InputResult {
             a: false,
             s: false,
             d: false,
+            space: false,
         }
     }
 }
@@ -64,6 +66,10 @@ impl InputController {
                     keycode: Some(Keycode::D),
                     ..
                 } => self.result.d = true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Space),
+                    ..
+                } => self.result.space = true,
                 Event::KeyUp {
                     keycode: Some(Keycode::W),
                     ..
@@ -80,6 +86,10 @@ impl InputController {
                     keycode: Some(Keycode::D),
                     ..
                 } => self.result.d = false,
+                Event::KeyUp {
+                    keycode: Some(Keycode::Space),
+                    ..
+                } => self.result.space = false,
                 _ => (),
             };
         }
