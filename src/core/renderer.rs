@@ -152,7 +152,7 @@ impl Renderer {
 
         for i in 0..vertices.len() {
             let current_index = i;
-            let next_index = i + 1;
+            let next_index = (i + 1) % vertices.len();
 
             self.canvas
                 .line(
@@ -163,11 +163,11 @@ impl Renderer {
                     color_tuple,
                 )
                 .expect(DRAW_FAILURE_MESSAGE);
-
-            self.canvas
-                .filled_circle((position.x) as i16, (position.y) as i16, 1, color_tuple)
-                .expect(DRAW_FAILURE_MESSAGE);
         }
+
+        self.canvas
+            .filled_circle((position.x) as i16, (position.y) as i16, 1, color_tuple)
+            .expect(DRAW_FAILURE_MESSAGE);
     }
 
     pub fn _filled_polygon(&mut self, position: &Vector2, vertices: &Vec<Vector2>, color: &Color) {
