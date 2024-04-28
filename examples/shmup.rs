@@ -9,7 +9,7 @@ fn main() {
     let mut engine = Engine::new(
         String::from("Shmup"),
         Resolution::new(1920, 1080),
-        Color::black(),
+        Color::BLACK,
         60,
         24,
     );
@@ -19,7 +19,7 @@ fn main() {
         transform: Some(
             TransformComponent::default().with_position(Vector2::new(1920. / 2., 980.)),
         ),
-        shape: Some(ShapeComponent::new(Color::blue(), Vector2::new(100., 100.))),
+        shape: Some(ShapeComponent::new(Color::BLUE, Vector2::new(100., 100.))),
         behavior: Some(Box::new(Ship::new())),
     });
 
@@ -65,7 +65,7 @@ impl BehaviorComponent for Ship {
             spawner.add_entity(ComponentsPayload {
                 name: NameComponent::new(name.clone()),
                 transform: Some(transform.clone()),
-                shape: Some(ShapeComponent::new(Color::red(), Vector2::new(10., 10.))),
+                shape: Some(ShapeComponent::new(Color::RED, Vector2::new(10., 10.))),
                 behavior: Some(Box::new(Projectile::new(name))),
             });
 

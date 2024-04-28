@@ -9,7 +9,7 @@ fn main() {
     let mut engine = Engine::new(
         String::from("Breakout"),
         Resolution::new(800, 600),
-        Color::black(),
+        Color::BLACK,
         60,
         30,
     );
@@ -21,7 +21,7 @@ fn main() {
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("left wall")),
         shape: Some(ShapeComponent::new(
-            Color::white(),
+            Color::WHITE,
             Vector2::new(wall_thickness, resolution.height as f64),
         )),
         transform: Some(TransformComponent::default().with_position(Vector2::new(
@@ -35,7 +35,7 @@ fn main() {
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("top wall")),
         shape: Some(ShapeComponent::new(
-            Color::white(),
+            Color::WHITE,
             Vector2::new(resolution.width as f64, wall_thickness),
         )),
         transform: Some(TransformComponent::default().with_position(Vector2::new(
@@ -49,7 +49,7 @@ fn main() {
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("right wall")),
         shape: Some(ShapeComponent::new(
-            Color::white(),
+            Color::WHITE,
             Vector2::new(wall_thickness, resolution.height as f64),
         )),
         transform: Some(TransformComponent::default().with_position(Vector2::new(
@@ -62,7 +62,7 @@ fn main() {
     // Ball
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("ball")),
-        shape: Some(ShapeComponent::new(Color::white(), Vector2::new(10., 10.))),
+        shape: Some(ShapeComponent::new(Color::WHITE, Vector2::new(10., 10.))),
         transform: Some(TransformComponent::default().with_position(Vector2::new(
             resolution.width as f64 / 2.,
             resolution.height as f64 / 2.,
@@ -73,7 +73,7 @@ fn main() {
     // Paddle
     engine.add_entity(ComponentsPayload {
         name: NameComponent::new(String::from("paddle")),
-        shape: Some(ShapeComponent::new(Color::white(), Vector2::new(100., 10.))),
+        shape: Some(ShapeComponent::new(Color::WHITE, Vector2::new(100., 10.))),
         transform: Some(TransformComponent::default().with_position(Vector2::new(
             resolution.width as f64 / 2.,
             resolution.height as f64 - wall_thickness,

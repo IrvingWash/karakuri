@@ -20,48 +20,38 @@ impl Color {
         (self.red, self.green, self.blue, self.alpha)
     }
 
-    pub fn white() -> Color {
-        Color {
-            red: 255,
-            green: 255,
-            blue: 255,
-            alpha: 255,
-        }
-    }
+    pub const WHITE: Color = Color {
+        red: 255,
+        green: 255,
+        blue: 255,
+        alpha: 255,
+    };
 
-    pub fn black() -> Color {
-        Color {
-            red: 0,
-            green: 0,
-            blue: 0,
-            alpha: 255,
-        }
-    }
+    pub const BLACK: Color = Color {
+        red: 0,
+        green: 0,
+        blue: 0,
+        alpha: 255,
+    };
 
-    pub fn red() -> Color {
-        Color {
-            red: 255,
-            green: 0,
-            blue: 0,
-            alpha: 255,
-        }
-    }
+    pub const RED: Color = Color {
+        red: 255,
+        green: 0,
+        blue: 0,
+        alpha: 255,
+    };
 
-    pub fn green() -> Color {
-        Color {
-            red: 0,
-            green: 255,
-            blue: 0,
-            alpha: 255,
-        }
-    }
+    pub const GREEN: Color = Color {
+        red: 0,
+        green: 255,
+        blue: 0,
+        alpha: 255,
+    };
 
-    pub fn blue() -> Color {
-        Color {
-            red: 0,
-            green: 0,
-            blue: 255,
-            alpha: 255,
-        }
-    }
+    pub const BLUE: Color = Color {
+        red: 0,
+        green: 0,
+        blue: 255,
+        alpha: 255,
+    };
 }

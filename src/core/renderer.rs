@@ -188,7 +188,7 @@ impl Renderer {
                 (position.x) as i16,
                 (position.y) as i16,
                 1,
-                Color::red().to_tuple(),
+                Color::RED.to_tuple(),
             )
             .expect(DRAW_FAILURE_MESSAGE);
     }
