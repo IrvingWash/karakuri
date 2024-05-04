@@ -73,6 +73,10 @@ impl Vector2 {
     pub fn normalize(&mut self) {
         let magnitude = self.magnitude();
 
+        if magnitude == 0. {
+            return;
+        }
+
         self.divide(magnitude);
     }
 
