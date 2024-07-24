@@ -1,4 +1,16 @@
-#[derive(Debug, Clone, PartialEq)]
+use std::{
+    cmp::Ordering,
+    ops::{
+        Add, AddAssign,
+        Neg,
+        Sub, SubAssign,
+        Mul, MulAssign,
+        Div, DivAssign,
+        Rem, RemAssign,
+    },
+};
+
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vector2 {
     pub x: f64,
     pub y: f64,
@@ -11,74 +23,36 @@ impl Default for Vector2 {
 }
 
 impl Vector2 {
-    pub fn new(x: f64, y: f64) -> Vector2 {
+    pub fn new(x: f64, y: f64) -> Self {
         Self { x, y }
     }
 
     pub const ZERO: Vector2 = Vector2 { x: 0., y: 0. };
 
-    pub fn add(&mut self, other: &Vector2) {
-        self.x += other.x;
-        self.y += other.y;
+    pub fn dot(self, other: Vector2) -> f64 {
+        let t = self * other;
+        t.x + t.y
     }
 
-    pub fn subtract(&mut self, other: &Vector2) {
-        self.x -= other.x;
-        self.y -= other.y;
+    pub fn squared_magnitude(self) -> f64 {
+        self.dot(self)
     }
 
-    pub fn scale(&mut self, scaler: f64) {
-        self.x *= scaler;
-        self.y *= scaler;
-    }
-
-    pub fn divide(&mut self, divider: f64) {
-        if divider == 0. {
-            return;
-        }
-
-        self.x /= divider;
-        self.y /= divider;
-    }
-
-    pub fn translate(&mut self, increment: f64) {
-        self.x += increment;
-        self.y += increment;
-    }
-
-    pub fn set(&mut self, other: &Vector2) {
-        self.x = other.x;
-        self.y = other.y;
-    }
-
-    pub fn reset(&mut self) {
-        self.x = 0.;
-        self.y = 0.;
-    }
-
-    pub fn squared_magnitude(&self) -> f64 {
-        self.x.powi(2) + self.y.powi(2)
-    }
-
-    pub fn magnitude(&self) -> f64 {
+    pub fn magnitude(self) -> f64 {
         self.squared_magnitude().sqrt()
     }
 
-    pub fn dot_product(&self, other: &Vector2) -> f64 {
-        self.x * other.x + self.y * other.y
-    }
-
-    pub fn cross_product(&self, other: &Vector2) -> f64 {
+    pub fn cross(self, other: Vector2) -> f64 {
         self.x * other.y - self.y * other.x
     }
 
     pub fn normalize(&mut self) {
         let magnitude = self.magnitude();
 
-        self.divide(magnitude);
+        *self /= magnitude;
     }
 
-    pub fn create_perpendicular(&self) -> Vector2 {
+    pub fn create_perpendicular(self) -> Self {
         let mut flipped_vector = Vector2::new(self.y, -self.x);
 
         flipped_vector.normalize();
@@ -93,87 +67,235 @@ impl Vector2 {
         let x = self.x * cos - self.y * sin;
         let y = self.x * sin + self.y * cos;
 
-        self.x = x;
-        self.y = y;
+        *self = (x, y).into();
     }
 
-    pub fn create_copy(&self) -> Vector2 {
-        Vector2::new(self.x, self.y)
+    pub fn rotate_at(&mut self, pivot: Vector2, angle: f64) {
+        let mut t = *self - pivot;
+
+        t.rotate(angle);
+        t += pivot;
+
+        *self = t;
     }
 
-    pub fn rotate_at(&mut self, pivot: &Vector2, angle: f64) {
-        let x = self.x - pivot.x;
-        let y = self.y - pivot.y;
-
-        let mut temporary_vector = Vector2::new(x, y);
-
-        temporary_vector.rotate(angle);
-        temporary_vector.add(pivot);
-
-        self.set(&temporary_vector);
+    pub fn clamp(self, min: Vector2, max: Vector2) -> Self {
+        Self {
+            x: self.x.clamp(min.x, max.x),
+            y: self.y.clamp(min.y, max.y),
+        }
     }
 
-    pub fn to_added(&self, other: &Vector2) -> Vector2 {
-        let mut copy = self.create_copy();
-
-        copy.add(other);
-
-        copy
+    pub fn rem_euclid(self, other: Vector2) -> Self {
+        Self {
+            x: self.x.rem_euclid(other.x),
+            y: self.y.rem_euclid(other.y),
+        }
     }
+}
 
-    pub fn to_subtracted(&self, other: &Vector2) -> Vector2 {
-        let mut copy = self.create_copy();
-
-        copy.subtract(other);
-
-        copy
+impl From<f64> for Vector2 {
+    fn from(s: f64) -> Self {
+        Self {
+            x: s,
+            y: s,
+        }
     }
+}
 
-    pub fn to_scaled(&self, scaler: f64) -> Vector2 {
-        let mut copy = self.create_copy();
-
-        copy.scale(scaler);
-
-        copy
+impl From<(f64, f64)> for Vector2 {
+    fn from((x, y): (f64, f64)) -> Self {
+        Self {
+            x,
+            y,
+        }
     }
+}
 
-    pub fn to_divided(&self, divider: f64) -> Vector2 {
-        let mut copy = self.create_copy();
-
-        copy.divide(divider);
-
-        copy
+impl From<[f64; 2]> for Vector2 {
+    fn from([x, y]: [f64; 2]) -> Self {
+        Self {
+            x,
+            y,
+        }
     }
+}
 
-    pub fn to_translated(&self, increment: f64) -> Vector2 {
-        let mut copy = self.create_copy();
+impl Add for Vector2 {
+    type Output = Self;
 
-        copy.translate(increment);
-
-        copy
+    fn add(self, other: Vector2) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
     }
+}
 
-    pub fn to_normalized(&self) -> Vector2 {
-        let mut copy = self.create_copy();
+impl Add<f64> for Vector2 {
+    type Output = Self;
 
-        copy.normalize();
+    fn add(self, other: f64) -> Self {
+        let other: Vector2 = other.into();
 
-        copy
+        self + other
     }
+}
 
-    pub fn to_rotated(&self, angle: f64) -> Vector2 {
-        let mut copy = self.create_copy();
-
-        copy.rotate(angle);
-
-        copy
+impl AddAssign for Vector2 {
+    fn add_assign(&mut self, other: Vector2) {
+        *self = *self + other;
     }
+}
 
-    pub fn to_rotated_at(&self, pivot: &Vector2, angle: f64) -> Vector2 {
-        let mut copy = self.create_copy();
+impl AddAssign<f64> for Vector2 {
+    fn add_assign(&mut self, other: f64) {
+        let other: Vector2 = other.into();
 
-        copy.rotate_at(pivot, angle);
+        *self *= other;
+    }
+}
 
-        copy
+impl Neg for Vector2 {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        Self {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
+}
+
+impl Sub for Vector2 {
+    type Output = Self;
+
+    fn sub(self, other: Vector2) -> Self {
+        self + -other
+    }
+}
+
+impl Sub<f64> for Vector2 {
+    type Output = Self;
+
+    fn sub(self, other: f64) -> Self {
+        let other: Vector2 = other.into();
+
+        self - other
+    }
+}
+
+impl SubAssign for Vector2 {
+    fn sub_assign(&mut self, other: Vector2) {
+        *self = *self - other;
+    }
+}
+
+impl SubAssign<f64> for Vector2 {
+    fn sub_assign(&mut self, other: f64) {
+        let other: Vector2 = other.into();
+
+        *self -= other;
+    }
+}
+
+impl Mul for Vector2 {
+    type Output = Self;
+
+    fn mul(self, other: Vector2) -> Self {
+        Self {
+            x: self.x * other.x,
+            y: self.y * other.y,
+        }
+    }
+}
+
+impl Mul<f64> for Vector2 {
+    type Output = Self;
+
+    fn mul(self, other: f64) -> Self {
+        let other: Vector2 = other.into();
+
+        self * other
+    }
+}
+
+impl MulAssign for Vector2 {
+    fn mul_assign(&mut self, other: Vector2) {
+        *self = *self * other;
+    }
+}
+
+impl MulAssign<f64> for Vector2 {
+    fn mul_assign(&mut self, other: f64) {
+        let other: Vector2 = other.into();
+
+        *self *= other;
+    }
+}
+
+impl Div for Vector2 {
+    type Output = Self;
+
+    fn div(self, other: Vector2) -> Vector2 {
+        Self {
+            x: self.x / other.x,
+            y: self.y / other.y,
+        }
+    }
+}
+
+impl Div<f64> for Vector2 {
+    type Output = Self;
+
+    fn div(self, other: f64) -> Vector2 {
+        let other: Vector2 = other.into();
+
+        self / other
+    }
+}
+
+impl DivAssign for Vector2 {
+    fn div_assign(&mut self, other: Vector2) {
+        *self = *self / other;
+    }
+}
+
+impl DivAssign<f64> for Vector2 {
+    fn div_assign(&mut self, other: f64) {
+        let other: Vector2 = other.into();
+
+        *self /= other;
+    }
+}
+
+impl Rem for Vector2 {
+    type Output = Self;
+
+    fn rem(self, other: Vector2) -> Self {
+        Self {
+            x: self.x % other.x,
+            y: self.y % other.y,
+        }
+    }
+}
+
+impl RemAssign for Vector2 {
+    fn rem_assign(&mut self, other: Vector2) {
+        *self = *self % other;
+    }
+}
+
+impl PartialOrd for Vector2 {
+    fn partial_cmp(&self, other: &Vector2) -> Option<Ordering> {
+        let this_sq = self.squared_magnitude();
+        let other_sq = other.squared_magnitude();
+        this_sq.partial_cmp(&other_sq)
+    }
+}
+
+impl std::fmt::Display for Vector2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "({},{})", self.x, self.y)
     }
 }
