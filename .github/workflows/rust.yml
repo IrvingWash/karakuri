@@ -14,7 +14,7 @@ jobs:
     - name: Install SDL2
       run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
     - name: Run build
-      run: cargo build --verbose
+      run: cargo build --workspace --verbose
 
   test:
     name: Test
@@ -24,7 +24,7 @@ jobs:
     - name: Install SDL2
       run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --workspace --verbose
 
   lint:
     name: Lint
@@ -50,4 +50,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run doc tests
-      run: cargo test --doc
+      run: cargo test --workspace --doc

@@ -1,3 +1,24 @@
+[package]
+name = "karakuri"
+version = "0.0.0"
+edition = "2021"
+description = "2D game engine"
+exclude = [".github"]
+publish = true
+homepage = "https://github.com/IrvingWash/karakuri"
+repository = "https://github.com/IrvingWash/karakuri.git"
+readme = "README.md"
+documentation = "https://github.com/IrvingWash/karakuri"
+license = "MIT"
+authors = ["WI"]
+keywords = ["game", "engine", "gamedev", "graphics", "bevy"]
+categories = ["game-engines"]
+
+[dependencies]
+kec = { path = "crates/kec" }
+kmath = { path = "crates/kmath" }
+kutils = { path = "crates/kutils" }
+
 [workspace]
 resolver = "2"
-members = ["karakuri", "kec", "kmath", "kutils"]
+members = ["crates/*"]
