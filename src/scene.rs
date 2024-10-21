@@ -31,7 +31,12 @@ impl Scene {
         self.entities_to_remove.push(id);
     }
 
-    pub(crate) fn sync(&mut self) {
+    #[allow(dead_code)]
+    fn sync(&mut self) {
+        for entity_to_remove in self.entities_to_remove.drain(..) {
+            self.world.remove_entity(entity_to_remove);
+        }
+
         for entity_to_add in self.entities_to_add.drain(..) {
             let id = self.world.create_entity();
 
@@ -42,10 +47,6 @@ impl Scene {
             if let Some(transform) = entity_to_add.transform {
                 self.world.add_component(id, transform);
             }
-        }
-
-        for entity_to_remove in self.entities_to_remove.drain(..) {
-            self.world.remove_entity(entity_to_remove);
         }
     }
 }

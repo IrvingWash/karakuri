@@ -1,5 +1,6 @@
 use kmath::Vector2;
 
+#[derive(Debug)]
 pub struct Transform {
     pub position: Vector2,
     pub scale: Vector2,
