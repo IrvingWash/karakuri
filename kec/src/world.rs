@@ -17,6 +17,12 @@ pub struct World {
     free_ids: Vec<EntityId>,
 }
 
+impl Default for World {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl World {
     pub fn new() -> Self {
         Self {
