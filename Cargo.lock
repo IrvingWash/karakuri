@@ -3,6 +3,14 @@
 version = 3
 
 [[package]]
+name = "karakuri"
+version = "0.0.0"
+dependencies = [
+ "kec",
+ "kmath",
+]
+
+[[package]]
 name = "kec"
 version = "0.1.0"
 
