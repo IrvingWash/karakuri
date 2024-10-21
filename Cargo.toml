@@ -18,6 +18,7 @@ categories = ["game-engines"]
 kec = { path = "crates/kec" }
 kmath = { path = "crates/kmath" }
 kutils = { path = "crates/kutils" }
+kwindow = { path = "crates/kwindow" }
 
 [workspace]
 resolver = "2"
