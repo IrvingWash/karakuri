@@ -1,6 +1,7 @@
 use kmath::Vector2;
 use kutils::Color;
 
+#[derive(Debug)]
 pub struct Sprite {
     pub color: Color,
     pub size: Vector2,

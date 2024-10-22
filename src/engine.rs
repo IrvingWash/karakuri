@@ -25,9 +25,15 @@ impl Engine {
         }
     }
 
+    pub fn scene(&mut self) -> &mut Scene {
+        &mut self.scene
+    }
+
     pub fn play(&mut self) {
         loop {
             // Prepare
+            self.scene.sync();
+
             let delta_time = self.fps_controller.cap_framerate();
 
             self.input_processor.process();

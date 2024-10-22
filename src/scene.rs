@@ -31,8 +31,7 @@ impl Scene {
         self.entities_to_remove.push(id);
     }
 
-    #[allow(dead_code)]
-    fn sync(&mut self) {
+    pub(crate) fn sync(&mut self) {
         // Remove
         for entity_to_remove in self.entities_to_remove.drain(..) {
             if let Some(mut behavior) = self
