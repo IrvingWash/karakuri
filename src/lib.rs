@@ -1,3 +1,6 @@
+mod engine;
+
+pub use engine::Engine;
 mod scene;
 
 pub use kec;
