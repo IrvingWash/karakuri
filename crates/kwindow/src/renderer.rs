@@ -41,7 +41,7 @@ impl Renderer {
         Size::new(width as i64, height as i64)
     }
 
-    pub fn _line(&mut self, a: &Vector2, b: &Vector2, color: &Color) {
+    pub fn line(&mut self, a: &Vector2, b: &Vector2, color: &Color) {
         self.canvas
             .line(
                 a.x as i16,
@@ -53,7 +53,7 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE)
     }
 
-    pub fn _circle(&mut self, position: &Vector2, radius: f64, angle: f64, color: &Color) {
+    pub fn circle(&mut self, position: &Vector2, radius: f64, angle: f64, color: &Color) {
         self.canvas
             .circle(
                 position.x as i16,
@@ -74,7 +74,7 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE);
     }
 
-    pub fn _filled_circle(&mut self, position: &Vector2, radius: f64, color: &Color) {
+    pub fn filled_circle(&mut self, position: &Vector2, radius: f64, color: &Color) {
         self.canvas
             .filled_circle(
                 position.x as i16,
@@ -85,7 +85,7 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE);
     }
 
-    pub fn _rectangle(&mut self, position: &Vector2, size: &Vector2, color: &Color) {
+    pub fn rectangle(&mut self, position: &Vector2, size: &Vector2, color: &Color) {
         let half_width = size.x * 0.5;
         let half_height = size.y * 0.5;
         let color_tuple = color.to_tuple();
@@ -146,7 +146,7 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE)
     }
 
-    pub fn _polygon(&mut self, position: &Vector2, vertices: &[Vector2], color: &Color) {
+    pub fn polygon(&mut self, position: &Vector2, vertices: &[Vector2], color: &Color) {
         let color_tuple = color.to_tuple();
 
         for i in 0..vertices.len() {
@@ -169,7 +169,7 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE);
     }
 
-    pub fn _filled_polygon(&mut self, position: &Vector2, vertices: &Vec<Vector2>, color: &Color) {
+    pub fn filled_polygon(&mut self, position: &Vector2, vertices: &Vec<Vector2>, color: &Color) {
         let mut vx: Vec<i16> = Vec::new();
         let mut vy: Vec<i16> = Vec::new();
 

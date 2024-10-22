@@ -64,6 +64,10 @@ impl Scene {
 
                 self.world.add_component(id, behavior);
             }
+
+            if let Some(sprite) = entity_to_add.sprite {
+                self.world.add_component(id, sprite);
+            }
         }
 
         for entity_to_start in entities_to_start {

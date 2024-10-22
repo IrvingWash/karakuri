@@ -33,6 +33,10 @@ impl World {
         }
     }
 
+    pub fn entities(&self) -> &Vec<EntityId> {
+        &self.entities
+    }
+
     pub fn create_entity(&mut self) -> EntityId {
         match self.free_ids.pop() {
             Some(id) => id,
@@ -94,7 +98,7 @@ impl World {
         None
     }
 
-    pub fn get_component_vec<T: Any>(&mut self) -> Option<Vec<Ref<T>>> {
+    pub fn get_component_vec<T: Any>(&self) -> Option<Vec<Ref<T>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => None,
             Some(component_vec) => component_vec

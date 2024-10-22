@@ -1,7 +1,10 @@
 use kutils::{Color, Size};
 use kwindow::{FpsController, InputProcessor, Renderer};
 
-use crate::{components::Behavior, Scene};
+use crate::{
+    components::{Behavior, Sprite, Transform},
+    Scene,
+};
 
 pub struct Engine {
     renderer: Renderer,
@@ -46,6 +49,21 @@ impl Engine {
 
             // Render
             self.renderer.start_frame();
+            if let Some(transforms) = self.scene.world.get_component_vec::<Transform>() {
+                if let Some(sprites) = self.scene.world.get_component_vec::<Sprite>() {
+                    for entity in self.scene.world.entities() {
+                        let transform = &transforms[*entity];
+                        let sprite = &sprites[*entity];
+
+                        self.renderer.filled_rectangle(
+                            &transform.position,
+                            &sprite.size,
+                            &sprite.color,
+                        );
+                    }
+                };
+            }
+
             self.renderer.finish_frame();
         }
     }
