@@ -26,7 +26,7 @@ pub fn init(
     });
 
     Window {
-        renderer: Renderer::new(&sdl, &title, resolution, clear_color),
+        renderer: Renderer::new(&sdl, title, resolution, clear_color),
         fps_controller: FpsController::new(
             sdl.timer()
                 .unwrap_or_else(|e| panic!("Failed to get SDL2 timer: {}", e)),
