@@ -1,9 +1,9 @@
 use kec::{EntityId, World};
 
-use crate::components::ComponentPayload;
+use crate::components::{Behavior, ComponentPayload};
 
 pub struct Scene {
-    world: World,
+    pub(crate) world: World,
     entities_to_add: Vec<ComponentPayload>,
     entities_to_remove: Vec<EntityId>,
 }
@@ -33,9 +33,20 @@ impl Scene {
 
     #[allow(dead_code)]
     fn sync(&mut self) {
+        // Remove
         for entity_to_remove in self.entities_to_remove.drain(..) {
+            if let Some(mut behavior) = self
+                .world
+                .get_component_mut::<Box<dyn Behavior>>(entity_to_remove)
+            {
+                behavior.destroy();
+            }
+
             self.world.remove_entity(entity_to_remove);
         }
+
+        // Add
+        let mut entities_to_start: Vec<EntityId> = Vec::new();
 
         for entity_to_add in self.entities_to_add.drain(..) {
             let id = self.world.create_entity();
@@ -47,6 +58,19 @@ impl Scene {
             if let Some(transform) = entity_to_add.transform {
                 self.world.add_component(id, transform);
             }
+
+            if let Some(behavior) = entity_to_add.behavior {
+                entities_to_start.push(id);
+
+                self.world.add_component(id, behavior);
+            }
+        }
+
+        for entity_to_start in entities_to_start {
+            self.world
+                .get_component_mut::<Box<dyn Behavior>>(entity_to_start)
+                .unwrap()
+                .start();
         }
     }
 }
