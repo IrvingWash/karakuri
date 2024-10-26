@@ -35,4 +35,8 @@ impl Signature {
     pub fn is_superset(&self, other: &Self) -> bool {
         self.data.is_superset(&other.data)
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
 }
