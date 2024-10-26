@@ -59,8 +59,6 @@ impl Game {
                 .with_component::<Box<dyn BehaviorComponent>>()
                 .build();
 
-            dbg!(&updateable_entities);
-
             for entity in updateable_entities {
                 self.registry
                     .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
@@ -77,8 +75,6 @@ impl Game {
                 .with_component::<TransformComponent>()
                 .with_component::<SpriteComponent>()
                 .build();
-
-            dbg!(&renderable_entities);
 
             for entity in renderable_entities {
                 let transform = self
