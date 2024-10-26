@@ -2,8 +2,8 @@ use kec::Registry;
 use kwindow::{FpsController, InputProcessor, Renderer, Window};
 
 use crate::{
-    components::{SpriteComponent, TransformComponent},
-    GameConfig,
+    components::{BehaviorComponent, ComponentPayload, SpriteComponent, TransformComponent},
+    GameConfig, Scene,
 };
 
 pub struct Game {
@@ -11,6 +11,7 @@ pub struct Game {
     renderer: Renderer,
     input_processor: InputProcessor,
     registry: Registry,
+    scene: Scene,
 }
 
 impl Game {
@@ -32,12 +33,18 @@ impl Game {
             renderer,
             input_processor,
             registry: Registry::new(),
+            scene: Scene::new(),
         }
+    }
+
+    pub fn set_scene(&mut self, entities: Vec<ComponentPayload>) {
+        self.scene
+            .create_initial_entities(&mut self.registry, entities);
     }
 
     pub fn start(&mut self) {
         loop {
-            let _delta_time = self.fps_controller.cap_framerate();
+            let delta_time = self.fps_controller.cap_framerate();
 
             // Get input
             let input = self.input_processor.process();
@@ -46,6 +53,20 @@ impl Game {
             }
 
             // Update
+            let updateable_entities = self
+                .registry
+                .query()
+                .with_component::<Box<dyn BehaviorComponent>>()
+                .build();
+
+            dbg!(&updateable_entities);
+
+            for entity in updateable_entities {
+                self.registry
+                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
+                    .unwrap()
+                    .update(delta_time);
+            }
 
             // Render
             self.renderer.start_frame();
@@ -56,6 +77,8 @@ impl Game {
                 .with_component::<TransformComponent>()
                 .with_component::<SpriteComponent>()
                 .build();
+
+            dbg!(&renderable_entities);
 
             for entity in renderable_entities {
                 let transform = self
@@ -73,9 +96,5 @@ impl Game {
 
             self.renderer.finish_frame();
         }
-    }
-
-    pub fn registry(&mut self) -> &mut Registry {
-        &mut self.registry
     }
 }
