@@ -131,9 +131,9 @@ impl Renderer {
             .expect(DRAW_FAILURE_MESSAGE);
     }
 
-    pub fn filled_rectangle(&mut self, position: &Vector2, size: &Vector2, color: &Color) {
-        let half_width = size.x * 0.5;
-        let half_height = size.y * 0.5;
+    pub fn filled_rectangle(&mut self, position: &Vector2, size: &Size, color: &Color) {
+        let half_width = size.width as f64 * 0.5;
+        let half_height = size.height as f64 * 0.5;
 
         self.canvas
             .box_(

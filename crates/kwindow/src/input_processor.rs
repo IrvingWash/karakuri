@@ -41,7 +41,7 @@ impl InputProcessor {
         }
     }
 
-    pub fn process(&mut self) {
+    pub fn process(&mut self) -> &InputResult {
         #[allow(clippy::never_loop)]
         for event in self.event_pump.poll_iter() {
             match event {
@@ -93,9 +93,7 @@ impl InputProcessor {
                 _ => (),
             };
         }
-    }
 
-    pub fn result(&self) -> &InputResult {
         &self.result
     }
 }

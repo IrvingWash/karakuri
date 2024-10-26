@@ -63,6 +63,13 @@ impl Color {
         blue: 0,
         alpha: 255,
     };
+
+    pub const YELLOW: Color = Color {
+        red: 255,
+        green: 255,
+        blue: 0,
+        alpha: 255,
+    };
 }
 
 #[cfg(test)]

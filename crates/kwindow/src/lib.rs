@@ -15,7 +15,7 @@ pub struct Window {
     pub input_processor: InputProcessor,
 }
 
-pub fn init(
+pub fn init_kwindow(
     title: &str,
     resolution: Size,
     clear_color: Color,

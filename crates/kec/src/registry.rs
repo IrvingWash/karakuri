@@ -9,6 +9,8 @@ use crate::{Entity, Query, Signature};
 
 type Orra = Option<Rc<RefCell<dyn Any>>>;
 
+const NO_SIGNATURE_MESSAGE: &'static str = "Signature should have been already created";
+
 #[derive(Debug, Default)]
 pub struct Registry {
     entity_count: usize,
@@ -64,7 +66,7 @@ impl Registry {
 
         self.entity_signatures
             .get_mut(&id)
-            .expect("Signature should have been already created")
+            .expect(NO_SIGNATURE_MESSAGE)
             .reset();
 
         self.free_ids.push(id);
@@ -97,7 +99,7 @@ impl Registry {
 
         self.entity_signatures
             .get_mut(&id)
-            .expect("Signature should have been already created")
+            .expect(NO_SIGNATURE_MESSAGE)
             .set(component_id);
     }
 
