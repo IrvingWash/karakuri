@@ -5,3 +5,6 @@ fmt:
 test:
 	cargo test --workspace --verbose
 check: fmt lint test
+
+canary:
+	cargo run --example=canary
