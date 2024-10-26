@@ -67,8 +67,6 @@ fn test_querying() {
 
     registry.add_component(&blanka, HP(90));
 
-    dbg!(&registry);
-
     let entities_with_hp = registry.query().with_component::<HP>().build();
     assert_eq!(entities_with_hp.len(), 2);
     assert!(entities_with_hp[0] != entities_with_hp[1]);

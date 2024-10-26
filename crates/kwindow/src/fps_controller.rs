@@ -3,6 +3,7 @@ use sdl2::TimerSubsystem;
 const MILLISECONDS_PER_MINUTE: u32 = 1000;
 const MINUTES_PER_MILLISECOND: f64 = 1. / MILLISECONDS_PER_MINUTE as f64;
 
+#[derive(Debug)]
 pub struct FpsController {
     time_previous_frame: u32,
     timer: TimerSubsystem,

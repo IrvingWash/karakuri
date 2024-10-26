@@ -1,5 +1,6 @@
 use sdl2::{event::Event, keyboard::Keycode, EventPump};
 
+#[derive(Debug)]
 pub struct InputResult {
     pub should_quit: bool,
     pub w: bool,
