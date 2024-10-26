@@ -9,7 +9,7 @@ use crate::{Entity, Query, Signature};
 
 type Orra = Option<Rc<RefCell<dyn Any>>>;
 
-const NO_SIGNATURE_MESSAGE: &'static str = "Signature should have been already created";
+const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 
 #[derive(Debug, Default)]
 pub struct Registry {

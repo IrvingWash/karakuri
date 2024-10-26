@@ -21,7 +21,7 @@ impl Game {
             renderer,
             input_processor,
         } = kwindow::init_kwindow(
-            &config.title,
+            config.title,
             config.resolution,
             config.clear_color,
             config.target_fps,
