@@ -1,4 +1,6 @@
-pub trait BehaviorComponent {
+use std::fmt::Debug;
+
+pub trait BehaviorComponent: Debug {
     fn on_start(&mut self);
     fn on_update(&mut self);
     fn on_destroy(&mut self);

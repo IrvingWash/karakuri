@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Size {
     pub width: i64,
     pub height: i64,

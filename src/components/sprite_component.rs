@@ -1,5 +1,6 @@
 use kutils::{Color, Size};
 
+#[derive(Debug)]
 pub struct SpriteComponent {
     pub size: Size,
     pub color: Color,
