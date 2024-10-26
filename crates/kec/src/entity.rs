@@ -1,1 +1,22 @@
-pub type EntityId = usize;
+use std::cmp::PartialEq;
+
+#[derive(Debug, Clone, Copy)]
+pub struct Entity {
+    id: usize,
+}
+
+impl Entity {
+    pub fn new(id: usize) -> Self {
+        Self { id }
+    }
+
+    pub fn id(&self) -> usize {
+        self.id
+    }
+}
+
+impl PartialEq for Entity {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}

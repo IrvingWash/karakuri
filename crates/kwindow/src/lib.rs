@@ -6,6 +6,7 @@ mod renderer;
 
 pub use fps_controller::FpsController;
 pub use input_processor::InputProcessor;
+pub use input_processor::InputResult;
 pub use renderer::Renderer;
 
 pub struct Window {

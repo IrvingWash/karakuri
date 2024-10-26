@@ -11,3 +11,4 @@ license = "MIT"
 authors = ["WI"]
 
 [dependencies]
+bit-set = "0.8.0"
