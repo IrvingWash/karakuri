@@ -20,6 +20,10 @@ impl<'a> Query<'a> {
 
         let signature = Signature::from(self.component_ids);
 
+        if signature.is_empty() {
+            return Vec::new();
+        }
+
         self.registry
             .entity_signatures()
             .iter()
