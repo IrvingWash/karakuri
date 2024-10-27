@@ -66,6 +66,8 @@ impl Game {
                     .update(Ctx {
                         delta_time,
                         input_result: &input,
+                        registry: &self.registry,
+                        entity: &entity,
                     });
             }
 

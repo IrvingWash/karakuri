@@ -1,10 +1,13 @@
 use std::fmt::Debug;
 
+use kec::{Entity, Registry};
 use kwindow::InputResult;
 
 pub struct Ctx<'a> {
     pub delta_time: f64,
     pub input_result: &'a InputResult,
+    pub registry: &'a Registry,
+    pub entity: &'a Entity,
 }
 
 pub trait BehaviorComponent: Debug {

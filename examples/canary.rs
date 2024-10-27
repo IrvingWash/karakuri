@@ -8,19 +8,34 @@ use kmath::Vector2;
 use kutils::{Color, Size};
 
 #[derive(Debug)]
-struct TailsScript {
-    tail_count: u8,
+struct Tails {
+    speed: f64,
 }
 
-impl BehaviorComponent for TailsScript {
-    fn on_start(&mut self) {
-        println!("I have {} tails!", self.tail_count);
-    }
+impl BehaviorComponent for Tails {
+    fn on_start(&mut self) {}
 
     fn on_update(&mut self, ctx: Ctx<'_>) {
-        if ctx.input_result.space {
-            println!("{}", ctx.delta_time);
+        let mut velocity = Vector2::new(0., 0.);
+
+        if ctx.input_result.w {
+            velocity.y -= self.speed;
         }
+        if ctx.input_result.a {
+            velocity.x -= self.speed;
+        }
+        if ctx.input_result.s {
+            velocity.y += self.speed;
+        }
+        if ctx.input_result.d {
+            velocity.x += self.speed;
+        }
+
+        ctx.registry
+            .get_component_mut::<TransformComponent>(ctx.entity)
+            .unwrap()
+            .position
+            .add(&velocity.to_scaled(ctx.delta_time));
     }
 
     fn on_destroy(&mut self) {}
@@ -51,7 +66,7 @@ pub fn main() {
             tag: Some(TagComponent::new(String::from("Tails"))),
             transform: Some(TransformComponent::from_position(Vector2::new(500., 300.))),
             sprite: Some(SpriteComponent::new(Size::new(300, 300), Color::YELLOW)),
-            behavior: Some(Box::new(TailsScript { tail_count: 2 })),
+            behavior: Some(Box::new(Tails { speed: 100.0 })),
         },
     ]);
 
