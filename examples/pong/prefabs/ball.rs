@@ -39,8 +39,7 @@ impl BehaviorComponent for Ball {
             .registry
             .find_entity(TagComponent::new(String::from("right-paddle")));
 
-        self.velocity
-            .set(&Vector2::new(self.speed, self.speed).to_scaled(-1.0));
+        self.velocity.set(&Vector2::new(self.speed, self.speed));
     }
 
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
