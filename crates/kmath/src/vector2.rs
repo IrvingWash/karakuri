@@ -113,6 +113,22 @@ impl Vector2 {
         self.set(&temporary_vector);
     }
 
+    pub fn move_towards(&mut self, other: &Vector2, max_distance: f64) {
+        let mut disposition = other.to_subtracted(self);
+
+        let magnitude = disposition.magnitude();
+
+        if magnitude <= max_distance || magnitude == 0.0 {
+            self.set(&other);
+        }
+
+        disposition.divide(magnitude);
+        disposition.scale(max_distance);
+        disposition.add(self);
+
+        self.set(&disposition);
+    }
+
     pub fn to_added(&self, other: &Vector2) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -178,18 +194,11 @@ impl Vector2 {
     }
 
     pub fn to_moved_towards(&self, other: &Vector2, max_distance: f64) -> Vector2 {
-        let disposition = other.to_subtracted(self);
+        let mut copy = self.create_copy();
 
-        let magnitude = disposition.magnitude();
+        copy.move_towards(other, max_distance);
 
-        if magnitude <= max_distance || magnitude == 0.0 {
-            return other.create_copy();
-        }
-
-        disposition
-            .to_divided(magnitude)
-            .to_scaled(max_distance)
-            .to_added(&self)
+        copy
     }
 }
 
