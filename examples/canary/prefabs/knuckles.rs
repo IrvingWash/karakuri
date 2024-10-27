@@ -45,12 +45,12 @@ impl BehaviorComponent for Knuckles {
             .registry
             .get_component::<TransformComponent>(&self.tails.unwrap())
             .unwrap();
-        let mut knuckles_transfrom = ctx
+        let mut knuckles_transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(ctx.entity)
             .unwrap();
 
-        knuckles_transfrom
+        knuckles_transform
             .position
             .move_towards(&tails_transform.position, self.speed * ctx.delta_time);
     }
