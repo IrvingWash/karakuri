@@ -45,16 +45,16 @@ impl BehaviorComponent for Paddle {
             .get_component::<SpriteComponent>(&ctx.entity)
             .unwrap();
 
-        let offset = 50.0;
+        let edge_offset = 50.0;
 
         if self.side == Side::Left {
             transform.position.set(&Vector2::new(
-                offset + (sprite.size.width as f64) / 2.0,
+                edge_offset + (sprite.size.width as f64) / 2.0,
                 (self.resolution.height / 2) as f64,
             ));
         } else {
             transform.position.set(&Vector2::new(
-                (self.resolution.width as f64) - offset - (sprite.size.width as f64) / 2.0,
+                (self.resolution.width as f64) - edge_offset - (sprite.size.width as f64) / 2.0,
                 (self.resolution.height / 2) as f64,
             ));
         }
