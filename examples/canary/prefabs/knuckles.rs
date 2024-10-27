@@ -5,6 +5,8 @@ use kec::Entity;
 use kmath::Vector2;
 use kutils::{Color, Size};
 
+use super::tails::Tails;
+
 pub fn knuckles_prefab() -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("Knuckles"))),
@@ -28,6 +30,14 @@ impl BehaviorComponent for Knuckles {
         self.tails = ctx
             .registry
             .find_entity(TagComponent::new(String::from("Tails")));
+
+        ctx.registry
+            .get_component::<Box<dyn BehaviorComponent>>(&self.tails.unwrap())
+            .unwrap()
+            .as_any()
+            .downcast_ref::<Tails>()
+            .unwrap()
+            .tease();
     }
 
     fn on_update(&mut self, ctx: Ctx) {
@@ -46,4 +56,8 @@ impl BehaviorComponent for Knuckles {
     }
 
     fn on_destroy(&mut self) {}
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
 }

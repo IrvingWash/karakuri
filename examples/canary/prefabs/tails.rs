@@ -14,8 +14,14 @@ pub fn tails_prefab() -> ComponentPayload {
 }
 
 #[derive(Debug)]
-struct Tails {
+pub struct Tails {
     speed: f64,
+}
+
+impl Tails {
+    pub fn tease(&self) {
+        println!("Tails: Knuckles, try to catch me!");
+    }
 }
 
 impl BehaviorComponent for Tails {
@@ -45,4 +51,8 @@ impl BehaviorComponent for Tails {
     }
 
     fn on_destroy(&mut self) {}
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
 }

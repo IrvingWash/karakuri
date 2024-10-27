@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{any::Any, fmt::Debug};
 
 use kec::{Entity, Registry};
 use kwindow::InputResult;
@@ -26,4 +26,6 @@ pub trait BehaviorComponent: Debug {
     fn destroy(&mut self) {
         self.on_destroy();
     }
+
+    fn as_any(&self) -> &dyn Any;
 }
