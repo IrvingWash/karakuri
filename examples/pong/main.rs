@@ -1,6 +1,9 @@
 use karakuri::{Game, GameConfig};
 use kutils::{Color, Size};
-use prefabs::paddle::{paddle_prefab, Side};
+use prefabs::{
+    ball::ball_prefab,
+    paddle::{paddle_prefab, Side},
+};
 
 mod prefabs;
 
@@ -18,6 +21,7 @@ pub fn main() {
     game.set_scene(vec![
         paddle_prefab(Side::Left, &resolution),
         paddle_prefab(Side::Right, &resolution),
+        ball_prefab(&resolution),
     ]);
 
     game.start();

@@ -8,3 +8,5 @@ check: fmt lint test
 
 canary:
 	cargo run --example=canary
+pong:
+	cargo run --example=pong
