@@ -1,7 +1,6 @@
 use karakuri::components::{
     BehaviorComponent, ComponentPayload, Ctx, SpriteComponent, TagComponent, TransformComponent,
 };
-use kec::Entity;
 use kmath::Vector2;
 use kutils::{Color, Size};
 
