@@ -19,7 +19,7 @@ struct Tails {
 }
 
 impl BehaviorComponent for Tails {
-    fn on_start(&mut self) {}
+    fn on_start(&mut self, _ctx: Ctx) {}
 
     fn on_update(&mut self, ctx: Ctx<'_>) {
         let mut velocity = Vector2::new(0., 0.);

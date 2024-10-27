@@ -38,8 +38,7 @@ impl Game {
     }
 
     pub fn set_scene(&mut self, entities: Vec<ComponentPayload>) {
-        self.scene
-            .create_initial_entities(&mut self.registry, entities);
+        self.scene.create_initial_entities(entities);
     }
 
     pub fn start(&mut self) {
@@ -50,6 +49,21 @@ impl Game {
             let input = self.input_processor.process();
             if input.should_quit {
                 break;
+            }
+
+            // Start new entities
+            let entities_to_start = self.scene.sync(&mut self.registry);
+
+            for entity in entities_to_start {
+                self.registry
+                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
+                    .unwrap()
+                    .start(Ctx {
+                        entity: &entity,
+                        delta_time,
+                        input_result: &input,
+                        registry: &self.registry,
+                    });
             }
 
             // Update

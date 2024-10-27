@@ -1,6 +1,6 @@
 use kec::{Entity, Registry};
 
-use crate::components::{BehaviorComponent, ComponentPayload};
+use crate::components::ComponentPayload;
 
 #[derive(Debug, Default)]
 pub struct Scene {
@@ -14,23 +14,17 @@ impl Scene {
         }
     }
 
-    pub fn create_initial_entities(
-        &mut self,
-        registry: &mut Registry,
-        entities: Vec<ComponentPayload>,
-    ) {
+    pub fn create_initial_entities(&mut self, entities: Vec<ComponentPayload>) {
         for entity in entities {
             self.create_entity(entity);
         }
-
-        self.sync(registry);
     }
 
     fn create_entity(&mut self, component_payload: ComponentPayload) {
         self.entities_to_add.push(component_payload);
     }
 
-    fn sync(&mut self, registry: &mut Registry) {
+    pub fn sync(&mut self, registry: &mut Registry) -> Vec<Entity> {
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
         for bundle in self.entities_to_add.drain(..) {
@@ -54,11 +48,6 @@ impl Scene {
             }
         }
 
-        for entity in entities_to_start {
-            registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                .unwrap()
-                .start();
-        }
+        entities_to_start
     }
 }

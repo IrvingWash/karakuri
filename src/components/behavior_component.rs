@@ -11,12 +11,12 @@ pub struct Ctx<'a> {
 }
 
 pub trait BehaviorComponent: Debug {
-    fn on_start(&mut self);
+    fn on_start(&mut self, ctx: Ctx);
     fn on_update(&mut self, ctx: Ctx);
     fn on_destroy(&mut self);
 
-    fn start(&mut self) {
-        self.on_start();
+    fn start(&mut self, ctx: Ctx) {
+        self.on_start(ctx);
     }
 
     fn update(&mut self, ctx: Ctx) {
