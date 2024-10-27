@@ -1,6 +1,6 @@
 use karakuri::{
     components::{
-        BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
+        BehaviorComponent, ComponentPayload, Ctx, SpriteComponent, TagComponent, TransformComponent,
     },
     Game, GameConfig,
 };
@@ -8,13 +8,21 @@ use kmath::Vector2;
 use kutils::{Color, Size};
 
 #[derive(Debug)]
-struct TailsScript {}
+struct TailsScript {
+    tail_count: u8,
+}
 
 impl BehaviorComponent for TailsScript {
-    fn on_start(&mut self) {}
-    fn on_update(&mut self, delta_time: f64) {
-        println!("{}", delta_time);
+    fn on_start(&mut self) {
+        println!("I have {} tails!", self.tail_count);
     }
+
+    fn on_update(&mut self, ctx: Ctx<'_>) {
+        if ctx.input_result.space {
+            println!("{}", ctx.delta_time);
+        }
+    }
+
     fn on_destroy(&mut self) {}
 }
 
@@ -43,7 +51,7 @@ pub fn main() {
             tag: Some(TagComponent::new(String::from("Tails"))),
             transform: Some(TransformComponent::from_position(Vector2::new(500., 300.))),
             sprite: Some(SpriteComponent::new(Size::new(300, 300), Color::YELLOW)),
-            behavior: Some(Box::new(TailsScript {})),
+            behavior: Some(Box::new(TailsScript { tail_count: 2 })),
         },
     ]);
 

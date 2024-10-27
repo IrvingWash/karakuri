@@ -2,7 +2,7 @@ use kec::Registry;
 use kwindow::{FpsController, InputProcessor, Renderer, Window};
 
 use crate::{
-    components::{BehaviorComponent, ComponentPayload, SpriteComponent, TransformComponent},
+    components::{BehaviorComponent, ComponentPayload, Ctx, SpriteComponent, TransformComponent},
     GameConfig, Scene,
 };
 
@@ -52,8 +52,6 @@ impl Game {
                 break;
             }
 
-            dbg!(&self.registry);
-
             // Update
             let updateable_entities = self
                 .registry
@@ -65,7 +63,10 @@ impl Game {
                 self.registry
                     .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
                     .unwrap()
-                    .update(delta_time);
+                    .update(Ctx {
+                        delta_time,
+                        input_result: &input,
+                    });
             }
 
             // Render
