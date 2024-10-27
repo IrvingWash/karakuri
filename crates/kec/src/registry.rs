@@ -148,6 +148,26 @@ impl Registry {
         }
     }
 
+    pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: T) -> Option<Entity> {
+        if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
+            let id = component_vec.iter().position(|component| {
+                if let Some(component) = component {
+                    let component = Self::borrow_downcast::<T>(component).unwrap();
+
+                    return component.eq(&component_to_find);
+                };
+
+                false
+            });
+
+            if let Some(id) = id {
+                return Some(Entity::new(id));
+            }
+        }
+
+        None
+    }
+
     pub fn query(&mut self) -> Query {
         Query::new(self)
     }

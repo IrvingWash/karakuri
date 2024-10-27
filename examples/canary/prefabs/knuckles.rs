@@ -23,9 +23,14 @@ impl BehaviorComponent for Knuckles {
     fn on_start(&mut self) {}
 
     fn on_update(&mut self, ctx: Ctx) {
+        let tails = ctx
+            .registry
+            .find_entity(TagComponent::new(String::from("Tails")))
+            .unwrap();
+
         let tails_transform = ctx
             .registry
-            .get_component::<TransformComponent>(&Entity::new(1))
+            .get_component::<TransformComponent>(&tails)
             .unwrap();
         let mut knuckles_transfrom = ctx
             .registry
