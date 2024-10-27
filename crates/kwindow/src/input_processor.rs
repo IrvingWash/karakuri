@@ -1,30 +1,23 @@
 use sdl2::{event::Event, keyboard::Keycode, EventPump};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct InputResult {
     pub should_quit: bool,
     pub w: bool,
     pub a: bool,
     pub s: bool,
     pub d: bool,
+    pub up: bool,
+    pub left: bool,
+    pub down: bool,
+    pub right: bool,
     pub space: bool,
-}
-
-impl Default for InputResult {
-    fn default() -> InputResult {
-        InputResult::new()
-    }
 }
 
 impl InputResult {
     pub fn new() -> InputResult {
         InputResult {
-            should_quit: false,
-            w: false,
-            a: false,
-            s: false,
-            d: false,
-            space: false,
+            ..Default::default()
         }
     }
 }
@@ -71,6 +64,22 @@ impl InputProcessor {
                     keycode: Some(Keycode::Space),
                     ..
                 } => self.result.space = true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Up),
+                    ..
+                } => self.result.up = true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Left),
+                    ..
+                } => self.result.left = true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Down),
+                    ..
+                } => self.result.down = true,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Right),
+                    ..
+                } => self.result.right = true,
                 Event::KeyUp {
                     keycode: Some(Keycode::W),
                     ..
@@ -91,6 +100,22 @@ impl InputProcessor {
                     keycode: Some(Keycode::Space),
                     ..
                 } => self.result.space = false,
+                Event::KeyUp {
+                    keycode: Some(Keycode::Up),
+                    ..
+                } => self.result.up = false,
+                Event::KeyUp {
+                    keycode: Some(Keycode::Left),
+                    ..
+                } => self.result.left = false,
+                Event::KeyUp {
+                    keycode: Some(Keycode::Down),
+                    ..
+                } => self.result.down = false,
+                Event::KeyUp {
+                    keycode: Some(Keycode::Right),
+                    ..
+                } => self.result.right = false,
                 _ => (),
             };
         }

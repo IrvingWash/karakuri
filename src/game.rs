@@ -1,4 +1,5 @@
 use kec::Registry;
+use kutils::Size;
 use kwindow::{FpsController, InputProcessor, Renderer, Window};
 
 use crate::{
@@ -111,5 +112,9 @@ impl Game {
 
             self.renderer.finish_frame();
         }
+    }
+
+    pub fn resolution(&self) -> Size {
+        self.renderer.resolution()
     }
 }
