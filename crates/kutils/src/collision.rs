@@ -14,7 +14,7 @@ pub fn aabb_centered(
     let half_height_a = size_a.height as f64 * 0.5;
     let half_height_b = size_b.height as f64 * 0.5;
 
-    position_a.x < position_b.x + half_width_b as f64
+    position_a.x < position_b.x + half_width_b
         && position_a.x + half_width_a > position_b.x
         && position_a.y - half_height_a < position_b.y + half_height_b
         && position_a.y + half_height_a > position_b.y - half_height_b
