@@ -52,6 +52,8 @@ impl Game {
                 break;
             }
 
+            dbg!(&self.registry);
+
             // Update
             let updateable_entities = self
                 .registry

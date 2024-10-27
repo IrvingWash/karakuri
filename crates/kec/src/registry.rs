@@ -79,10 +79,7 @@ impl Registry {
 
         let component_id = match self.component_ids.get(&component_type) {
             Some(id) => *id,
-            None => match self.component_ids.values().last() {
-                None => 0,
-                Some(id) => id + 1,
-            },
+            None => self.component_ids.len(),
         };
 
         match self.components.get_mut(&component_type) {
