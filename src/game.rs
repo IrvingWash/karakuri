@@ -61,7 +61,7 @@ impl Game {
                     .start(Ctx {
                         entity: &entity,
                         delta_time,
-                        input_result: &input,
+                        input_result: input,
                         registry: &self.registry,
                     });
             }
