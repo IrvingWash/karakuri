@@ -20,7 +20,7 @@ impl From<Vec<usize>> for Signature {
 impl Signature {
     pub fn new() -> Self {
         Self {
-            data: BitSet::new(),
+            data: BitSet::with_capacity(64),
         }
     }
 
