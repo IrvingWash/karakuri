@@ -11,3 +11,4 @@ license = "MIT"
 authors = ["WI"]
 
 [dependencies]
+kmath = { path = "../kmath" }

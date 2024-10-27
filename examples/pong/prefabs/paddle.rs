@@ -21,7 +21,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
         },
         behavior: Some(Box::new(Paddle {
             side,
-            speed: 200.0,
+            speed: 300.0,
             resolution: resolution.clone(),
         })),
     }

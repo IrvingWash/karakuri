@@ -59,6 +59,9 @@ version = "0.1.0"
 [[package]]
 name = "kutils"
 version = "0.1.0"
+dependencies = [
+ "kmath",
+]
 
 [[package]]
 name = "kwindow"

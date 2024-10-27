@@ -3,7 +3,7 @@ use karakuri::components::{
 };
 use kec::Entity;
 use kmath::Vector2;
-use kutils::{Color, Size};
+use kutils::{collision, Color, Size};
 
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
@@ -15,6 +15,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
         ))),
         behavior: Some(Box::new(Ball {
             speed: 400.0,
+            resolution: resolution.clone(),
             ..Default::default()
         })),
     }
@@ -26,6 +27,7 @@ struct Ball {
     velocity: Vector2,
     left_paddle: Option<Entity>,
     right_paddle: Option<Entity>,
+    resolution: Size,
 }
 
 impl BehaviorComponent for Ball {
@@ -38,7 +40,7 @@ impl BehaviorComponent for Ball {
             .find_entity(TagComponent::new(String::from("right-paddle")));
 
         self.velocity
-            .set(&Vector2::new(self.speed + 100.0, 0.0).to_scaled(-1.0));
+            .set(&Vector2::new(self.speed, self.speed).to_scaled(-1.0));
     }
 
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
@@ -64,22 +66,26 @@ impl BehaviorComponent for Ball {
             .get_component::<SpriteComponent>(&self.left_paddle.unwrap())
             .unwrap();
 
-        if aabb(
+        if collision::aabb_centered(
             &transform.position,
             &sprite.size,
             &left_paddle_transform.position,
             &paddle_sprite.size,
         ) {
-            self.velocity.scale(-1.0);
+            self.velocity.x *= -1.0;
         }
 
-        if aabb(
+        if collision::aabb_centered(
             &transform.position,
             &sprite.size,
             &right_paddle_transform.position,
             &paddle_sprite.size,
         ) {
-            self.velocity.scale(-1.0);
+            self.velocity.x *= -1.0;
+        }
+
+        if transform.position.y <= 0.0 || transform.position.y >= self.resolution.height as f64 {
+            self.velocity.y *= -1.0;
         }
 
         transform
@@ -92,11 +98,4 @@ impl BehaviorComponent for Ball {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-}
-
-fn aabb(position_a: &Vector2, size_a: &Size, position_b: &Vector2, size_b: &Size) -> bool {
-    position_a.x < position_b.x + size_b.width as f64
-        && position_a.x + size_a.width as f64 > position_b.x
-        && position_a.y < position_b.y + size_b.height as f64
-        && position_a.y + size_a.height as f64 > position_b.y
 }
