@@ -11,15 +11,15 @@ readme = "README.md"
 documentation = "https://github.com/IrvingWash/karakuri"
 license = "MIT"
 authors = ["WI"]
-keywords = ["game", "engine", "gamedev", "graphics", "bevy"]
+keywords = ["game", "engine", "gamedev", "graphics"]
 categories = ["game-engines"]
+
+[workspace]
+resolver = "2"
+members = ["crates/*"]
 
 [dependencies]
 kec = { path = "crates/kec" }
 kmath = { path = "crates/kmath" }
 kutils = { path = "crates/kutils" }
 kwindow = { path = "crates/kwindow" }
-
-[workspace]
-resolver = "2"
-members = ["crates/*"]
