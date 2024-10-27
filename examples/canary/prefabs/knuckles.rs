@@ -8,7 +8,7 @@ pub fn knuckles_prefab() -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("Knuckles"))),
         transform: Some(TransformComponent::from_position(Vector2::new(300., 500.))),
-        sprite: Some(SpriteComponent::new(Size::new(300, 300), Color::RED)),
+        sprite: Some(SpriteComponent::new(Size::new(100, 100), Color::RED)),
         behavior: Some(Box::new(Knuckles { speed: 50.0 })),
     }
 }

@@ -8,7 +8,7 @@ pub fn tails_prefab() -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("Tails"))),
         transform: Some(TransformComponent::from_position(Vector2::new(500., 300.))),
-        sprite: Some(SpriteComponent::new(Size::new(300, 300), Color::YELLOW)),
+        sprite: Some(SpriteComponent::new(Size::new(100, 100), Color::YELLOW)),
         behavior: Some(Box::new(Tails { speed: 100.0 })),
     }
 }
