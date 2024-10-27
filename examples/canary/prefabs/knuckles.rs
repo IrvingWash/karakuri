@@ -22,25 +22,23 @@ impl BehaviorComponent for Knuckles {
     fn on_start(&mut self) {}
 
     fn on_update(&mut self, ctx: Ctx) {
-        let disposition = {
-            let transform_components = ctx.registry.get_component_vec_mut::<TransformComponent>();
+        let mut transform_components = ctx.registry.get_component_vec_mut::<TransformComponent>();
 
-            // TODO: This is a hack!
-            let tails = 1;
-            let tails_transform = transform_components[tails].as_ref().unwrap();
-
-            let knuckles_transform = transform_components[ctx.entity.id()].as_ref().unwrap();
-
-            knuckles_transform
+        // TODO: This is a hack!
+        let tails = 1;
+        let tails_position = {
+            transform_components[tails]
+                .as_ref()
+                .unwrap()
                 .position
-                .to_moved_towards(&tails_transform.position, self.speed * ctx.delta_time)
+                .create_copy()
         };
 
-        ctx.registry
-            .get_component_mut::<TransformComponent>(ctx.entity)
-            .unwrap()
+        let knuckles_transform = transform_components[ctx.entity.id()].as_mut().unwrap();
+
+        knuckles_transform
             .position
-            .set(&disposition);
+            .move_towards(&tails_position, self.speed * ctx.delta_time);
     }
 
     fn on_destroy(&mut self) {}
