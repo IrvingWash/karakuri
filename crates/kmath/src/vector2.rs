@@ -176,6 +176,21 @@ impl Vector2 {
 
         copy
     }
+
+    pub fn to_moved_towards(&self, other: &Vector2, max_distance: f64) -> Vector2 {
+        let disposition = other.to_subtracted(self);
+
+        let magnitude = disposition.magnitude();
+
+        if magnitude <= max_distance || magnitude == 0.0 {
+            return other.create_copy();
+        }
+
+        disposition
+            .to_divided(magnitude)
+            .to_scaled(max_distance)
+            .to_added(&self)
+    }
 }
 
 #[cfg(test)]

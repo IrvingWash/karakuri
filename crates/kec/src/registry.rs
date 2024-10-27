@@ -135,7 +135,7 @@ impl Registry {
         }
     }
 
-    pub fn get_component_vec_mut<T: Any>(&mut self) -> Vec<Option<RefMut<T>>> {
+    pub fn get_component_vec_mut<T: Any>(&self) -> Vec<Option<RefMut<T>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
             Some(component_vec) => component_vec
