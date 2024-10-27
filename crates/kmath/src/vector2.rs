@@ -119,7 +119,7 @@ impl Vector2 {
         let magnitude = disposition.magnitude();
 
         if magnitude <= max_distance || magnitude == 0.0 {
-            self.set(&other);
+            self.set(other);
         }
 
         disposition.divide(magnitude);
