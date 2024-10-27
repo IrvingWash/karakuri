@@ -1,9 +1,9 @@
 use karakuri::components::{
     BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
 };
-use kec::Entity;
-use kmath::Vector2;
-use kutils::{collision, Color, Size};
+use karakuri::kec::Entity;
+use karakuri::kmath::Vector2;
+use karakuri::kutils::{collision, Color, Size};
 
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {

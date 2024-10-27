@@ -1,8 +1,8 @@
 use karakuri::components::{
     BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
 };
-use kmath::Vector2;
-use kutils::{Color, Size};
+use karakuri::kmath::Vector2;
+use karakuri::kutils::{Color, Size};
 
 #[derive(PartialEq, Debug)]
 pub enum Side {

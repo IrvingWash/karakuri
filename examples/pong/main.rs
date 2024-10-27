@@ -1,5 +1,5 @@
+use karakuri::kutils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use kutils::{Color, Size};
 use prefabs::{
     ball::ball_prefab,
     paddle::{paddle_prefab, Side},
