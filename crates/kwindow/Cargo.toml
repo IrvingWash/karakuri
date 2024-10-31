@@ -11,10 +11,6 @@ license = "MIT"
 authors = ["WI"]
 
 [dependencies]
+raylib = "5.0.2"
 kutils = { path = "../kutils" }
 kmath = { path = "../kmath" }
-
-[dependencies.sdl2]
-version = "0.36.0"
-default-features = false
-features = ["gfx", "image"]

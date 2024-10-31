@@ -1,24 +1,21 @@
 use kmath::Vector2;
 use kutils::{Color, Size};
-
-use sdl2::{
-    gfx::primitives::DrawRenderer, pixels::Color as SdlColor, render::Canvas, video::Window, Sdl,
+use raylib::{
+    color::Color as RaylibColor,
+    prelude::{RaylibDraw, RaylibDrawHandle},
+    RaylibHandle, RaylibThread,
 };
 
-const DRAW_FAILURE_MESSAGE: &str = "Failed to draw";
-
 pub struct Renderer {
-    canvas: Canvas<Window>,
-    clear_color: SdlColor,
+    thread: RaylibThread,
+    clear_color: RaylibColor,
 }
 
 impl Renderer {
-    pub fn new(sdl: &Sdl, title: &str, resolution: Size, clear_color: Color) -> Self {
-        let window = Self::open_window(sdl, title, resolution);
-
+    pub fn new(thread: RaylibThread, clear_color: Color) -> Renderer {
         Self {
-            canvas: Self::create_canvas(window),
-            clear_color: SdlColor::RGBA(
+            thread,
+            clear_color: RaylibColor::new(
                 clear_color.red,
                 clear_color.green,
                 clear_color.blue,
@@ -27,201 +24,43 @@ impl Renderer {
         }
     }
 
-    pub fn start_frame(&mut self) {
-        self.clear_screen();
+    pub fn resolution(&self, ctx: &RaylibHandle) -> Size {
+        Size {
+            width: ctx.get_screen_width() as i64,
+            height: ctx.get_screen_height() as i64,
+        }
     }
 
-    pub fn finish_frame(&mut self) {
-        self.canvas.present();
+    pub fn start_frame<'a>(&mut self, ctx: &'a mut RaylibHandle) -> RaylibDrawHandle<'a> {
+        let mut d = ctx.begin_drawing(&self.thread);
+
+        d.clear_background(self.clear_color);
+
+        d
     }
 
-    pub fn resolution(&self) -> Size {
-        let (width, height) = self.canvas.window().size();
-
-        Size::new(width as i64, height as i64)
+    pub fn finish_frame(&mut self, d: RaylibDrawHandle) {
+        drop(d);
     }
 
-    pub fn line(&mut self, a: &Vector2, b: &Vector2, color: &Color) {
-        self.canvas
-            .line(
-                a.x as i16,
-                a.y as i16,
-                b.x as i16,
-                b.y as i16,
-                color.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE)
-    }
-
-    pub fn circle(&mut self, position: &Vector2, radius: f64, angle: f64, color: &Color) {
-        self.canvas
-            .circle(
-                position.x as i16,
-                position.y as i16,
-                radius as i16,
-                color.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-
-        self.canvas
-            .line(
-                position.x as i16,
-                position.y as i16,
-                (position.x + angle.cos() * radius) as i16,
-                (position.y + angle.sin() * radius) as i16,
-                color.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-    }
-
-    pub fn filled_circle(&mut self, position: &Vector2, radius: f64, color: &Color) {
-        self.canvas
-            .filled_circle(
-                position.x as i16,
-                position.y as i16,
-                radius as i16,
-                color.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-    }
-
-    pub fn rectangle(&mut self, position: &Vector2, size: &Vector2, color: &Color) {
-        let half_width = size.x * 0.5;
-        let half_height = size.y * 0.5;
-        let color_tuple = color.to_tuple();
-
-        self.canvas
-            .line(
-                (position.x - half_width) as i16,
-                (position.y - half_height) as i16,
-                (position.x + half_width) as i16,
-                (position.y - half_height) as i16,
-                color_tuple,
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-
-        self.canvas
-            .line(
-                (position.x + half_width) as i16,
-                (position.y - half_height) as i16,
-                (position.x + half_width) as i16,
-                (position.y + half_height) as i16,
-                color_tuple,
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-
-        self.canvas
-            .line(
-                (position.x + half_width) as i16,
-                (position.y + half_height) as i16,
-                (position.x - half_width) as i16,
-                (position.y + half_height) as i16,
-                color_tuple,
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-
-        self.canvas
-            .line(
-                (position.x - half_width) as i16,
-                (position.y + half_height) as i16,
-                (position.x - half_width) as i16,
-                (position.y - half_height) as i16,
-                color_tuple,
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-    }
-
-    pub fn filled_rectangle(&mut self, position: &Vector2, size: &Size, color: &Color) {
+    pub fn draw_rect<'a>(
+        &mut self,
+        mut d: RaylibDrawHandle<'a>,
+        position: &Vector2,
+        size: &Size,
+        color: &Color,
+    ) -> RaylibDrawHandle<'a> {
         let half_width = size.width as f64 * 0.5;
         let half_height = size.height as f64 * 0.5;
 
-        self.canvas
-            .box_(
-                (position.x - half_width) as i16,
-                (position.y - half_height) as i16,
-                (position.x + half_width) as i16,
-                (position.y + half_height) as i16,
-                color.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE)
-    }
+        d.draw_rectangle(
+            (position.x - half_width) as i32,
+            (position.y - half_height) as i32,
+            size.width as i32,
+            size.height as i32,
+            RaylibColor::new(color.red, color.green, color.blue, color.alpha),
+        );
 
-    pub fn polygon(&mut self, position: &Vector2, vertices: &[Vector2], color: &Color) {
-        let color_tuple = color.to_tuple();
-
-        for i in 0..vertices.len() {
-            let current_index = i;
-            let next_index = (i + 1) % vertices.len();
-
-            self.canvas
-                .line(
-                    (vertices[current_index].x) as i16,
-                    (vertices[current_index].y) as i16,
-                    (vertices[next_index].x) as i16,
-                    (vertices[next_index].y) as i16,
-                    color_tuple,
-                )
-                .expect(DRAW_FAILURE_MESSAGE);
-        }
-
-        self.canvas
-            .filled_circle((position.x) as i16, (position.y) as i16, 1, color_tuple)
-            .expect(DRAW_FAILURE_MESSAGE);
-    }
-
-    pub fn filled_polygon(&mut self, position: &Vector2, vertices: &Vec<Vector2>, color: &Color) {
-        let mut vx: Vec<i16> = Vec::new();
-        let mut vy: Vec<i16> = Vec::new();
-
-        for vertex in vertices {
-            vx.push(vertex.x as i16);
-            vy.push(vertex.y as i16);
-        }
-
-        self.canvas
-            .filled_polygon(&vx, &vy, color.to_tuple())
-            .expect(DRAW_FAILURE_MESSAGE);
-
-        self.canvas
-            .filled_circle(
-                (position.x) as i16,
-                (position.y) as i16,
-                1,
-                Color::RED.to_tuple(),
-            )
-            .expect(DRAW_FAILURE_MESSAGE);
-    }
-
-    fn clear_screen(&mut self) {
-        self.canvas.set_draw_color(self.clear_color);
-
-        self.canvas.clear();
-    }
-
-    fn open_window(sdl: &Sdl, title: &str, resolution: Size) -> Window {
-        let video_subsystem = sdl.video().unwrap_or_else(|e| {
-            panic!("Failed to get SDL2 video subsystem: {}", e);
-        });
-
-        video_subsystem
-            .window(title, resolution.width as u32, resolution.height as u32)
-            .position_centered()
-            .borderless()
-            .fullscreen_desktop() // TODO: Chang to fullscreen
-            .build()
-            .unwrap_or_else(|e| {
-                panic!("Failed to create SDL2 window: {}", e);
-            })
-    }
-
-    fn create_canvas(window: Window) -> Canvas<Window> {
-        window
-            .into_canvas()
-            .accelerated()
-            .present_vsync()
-            .build()
-            .unwrap_or_else(|e| {
-                panic!("Failed to create SDL2 canvas: {}", e);
-            })
+        d
     }
 }

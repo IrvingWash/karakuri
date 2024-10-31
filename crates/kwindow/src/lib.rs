@@ -1,4 +1,5 @@
 use kutils::{Color, Size};
+use raylib::RaylibHandle;
 
 mod fps_controller;
 mod input_processor;
@@ -6,37 +7,36 @@ mod renderer;
 
 pub use fps_controller::FpsController;
 pub use input_processor::InputProcessor;
-pub use input_processor::InputResult;
+pub use raylib::consts::KeyboardKey;
+pub use raylib::RaylibHandle as WindowCtx;
 pub use renderer::Renderer;
 
 pub struct Window {
-    pub fps_controller: FpsController,
+    pub ctx: RaylibHandle,
     pub renderer: Renderer,
+    pub fps_controller: FpsController,
     pub input_processor: InputProcessor,
 }
 
-pub fn init_kwindow(
-    title: &str,
-    resolution: Size,
-    clear_color: Color,
-    target_fps: u32,
-    min_update_fps: u32,
-) -> Window {
-    let sdl = sdl2::init().unwrap_or_else(|e| {
-        panic!("Failed to initialize SDL2: {}", e);
-    });
+pub fn init(title: &str, resolution: Size, clear_color: Color, target_fps: u32) -> Window {
+    let (mut rl, thread) = raylib::init()
+        .size(resolution.width as i32, resolution.height as i32)
+        .title(title)
+        .fullscreen()
+        .build();
+
+    rl.set_window_focused();
+
+    rl.set_target_fps(target_fps);
+
+    let fps_controller = FpsController::new(target_fps);
+    let input_processor = InputProcessor::new();
+    let renderer = Renderer::new(thread, clear_color);
 
     Window {
-        renderer: Renderer::new(&sdl, title, resolution, clear_color),
-        fps_controller: FpsController::new(
-            sdl.timer()
-                .unwrap_or_else(|e| panic!("Failed to get SDL2 timer: {}", e)),
-            target_fps,
-            min_update_fps,
-        ),
-        input_processor: InputProcessor::new(
-            sdl.event_pump()
-                .unwrap_or_else(|e| panic!("Failed to get SDL2 event pump: {}", e)),
-        ),
+        ctx: rl,
+        renderer,
+        fps_controller,
+        input_processor,
     }
 }

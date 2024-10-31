@@ -3,6 +3,7 @@ use karakuri::components::{
 };
 use karakuri::kmath::Vector2;
 use karakuri::kutils::{Color, Size};
+use kwindow::KeyboardKey;
 
 #[derive(PartialEq, Debug)]
 pub enum Side {
@@ -67,17 +68,29 @@ impl BehaviorComponent for Paddle {
             .unwrap();
 
         if self.side == Side::Left {
-            if ctx.input_result.w {
+            if ctx
+                .input_processor
+                .is_down(KeyboardKey::KEY_W, ctx.window_ctx)
+            {
                 transform.position.y -= self.speed * ctx.delta_time;
             }
-            if ctx.input_result.s {
+            if ctx
+                .input_processor
+                .is_down(KeyboardKey::KEY_S, ctx.window_ctx)
+            {
                 transform.position.y += self.speed * ctx.delta_time;
             }
         } else {
-            if ctx.input_result.up {
+            if ctx
+                .input_processor
+                .is_down(KeyboardKey::KEY_UP, ctx.window_ctx)
+            {
                 transform.position.y -= self.speed * ctx.delta_time;
             }
-            if ctx.input_result.down {
+            if ctx
+                .input_processor
+                .is_down(KeyboardKey::KEY_DOWN, ctx.window_ctx)
+            {
                 transform.position.y += self.speed * ctx.delta_time;
             }
         }

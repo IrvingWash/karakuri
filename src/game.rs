@@ -1,6 +1,6 @@
 use kec::Registry;
 use kutils::Size;
-use kwindow::{FpsController, InputProcessor, Renderer, Window};
+use kwindow::{FpsController, InputProcessor, Renderer, Window, WindowCtx};
 
 use crate::{
     components::{BehaviorComponent, ComponentPayload, Ctx, SpriteComponent, TransformComponent},
@@ -13,6 +13,7 @@ pub struct Game {
     input_processor: InputProcessor,
     registry: Registry,
     scene: Scene,
+    ctx: WindowCtx,
 }
 
 impl Game {
@@ -21,12 +22,12 @@ impl Game {
             fps_controller,
             renderer,
             input_processor,
-        } = kwindow::init_kwindow(
+            ctx,
+        } = kwindow::init(
             config.title,
             config.resolution,
             config.clear_color,
             config.target_fps,
-            config.min_update_fps,
         );
 
         Self {
@@ -35,6 +36,7 @@ impl Game {
             input_processor,
             registry: Registry::new(),
             scene: Scene::new(),
+            ctx,
         }
     }
 
@@ -44,11 +46,10 @@ impl Game {
 
     pub fn start(&mut self) {
         loop {
-            let delta_time = self.fps_controller.cap_framerate();
+            let delta_time = self.fps_controller.delta_time(&self.ctx);
 
             // Get input
-            let input = self.input_processor.process();
-            if input.should_quit {
+            if self.input_processor.should_close(&self.ctx) {
                 break;
             }
 
@@ -62,8 +63,9 @@ impl Game {
                     .start(Ctx {
                         entity: &entity,
                         delta_time,
-                        input_result: input,
                         registry: &self.registry,
+                        input_processor: &self.input_processor,
+                        window_ctx: &self.ctx,
                     });
             }
 
@@ -80,14 +82,15 @@ impl Game {
                     .unwrap()
                     .update(Ctx {
                         delta_time,
-                        input_result: input,
                         registry: &self.registry,
                         entity: &entity,
+                        input_processor: &self.input_processor,
+                        window_ctx: &self.ctx,
                     });
             }
 
             // Render
-            self.renderer.start_frame();
+            let mut handle = self.renderer.start_frame(&mut self.ctx);
 
             let renderable_entities = self
                 .registry
@@ -106,15 +109,19 @@ impl Game {
                     .get_component::<SpriteComponent>(&entity)
                     .unwrap();
 
-                self.renderer
-                    .filled_rectangle(&transform.position, &sprite.size, &sprite.color);
+                handle = self.renderer.draw_rect(
+                    handle,
+                    &transform.position,
+                    &sprite.size,
+                    &sprite.color,
+                );
             }
 
-            self.renderer.finish_frame();
+            self.renderer.finish_frame(handle);
         }
     }
 
     pub fn resolution(&self) -> Size {
-        self.renderer.resolution()
+        self.renderer.resolution(&self.ctx)
     }
 }
