@@ -18,6 +18,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             resolution: resolution.clone(),
             ..Default::default()
         })),
+        ..Default::default()
     }
 }
 

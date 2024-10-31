@@ -25,6 +25,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
             speed: 300.0,
             resolution: resolution.clone(),
         })),
+        ..Default::default()
     }
 }
 

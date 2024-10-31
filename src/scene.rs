@@ -46,6 +46,10 @@ impl Scene {
             if let Some(figure) = bundle.figure {
                 registry.add_component(&entity, figure);
             }
+
+            if let Some(sprite) = bundle.sprite {
+                registry.add_component(&entity, sprite);
+            }
         }
 
         entities_to_start
