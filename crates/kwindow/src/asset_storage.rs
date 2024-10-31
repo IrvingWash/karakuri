@@ -24,6 +24,10 @@ impl AssetStorage {
         path: &'static str,
         ctx: &mut WindowCtx,
     ) -> Result<(), String> {
+        if let Some(_) = self.textures.get(&name) {
+            return Ok(());
+        }
+
         let texture = ctx.load_texture(&self.thread, path)?;
 
         self.textures.insert(name, texture);
