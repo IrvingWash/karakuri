@@ -15,12 +15,7 @@ impl Renderer {
     pub fn new(thread: RaylibThread, clear_color: Color) -> Renderer {
         Self {
             thread,
-            clear_color: RaylibColor::new(
-                clear_color.red,
-                clear_color.green,
-                clear_color.blue,
-                clear_color.alpha,
-            ),
+            clear_color: color_to_raylib(&clear_color),
         }
     }
 
@@ -31,7 +26,7 @@ impl Renderer {
         }
     }
 
-    pub fn start_frame<'a>(&mut self, ctx: &'a mut RaylibHandle) -> RaylibDrawHandle<'a> {
+    pub fn start_frame<'a>(&self, ctx: &'a mut RaylibHandle) -> RaylibDrawHandle<'a> {
         let mut d = ctx.begin_drawing(&self.thread);
 
         d.clear_background(self.clear_color);
@@ -39,12 +34,12 @@ impl Renderer {
         d
     }
 
-    pub fn finish_frame(&mut self, d: RaylibDrawHandle) {
+    pub fn finish_frame(&self, d: RaylibDrawHandle) {
         drop(d);
     }
 
     pub fn draw_rect<'a>(
-        &mut self,
+        &self,
         mut d: RaylibDrawHandle<'a>,
         position: &Vector2,
         size: &Size,
@@ -58,9 +53,13 @@ impl Renderer {
             (position.y - half_height) as i32,
             size.width as i32,
             size.height as i32,
-            RaylibColor::new(color.red, color.green, color.blue, color.alpha),
+            color_to_raylib(color),
         );
 
         d
     }
+}
+
+fn color_to_raylib(color: &Color) -> RaylibColor {
+    RaylibColor::from(color.to_tuple())
 }

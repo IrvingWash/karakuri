@@ -1,5 +1,5 @@
 use karakuri::components::{
-    BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
+    BehaviorComponent, ComponentPayload, FigureComponent, TagComponent, TransformComponent,
 };
 use karakuri::kmath::Vector2;
 use karakuri::kutils::{Color, Size};
@@ -13,7 +13,7 @@ pub enum Side {
 
 pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
     ComponentPayload {
-        sprite: Some(SpriteComponent::new(Size::new(30, 200), Color::WHITE)),
+        figure: Some(FigureComponent::new(Size::new(30, 200), Color::WHITE)),
         transform: Some(TransformComponent::default()),
         tag: if side == Side::Left {
             Some(TagComponent::new(String::from("left-paddle")))
@@ -41,21 +41,21 @@ impl BehaviorComponent for Paddle {
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
             .unwrap();
-        let sprite = ctx
+        let figure = ctx
             .registry
-            .get_component::<SpriteComponent>(&ctx.entity)
+            .get_component::<FigureComponent>(&ctx.entity)
             .unwrap();
 
         let edge_offset = 50.0;
 
         if self.side == Side::Left {
             transform.position.set(&Vector2::new(
-                edge_offset + (sprite.size.width as f64) / 2.0,
+                edge_offset + (figure.size.width as f64) / 2.0,
                 (self.resolution.height / 2) as f64,
             ));
         } else {
             transform.position.set(&Vector2::new(
-                (self.resolution.width as f64) - edge_offset - (sprite.size.width as f64) / 2.0,
+                (self.resolution.width as f64) - edge_offset - (figure.size.width as f64) / 2.0,
                 (self.resolution.height / 2) as f64,
             ));
         }

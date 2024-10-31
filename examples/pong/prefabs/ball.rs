@@ -1,5 +1,5 @@
 use karakuri::components::{
-    BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
+    BehaviorComponent, ComponentPayload, FigureComponent, TagComponent, TransformComponent,
 };
 use karakuri::kec::Entity;
 use karakuri::kmath::Vector2;
@@ -8,7 +8,7 @@ use karakuri::kutils::{collision, Color, Size};
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("ball"))),
-        sprite: Some(SpriteComponent::new(Size::new(30, 30), Color::WHITE)),
+        figure: Some(FigureComponent::new(Size::new(30, 30), Color::WHITE)),
         transform: Some(TransformComponent::from_position(Vector2::new(
             resolution.width as f64 / 2.,
             resolution.height as f64 / 2.,
@@ -47,9 +47,9 @@ impl BehaviorComponent for Ball {
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
             .unwrap();
-        let sprite = ctx
+        let figure = ctx
             .registry
-            .get_component::<SpriteComponent>(&ctx.entity)
+            .get_component::<FigureComponent>(&ctx.entity)
             .unwrap();
 
         let left_paddle_transform = ctx
@@ -60,25 +60,25 @@ impl BehaviorComponent for Ball {
             .registry
             .get_component::<TransformComponent>(&self.right_paddle.unwrap())
             .unwrap();
-        let paddle_sprite = ctx
+        let paddle_figure = ctx
             .registry
-            .get_component::<SpriteComponent>(&self.left_paddle.unwrap())
+            .get_component::<FigureComponent>(&self.left_paddle.unwrap())
             .unwrap();
 
         if collision::aabb_centered(
             &transform.position,
-            &sprite.size,
+            &figure.size,
             &left_paddle_transform.position,
-            &paddle_sprite.size,
+            &paddle_figure.size,
         ) {
             self.velocity.x *= -1.0;
         }
 
         if collision::aabb_centered(
             &transform.position,
-            &sprite.size,
+            &figure.size,
             &right_paddle_transform.position,
-            &paddle_sprite.size,
+            &paddle_figure.size,
         ) {
             self.velocity.x *= -1.0;
         }

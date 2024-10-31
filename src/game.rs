@@ -1,9 +1,9 @@
 use kec::Registry;
 use kutils::Size;
-use kwindow::{FpsController, InputProcessor, Renderer, Window, WindowCtx};
+use kwindow::{AssetStorage, FpsController, InputProcessor, Renderer, Window, WindowCtx};
 
 use crate::{
-    components::{BehaviorComponent, ComponentPayload, Ctx, SpriteComponent, TransformComponent},
+    components::{BehaviorComponent, ComponentPayload, Ctx, FigureComponent, TransformComponent},
     GameConfig, Scene,
 };
 
@@ -14,6 +14,7 @@ pub struct Game {
     registry: Registry,
     scene: Scene,
     ctx: WindowCtx,
+    _asset_storage: AssetStorage,
 }
 
 impl Game {
@@ -23,7 +24,8 @@ impl Game {
             renderer,
             input_processor,
             ctx,
-        } = kwindow::init(
+            asset_storage,
+        } = Window::new(
             config.title,
             config.resolution,
             config.clear_color,
@@ -37,6 +39,7 @@ impl Game {
             registry: Registry::new(),
             scene: Scene::new(),
             ctx,
+            _asset_storage: asset_storage,
         }
     }
 
@@ -96,7 +99,7 @@ impl Game {
                 .registry
                 .query()
                 .with_component::<TransformComponent>()
-                .with_component::<SpriteComponent>()
+                .with_component::<FigureComponent>()
                 .build();
 
             for entity in renderable_entities {
@@ -104,16 +107,16 @@ impl Game {
                     .registry
                     .get_component::<TransformComponent>(&entity)
                     .unwrap();
-                let sprite = self
+                let figure = self
                     .registry
-                    .get_component::<SpriteComponent>(&entity)
+                    .get_component::<FigureComponent>(&entity)
                     .unwrap();
 
                 handle = self.renderer.draw_rect(
                     handle,
                     &transform.position,
-                    &sprite.size,
-                    &sprite.color,
+                    &figure.size,
+                    &figure.color,
                 );
             }
 
