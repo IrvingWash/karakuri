@@ -1,9 +1,10 @@
 use raylib::RaylibHandle;
 
+#[derive(Debug, Default)]
 pub struct FpsController {}
 
 impl FpsController {
-    pub fn new(target_fps: u32) -> Self {
+    pub fn new() -> Self {
         Self {}
     }
 

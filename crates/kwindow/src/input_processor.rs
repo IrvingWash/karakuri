@@ -1,5 +1,6 @@
 use raylib::{consts::KeyboardKey, RaylibHandle};
 
+#[derive(Debug, Default)]
 pub struct InputProcessor {}
 
 impl InputProcessor {

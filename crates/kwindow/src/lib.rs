@@ -29,7 +29,7 @@ pub fn init(title: &str, resolution: Size, clear_color: Color, target_fps: u32) 
 
     rl.set_target_fps(target_fps);
 
-    let fps_controller = FpsController::new(target_fps);
+    let fps_controller = FpsController::new();
     let input_processor = InputProcessor::new();
     let renderer = Renderer::new(thread, clear_color);
 
