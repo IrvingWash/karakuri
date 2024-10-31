@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install SDL2
-      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
     - name: Run build
       run: cargo build --workspace --verbose
 
@@ -21,8 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install SDL2
-      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
     - name: Run tests
       run: cargo test --workspace --verbose
 
@@ -31,8 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install SDL2
-      run: sudo apt install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libsdl2-gfx-dev -y;
     - name: Run clippy
       run: cargo clippy -- -D warnings
 
