@@ -146,19 +146,24 @@ impl Game {
                     .get_component::<SpriteComponent>(&entity)
                     .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
-                if let Some(texture) = self.asset_storage.texture(sprite.texture_name) {
-                    self.renderer.draw_texture(
-                        &mut handle,
-                        texture,
-                        &sprite.clip_position,
-                        &sprite.clip_size,
-                        &transform.position,
-                        &transform.scale,
-                        None,
-                        transform.rotation,
-                        None,
-                    );
-                }
+                let texture = self
+                    .asset_storage
+                    .texture(sprite.texture_name)
+                    .unwrap_or_else(|| {
+                        panic!("Tried to use not loaded texture {}", sprite.texture_name)
+                    });
+
+                self.renderer.draw_texture(
+                    &mut handle,
+                    texture,
+                    &sprite.clip_position,
+                    &sprite.clip_size,
+                    &transform.position,
+                    &transform.scale,
+                    None,
+                    transform.rotation,
+                    None,
+                );
             }
 
             self.renderer.finish_frame(handle);
