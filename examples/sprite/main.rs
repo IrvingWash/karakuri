@@ -18,7 +18,7 @@ pub fn main() -> Result<(), String> {
         transform: Some(TransformComponent::new(
             Vector2::new(100., 100.),
             Vector2::new(3., 2.),
-            1.5708,
+            45.0,
         )),
         sprite: Some(SpriteComponent {
             clip_position: None,
