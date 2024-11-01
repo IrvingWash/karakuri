@@ -1,6 +1,6 @@
 use std::any::{Any, TypeId};
 
-use crate::{Entity, Registry, Signature};
+use crate::{errors::panic_registered_without_id, Entity, Registry, Signature};
 
 pub struct Query<'a> {
     registry: &'a mut Registry,
@@ -51,7 +51,7 @@ impl<'a> Query<'a> {
                         .registry
                         .component_ids()
                         .get(&component_type)
-                        .expect("Registered component has no id"),
+                        .unwrap_or_else(|| panic_registered_without_id::<T>()),
                 )
             }
         }

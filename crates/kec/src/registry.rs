@@ -5,7 +5,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::{Entity, Query, Signature};
+use crate::{errors::panic_registered_without_id, Entity, Query, Signature};
 
 type Orra = Option<Rc<RefCell<dyn Any>>>;
 
@@ -93,16 +93,14 @@ impl Registry {
         let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
-        let component_id = self.component_ids.get(&component_type).unwrap_or_else(|| {
-            panic!(
-                "Component {} should have been already registered",
-                type_name::<T>()
-            )
-        });
+        let component_id = self
+            .component_ids
+            .get(&component_type)
+            .unwrap_or_else(|| panic_registered_without_id::<T>());
 
         self.components.get_mut(&component_type).unwrap_or_else(|| {
             panic!(
-                "Component Vec for {} should have been already registered",
+                "Component {} should have been already registered, but doesn't have a component vec.",
                 type_name::<T>()
             )
         })[id] = wrapped_component;
@@ -166,7 +164,12 @@ impl Registry {
             let id = component_vec.iter().position(|component| match component {
                 None => false,
                 Some(component) => Self::borrow_downcast::<T>(component)
-                    .unwrap()
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "Failed to downcast component {} although it was found",
+                            type_name::<T>()
+                        )
+                    })
                     .eq(&component_to_find),
             });
 
@@ -183,7 +186,10 @@ impl Registry {
     fn borrow_downcast<T: Any>(cell: &Rc<RefCell<dyn Any>>) -> Option<Ref<T>> {
         let r = cell.borrow();
         if (*r).type_id() == TypeId::of::<T>() {
-            Some(Ref::map(r, |x| x.downcast_ref::<T>().unwrap()))
+            Some(Ref::map(r, |x| {
+                x.downcast_ref::<T>()
+                    .unwrap_or_else(|| panic!("Failed to downcast component {}", type_name::<T>()))
+            }))
         } else {
             None
         }
@@ -192,7 +198,11 @@ impl Registry {
     pub fn borrow_downcast_mut<T: Any>(cell: &RefCell<dyn Any>) -> Option<RefMut<T>> {
         let r = cell.borrow_mut();
         if (*r).type_id() == TypeId::of::<T>() {
-            Some(RefMut::map(r, |x| x.downcast_mut::<T>().unwrap()))
+            Some(RefMut::map(r, |x| {
+                x.downcast_mut::<T>().unwrap_or_else(|| {
+                    panic!("Failed to mutably downcast component {}", type_name::<T>())
+                })
+            }))
         } else {
             None
         }

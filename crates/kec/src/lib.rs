@@ -1,4 +1,5 @@
 mod entity;
+mod errors;
 mod query;
 mod registry;
 mod signature;
