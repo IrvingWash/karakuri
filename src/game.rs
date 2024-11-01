@@ -3,7 +3,10 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Renderer, Window, WindowCtx};
 
 use crate::{
-    components::{BehaviorComponent, ComponentPayload, Ctx, FigureComponent, TransformComponent},
+    components::{
+        BehaviorComponent, ComponentPayload, Ctx, FigureComponent, SpriteComponent,
+        TransformComponent,
+    },
     GameConfig, Scene,
 };
 
@@ -14,7 +17,7 @@ pub struct Game {
     registry: Registry,
     scene: Scene,
     ctx: WindowCtx,
-    _asset_storage: AssetStorage,
+    asset_storage: AssetStorage,
 }
 
 impl Game {
@@ -39,12 +42,16 @@ impl Game {
             registry: Registry::new(),
             scene: Scene::new(),
             ctx,
-            _asset_storage: asset_storage,
+            asset_storage,
         }
     }
 
     pub fn set_scene(&mut self, entities: Vec<ComponentPayload>) {
         self.scene.create_initial_entities(entities);
+    }
+
+    pub fn add_texture(&mut self, name: &'static str, path: &'static str) -> Result<(), String> {
+        self.asset_storage.add_texture(name, path, &mut self.ctx)
     }
 
     pub fn start(&mut self) {
@@ -95,14 +102,14 @@ impl Game {
             // Render
             let mut handle = self.renderer.start_frame(&mut self.ctx);
 
-            let renderable_entities = self
+            let entities_with_figures = self
                 .registry
                 .query()
-                .with_component::<TransformComponent>()
+                // .with_component::<TransformComponent>()
                 .with_component::<FigureComponent>()
                 .build();
 
-            for entity in renderable_entities {
+            for entity in entities_with_figures {
                 let transform = self
                     .registry
                     .get_component::<TransformComponent>(&entity)
@@ -118,6 +125,38 @@ impl Game {
                     &figure.size,
                     &figure.color,
                 );
+            }
+
+            let entities_with_sprites = self
+                .registry
+                .query()
+                .with_component::<TransformComponent>()
+                .with_component::<SpriteComponent>()
+                .build();
+
+            for entity in entities_with_sprites {
+                let transform = self
+                    .registry
+                    .get_component::<TransformComponent>(&entity)
+                    .unwrap();
+                let sprite = self
+                    .registry
+                    .get_component::<SpriteComponent>(&entity)
+                    .unwrap();
+
+                if let Some(texture) = self.asset_storage.texture(sprite.texture_name) {
+                    handle = self.renderer.draw_texture(
+                        handle,
+                        texture,
+                        &sprite.clip_position,
+                        &sprite.clip_size,
+                        &transform.position,
+                        &transform.scale,
+                        None,
+                        transform.rotation,
+                        None,
+                    );
+                }
             }
 
             self.renderer.finish_frame(handle);

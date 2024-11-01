@@ -1,8 +1,8 @@
 use karakuri::components::{
     BehaviorComponent, ComponentPayload, FigureComponent, TagComponent, TransformComponent,
 };
-use karakuri::kmath::Vector2;
-use karakuri::kutils::{Color, Size};
+use karakuri::math::Vector2;
+use karakuri::utils::{Color, Size};
 use kwindow::KeyboardKey;
 
 #[derive(PartialEq, Debug)]

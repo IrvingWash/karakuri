@@ -6,7 +6,7 @@ pub mod components;
 
 pub use game::Game;
 pub use game_config::GameConfig;
-pub use kec;
-pub use kmath;
-pub use kutils;
+pub use kec as ec;
+pub use kmath as math;
+pub use kutils as utils;
 pub use scene::Scene;

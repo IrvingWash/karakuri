@@ -1,4 +1,4 @@
-use karakuri::kutils::{Color, Size};
+use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
 use prefabs::{
     ball::ball_prefab,

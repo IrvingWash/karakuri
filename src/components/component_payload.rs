@@ -29,5 +29,6 @@ mod component_payload_tests {
         assert!(component_payload.transform.is_some());
         assert!(component_payload.figure.is_none());
         assert!(component_payload.behavior.is_none());
+        assert!(component_payload.sprite.is_none());
     }
 }

@@ -2,7 +2,9 @@ use kmath::Vector2;
 use kutils::{Color, Size};
 use raylib::{
     color::Color as RaylibColor,
+    math::{Rectangle, Vector2 as RaylibVector2},
     prelude::{RaylibDraw, RaylibDrawHandle},
+    texture::Texture2D,
     RaylibHandle, RaylibThread,
 };
 
@@ -58,8 +60,58 @@ impl Renderer {
 
         d
     }
+
+    pub fn draw_texture<'a>(
+        &self,
+        mut d: RaylibDrawHandle<'a>,
+        texture: &Texture2D,
+        source_position: &Option<Vector2>,
+        source_size: &Option<Size>,
+        dest_position: &Vector2,
+        scale: &Vector2,
+        origin: Option<&Vector2>,
+        rotation: f64,
+        tint: Option<&Color>,
+    ) -> RaylibDrawHandle<'a> {
+        dbg!(&texture);
+
+        d.draw_texture_pro(
+            texture,
+            make_rectangle(
+                source_position.as_ref().unwrap_or(&Vector2::ZERO),
+                source_size
+                    .as_ref()
+                    .unwrap_or(&Size::new(texture.width as i64, texture.height as i64)),
+            ),
+            make_rectangle(
+                dest_position,
+                &Size::new(
+                    (texture.width * scale.x as i32) as i64,
+                    (texture.height * scale.y as i32) as i64,
+                ),
+            ),
+            vector2_to_raylib(origin.unwrap_or(&Vector2::ZERO)),
+            rotation as f32,
+            color_to_raylib(tint.unwrap_or(&Color::WHITE)),
+        );
+
+        d
+    }
 }
 
 fn color_to_raylib(color: &Color) -> RaylibColor {
     RaylibColor::from(color.to_tuple())
+}
+
+fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
+    RaylibVector2::new(vector2.x as f32, vector2.y as f32)
+}
+
+fn make_rectangle(position: &Vector2, size: &Size) -> Rectangle {
+    Rectangle {
+        x: position.x as f32,
+        y: position.y as f32,
+        width: size.width as f32,
+        height: size.height as f32,
+    }
 }

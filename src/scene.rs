@@ -43,12 +43,12 @@ impl Scene {
                 registry.add_component(&entity, tab);
             }
 
-            if let Some(figure) = bundle.figure {
-                registry.add_component(&entity, figure);
-            }
-
             if let Some(sprite) = bundle.sprite {
                 registry.add_component(&entity, sprite);
+            }
+
+            if let Some(figure) = bundle.figure {
+                registry.add_component(&entity, figure);
             }
         }
 
