@@ -40,9 +40,9 @@ impl Renderer {
         drop(d);
     }
 
-    pub fn draw_rect<'a>(
+    pub fn draw_rect(
         &self,
-        d: &mut RaylibDrawHandle<'a>,
+        d: &mut RaylibDrawHandle,
         position: &Vector2,
         size: &Size,
         color: &Color,
@@ -60,7 +60,7 @@ impl Renderer {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn draw_texture<'a>(
+    pub fn draw_texture(
         &self,
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
