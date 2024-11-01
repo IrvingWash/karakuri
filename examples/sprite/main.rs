@@ -1,7 +1,7 @@
 use karakuri::components::{ComponentPayload, SpriteComponent, TagComponent, TransformComponent};
+use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use kmath::Vector2;
 
 pub fn main() -> Result<(), String> {
     let mut game = Game::new(GameConfig {

@@ -3,7 +3,7 @@ use karakuri::components::{
 };
 use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
-use kwindow::KeyboardKey;
+use karakuri::window::KeyboardKey;
 
 #[derive(PartialEq, Debug)]
 pub enum Side {
