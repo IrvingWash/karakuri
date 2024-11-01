@@ -1,5 +1,5 @@
 use std::{
-    any::{Any, TypeId},
+    any::{type_name, Any, TypeId},
     cell::{Ref, RefCell, RefMut},
     collections::HashMap,
     rc::Rc,
@@ -80,40 +80,37 @@ impl Registry {
         }
 
         let component_id = self.component_ids.len();
+        self.component_ids.insert(component_type, component_id);
 
         let new_component_vec: Vec<Orra> = vec![None; self.entity_count];
-
         self.components.insert(component_type, new_component_vec);
-
-        self.component_ids.insert(component_type, component_id);
     }
 
     pub fn add_component<T: Any>(&mut self, entity: &Entity, component: T) {
+        self.register_component::<T>();
+
         let id = entity.id();
         let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
-        let component_id = match self.component_ids.get(&component_type) {
-            Some(id) => *id,
-            None => self.component_ids.len(),
-        };
+        let component_id = self.component_ids.get(&component_type).unwrap_or_else(|| {
+            panic!(
+                "Component {} should have been already registered",
+                type_name::<T>()
+            )
+        });
 
-        match self.components.get_mut(&component_type) {
-            Some(component_vec) => component_vec[id] = wrapped_component,
-            None => {
-                let mut new_component_vec: Vec<Orra> = vec![None; self.entity_count];
-                new_component_vec[id] = wrapped_component;
-
-                self.components.insert(component_type, new_component_vec);
-
-                self.component_ids.insert(component_type, component_id);
-            }
-        }
+        self.components.get_mut(&component_type).unwrap_or_else(|| {
+            panic!(
+                "Component Vec for {} should have been already registered",
+                type_name::<T>()
+            )
+        })[id] = wrapped_component;
 
         self.entity_signatures
             .get_mut(&id)
             .expect(NO_SIGNATURE_MESSAGE)
-            .set(component_id);
+            .set(*component_id);
     }
 
     pub fn get_component<T: Any>(&self, entity: &Entity) -> Option<Ref<T>> {
@@ -165,19 +162,18 @@ impl Registry {
     }
 
     pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: T) -> Option<Entity> {
-        match self.components.get(&TypeId::of::<T>()) {
-            None => None,
-            Some(component_vec) => {
-                let id = component_vec.iter().position(|component| match component {
-                    None => false,
-                    Some(component) => Self::borrow_downcast::<T>(component)
-                        .unwrap()
-                        .eq(&component_to_find),
-                });
+        if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
+            let id = component_vec.iter().position(|component| match component {
+                None => false,
+                Some(component) => Self::borrow_downcast::<T>(component)
+                    .unwrap()
+                    .eq(&component_to_find),
+            });
 
-                id.map(Entity::new)
-            }
+            return id.map(Entity::new);
         }
+
+        None
     }
 
     pub fn query(&mut self) -> Query {
