@@ -5,6 +5,8 @@ struct Speed(u8);
 struct Position(u8);
 #[allow(dead_code)]
 struct Power(u8);
+#[allow(dead_code)]
+struct UnusedComponent(u8);
 
 #[test]
 fn test_lifecycle() {
@@ -80,4 +82,13 @@ fn test_querying() {
         .build();
     assert_eq!(entities_with_hp.len(), 2);
     assert!(entities_with_hp_and_power[0] != entities_with_hp_and_power[1]);
+
+    let entities = registry
+        .query()
+        .with_component::<HP>()
+        .with_component::<Power>()
+        .with_component::<UnusedComponent>()
+        .build();
+
+    assert_eq!(entities.len(), 0);
 }
