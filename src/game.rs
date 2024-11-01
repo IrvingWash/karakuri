@@ -119,8 +119,8 @@ impl Game {
                     .get_component::<FigureComponent>(&entity)
                     .unwrap();
 
-                handle = self.renderer.draw_rect(
-                    handle,
+                self.renderer.draw_rect(
+                    &mut handle,
                     &transform.position,
                     &figure.size,
                     &figure.color,
@@ -145,8 +145,8 @@ impl Game {
                     .unwrap();
 
                 if let Some(texture) = self.asset_storage.texture(sprite.texture_name) {
-                    handle = self.renderer.draw_texture(
-                        handle,
+                    self.renderer.draw_texture(
+                        &mut handle,
                         texture,
                         &sprite.clip_position,
                         &sprite.clip_size,

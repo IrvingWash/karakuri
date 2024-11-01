@@ -42,11 +42,11 @@ impl Renderer {
 
     pub fn draw_rect<'a>(
         &self,
-        mut d: RaylibDrawHandle<'a>,
+        d: &mut RaylibDrawHandle<'a>,
         position: &Vector2,
         size: &Size,
         color: &Color,
-    ) -> RaylibDrawHandle<'a> {
+    ) {
         let half_width = size.width as f64 * 0.5;
         let half_height = size.height as f64 * 0.5;
 
@@ -57,14 +57,12 @@ impl Renderer {
             size.height as i32,
             color_to_raylib(color),
         );
-
-        d
     }
 
     #[allow(clippy::too_many_arguments)]
     pub fn draw_texture<'a>(
         &self,
-        mut d: RaylibDrawHandle<'a>,
+        d: &mut RaylibDrawHandle,
         texture: &Texture2D,
         source_position: &Option<Vector2>,
         source_size: &Option<Size>,
@@ -73,7 +71,7 @@ impl Renderer {
         origin: Option<&Vector2>,
         rotation: f64,
         tint: Option<&Color>,
-    ) -> RaylibDrawHandle<'a> {
+    ) {
         d.draw_texture_pro(
             texture,
             make_rectangle(
@@ -93,8 +91,6 @@ impl Renderer {
             rotation as f32,
             color_to_raylib(tint.unwrap_or(&Color::WHITE)),
         );
-
-        d
     }
 }
 
