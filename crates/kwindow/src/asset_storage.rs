@@ -24,7 +24,7 @@ impl AssetStorage {
         path: &'static str,
         ctx: &mut WindowCtx,
     ) -> Result<(), String> {
-        if let Some(_) = self.textures.get(&name) {
+        if self.textures.contains_key(&name) {
             return Ok(());
         }
 

@@ -72,6 +72,22 @@ impl Registry {
         self.free_ids.push(id);
     }
 
+    pub fn register_component<T: Any>(&mut self) {
+        let component_type = TypeId::of::<T>();
+
+        if self.components.contains_key(&component_type) {
+            return;
+        }
+
+        let component_id = self.component_ids.len();
+
+        let new_component_vec: Vec<Orra> = vec![None; self.entity_count];
+
+        self.components.insert(component_type, new_component_vec);
+
+        self.component_ids.insert(component_type, component_id);
+    }
+
     pub fn add_component<T: Any>(&mut self, entity: &Entity, component: T) {
         let id = entity.id();
         let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));

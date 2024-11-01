@@ -61,6 +61,7 @@ impl Renderer {
         d
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_texture<'a>(
         &self,
         mut d: RaylibDrawHandle<'a>,
@@ -73,8 +74,6 @@ impl Renderer {
         rotation: f64,
         tint: Option<&Color>,
     ) -> RaylibDrawHandle<'a> {
-        dbg!(&texture);
-
         d.draw_texture_pro(
             texture,
             make_rectangle(

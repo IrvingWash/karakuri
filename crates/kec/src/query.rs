@@ -38,8 +38,22 @@ impl<'a> Query<'a> {
     }
 
     pub fn with_component<T: Any>(mut self) -> Query<'a> {
-        if let Some(component_id) = self.registry.component_ids().get(&TypeId::of::<T>()) {
-            self.component_ids.push(*component_id);
+        let component_type = TypeId::of::<T>();
+
+        match self.registry.component_ids().get(&component_type) {
+            Some(component_id) => {
+                self.component_ids.push(*component_id);
+            }
+            None => {
+                self.registry.register_component::<T>();
+                self.component_ids.push(
+                    *self
+                        .registry
+                        .component_ids()
+                        .get(&component_type)
+                        .expect("Registered component has no id"),
+                )
+            }
         }
 
         self

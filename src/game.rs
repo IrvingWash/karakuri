@@ -105,7 +105,7 @@ impl Game {
             let entities_with_figures = self
                 .registry
                 .query()
-                // .with_component::<TransformComponent>()
+                .with_component::<TransformComponent>()
                 .with_component::<FigureComponent>()
                 .build();
 
