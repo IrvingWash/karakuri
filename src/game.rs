@@ -160,9 +160,9 @@ impl Game {
                     &sprite.clip_size,
                     &transform.position,
                     &transform.scale,
-                    None,
+                    sprite.rotation_origin.as_ref(),
                     transform.rotation,
-                    None,
+                    sprite.tint.as_ref(),
                 );
             }
 

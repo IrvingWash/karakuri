@@ -24,6 +24,7 @@ pub fn main() -> Result<(), String> {
             clip_position: None,
             clip_size: None,
             texture_name: "sonic-idle",
+            ..Default::default()
         }),
         figure: None,
         behavior: None,
