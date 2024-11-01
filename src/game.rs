@@ -1,4 +1,6 @@
-use kec::Registry;
+use std::any::type_name;
+
+use kec::{Entity, Registry};
 use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Renderer, Window, WindowCtx};
 
@@ -69,7 +71,7 @@ impl Game {
             for entity in entities_to_start {
                 self.registry
                     .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap()
+                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
                     .start(Ctx {
                         entity: &entity,
                         delta_time,
@@ -89,7 +91,7 @@ impl Game {
             for entity in updateable_entities {
                 self.registry
                     .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap()
+                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
                     .update(Ctx {
                         delta_time,
                         registry: &self.registry,
@@ -113,11 +115,11 @@ impl Game {
                 let transform = self
                     .registry
                     .get_component::<TransformComponent>(&entity)
-                    .unwrap();
+                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
                 let figure = self
                     .registry
                     .get_component::<FigureComponent>(&entity)
-                    .unwrap();
+                    .unwrap_or_else(|| panic_queried::<FigureComponent>(entity));
 
                 self.renderer.draw_rect(
                     &mut handle,
@@ -138,11 +140,11 @@ impl Game {
                 let transform = self
                     .registry
                     .get_component::<TransformComponent>(&entity)
-                    .unwrap();
+                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
                 let sprite = self
                     .registry
                     .get_component::<SpriteComponent>(&entity)
-                    .unwrap();
+                    .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
                 if let Some(texture) = self.asset_storage.texture(sprite.texture_name) {
                     self.renderer.draw_texture(
@@ -166,4 +168,12 @@ impl Game {
     pub fn resolution(&self) -> Size {
         self.renderer.resolution(&self.ctx)
     }
+}
+
+fn panic_queried<T>(entity: Entity) -> ! {
+    panic!(
+        "Entity {} didn't have {}, though was queried for it.",
+        entity.id(),
+        type_name::<T>()
+    )
 }
