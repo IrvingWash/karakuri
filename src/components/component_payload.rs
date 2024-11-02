@@ -1,5 +1,6 @@
 use super::{
-    BehaviorComponent, FigureComponent, SpriteComponent, TagComponent, TransformComponent,
+    AnimationComponent, BehaviorComponent, FigureComponent, SpriteComponent, TagComponent,
+    TransformComponent,
 };
 
 #[derive(Debug, Default)]
@@ -9,6 +10,7 @@ pub struct ComponentPayload {
     pub figure: Option<FigureComponent>,
     pub behavior: Option<Box<dyn BehaviorComponent>>,
     pub sprite: Option<SpriteComponent>,
+    pub animation: Option<AnimationComponent>,
 }
 
 #[cfg(test)]

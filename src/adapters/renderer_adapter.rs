@@ -6,7 +6,7 @@ use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
 use crate::components::{FigureComponent, SpriteComponent, TransformComponent};
 
-use crate::errors::panic_queried;
+use crate::errors::{panic_not_loaded_texture, panic_queried, panic_uninitialized_sprite};
 
 #[derive(Debug)]
 pub struct RendererAdapter {
@@ -88,9 +88,7 @@ impl RendererAdapter {
         for SpriteDrawData { transform, sprite } in data {
             let texture = asset_storage
                 .texture(sprite.texture_name)
-                .unwrap_or_else(|| {
-                    panic!("Tried to use not loaded texture {}", sprite.texture_name)
-                });
+                .unwrap_or_else(|| panic_not_loaded_texture(&sprite.texture_name));
 
             self.renderer.draw_texture(
                 handle,
@@ -98,13 +96,13 @@ impl RendererAdapter {
                 &sprite.clip_position,
                 &sprite
                     .clip_size
-                    .expect("Sprite doesn't have `clip_size` though it should have been populated"),
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
                 &transform.position,
                 &transform.scale,
                 sprite
                     .rotation_origin
                     .as_ref()
-                    .expect("Sprite doesn't have `clip_size` though it should have been populated"),
+                    .unwrap_or_else(|| panic_uninitialized_sprite("rotation_origin")),
                 transform.rotation,
                 &sprite.tint,
             );

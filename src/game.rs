@@ -65,7 +65,11 @@ impl Game {
             }
 
             // Start new entities
-            let entities_to_start = self.scene.sync(&mut self.registry, &self.asset_storage);
+            let entities_to_start = self.scene.sync(
+                &mut self.registry,
+                &self.asset_storage,
+                self.fps_controller.time(&self.ctx),
+            );
 
             for entity in entities_to_start {
                 self.registry

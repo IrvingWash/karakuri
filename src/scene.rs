@@ -3,7 +3,10 @@ use kmath::Vector2;
 use kutils::Size;
 use kwindow::AssetStorage;
 
-use crate::components::ComponentPayload;
+use crate::{
+    components::ComponentPayload,
+    errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
+};
 
 #[derive(Debug, Default)]
 pub struct Scene {
@@ -27,7 +30,12 @@ impl Scene {
         self.entities_to_add.push(component_payload);
     }
 
-    pub fn sync(&mut self, registry: &mut Registry, asset_storage: &AssetStorage) -> Vec<Entity> {
+    pub fn sync(
+        &mut self,
+        registry: &mut Registry,
+        asset_storage: &AssetStorage,
+        time: f64,
+    ) -> Vec<Entity> {
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
         for bundle in self.entities_to_add.drain(..) {
@@ -47,7 +55,9 @@ impl Scene {
             }
 
             if let Some(mut sprite) = bundle.sprite {
-                let texture = asset_storage.texture(sprite.texture_name).unwrap(); // TODO: Unwrap
+                let texture = asset_storage
+                    .texture(sprite.texture_name)
+                    .unwrap_or_else(|| panic_not_loaded_texture(&sprite.texture_name));
 
                 match &sprite.clip_size {
                     Some(_) => {}
@@ -63,8 +73,16 @@ impl Scene {
                     Some(_) => {}
                     None => {
                         sprite.rotation_origin = Some(Vector2::new(
-                            sprite.clip_size.unwrap().width as f64 / 2.0, // TODO: Unwrap
-                            sprite.clip_size.unwrap().height as f64 / 2.0, // TODO: Unwrap
+                            sprite
+                                .clip_size
+                                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                                .width as f64
+                                / 2.0,
+                            sprite
+                                .clip_size
+                                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                                .height as f64
+                                / 2.0,
                         ))
                     }
                 }
@@ -74,6 +92,12 @@ impl Scene {
 
             if let Some(figure) = bundle.figure {
                 registry.add_component(&entity, figure);
+            }
+
+            if let Some(mut animation) = bundle.animation {
+                animation.start_time = time;
+
+                registry.add_component(&entity, animation);
             }
         }
 

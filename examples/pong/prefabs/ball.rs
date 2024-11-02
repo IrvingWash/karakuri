@@ -14,7 +14,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             resolution.height as f64 / 2.,
         ))),
         behavior: Some(Box::new(Ball {
-            speed: 300.0,
+            speed: 30.0,
             resolution: resolution.clone(),
             ..Default::default()
         })),

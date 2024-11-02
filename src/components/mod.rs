@@ -1,3 +1,4 @@
+mod animation_component;
 mod behavior_component;
 mod component_payload;
 mod figure_component;
@@ -5,6 +6,7 @@ mod sprite_component;
 mod tag_component;
 mod transform_component;
 
+pub use animation_component::AnimationComponent;
 pub use behavior_component::BehaviorComponent;
 pub use behavior_component::Ctx;
 pub use component_payload::ComponentPayload;

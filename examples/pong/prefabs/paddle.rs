@@ -22,7 +22,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
         },
         behavior: Some(Box::new(Paddle {
             side,
-            speed: 300.0,
+            speed: 30.0,
             resolution: resolution.clone(),
         })),
         ..Default::default()
@@ -63,6 +63,7 @@ impl BehaviorComponent for Paddle {
     }
 
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+        dbg!(ctx.delta_time);
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)

@@ -9,3 +9,14 @@ pub fn panic_queried<T>(entity: Entity) -> ! {
         type_name::<T>()
     )
 }
+
+pub fn panic_uninitialized_sprite(name: &str) -> ! {
+    panic!(
+        "Sprite doesn't have `{}` though it should have been populated",
+        name
+    );
+}
+
+pub fn panic_not_loaded_texture(name: &str) -> ! {
+    panic!("Tried to use not loaded texture {}", name)
+}

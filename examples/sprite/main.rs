@@ -30,6 +30,7 @@ pub fn main() -> Result<(), String> {
             }),
             figure: None,
             behavior: None,
+            ..Default::default()
         },
         ComponentPayload {
             tag: Some(TagComponent::new(String::from("Sonic Doppelganger"))),
@@ -46,6 +47,7 @@ pub fn main() -> Result<(), String> {
             }),
             figure: None,
             behavior: None,
+            ..Default::default()
         },
     ]);
 
