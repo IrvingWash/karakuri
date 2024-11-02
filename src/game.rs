@@ -1,4 +1,4 @@
-use std::any::type_name;
+use std::{any::type_name, cell::Ref};
 
 use kec::{Entity, Registry};
 use kutils::Size;
@@ -104,6 +104,12 @@ impl Game {
             // Render
             let mut handle = self.renderer.start_frame(&mut self.ctx);
 
+            // Render figures
+            struct FigureDrawData<'a> {
+                transform: Ref<'a, TransformComponent>,
+                figure: Ref<'a, FigureComponent>,
+            }
+
             let entities_with_figures = self
                 .registry
                 .query()
@@ -111,22 +117,37 @@ impl Game {
                 .with_component::<FigureComponent>()
                 .build();
 
-            for entity in entities_with_figures {
-                let transform = self
-                    .registry
-                    .get_component::<TransformComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
-                let figure = self
-                    .registry
-                    .get_component::<FigureComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<FigureComponent>(entity));
+            let mut data: Vec<FigureDrawData> =
+                Vec::with_capacity(entities_with_figures.capacity());
 
+            for entity in entities_with_figures {
+                data.push(FigureDrawData {
+                    figure: self
+                        .registry
+                        .get_component::<FigureComponent>(&entity)
+                        .unwrap_or_else(|| panic_queried::<FigureComponent>(entity)),
+                    transform: self
+                        .registry
+                        .get_component::<TransformComponent>(&entity)
+                        .unwrap_or_else(|| panic_queried::<TransformComponent>(entity)),
+                });
+            }
+
+            data.sort_by(|a, b| a.figure.layer.cmp(&b.figure.layer));
+
+            for FigureDrawData { figure, transform } in data {
                 self.renderer.draw_rect(
                     &mut handle,
                     &transform.position,
                     &figure.size,
                     &figure.color,
                 );
+            }
+
+            // Render sprites
+            struct SpriteDrawData<'a> {
+                transform: Ref<'a, TransformComponent>,
+                sprite: Ref<'a, SpriteComponent>,
             }
 
             let entities_with_sprites = self
@@ -136,16 +157,25 @@ impl Game {
                 .with_component::<SpriteComponent>()
                 .build();
 
-            for entity in entities_with_sprites {
-                let transform = self
-                    .registry
-                    .get_component::<TransformComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
-                let sprite = self
-                    .registry
-                    .get_component::<SpriteComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
+            let mut data: Vec<SpriteDrawData> =
+                Vec::with_capacity(entities_with_sprites.capacity());
 
+            for entity in entities_with_sprites {
+                data.push(SpriteDrawData {
+                    transform: self
+                        .registry
+                        .get_component::<TransformComponent>(&entity)
+                        .unwrap_or_else(|| panic_queried::<TransformComponent>(entity)),
+                    sprite: self
+                        .registry
+                        .get_component::<SpriteComponent>(&entity)
+                        .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity)),
+                });
+            }
+
+            data.sort_by(|a, b| a.sprite.layer.cmp(&b.sprite.layer));
+
+            for SpriteDrawData { transform, sprite } in data {
                 let texture = self
                     .asset_storage
                     .texture(sprite.texture_name)
