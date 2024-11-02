@@ -54,9 +54,7 @@ pub fn main() -> Result<(), String> {
         },
         ComponentPayload {
             tag: Some(TagComponent::new(String::from("Radar"))),
-            transform: Some(TransformComponent::from_position(Vector2::new(
-                300.0, 300.0,
-            ))),
+            transform: Some(TransformComponent::from_position(Vector2::new(32.0, 32.0))),
             sprite: Some(SpriteComponent {
                 texture_name: "radar",
                 layer: 99,
