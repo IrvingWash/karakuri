@@ -6,9 +6,9 @@ use crate::{
 };
 
 #[derive(Debug, Default)]
-pub struct Animator {}
+pub struct AnimatorSystem {}
 
-impl Animator {
+impl AnimatorSystem {
     pub fn new() -> Self {
         Self {}
     }

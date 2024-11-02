@@ -1,13 +1,10 @@
 mod adapters;
-mod animator;
 mod errors;
 mod game;
 mod game_config;
 mod scene;
+mod systems;
 
-use adapters::InputProcessorWrapper;
-use adapters::RendererAdapter;
-use animator::Animator;
 use scene::Scene;
 
 pub mod components;

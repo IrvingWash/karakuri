@@ -3,20 +3,22 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
 
 use crate::{
+    adapters::InputProcessorAdapter,
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
-    Animator, GameConfig, InputProcessorWrapper, RendererAdapter, Scene,
+    systems::{AnimatorSystem, RendererSystem},
+    GameConfig, Scene,
 };
 
 pub struct Game {
     fps_controller: FpsController,
-    renderer_adapter: RendererAdapter,
     input_processor: InputProcessor,
     registry: Registry,
     scene: Scene,
     ctx: WindowCtx,
     asset_storage: AssetStorage,
-    animator: Animator,
+    renderer: RendererSystem,
+    animator: AnimatorSystem,
 }
 
 impl Game {
@@ -36,13 +38,13 @@ impl Game {
 
         Self {
             fps_controller,
-            renderer_adapter: RendererAdapter::new(renderer),
             input_processor,
             registry: Registry::new(),
             scene: Scene::new(),
             ctx,
             asset_storage,
-            animator: Animator::new(),
+            renderer: RendererSystem::new(renderer),
+            animator: AnimatorSystem::new(),
         }
     }
 
@@ -60,10 +62,10 @@ impl Game {
             let delta_time = self.fps_controller.delta_time(&self.ctx);
 
             // Get input
-            let input_processor_wrapper =
-                InputProcessorWrapper::new(&self.input_processor, &self.ctx);
+            let input_processor_adapter =
+                InputProcessorAdapter::new(&self.input_processor, &self.ctx);
 
-            if input_processor_wrapper.should_close() {
+            if input_processor_adapter.should_close() {
                 break;
             }
 
@@ -80,7 +82,7 @@ impl Game {
                         entity: &entity,
                         delta_time,
                         registry: &self.registry,
-                        input_processor: &input_processor_wrapper,
+                        input_processor: &input_processor_adapter,
                     });
             }
 
@@ -99,7 +101,7 @@ impl Game {
                         delta_time,
                         registry: &self.registry,
                         entity: &entity,
-                        input_processor: &input_processor_wrapper,
+                        input_processor: &input_processor_adapter,
                     });
             }
 
@@ -110,18 +112,17 @@ impl Game {
     }
 
     pub fn resolution(&self) -> Size {
-        self.renderer_adapter.resolution(&self.ctx)
+        self.renderer.resolution(&self.ctx)
     }
 
     fn render(&mut self) {
-        let mut handle = self.renderer_adapter.start_frame(&mut self.ctx);
+        let mut handle = self.renderer.start_frame(&mut self.ctx);
 
-        self.renderer_adapter
-            .draw_figures(&mut handle, &mut self.registry);
+        self.renderer.draw_figures(&mut handle, &mut self.registry);
 
-        self.renderer_adapter
+        self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 
-        self.renderer_adapter.finish_frame(handle);
+        self.renderer.finish_frame(handle);
     }
 }

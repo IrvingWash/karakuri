@@ -1,12 +1,12 @@
 use kwindow::{InputProcessor, KeyboardKey, WindowCtx};
 
 #[derive(Debug)]
-pub struct InputProcessorWrapper<'a> {
+pub struct InputProcessorAdapter<'a> {
     input_processor: &'a InputProcessor,
     ctx: &'a WindowCtx,
 }
 
-impl<'a> InputProcessorWrapper<'a> {
+impl<'a> InputProcessorAdapter<'a> {
     pub fn new(input_processor: &'a InputProcessor, ctx: &'a WindowCtx) -> Self {
         Self {
             input_processor,

@@ -9,11 +9,11 @@ use crate::components::{FigureComponent, SpriteComponent, TransformComponent};
 use crate::errors::{panic_not_loaded_texture, panic_queried, panic_uninitialized_sprite};
 
 #[derive(Debug)]
-pub struct RendererAdapter {
+pub struct RendererSystem {
     renderer: Renderer,
 }
 
-impl RendererAdapter {
+impl RendererSystem {
     pub fn new(renderer: Renderer) -> Self {
         Self { renderer }
     }
