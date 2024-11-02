@@ -37,7 +37,7 @@ impl<'a> Query<'a> {
             .collect()
     }
 
-    pub fn with_component<T: Any>(mut self) -> Query<'a> {
+    pub fn with_component<T: Any + ?Sized>(mut self) -> Query<'a> {
         let component_type = TypeId::of::<T>();
 
         match self.registry.component_ids().get(&component_type) {

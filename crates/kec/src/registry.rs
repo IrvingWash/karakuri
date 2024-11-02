@@ -72,7 +72,7 @@ impl Registry {
         self.free_ids.push(id);
     }
 
-    pub fn register_component<T: Any>(&mut self) {
+    pub fn register_component<T: Any + ?Sized>(&mut self) {
         let component_type = TypeId::of::<T>();
 
         if self.components.contains_key(&component_type) {
@@ -84,6 +84,31 @@ impl Registry {
 
         let new_component_vec: Vec<Orra> = vec![None; self.entity_count];
         self.components.insert(component_type, new_component_vec);
+    }
+
+    pub fn add_dyn_component<T: Any + ?Sized>(&mut self, entity: &Entity, component: Box<T>) {
+        self.register_component::<T>();
+
+        let id = entity.id();
+        let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
+        let component_type = TypeId::of::<T>();
+
+        let component_id = self
+            .component_ids
+            .get(&component_type)
+            .unwrap_or_else(|| panic_registered_without_id::<T>());
+
+        self.components.get_mut(&component_type).unwrap_or_else(|| {
+            panic!(
+                "Component {} should have been already registered, but doesn't have a component vec.",
+                type_name::<T>()
+            )
+        })[id] = wrapped_component;
+
+        self.entity_signatures
+            .get_mut(&id)
+            .expect(NO_SIGNATURE_MESSAGE)
+            .set(*component_id);
     }
 
     pub fn add_component<T: Any>(&mut self, entity: &Entity, component: T) {
@@ -111,11 +136,36 @@ impl Registry {
             .set(*component_id);
     }
 
+    pub fn get_dyn_component<T: Any + ?Sized>(&self, entity: &Entity) -> Option<Ref<Box<T>>> {
+        if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
+            match &component_vec[entity.id()] {
+                None => return None,
+                Some(component) => return Self::borrow_downcast::<Box<T>>(component),
+            }
+        }
+
+        None
+    }
+
     pub fn get_component<T: Any>(&self, entity: &Entity) -> Option<Ref<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             match &component_vec[entity.id()] {
                 None => return None,
                 Some(component) => return Self::borrow_downcast::<T>(component),
+            }
+        }
+
+        None
+    }
+
+    pub fn get_dyn_component_mut<T: Any + ?Sized>(
+        &self,
+        entity: &Entity,
+    ) -> Option<RefMut<Box<T>>> {
+        if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
+            match &component_vec[entity.id()] {
+                None => return None,
+                Some(component) => return Self::borrow_downcast_mut::<Box<T>>(component),
             }
         }
 
@@ -146,6 +196,19 @@ impl Registry {
         }
     }
 
+    pub fn get_dyn_component_vec<T: Any + ?Sized>(&self) -> Vec<Option<Ref<Box<T>>>> {
+        match self.components.get(&TypeId::of::<T>()) {
+            None => Vec::new(),
+            Some(component_vec) => component_vec
+                .iter()
+                .map(|c| match c {
+                    None => None,
+                    Some(c) => Self::borrow_downcast::<Box<T>>(c),
+                })
+                .collect(),
+        }
+    }
+
     pub fn get_component_vec_mut<T: Any>(&self) -> Vec<Option<RefMut<T>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
@@ -154,6 +217,19 @@ impl Registry {
                 .map(|c| match c {
                     None => None,
                     Some(c) => Self::borrow_downcast_mut::<T>(c),
+                })
+                .collect(),
+        }
+    }
+
+    pub fn get_dyn_component_vec_mut<T: Any + ?Sized>(&self) -> Vec<Option<RefMut<Box<T>>>> {
+        match self.components.get(&TypeId::of::<T>()) {
+            None => Vec::new(),
+            Some(component_vec) => component_vec
+                .iter()
+                .map(|c| match c {
+                    None => None,
+                    Some(c) => Self::borrow_downcast_mut::<Box<T>>(c),
                 })
                 .collect(),
         }
@@ -308,14 +384,14 @@ mod world_tests {
             name: String::from("Tails"),
         });
 
-        registry.add_component(&tails, flyer);
+        registry.add_dyn_component(&tails, flyer);
 
         registry
-            .get_component::<Box<dyn Flyer>>(&tails)
+            .get_dyn_component::<dyn Flyer>(&tails)
             .unwrap()
             .fly();
         registry
-            .get_component::<Box<dyn Flyer>>(&tails)
+            .get_dyn_component::<dyn Flyer>(&tails)
             .unwrap()
             .as_any()
             .downcast_ref::<Tails>()

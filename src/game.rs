@@ -69,8 +69,8 @@ impl Game {
 
             for entity in entities_to_start {
                 self.registry
-                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                    .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                    .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                     .start(Ctx {
                         entity: &entity,
                         delta_time,
@@ -83,13 +83,13 @@ impl Game {
             let updateable_entities = self
                 .registry
                 .query()
-                .with_component::<Box<dyn BehaviorComponent>>()
+                .with_component::<dyn BehaviorComponent>()
                 .build();
 
             for entity in updateable_entities {
                 self.registry
-                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                    .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                    .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                     .update(Ctx {
                         delta_time,
                         registry: &self.registry,

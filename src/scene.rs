@@ -35,7 +35,7 @@ impl Scene {
             }
 
             if let Some(behavior) = bundle.behavior {
-                registry.add_component(&entity, behavior);
+                registry.add_dyn_component(&entity, behavior);
                 entities_to_start.push(entity);
             }
 
