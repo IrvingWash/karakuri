@@ -1,5 +1,7 @@
+mod errors;
 mod game;
 mod game_config;
+mod renderer_adapter;
 mod scene;
 
 use scene::Scene;

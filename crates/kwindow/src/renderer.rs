@@ -8,6 +8,7 @@ use raylib::{
     RaylibHandle, RaylibThread,
 };
 
+#[derive(Debug)]
 pub struct Renderer {
     thread: RaylibThread,
     clear_color: RaylibColor,

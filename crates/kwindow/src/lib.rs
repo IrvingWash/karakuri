@@ -10,6 +10,7 @@ pub use asset_storage::AssetStorage;
 pub use fps_controller::FpsController;
 pub use input_processor::InputProcessor;
 pub use raylib::consts::KeyboardKey;
+pub use raylib::prelude::RaylibDrawHandle as DrawHandle;
 pub use raylib::texture::Texture2D;
 pub use raylib::RaylibHandle as WindowCtx;
 pub use renderer::Renderer;

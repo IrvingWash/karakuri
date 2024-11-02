@@ -1,0 +1,11 @@
+use std::any::type_name;
+
+use kec::Entity;
+
+pub fn panic_queried<T>(entity: Entity) -> ! {
+    panic!(
+        "Entity {} didn't have {}, though was queried for it.",
+        entity.id(),
+        type_name::<T>()
+    )
+}
