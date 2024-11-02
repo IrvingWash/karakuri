@@ -19,7 +19,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(config: GameConfig) -> Self {
+    pub fn new(config: &GameConfig) -> Self {
         let Window {
             fps_controller,
             renderer,

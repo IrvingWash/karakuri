@@ -4,7 +4,7 @@ use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
 
 pub fn main() -> Result<(), String> {
-    let mut game = Game::new(GameConfig {
+    let mut game = Game::new(&GameConfig {
         clear_color: Color::BLUE,
         resolution: Size::new(800, 600),
         target_fps: 60,

@@ -8,7 +8,7 @@ use prefabs::{
 mod prefabs;
 
 pub fn main() {
-    let mut game = Game::new(GameConfig {
+    let mut game = Game::new(&GameConfig {
         clear_color: Color::BLACK,
         resolution: Size::new(800, 600),
         target_fps: 60,

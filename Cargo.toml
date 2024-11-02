@@ -22,6 +22,9 @@ members = ["crates/*"]
 needless_pass_by_ref_mut = "forbid"
 needless_pass_by_value = "forbid"
 
+[lints]
+workspace = true
+
 [dependencies]
 kec = { path = "crates/kec" }
 kmath = { path = "crates/kmath" }
