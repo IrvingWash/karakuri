@@ -10,5 +10,8 @@ documentation = "https://github.com/IrvingWash/karakuri"
 license = "MIT"
 authors = ["WI"]
 
+[lints]
+workspace = true
+
 [dependencies]
 kmath = { path = "../kmath" }

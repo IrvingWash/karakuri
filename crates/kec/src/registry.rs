@@ -159,7 +159,7 @@ impl Registry {
         }
     }
 
-    pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: T) -> Option<Entity> {
+    pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: &T) -> Option<Entity> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             let id = component_vec.iter().position(|component| match component {
                 None => false,
@@ -170,7 +170,7 @@ impl Registry {
                             type_name::<T>()
                         )
                     })
-                    .eq(&component_to_find),
+                    .eq(component_to_find),
             });
 
             return id.map(Entity::new);

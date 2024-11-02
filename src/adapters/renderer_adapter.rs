@@ -18,7 +18,7 @@ impl RendererAdapter {
         Self { renderer }
     }
 
-    pub fn start_frame<'a>(&mut self, ctx: &'a mut WindowCtx) -> DrawHandle<'a> {
+    pub fn start_frame<'a>(&self, ctx: &'a mut WindowCtx) -> DrawHandle<'a> {
         self.renderer.start_frame(ctx)
     }
 
@@ -30,7 +30,7 @@ impl RendererAdapter {
         self.renderer.resolution(ctx)
     }
 
-    pub fn draw_figures(&mut self, handle: &mut DrawHandle, registry: &mut Registry) {
+    pub fn draw_figures(&self, handle: &mut DrawHandle, registry: &mut Registry) {
         let entities_with_figures = registry
             .query()
             .with_component::<TransformComponent>()
@@ -59,7 +59,7 @@ impl RendererAdapter {
     }
 
     pub fn draw_sprites(
-        &mut self,
+        &self,
         handle: &mut DrawHandle,
         registry: &mut Registry,
         asset_storage: &AssetStorage,

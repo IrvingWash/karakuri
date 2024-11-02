@@ -10,6 +10,9 @@ documentation = "https://github.com/IrvingWash/karakuri"
 license = "MIT"
 authors = ["WI"]
 
+[lints]
+workspace = true
+
 [dependencies]
 raylib = "5.0.2"
 kutils = { path = "../kutils" }

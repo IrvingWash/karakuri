@@ -24,7 +24,7 @@ pub struct Window {
 }
 
 impl Window {
-    pub fn new(title: &str, resolution: Size, clear_color: Color, target_fps: u32) -> Self {
+    pub fn new(title: &str, resolution: Size, clear_color: &Color, target_fps: u32) -> Self {
         let (mut rl, thread) = raylib::init()
             .size(resolution.width as i32, resolution.height as i32)
             .title(title)

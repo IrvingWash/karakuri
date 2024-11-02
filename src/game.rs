@@ -29,7 +29,7 @@ impl Game {
         } = Window::new(
             config.title,
             config.resolution,
-            config.clear_color,
+            &config.clear_color,
             config.target_fps,
         );
 
@@ -98,23 +98,23 @@ impl Game {
                     });
             }
 
-            // Render
-            let mut handle = self.renderer_adapter.start_frame(&mut self.ctx);
-
-            self.renderer_adapter
-                .draw_figures(&mut handle, &mut self.registry);
-
-            self.renderer_adapter.draw_sprites(
-                &mut handle,
-                &mut self.registry,
-                &self.asset_storage,
-            );
-
-            self.renderer_adapter.finish_frame(handle);
+            self.render();
         }
     }
 
     pub fn resolution(&self) -> Size {
         self.renderer_adapter.resolution(&self.ctx)
+    }
+
+    fn render(&mut self) {
+        let mut handle = self.renderer_adapter.start_frame(&mut self.ctx);
+
+        self.renderer_adapter
+            .draw_figures(&mut handle, &mut self.registry);
+
+        self.renderer_adapter
+            .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
+
+        self.renderer_adapter.finish_frame(handle);
     }
 }

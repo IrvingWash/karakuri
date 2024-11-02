@@ -15,10 +15,10 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(thread: RaylibThread, clear_color: Color) -> Renderer {
+    pub fn new(thread: RaylibThread, clear_color: &Color) -> Renderer {
         Self {
             thread,
-            clear_color: color_to_raylib(&clear_color),
+            clear_color: color_to_raylib(clear_color),
         }
     }
 
