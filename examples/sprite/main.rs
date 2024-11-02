@@ -18,16 +18,15 @@ pub fn main() -> Result<(), String> {
             tag: Some(TagComponent::new(String::from("Sonic"))),
             transform: Some(TransformComponent::new(
                 Vector2::new(100., 100.),
-                Vector2::new(3., 2.),
+                Vector2::new(1., 1.),
                 45.0,
             )),
             sprite: Some(SpriteComponent {
                 texture_name: "sonic-idle",
-                clip_position: None,
-                rotation_origin: None,
-                clip_size: None,
                 layer: 1,
-                tint: Color::WHITE,
+                clip_size: Some(Size::new(10, 10)),
+                clip_position: Vector2::new(10.0, 10.0),
+                ..Default::default()
             }),
             figure: None,
             behavior: None,
@@ -41,11 +40,9 @@ pub fn main() -> Result<(), String> {
             )),
             sprite: Some(SpriteComponent {
                 texture_name: "sonic-idle",
-                clip_position: None,
-                rotation_origin: None,
-                clip_size: None,
                 layer: 0,
                 tint: Color::RED,
+                ..Default::default()
             }),
             figure: None,
             behavior: None,

@@ -1,6 +1,6 @@
 # ci
 lint:
-	cargo clippy -- -D warnings
+	cargo clippy --workspace -- -D warnings
 fmt:
 	cargo fmt --all
 test:

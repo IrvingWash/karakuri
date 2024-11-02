@@ -96,12 +96,17 @@ impl RendererAdapter {
                 handle,
                 texture,
                 &sprite.clip_position,
-                &sprite.clip_size,
+                &sprite
+                    .clip_size
+                    .expect("Sprite doesn't have `clip_size` though it should have been populated"),
                 &transform.position,
                 &transform.scale,
-                sprite.rotation_origin.as_ref(),
+                sprite
+                    .rotation_origin
+                    .as_ref()
+                    .expect("Sprite doesn't have `clip_size` though it should have been populated"),
                 transform.rotation,
-                Some(&sprite.tint),
+                &sprite.tint,
             );
         }
     }

@@ -1,4 +1,7 @@
 use kec::{Entity, Registry};
+use kmath::Vector2;
+use kutils::Size;
+use kwindow::AssetStorage;
 
 use crate::components::ComponentPayload;
 
@@ -24,7 +27,7 @@ impl Scene {
         self.entities_to_add.push(component_payload);
     }
 
-    pub fn sync(&mut self, registry: &mut Registry) -> Vec<Entity> {
+    pub fn sync(&mut self, registry: &mut Registry, asset_storage: &AssetStorage) -> Vec<Entity> {
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
         for bundle in self.entities_to_add.drain(..) {
@@ -43,7 +46,29 @@ impl Scene {
                 registry.add_component(&entity, tab);
             }
 
-            if let Some(sprite) = bundle.sprite {
+            if let Some(mut sprite) = bundle.sprite {
+                let texture = asset_storage.texture(sprite.texture_name).unwrap(); // TODO: Unwrap
+
+                match &sprite.clip_size {
+                    Some(_) => {}
+                    None => {
+                        sprite.clip_size = Some(Size::new(
+                            i64::from(texture.width),
+                            i64::from(texture.height),
+                        ))
+                    }
+                }
+
+                match &sprite.rotation_origin {
+                    Some(_) => {}
+                    None => {
+                        sprite.rotation_origin = Some(Vector2::new(
+                            sprite.clip_size.unwrap().width as f64 / 2.0, // TODO: Unwrap
+                            sprite.clip_size.unwrap().height as f64 / 2.0, // TODO: Unwrap
+                        ))
+                    }
+                }
+
                 registry.add_component(&entity, sprite);
             }
 

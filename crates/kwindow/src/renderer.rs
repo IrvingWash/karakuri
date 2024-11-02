@@ -65,36 +65,27 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
-        source_position: &Option<Vector2>,
-        source_size: &Option<Size>,
+        source_position: &Vector2,
+        source_size: &Size,
         dest_position: &Vector2,
         scale: &Vector2,
-        origin: Option<&Vector2>,
+        origin: &Vector2,
         rotation: f64,
-        tint: Option<&Color>,
+        tint: &Color,
     ) {
         let dest_width = texture.width * scale.x as i32;
         let dest_height = texture.height * scale.y as i32;
 
         d.draw_texture_pro(
             texture,
-            make_rectangle(
-                source_position.as_ref().unwrap_or(&Vector2::ZERO),
-                source_size.as_ref().unwrap_or(&Size::new(
-                    i64::from(texture.width),
-                    i64::from(texture.height),
-                )),
-            ),
+            make_rectangle(source_position, source_size),
             make_rectangle(
                 dest_position,
                 &Size::new(i64::from(dest_width), i64::from(dest_height)),
             ),
-            vector2_to_raylib(origin.unwrap_or(&Vector2::new(
-                f64::from(dest_width) * 0.5,
-                f64::from(dest_height) * 0.5,
-            ))),
+            vector2_to_raylib(origin),
             rotation as f32,
-            color_to_raylib(tint.unwrap_or(&Color::WHITE)),
+            color_to_raylib(tint),
         );
     }
 }
