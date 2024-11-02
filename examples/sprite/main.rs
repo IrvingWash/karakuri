@@ -20,12 +20,7 @@ pub fn main() -> Result<(), String> {
             Vector2::new(3., 2.),
             45.0,
         )),
-        sprite: Some(SpriteComponent {
-            clip_position: None,
-            clip_size: None,
-            texture_name: "sonic-idle",
-            ..Default::default()
-        }),
+        sprite: Some(SpriteComponent::from_texture_name("sonic-idle")),
         figure: None,
         behavior: None,
     }]);

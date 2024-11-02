@@ -162,7 +162,7 @@ impl Game {
                     &transform.scale,
                     sprite.rotation_origin.as_ref(),
                     transform.rotation,
-                    sprite.tint.as_ref(),
+                    Some(&sprite.tint),
                 );
             }
 
