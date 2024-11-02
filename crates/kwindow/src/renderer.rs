@@ -24,8 +24,8 @@ impl Renderer {
 
     pub fn resolution(&self, ctx: &RaylibHandle) -> Size {
         Size {
-            width: ctx.get_screen_width() as i64,
-            height: ctx.get_screen_height() as i64,
+            width: i64::from(ctx.get_screen_width()),
+            height: i64::from(ctx.get_screen_height()),
         }
     }
 
@@ -80,17 +80,18 @@ impl Renderer {
             texture,
             make_rectangle(
                 source_position.as_ref().unwrap_or(&Vector2::ZERO),
-                source_size
-                    .as_ref()
-                    .unwrap_or(&Size::new(texture.width as i64, texture.height as i64)),
+                source_size.as_ref().unwrap_or(&Size::new(
+                    i64::from(texture.width),
+                    i64::from(texture.height),
+                )),
             ),
             make_rectangle(
                 dest_position,
-                &Size::new((dest_width) as i64, (dest_height) as i64),
+                &Size::new(i64::from(dest_width), i64::from(dest_height)),
             ),
             vector2_to_raylib(origin.unwrap_or(&Vector2::new(
-                dest_width as f64 * 0.5,
-                dest_height as f64 * 0.5,
+                f64::from(dest_width) * 0.5,
+                f64::from(dest_height) * 0.5,
             ))),
             rotation as f32,
             color_to_raylib(tint.unwrap_or(&Color::WHITE)),
