@@ -5,8 +5,7 @@ use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
 use crate::{
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
-    renderer_adapter::RendererAdapter,
-    GameConfig, Scene,
+    GameConfig, InputProcessorWrapper, RendererAdapter, Scene,
 };
 
 pub struct Game {
@@ -58,7 +57,10 @@ impl Game {
             let delta_time = self.fps_controller.delta_time(&self.ctx);
 
             // Get input
-            if self.input_processor.should_close(&self.ctx) {
+            let input_processor_wrapper =
+                InputProcessorWrapper::new(&self.input_processor, &self.ctx);
+
+            if input_processor_wrapper.should_close() {
                 break;
             }
 
@@ -73,8 +75,7 @@ impl Game {
                         entity: &entity,
                         delta_time,
                         registry: &self.registry,
-                        input_processor: &self.input_processor,
-                        window_ctx: &self.ctx,
+                        input_processor: &input_processor_wrapper,
                     });
             }
 
@@ -93,8 +94,7 @@ impl Game {
                         delta_time,
                         registry: &self.registry,
                         entity: &entity,
-                        input_processor: &self.input_processor,
-                        window_ctx: &self.ctx,
+                        input_processor: &input_processor_wrapper,
                     });
             }
 

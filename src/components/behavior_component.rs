@@ -1,14 +1,14 @@
 use std::{any::Any, fmt::Debug};
 
 use kec::{Entity, Registry};
-use kwindow::{InputProcessor, WindowCtx};
+
+use crate::input_processor_wrapper::InputProcessorWrapper;
 
 pub struct Ctx<'a> {
     pub delta_time: f64,
     pub registry: &'a Registry,
     pub entity: &'a Entity,
-    pub input_processor: &'a InputProcessor,
-    pub window_ctx: &'a WindowCtx,
+    pub input_processor: &'a InputProcessorWrapper<'a>,
 }
 
 pub trait BehaviorComponent: Debug {

@@ -69,29 +69,17 @@ impl BehaviorComponent for Paddle {
             .unwrap();
 
         if self.side == Side::Left {
-            if ctx
-                .input_processor
-                .is_down(KeyboardKey::KEY_W, ctx.window_ctx)
-            {
+            if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
                 transform.position.y -= self.speed * ctx.delta_time;
             }
-            if ctx
-                .input_processor
-                .is_down(KeyboardKey::KEY_S, ctx.window_ctx)
-            {
+            if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
                 transform.position.y += self.speed * ctx.delta_time;
             }
         } else {
-            if ctx
-                .input_processor
-                .is_down(KeyboardKey::KEY_UP, ctx.window_ctx)
-            {
+            if ctx.input_processor.is_down(KeyboardKey::KEY_UP) {
                 transform.position.y -= self.speed * ctx.delta_time;
             }
-            if ctx
-                .input_processor
-                .is_down(KeyboardKey::KEY_DOWN, ctx.window_ctx)
-            {
+            if ctx.input_processor.is_down(KeyboardKey::KEY_DOWN) {
                 transform.position.y += self.speed * ctx.delta_time;
             }
         }
