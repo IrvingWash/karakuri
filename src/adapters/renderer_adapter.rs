@@ -31,15 +31,15 @@ impl RendererAdapter {
     }
 
     pub fn draw_figures(&self, handle: &mut DrawHandle, registry: &mut Registry) {
-        let entities_with_figures = registry
+        let drawable_entities = registry
             .query()
             .with_component::<TransformComponent>()
             .with_component::<FigureComponent>()
             .build();
 
-        let mut data: Vec<FigureDrawData> = Vec::with_capacity(entities_with_figures.capacity());
+        let mut data: Vec<FigureDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
-        for entity in entities_with_figures {
+        for entity in drawable_entities {
             data.push(FigureDrawData {
                 figure: registry
                     .get_component::<FigureComponent>(&entity)
@@ -64,15 +64,15 @@ impl RendererAdapter {
         registry: &mut Registry,
         asset_storage: &AssetStorage,
     ) {
-        let entities_with_sprites = registry
+        let drawable_entities = registry
             .query()
             .with_component::<TransformComponent>()
             .with_component::<SpriteComponent>()
             .build();
 
-        let mut data: Vec<SpriteDrawData> = Vec::with_capacity(entities_with_sprites.capacity());
+        let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
-        for entity in entities_with_sprites {
+        for entity in drawable_entities {
             data.push(SpriteDrawData {
                 transform: registry
                     .get_component::<TransformComponent>(&entity)
