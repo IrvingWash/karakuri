@@ -5,7 +5,7 @@ use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
 use crate::{
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
-    GameConfig, InputProcessorWrapper, RendererAdapter, Scene,
+    Animator, GameConfig, InputProcessorWrapper, RendererAdapter, Scene,
 };
 
 pub struct Game {
@@ -16,6 +16,7 @@ pub struct Game {
     scene: Scene,
     ctx: WindowCtx,
     asset_storage: AssetStorage,
+    animator: Animator,
 }
 
 impl Game {
@@ -41,6 +42,7 @@ impl Game {
             scene: Scene::new(),
             ctx,
             asset_storage,
+            animator: Animator::new(),
         }
     }
 
@@ -54,6 +56,7 @@ impl Game {
 
     pub fn start(&mut self) {
         loop {
+            let time = self.fps_controller.time(&self.ctx);
             let delta_time = self.fps_controller.delta_time(&self.ctx);
 
             // Get input
@@ -65,11 +68,9 @@ impl Game {
             }
 
             // Start new entities
-            let entities_to_start = self.scene.sync(
-                &mut self.registry,
-                &self.asset_storage,
-                self.fps_controller.time(&self.ctx),
-            );
+            let entities_to_start = self
+                .scene
+                .sync(&mut self.registry, &self.asset_storage, time);
 
             for entity in entities_to_start {
                 self.registry
@@ -101,6 +102,8 @@ impl Game {
                         input_processor: &input_processor_wrapper,
                     });
             }
+
+            self.animator.animate(&mut self.registry, time);
 
             self.render();
         }

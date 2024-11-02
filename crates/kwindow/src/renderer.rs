@@ -68,21 +68,19 @@ impl Renderer {
         source_position: &Vector2,
         source_size: &Size,
         dest_position: &Vector2,
+        dest_size: &Size,
         scale: &Vector2,
         origin: &Vector2,
         rotation: f64,
         tint: &Color,
     ) {
-        let dest_width = texture.width * scale.x as i32;
-        let dest_height = texture.height * scale.y as i32;
+        let dest_width = dest_size.width * scale.x as i64;
+        let dest_height = dest_size.height * scale.y as i64;
 
         d.draw_texture_pro(
             texture,
             make_rectangle(source_position, source_size),
-            make_rectangle(
-                dest_position,
-                &Size::new(i64::from(dest_width), i64::from(dest_height)),
-            ),
+            make_rectangle(dest_position, &Size::new(dest_width, dest_height)),
             vector2_to_raylib(origin),
             rotation as f32,
             color_to_raylib(tint),

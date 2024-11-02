@@ -8,9 +8,9 @@ pub struct AnimationComponent {
 }
 
 impl AnimationComponent {
-    pub fn new(frame_count: u8, current_frame: u8, frame_rate: u8, looping: bool) -> Self {
+    pub fn new(frame_count: u8, frame_rate: u8, looping: bool) -> Self {
         Self {
-            current_frame,
+            current_frame: 0,
             frame_count,
             frame_rate,
             looping,

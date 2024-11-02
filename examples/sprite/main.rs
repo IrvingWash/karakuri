@@ -1,4 +1,6 @@
-use karakuri::components::{ComponentPayload, SpriteComponent, TagComponent, TransformComponent};
+use karakuri::components::{
+    AnimationComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
+};
 use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
@@ -12,6 +14,7 @@ pub fn main() -> Result<(), String> {
     });
 
     game.add_texture("sonic-idle", "./examples/sprite/assets/sprites/sonic.png")?;
+    game.add_texture("radar", "./examples/sprite/assets/sprites/radar.png")?;
 
     game.set_scene(vec![
         ComponentPayload {
@@ -36,17 +39,31 @@ pub fn main() -> Result<(), String> {
             tag: Some(TagComponent::new(String::from("Sonic Doppelganger"))),
             transform: Some(TransformComponent::new(
                 Vector2::new(130., 130.),
-                Vector2::new(3., 2.),
+                Vector2::new(5., 2.),
                 45.0,
             )),
             sprite: Some(SpriteComponent {
                 texture_name: "sonic-idle",
                 layer: 0,
-                tint: Color::RED,
+                tint: Color::YELLOW,
                 ..Default::default()
             }),
             figure: None,
             behavior: None,
+            ..Default::default()
+        },
+        ComponentPayload {
+            tag: Some(TagComponent::new(String::from("Radar"))),
+            transform: Some(TransformComponent::from_position(Vector2::new(
+                300.0, 300.0,
+            ))),
+            sprite: Some(SpriteComponent {
+                texture_name: "radar",
+                layer: 99,
+                clip_size: Some(Size::new(64, 64)),
+                ..Default::default()
+            }),
+            animation: Some(AnimationComponent::new(8, 10, true)),
             ..Default::default()
         },
     ]);

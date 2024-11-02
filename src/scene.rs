@@ -57,7 +57,7 @@ impl Scene {
             if let Some(mut sprite) = bundle.sprite {
                 let texture = asset_storage
                     .texture(sprite.texture_name)
-                    .unwrap_or_else(|| panic_not_loaded_texture(&sprite.texture_name));
+                    .unwrap_or_else(|| panic_not_loaded_texture(sprite.texture_name));
 
                 match &sprite.clip_size {
                     Some(_) => {}

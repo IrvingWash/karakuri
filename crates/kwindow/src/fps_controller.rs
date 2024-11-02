@@ -13,6 +13,6 @@ impl FpsController {
     }
 
     pub fn time(&self, ctx: &RaylibHandle) -> f64 {
-        ctx.get_time() / 1000.0
+        ctx.get_time() * 1000.0
     }
 }

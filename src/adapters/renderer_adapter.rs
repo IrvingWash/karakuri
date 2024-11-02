@@ -88,7 +88,7 @@ impl RendererAdapter {
         for SpriteDrawData { transform, sprite } in data {
             let texture = asset_storage
                 .texture(sprite.texture_name)
-                .unwrap_or_else(|| panic_not_loaded_texture(&sprite.texture_name));
+                .unwrap_or_else(|| panic_not_loaded_texture(sprite.texture_name));
 
             self.renderer.draw_texture(
                 handle,
@@ -98,6 +98,9 @@ impl RendererAdapter {
                     .clip_size
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
                 &transform.position,
+                &sprite
+                    .clip_size
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
                 &transform.scale,
                 sprite
                     .rotation_origin
