@@ -10,9 +10,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install raylib
-      run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev -y
+      run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev libglfw3-dev -y
     - name: Run build
       run: cargo build --workspace --verbose
 
@@ -20,9 +20,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install raylib
-      run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev -y
+      run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev libglfw3-dev -y
     - name: Run tests
       run: cargo test --workspace --verbose
 
@@ -30,7 +30,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install raylib
       run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev -y
     - name: Run clippy
@@ -40,7 +40,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run rustfmt
       run: cargo fmt --all --check
 
@@ -48,6 +48,6 @@ jobs:
     name: Test docs
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run doc tests
       run: cargo test --workspace --doc
