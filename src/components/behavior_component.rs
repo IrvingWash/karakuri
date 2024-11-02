@@ -2,7 +2,7 @@ use std::{any::Any, fmt::Debug};
 
 use kec::{Entity, Registry};
 
-use crate::input_processor_wrapper::InputProcessorWrapper;
+use crate::InputProcessorWrapper;
 
 pub struct Ctx<'a> {
     pub delta_time: f64,

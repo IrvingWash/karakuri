@@ -1,12 +1,11 @@
+mod adapters;
 mod errors;
 mod game;
 mod game_config;
-mod input_processor_wrapper;
-mod renderer_adapter;
 mod scene;
 
-use input_processor_wrapper::InputProcessorWrapper;
-use renderer_adapter::RendererAdapter;
+use adapters::InputProcessorWrapper;
+use adapters::RendererAdapter;
 use scene::Scene;
 
 pub mod components;
