@@ -13,7 +13,7 @@ pub enum Side {
 
 pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
     ComponentPayload {
-        figure: Some(FigureComponent::new(Size::new(30, 200), Color::WHITE)),
+        figure: Some(FigureComponent::new(Size::new(30, 200), Color::WHITE, 0)),
         transform: Some(TransformComponent::default()),
         tag: if side == Side::Left {
             Some(TagComponent::new(String::from("left-paddle")))

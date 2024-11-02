@@ -8,7 +8,7 @@ use karakuri::utils::{collision, Color, Size};
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("ball"))),
-        figure: Some(FigureComponent::new(Size::new(30, 30), Color::WHITE)),
+        figure: Some(FigureComponent::new(Size::new(30, 30), Color::WHITE, 0)),
         transform: Some(TransformComponent::from_position(Vector2::new(
             resolution.width as f64 / 2.,
             resolution.height as f64 / 2.,
