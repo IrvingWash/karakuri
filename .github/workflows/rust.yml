@@ -49,5 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install raylib
+      run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev -y
     - name: Run doc tests
       run: cargo test --workspace --doc
