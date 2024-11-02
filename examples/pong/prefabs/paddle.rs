@@ -63,7 +63,6 @@ impl BehaviorComponent for Paddle {
     }
 
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
-        dbg!(ctx.delta_time);
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)

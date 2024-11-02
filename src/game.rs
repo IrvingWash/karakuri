@@ -61,51 +61,13 @@ impl Game {
             let time = self.fps_controller.time(&self.ctx);
             let delta_time = self.fps_controller.delta_time(&self.ctx);
 
-            // Get input
-            let input_processor_adapter =
-                InputProcessorAdapter::new(&self.input_processor, &self.ctx);
-
-            if input_processor_adapter.should_close() {
+            if self.input_processor.should_close(&self.ctx) {
                 break;
             }
 
-            // Start new entities
-            let entities_to_start = self
-                .scene
-                .sync(&mut self.registry, &self.asset_storage, time);
+            self.start_entities(delta_time, time);
 
-            for entity in entities_to_start {
-                self.registry
-                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
-                    .start(Ctx {
-                        entity: &entity,
-                        delta_time,
-                        registry: &self.registry,
-                        input_processor: &input_processor_adapter,
-                    });
-            }
-
-            // Update
-            let updateable_entities = self
-                .registry
-                .query()
-                .with_component::<Box<dyn BehaviorComponent>>()
-                .build();
-
-            for entity in updateable_entities {
-                self.registry
-                    .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
-                    .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
-                    .update(Ctx {
-                        delta_time,
-                        registry: &self.registry,
-                        entity: &entity,
-                        input_processor: &input_processor_adapter,
-                    });
-            }
-
-            self.animator.animate(&mut self.registry, time);
+            self.update_entities(delta_time, time);
 
             self.render();
         }
@@ -113,6 +75,46 @@ impl Game {
 
     pub fn resolution(&self) -> Size {
         self.renderer.resolution(&self.ctx)
+    }
+
+    fn start_entities(&mut self, delta_time: f64, time: f64) {
+        let entities_to_start = self
+            .scene
+            .sync(&mut self.registry, &self.asset_storage, time);
+
+        for entity in entities_to_start {
+            self.registry
+                .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
+                .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                .start(Ctx {
+                    entity: &entity,
+                    delta_time,
+                    registry: &self.registry,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                });
+        }
+    }
+
+    fn update_entities(&mut self, delta_time: f64, time: f64) {
+        let updateable_entities = self
+            .registry
+            .query()
+            .with_component::<Box<dyn BehaviorComponent>>()
+            .build();
+
+        for entity in updateable_entities {
+            self.registry
+                .get_component_mut::<Box<dyn BehaviorComponent>>(&entity)
+                .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                .update(Ctx {
+                    delta_time,
+                    registry: &self.registry,
+                    entity: &entity,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                });
+        }
+
+        self.animator.animate(&mut self.registry, time);
     }
 
     fn render(&mut self) {
