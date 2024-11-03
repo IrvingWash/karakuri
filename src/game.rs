@@ -131,6 +131,9 @@ impl Game {
         self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 
+        self.renderer
+            .draw_box_colliders(&mut handle, &mut self.registry);
+
         self.renderer.finish_frame(handle);
     }
 }

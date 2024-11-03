@@ -1,12 +1,15 @@
 use std::cell::Ref;
 
 use kec::Registry;
-use kutils::Size;
+use kutils::{Color, Size};
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
-use crate::components::{SpriteComponent, TransformComponent};
+use crate::components::{BoxColliderComponent, SpriteComponent, TransformComponent};
 
-use crate::errors::{panic_not_loaded_texture, panic_queried, panic_uninitialized_sprite};
+use crate::errors::{
+    panic_not_loaded_texture, panic_queried, panic_uninitialized_collider,
+    panic_uninitialized_sprite,
+};
 
 #[derive(Debug)]
 pub struct RendererSystem {
@@ -28,6 +31,35 @@ impl RendererSystem {
 
     pub fn resolution(&self, ctx: &WindowCtx) -> Size {
         self.renderer.resolution(ctx)
+    }
+
+    pub fn draw_box_colliders(&self, handle: &mut DrawHandle, registry: &mut Registry) {
+        let entities_with_colliders = registry
+            .query()
+            .with_component::<TransformComponent>()
+            .with_component::<BoxColliderComponent>()
+            .build();
+
+        for entity in entities_with_colliders {
+            let transform = registry
+                .get_component::<TransformComponent>(&entity)
+                .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
+            let box_collider = registry
+                .get_component::<BoxColliderComponent>(&entity)
+                .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
+
+            self.renderer.draw_rect(
+                handle,
+                &transform.position.to_added(&box_collider.position_offset),
+                &box_collider
+                    .size
+                    .as_ref()
+                    .unwrap_or_else(|| panic_uninitialized_collider("size"))
+                    .to_scaled_by_other(&transform.scale),
+                &Color::GREEN,
+                true,
+            );
+        }
     }
 
     pub fn draw_sprites(

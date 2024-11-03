@@ -45,17 +45,17 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         position: &Vector2,
-        size: &Size,
+        size: &Vector2,
         color: &Color,
         hollow: bool,
     ) {
-        let half_width = size.width as f64 * 0.5;
-        let half_height = size.height as f64 * 0.5;
+        let half_width = size.x * 0.5;
+        let half_height = size.y * 0.5;
 
         let x = (position.x - half_width) as i32;
         let y = (position.y - half_height) as i32;
-        let width = size.width as i32;
-        let height = size.height as i32;
+        let width = size.x as i32;
+        let height = size.y as i32;
         let color = color_to_raylib(color);
 
         if hollow {
