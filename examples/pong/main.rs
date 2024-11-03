@@ -2,7 +2,7 @@ use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
 use prefabs::{
     ball::ball_prefab,
-    paddle::{paddle_prefab, Side},
+    paddle::{paddle_prefab, PaddleSide},
 };
 
 mod prefabs;
@@ -14,12 +14,11 @@ pub fn main() {
         target_fps: 60,
         title: "Pong",
     });
-
     let resolution = game.resolution();
 
     game.set_scene(vec![
-        paddle_prefab(Side::Left, &resolution),
-        paddle_prefab(Side::Right, &resolution),
+        paddle_prefab(PaddleSide::Left, &resolution),
+        paddle_prefab(PaddleSide::Right, &resolution),
         ball_prefab(&resolution),
     ]);
 

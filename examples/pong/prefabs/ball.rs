@@ -6,6 +6,8 @@ use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
 
+use super::paddle::PaddleSide;
+
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("ball"))),
@@ -60,8 +62,8 @@ impl BehaviorComponent for Ball {
 
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
-            if *other_tag.value() == String::from("left-paddle")
-                || *other_tag.value() == String::from("right-paddle")
+            if *other_tag.value() == PaddleSide::Left.to_string()
+                || *other_tag.value() == PaddleSide::Right.to_string()
             {
                 let mut rigid_body = ctx
                     .registry

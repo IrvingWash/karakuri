@@ -73,6 +73,7 @@ impl PhysicsSystem {
                 let _box_collider = registry
                     .get_component::<BoxColliderComponent>(&entity)
                     .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
+                // TODO: This currently works only with figures, not with sprites
                 let figure = registry
                     .get_component::<FigureComponent>(&entity)
                     .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));

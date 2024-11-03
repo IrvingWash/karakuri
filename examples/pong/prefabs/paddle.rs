@@ -7,20 +7,25 @@ use karakuri::utils::{Color, Size};
 use karakuri::window::KeyboardKey;
 
 #[derive(PartialEq, Debug)]
-pub enum Side {
+pub enum PaddleSide {
     Left,
     Right,
 }
 
-pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
+impl PaddleSide {
+    pub fn to_string(&self) -> &'static str {
+        match self {
+            Self::Left => "left-paddle",
+            Self::Right => "right-paddle",
+        }
+    }
+}
+
+pub fn paddle_prefab(side: PaddleSide, resolution: &Size) -> ComponentPayload {
     ComponentPayload {
         figure: Some(FigureComponent::new(Size::new(30, 200), Color::WHITE, 0)),
         transform: Some(TransformComponent::default()),
-        tag: if side == Side::Left {
-            Some(TagComponent::new(String::from("left-paddle")))
-        } else {
-            Some(TagComponent::new(String::from("right-paddle")))
-        },
+        tag: Some(TagComponent::new(side.to_string().into())),
         behavior: Some(Box::new(Paddle {
             side,
             speed: 30.0,
@@ -33,7 +38,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
 
 #[derive(Debug)]
 struct Paddle {
-    side: Side,
+    side: PaddleSide,
     speed: f64,
     resolution: Size,
 }
@@ -51,7 +56,7 @@ impl BehaviorComponent for Paddle {
 
         let edge_offset = 50.0;
 
-        if self.side == Side::Left {
+        if self.side == PaddleSide::Left {
             transform.position.set(&Vector2::new(
                 edge_offset + (figure.size.width as f64) / 2.0,
                 (self.resolution.height / 2) as f64,
@@ -70,7 +75,7 @@ impl BehaviorComponent for Paddle {
             .get_component_mut::<TransformComponent>(&ctx.entity)
             .unwrap();
 
-        if self.side == Side::Left {
+        if self.side == PaddleSide::Left {
             if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
                 transform.position.y -= self.speed * ctx.delta_time;
             }
