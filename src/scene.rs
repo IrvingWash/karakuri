@@ -132,10 +132,10 @@ impl Scene {
             }
         }
 
-        match &sprite.rotation_origin {
+        match &sprite.origin {
             Some(_) => {}
             None => {
-                sprite.rotation_origin = Some(Vector2::new(
+                sprite.origin = Some(Vector2::new(
                     sprite
                         .clip_size
                         .as_ref()

@@ -115,7 +115,7 @@ impl RendererSystem {
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
                     .to_scaled_by_other(&transform.scale),
                 &sprite
-                    .rotation_origin
+                    .origin
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("rotation_origin"))
                     .to_scaled_by_other(&transform.scale),

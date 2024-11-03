@@ -70,8 +70,10 @@ impl PhysicsSystem {
                 let (other_transform, other_box_collider) =
                     self.components_for_collision(other, registry);
 
+                let position = transform.position.to_added(&box_collider.position_offset);
+
                 if aabb_centered(
-                    &transform.position.to_added(&box_collider.position_offset),
+                    &position,
                     &box_collider
                         .size
                         .as_ref()
