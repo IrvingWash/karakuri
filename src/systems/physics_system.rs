@@ -78,9 +78,9 @@ impl PhysicsSystem {
 
                 if aabb_centered(
                     &Vector2::new(
-                        &position.x
+                        position.x
                             - box_collider.size.as_ref().unwrap().x * transform.scale.x / 2.0,
-                        &position.y
+                        position.y
                             - box_collider.size.as_ref().unwrap().y * transform.scale.y / 2.0,
                     ),
                     &box_collider
@@ -89,10 +89,10 @@ impl PhysicsSystem {
                         .unwrap_or_else(|| panic_uninitialized_collider("size"))
                         .to_scaled_by_other(&transform.scale),
                     &Vector2::new(
-                        &other_position.x
+                        other_position.x
                             - other_box_collider.size.as_ref().unwrap().x * other_transform.scale.x
                                 / 2.0,
-                        &other_position.y
+                        other_position.y
                             - other_box_collider.size.as_ref().unwrap().y * other_transform.scale.y
                                 / 2.0,
                     ),
