@@ -29,7 +29,7 @@ pub fn paddle_prefab(side: PaddleSide, resolution: &Size) -> ComponentPayload {
             ..Default::default()
         }),
         transform: Some(TransformComponent {
-            scale: Vector2::new(1.0, 5.0),
+            scale: Vector2::new(0.7, 3.0),
             ..Default::default()
         }),
         tag: Some(TagComponent::new(side.to_string().into())),

@@ -5,6 +5,7 @@ use karakuri::components::{
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
+use kwindow::KeyboardKey;
 
 use super::paddle::PaddleSide;
 
@@ -16,10 +17,11 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             ..Default::default()
         }),
         tag: Some(TagComponent::new(String::from("ball"))),
-        transform: Some(TransformComponent::from_position(Vector2::new(
-            resolution.width as f64 / 2.,
-            resolution.height as f64 / 2.,
-        ))),
+        transform: Some(TransformComponent {
+            position: Vector2::new(resolution.width as f64 / 2., resolution.height as f64 / 2.),
+            scale: Vector2::new(0.7, 0.7),
+            ..Default::default()
+        }),
         behavior: Some(Box::new(Ball {
             speed: 40.0,
             resolution: resolution.clone(),
@@ -37,18 +39,22 @@ struct Ball {
 }
 
 impl BehaviorComponent for Ball {
-    fn on_start(&mut self, ctx: Ctx) {
-        let mut rigid_body = ctx
-            .registry
-            .get_component_mut::<RigidBodyComponent>(ctx.entity)
-            .unwrap();
-
-        rigid_body
-            .velocity
-            .set(&Vector2::new(self.speed, self.speed));
-    }
-
     fn on_update(&mut self, ctx: Ctx) {
+        if ctx.input_processor.is_pressed(KeyboardKey::KEY_SPACE) {
+            let mut rigid_body = ctx
+                .registry
+                .get_component_mut::<RigidBodyComponent>(ctx.entity)
+                .unwrap();
+
+            let x_modifier = if rand::random() { -1.0 } else { 1.0 };
+            let y_modifier = if rand::random() { -1.0 } else { 1.0 };
+
+            rigid_body.velocity.set(&Vector2::new(
+                self.speed * x_modifier,
+                self.speed * y_modifier,
+            ));
+        }
+
         let transform = ctx
             .registry
             .get_component::<TransformComponent>(&ctx.entity)
