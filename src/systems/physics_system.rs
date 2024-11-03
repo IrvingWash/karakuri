@@ -1,6 +1,7 @@
 use std::cell::Ref;
 
 use kec::{Entity, Registry};
+use kmath::Vector2;
 use kutils::collision::aabb_centered;
 
 use crate::{
@@ -71,17 +72,30 @@ impl PhysicsSystem {
                     self.components_for_collision(other, registry);
 
                 let position = transform.position.to_added(&box_collider.position_offset);
+                let other_position = other_transform
+                    .position
+                    .to_added(&other_box_collider.position_offset);
 
                 if aabb_centered(
-                    &position,
+                    &Vector2::new(
+                        &position.x
+                            - box_collider.size.as_ref().unwrap().x * transform.scale.x / 2.0,
+                        &position.y
+                            - box_collider.size.as_ref().unwrap().y * transform.scale.y / 2.0,
+                    ),
                     &box_collider
                         .size
                         .as_ref()
                         .unwrap_or_else(|| panic_uninitialized_collider("size"))
                         .to_scaled_by_other(&transform.scale),
-                    &other_transform
-                        .position
-                        .to_added(&other_box_collider.position_offset),
+                    &Vector2::new(
+                        &other_position.x
+                            - other_box_collider.size.as_ref().unwrap().x * other_transform.scale.x
+                                / 2.0,
+                        &other_position.y
+                            - other_box_collider.size.as_ref().unwrap().y * other_transform.scale.y
+                                / 2.0,
+                    ),
                     &other_box_collider
                         .size
                         .as_ref()

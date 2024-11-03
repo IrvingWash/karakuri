@@ -28,7 +28,11 @@ pub fn box_prefab(interactive: bool) -> ComponentPayload {
         } else {
             Some(Box::new(MyBox {}))
         },
-        sprite: Some(SpriteComponent::from_texture_name("square")),
+        sprite: Some(SpriteComponent {
+            texture_name: "square",
+            layer: if interactive { 0 } else { 1 },
+            ..Default::default()
+        }),
         ..Default::default()
     }
 }
