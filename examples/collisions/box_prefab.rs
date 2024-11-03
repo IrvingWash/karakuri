@@ -16,9 +16,11 @@ pub fn box_prefab(interactive: bool) -> ComponentPayload {
     ComponentPayload {
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(tag)),
-        transform: Some(TransformComponent::from_position(Vector2::new(
-            400.0, 300.0,
-        ))),
+        transform: Some(TransformComponent {
+            position: Vector2::new(0.0, 0.0),
+            scale: Vector2::new(3.0, 1.0),
+            rotation: 0.0,
+        }),
         behavior: if interactive {
             Some(Box::new(MyBoxInteractive {}))
         } else {

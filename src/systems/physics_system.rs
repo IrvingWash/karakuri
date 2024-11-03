@@ -80,10 +80,11 @@ impl PhysicsSystem {
                     &other_transform
                         .position
                         .to_added(&other_box_collider.position_offset),
-                    other_box_collider
+                    &other_box_collider
                         .size
                         .as_ref()
-                        .unwrap_or_else(|| panic_uninitialized_collider("size")),
+                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
+                        .to_scaled_by_other(&other_transform.scale),
                 ) {
                     self.notify_collided_entity(
                         &entity,

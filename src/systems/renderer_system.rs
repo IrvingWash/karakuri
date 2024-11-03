@@ -1,6 +1,7 @@
 use std::cell::Ref;
 
 use kec::Registry;
+use kmath::Vector2;
 use kutils::{Color, Size};
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
@@ -48,16 +49,21 @@ impl RendererSystem {
                 .get_component::<BoxColliderComponent>(&entity)
                 .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
 
+            let position = transform.position.to_added(&box_collider.position_offset);
+            let halved_position = Vector2::new(
+                position.x - box_collider.size.as_ref().unwrap().x * transform.scale.x / 2.0,
+                position.y - box_collider.size.as_ref().unwrap().y * transform.scale.y / 2.0,
+            );
+
             self.renderer.draw_rect(
                 handle,
-                &transform.position.to_added(&box_collider.position_offset),
+                &halved_position,
                 &box_collider
                     .size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_collider("size"))
                     .to_scaled_by_other(&transform.scale),
                 &Color::GREEN,
-                true,
             );
         }
     }
@@ -103,15 +109,16 @@ impl RendererSystem {
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
                 &transform.position,
-                sprite
+                &sprite
                     .clip_size
                     .as_ref()
-                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
-                &transform.scale,
-                sprite
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                    .to_scaled_by_other(&transform.scale),
+                &sprite
                     .rotation_origin
                     .as_ref()
-                    .unwrap_or_else(|| panic_uninitialized_sprite("rotation_origin")),
+                    .unwrap_or_else(|| panic_uninitialized_sprite("rotation_origin"))
+                    .to_scaled_by_other(&transform.scale),
                 transform.rotation,
                 &sprite.tint,
             );

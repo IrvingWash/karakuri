@@ -47,22 +47,14 @@ impl Renderer {
         position: &Vector2,
         size: &Vector2,
         color: &Color,
-        hollow: bool,
     ) {
-        let half_width = size.x * 0.5;
-        let half_height = size.y * 0.5;
-
-        let x = (position.x - half_width) as i32;
-        let y = (position.y - half_height) as i32;
+        let x = position.x as i32;
+        let y = position.y as i32;
         let width = size.x as i32;
         let height = size.y as i32;
         let color = color_to_raylib(color);
 
-        if hollow {
-            d.draw_rectangle_lines(x, y, width, height, color);
-        } else {
-            d.draw_rectangle(x, y, width, height, color);
-        }
+        d.draw_rectangle_lines(x, y, width, height, color);
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -74,23 +66,16 @@ impl Renderer {
         source_size: &Vector2,
         dest_position: &Vector2,
         dest_size: &Vector2,
-        scale: &Vector2,
         origin: &Vector2,
         rotation: f64,
         tint: &Color,
     ) {
-        let dest_width = dest_size.x * scale.x;
-        let dest_height = dest_size.y * scale.y;
-
-        let half_width = dest_width / 2.0;
-        let half_height = dest_height / 2.0;
-
         d.draw_texture_pro(
             texture,
             make_rectangle(source_position, source_size),
             make_rectangle(
-                &Vector2::new(dest_position.x - half_width, dest_position.y - half_height),
-                &Vector2::new(dest_width, dest_height),
+                &Vector2::new(dest_position.x, dest_position.y),
+                &Vector2::new(dest_size.x, dest_size.y),
             ),
             vector2_to_raylib(origin),
             rotation as f32,

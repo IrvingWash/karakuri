@@ -12,3 +12,5 @@ pong:
 	cargo run --example=pong
 sprite:
 	cargo run --example=sprite
+collisions:
+	cargo run --example=collisions
