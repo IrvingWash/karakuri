@@ -1,5 +1,6 @@
 use karakuri::components::{
-    BehaviorComponent, ComponentPayload, FigureComponent, TagComponent, TransformComponent,
+    BehaviorComponent, BoxCollider, ComponentPayload, FigureComponent, TagComponent,
+    TransformComponent,
 };
 use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
@@ -25,6 +26,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
             speed: 30.0,
             resolution: resolution.clone(),
         })),
+        box_collider: Some(BoxCollider::default()),
         ..Default::default()
     }
 }

@@ -1,6 +1,6 @@
 use karakuri::components::{
-    BehaviorComponent, ComponentPayload, FigureComponent, RigidBodyComponent, TagComponent,
-    TransformComponent,
+    BehaviorComponent, BoxCollider, ComponentPayload, FigureComponent, RigidBodyComponent,
+    TagComponent, TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
@@ -20,6 +20,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             ..Default::default()
         })),
         rigid_body: Some(RigidBodyComponent::default()),
+        box_collider: Some(BoxCollider::default()),
         ..Default::default()
     }
 }
