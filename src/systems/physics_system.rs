@@ -130,10 +130,9 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
     ) {
-        registry
-            .get_component_mut::<Box<dyn BehaviorComponent>>(other)
-            .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(*other))
-            .collide(
+        if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
+        {
+            behavior.collide(
                 entity,
                 Ctx {
                     delta_time,
@@ -142,6 +141,7 @@ impl PhysicsSystem {
                     registry,
                 },
             );
+        }
     }
 
     fn components_for_collision<'a>(
