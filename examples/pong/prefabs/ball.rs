@@ -95,7 +95,7 @@ impl BehaviorComponent for Ball {
     }
 
     fn on_destroy(&mut self) {
-        println!("I (ball) am destroyed :(");
+        println!("I (ball) am sadly destroyed :(");
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
