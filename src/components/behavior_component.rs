@@ -2,13 +2,14 @@ use std::{any::Any, fmt::Debug};
 
 use kec::{Entity, Registry};
 
-use crate::adapters::InputProcessorAdapter;
+use crate::{adapters::InputProcessorAdapter, Spawner};
 
 pub struct Ctx<'a> {
     pub delta_time: f64,
     pub registry: &'a Registry,
     pub entity: &'a Entity,
     pub input_processor: &'a InputProcessorAdapter<'a>,
+    pub spawner: &'a mut Spawner,
 }
 
 pub trait BehaviorComponent: Debug {

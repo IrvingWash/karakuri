@@ -1,4 +1,4 @@
-use kec::Registry;
+use kec::{Entity, Registry};
 use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
 
@@ -67,7 +67,13 @@ impl Game {
                 break;
             }
 
-            self.start_entities(delta_time, time);
+            let (entities_to_start, entities_to_destroy) =
+                self.scene
+                    .sync(&mut self.registry, &self.asset_storage, time);
+
+            self.start_entities(entities_to_start, delta_time);
+
+            self.destroy_entities(entities_to_destroy);
 
             self.update_entities(delta_time, time);
 
@@ -79,11 +85,7 @@ impl Game {
         self.renderer.resolution(&self.ctx)
     }
 
-    fn start_entities(&mut self, delta_time: f64, time: f64) {
-        let entities_to_start = self
-            .scene
-            .sync(&mut self.registry, &self.asset_storage, time);
-
+    fn start_entities(&mut self, entities_to_start: Vec<Entity>, delta_time: f64) {
         for entity in entities_to_start {
             self.registry
                 .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
@@ -93,8 +95,22 @@ impl Game {
                     delta_time,
                     registry: &self.registry,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    spawner: self.scene.spawner(),
                 });
         }
+    }
+
+    fn destroy_entities(&mut self, entities_to_destroy: Vec<Entity>) {
+        for entity in &entities_to_destroy {
+            if let Some(mut behavior) = self
+                .registry
+                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+            {
+                behavior.destroy();
+            }
+        }
+
+        self.scene.set_entities_to_remove(entities_to_destroy);
     }
 
     fn update_entities(&mut self, delta_time: f64, time: f64) {
@@ -113,6 +129,7 @@ impl Game {
                     registry: &self.registry,
                     entity: &entity,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    spawner: self.scene.spawner(),
                 });
         }
 
@@ -120,6 +137,7 @@ impl Game {
             &mut self.registry,
             delta_time,
             &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+            self.scene.spawner(),
         );
 
         self.animator.animate(&mut self.registry, time);
