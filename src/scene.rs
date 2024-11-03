@@ -1,10 +1,12 @@
+use std::mem;
+
 use kec::{Entity, Registry};
 use kmath::Vector2;
 use kutils::Size;
 use kwindow::AssetStorage;
 
 use crate::{
-    components::ComponentPayload,
+    components::{ComponentPayload, SpriteComponent},
     errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
 };
 
@@ -38,7 +40,9 @@ impl Scene {
     ) -> Vec<Entity> {
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
-        for bundle in self.entities_to_add.drain(..) {
+        let entities_to_add = mem::take(&mut self.entities_to_add);
+
+        for bundle in entities_to_add {
             let entity = registry.create_entity();
 
             if let Some(transform) = bundle.transform {
@@ -54,40 +58,11 @@ impl Scene {
                 registry.add_component(&entity, tab);
             }
 
-            if let Some(mut sprite) = bundle.sprite {
-                let texture = asset_storage
-                    .texture(sprite.texture_name)
-                    .unwrap_or_else(|| panic_not_loaded_texture(sprite.texture_name));
-
-                match &sprite.clip_size {
-                    Some(_) => {}
-                    None => {
-                        sprite.clip_size = Some(Size::new(
-                            i64::from(texture.width),
-                            i64::from(texture.height),
-                        ))
-                    }
-                }
-
-                match &sprite.rotation_origin {
-                    Some(_) => {}
-                    None => {
-                        sprite.rotation_origin = Some(Vector2::new(
-                            sprite
-                                .clip_size
-                                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
-                                .width as f64
-                                / 2.0,
-                            sprite
-                                .clip_size
-                                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
-                                .height as f64
-                                / 2.0,
-                        ))
-                    }
-                }
-
-                registry.add_component(&entity, sprite);
+            if let Some(sprite) = bundle.sprite {
+                registry.add_component(
+                    &entity,
+                    self.prepare_sprite_component(sprite, asset_storage),
+                );
             }
 
             if let Some(figure) = bundle.figure {
@@ -110,5 +85,45 @@ impl Scene {
         }
 
         entities_to_start
+    }
+
+    fn prepare_sprite_component(
+        &self,
+        mut sprite: SpriteComponent,
+        asset_storage: &AssetStorage,
+    ) -> SpriteComponent {
+        let texture = asset_storage
+            .texture(sprite.texture_name)
+            .unwrap_or_else(|| panic_not_loaded_texture(sprite.texture_name));
+
+        match &sprite.clip_size {
+            Some(_) => {}
+            None => {
+                sprite.clip_size = Some(Size::new(
+                    i64::from(texture.width),
+                    i64::from(texture.height),
+                ))
+            }
+        }
+
+        match &sprite.rotation_origin {
+            Some(_) => {}
+            None => {
+                sprite.rotation_origin = Some(Vector2::new(
+                    sprite
+                        .clip_size
+                        .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                        .width as f64
+                        / 2.0,
+                    sprite
+                        .clip_size
+                        .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                        .height as f64
+                        / 2.0,
+                ))
+            }
+        }
+
+        sprite
     }
 }
