@@ -1,4 +1,6 @@
-use kec::Registry;
+use std::cell::Ref;
+
+use kec::{Entity, Registry};
 use kutils::collision::aabb_centered;
 
 use crate::{
@@ -67,26 +69,10 @@ impl PhysicsSystem {
                     continue;
                 }
 
-                let transform = registry
-                    .get_component::<TransformComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
-                let box_collider = registry
-                    .get_component::<BoxColliderComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
-                // TODO: This currently works only with figures, not with sprites
-                let figure = registry
-                    .get_component::<FigureComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));
-
-                let other_transform = registry
-                    .get_component::<TransformComponent>(other)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(*other));
-                let other_box_collider = registry
-                    .get_component::<BoxColliderComponent>(other)
-                    .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*other));
-                let other_figure = registry
-                    .get_component::<FigureComponent>(other)
-                    .unwrap_or_else(|| panic_queried::<FigureComponent>(*other));
+                let (transform, box_collider, figure) =
+                    self.components_for_collision(entity, registry);
+                let (other_transform, other_box_collider, other_figure) =
+                    self.components_for_collision(other, registry);
 
                 if aabb_centered(
                     &transform.position.to_added(&box_collider.position_offset),
@@ -111,5 +97,28 @@ impl PhysicsSystem {
                 }
             }
         }
+    }
+
+    fn components_for_collision<'a>(
+        &self,
+        entity: &Entity,
+        registry: &'a Registry,
+    ) -> (
+        Ref<'a, TransformComponent>,
+        Ref<'a, BoxColliderComponent>,
+        Ref<'a, FigureComponent>,
+    ) {
+        let transform = registry
+            .get_component::<TransformComponent>(entity)
+            .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
+        let box_collider = registry
+            .get_component::<BoxColliderComponent>(entity)
+            .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
+        // TODO: This currently works only with figures, not with sprites
+        let figure = registry
+            .get_component::<FigureComponent>(entity)
+            .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));
+
+        (transform, box_collider, figure)
     }
 }
