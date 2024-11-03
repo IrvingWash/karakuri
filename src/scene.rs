@@ -9,26 +9,30 @@ use crate::{
     errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
 };
 
+use super::Spawner;
+
 #[derive(Debug, Default)]
 pub struct Scene {
     entities_to_add: Vec<ComponentPayload>,
+    entities_to_destroy: Vec<Entity>,
+    entities_to_remove: Vec<Entity>,
+    spawner: Spawner,
 }
 
 impl Scene {
     pub fn new() -> Self {
         Self {
             entities_to_add: Vec::new(),
+            entities_to_destroy: Vec::new(),
+            entities_to_remove: Vec::new(),
+            spawner: Spawner::new(),
         }
     }
 
     pub fn create_initial_entities(&mut self, entities: Vec<ComponentPayload>) {
         for entity in entities {
-            self.create_entity(entity);
+            self.entities_to_add.push(entity);
         }
-    }
-
-    fn create_entity(&mut self, component_payload: ComponentPayload) {
-        self.entities_to_add.push(component_payload);
     }
 
     pub fn sync(
@@ -36,11 +40,21 @@ impl Scene {
         registry: &mut Registry,
         asset_storage: &AssetStorage,
         time: f64,
-    ) -> Vec<Entity> {
+    ) -> (Vec<Entity>, Vec<Entity>) {
+        self.entities_to_add
+            .append(&mut self.spawner.entities_to_add);
+        self.entities_to_destroy
+            .append(&mut self.spawner.entities_to_destroy);
+
+        // Remove entities
+        for entity in self.entities_to_remove.drain(..) {
+            registry.remove_entity(&entity);
+        }
+
+        // Create entities
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
         let entities_to_add = mem::take(&mut self.entities_to_add);
-
         for bundle in entities_to_add {
             let entity = registry.create_entity();
 
@@ -88,7 +102,18 @@ impl Scene {
             }
         }
 
-        entities_to_start
+        (
+            entities_to_start,
+            self.entities_to_destroy.drain(..).collect::<Vec<Entity>>(),
+        )
+    }
+
+    pub fn set_entities_to_remove(&mut self, entities: Vec<Entity>) {
+        self.entities_to_remove = entities;
+    }
+
+    pub fn spawner(&mut self) -> &mut Spawner {
+        &mut self.spawner
     }
 
     fn prepare_box_collider_component(

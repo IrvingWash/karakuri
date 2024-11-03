@@ -10,6 +10,7 @@ use crate::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
     errors::{panic_queried, panic_uninitialized_collider},
+    spawner::Spawner,
 };
 
 pub struct PhysicsSystem {}
@@ -24,9 +25,10 @@ impl PhysicsSystem {
         registry: &mut Registry,
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
+        spawner: &mut Spawner,
     ) {
         self.move_entities(registry, delta_time);
-        self.collide(registry, delta_time, input_processor);
+        self.collide(registry, delta_time, input_processor, spawner);
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
@@ -55,6 +57,7 @@ impl PhysicsSystem {
         registry: &mut Registry,
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
+        spawner: &mut Spawner,
     ) {
         let collidable_entities = registry
             .query()
@@ -91,6 +94,7 @@ impl PhysicsSystem {
                         registry,
                         delta_time,
                         input_processor,
+                        spawner,
                     );
 
                     self.notify_collided_entity(
@@ -99,6 +103,7 @@ impl PhysicsSystem {
                         registry,
                         delta_time,
                         input_processor,
+                        spawner,
                     );
                 }
             }
@@ -128,6 +133,7 @@ impl PhysicsSystem {
         registry: &Registry,
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
+        spawner: &mut Spawner,
     ) {
         if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
         {
@@ -138,6 +144,7 @@ impl PhysicsSystem {
                     entity: other,
                     input_processor,
                     registry,
+                    spawner,
                 },
             );
         }
