@@ -13,12 +13,14 @@ pub fn box_prefab(interactive: bool) -> ComponentPayload {
         String::from("box")
     };
 
+    let scale = if interactive { 2.0 } else { 1.0 };
+
     ComponentPayload {
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(tag)),
         transform: Some(TransformComponent {
             position: Vector2::new(400.0, 300.0),
-            scale: Vector2::new(3.0, 2.0),
+            scale: Vector2::new(3.0 * scale, 2.0 * scale),
             rotation: 0.0,
         }),
         behavior: if interactive {
