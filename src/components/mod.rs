@@ -1,5 +1,6 @@
 mod animation_component;
 mod behavior_component;
+mod box_collider;
 mod component_payload;
 mod figure_component;
 mod rigid_body_component;
@@ -10,6 +11,7 @@ mod transform_component;
 pub use animation_component::AnimationComponent;
 pub use behavior_component::BehaviorComponent;
 pub use behavior_component::Ctx;
+pub use box_collider::BoxCollider;
 pub use component_payload::ComponentPayload;
 pub use figure_component::FigureComponent;
 pub use rigid_body_component::RigidBodyComponent;

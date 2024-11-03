@@ -103,6 +103,10 @@ impl Scene {
             if let Some(rigid_body) = bundle.rigid_body {
                 registry.add_component(&entity, rigid_body);
             }
+
+            if let Some(box_collider) = bundle.box_collider {
+                registry.add_component(&entity, box_collider);
+            }
         }
 
         entities_to_start
