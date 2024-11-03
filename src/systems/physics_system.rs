@@ -63,6 +63,7 @@ impl PhysicsSystem {
             .with_component::<FigureComponent>()
             .build();
 
+        // Looks like this is O(n)
         for i in 0..collidable_entities.len() {
             let entity = collidable_entities[i];
 
