@@ -68,24 +68,24 @@ impl PhysicsSystem {
                 }
 
                 let transform = registry
-                    .get_component::<TransformComponent>(&entity)
+                    .get_component::<TransformComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
                 let _box_collider = registry
-                    .get_component::<BoxColliderComponent>(&entity)
+                    .get_component::<BoxColliderComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
                 // TODO: This currently works only with figures, not with sprites
                 let figure = registry
-                    .get_component::<FigureComponent>(&entity)
+                    .get_component::<FigureComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));
 
                 let other_transform = registry
-                    .get_component::<TransformComponent>(&other)
+                    .get_component::<TransformComponent>(other)
                     .unwrap_or_else(|| panic_queried::<TransformComponent>(*other));
                 let _other_box_collider = registry
-                    .get_component::<BoxColliderComponent>(&other)
+                    .get_component::<BoxColliderComponent>(other)
                     .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*other));
                 let other_figure = registry
-                    .get_component::<FigureComponent>(&other)
+                    .get_component::<FigureComponent>(other)
                     .unwrap_or_else(|| panic_queried::<FigureComponent>(*other));
 
                 // TODO: These values must be scaled by box collider
