@@ -99,6 +99,10 @@ impl Scene {
 
                 registry.add_component(&entity, animation);
             }
+
+            if let Some(rigid_body) = bundle.rigid_body {
+                registry.add_component(&entity, rigid_body);
+            }
         }
 
         entities_to_start
