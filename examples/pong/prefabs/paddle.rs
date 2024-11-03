@@ -92,6 +92,12 @@ impl BehaviorComponent for Paddle {
         }
     }
 
+    fn on_collision(&mut self, other: &kec::Entity, ctx: Ctx) {
+        let tag = ctx.registry.get_component::<TagComponent>(other).unwrap();
+
+        println!("{} collided with {}", self.side.to_string(), tag.value())
+    }
+
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }

@@ -63,16 +63,16 @@ impl PhysicsSystem {
             .with_component::<FigureComponent>()
             .build();
 
-        for entity in &collidable_entities {
-            for other in &collidable_entities {
-                if entity == other {
-                    continue;
-                }
+        for i in 0..collidable_entities.len() {
+            let entity = collidable_entities[i];
+
+            for j in i + 1..collidable_entities.len() {
+                let other = collidable_entities[j];
 
                 let (transform, box_collider, figure) =
-                    self.components_for_collision(entity, registry);
+                    self.components_for_collision(&entity, registry);
                 let (other_transform, other_box_collider, other_figure) =
-                    self.components_for_collision(other, registry);
+                    self.components_for_collision(&other, registry);
 
                 if aabb_centered(
                     &transform.position.to_added(&box_collider.position_offset),
@@ -82,21 +82,46 @@ impl PhysicsSystem {
                         .to_added(&other_box_collider.position_offset),
                     &other_figure.size.to_scaled(&other_box_collider.size_scale),
                 ) {
-                    registry
-                        .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
-                        .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(*entity))
-                        .collide(
-                            other,
-                            Ctx {
-                                delta_time,
-                                entity,
-                                input_processor,
-                                registry,
-                            },
-                        );
+                    self.notify_collided_entity(
+                        &entity,
+                        &other,
+                        registry,
+                        delta_time,
+                        input_processor,
+                    );
+
+                    self.notify_collided_entity(
+                        &other,
+                        &entity,
+                        registry,
+                        delta_time,
+                        input_processor,
+                    );
                 }
             }
         }
+    }
+
+    fn notify_collided_entity<'a>(
+        &self,
+        entity: &Entity,
+        other: &Entity,
+        registry: &'a Registry,
+        delta_time: f64,
+        input_processor: &InputProcessorAdapter,
+    ) {
+        registry
+            .get_component_mut::<Box<dyn BehaviorComponent>>(other)
+            .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(*other))
+            .collide(
+                &entity,
+                Ctx {
+                    delta_time,
+                    entity: &other,
+                    input_processor,
+                    registry,
+                },
+            );
     }
 
     fn components_for_collision<'a>(
