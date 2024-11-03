@@ -2,7 +2,7 @@ use kec::Registry;
 
 use crate::{
     components::{AnimationComponent, SpriteComponent},
-    errors::panic_queried,
+    errors::{panic_queried, panic_uninitialized_sprite},
 };
 
 #[derive(Debug, Default)]
@@ -32,8 +32,12 @@ impl AnimatorSystem {
                 (((time - animation.start_time) * f64::from(animation.frame_rate) / 1000.0)
                     % f64::from(animation.frame_count)) as u8;
 
-            sprite.clip_position.x =
-                f64::from(animation.current_frame) * sprite.clip_size.as_ref().unwrap().x;
+            sprite.clip_position.x = f64::from(animation.current_frame)
+                * sprite
+                    .clip_size
+                    .as_ref()
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip size"))
+                    .x;
         }
     }
 }

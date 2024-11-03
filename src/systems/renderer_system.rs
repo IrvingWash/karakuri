@@ -51,8 +51,22 @@ impl RendererSystem {
 
             let position = transform.position.to_added(&box_collider.position_offset);
             let halved_position = Vector2::new(
-                position.x - box_collider.size.as_ref().unwrap().x * transform.scale.x / 2.0,
-                position.y - box_collider.size.as_ref().unwrap().y * transform.scale.y / 2.0,
+                position.x
+                    - box_collider
+                        .size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
+                        .x
+                        * transform.scale.x
+                        / 2.0,
+                position.y
+                    - box_collider
+                        .size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
+                        .y
+                        * transform.scale.y
+                        / 2.0,
             );
 
             self.renderer.draw_rect(
