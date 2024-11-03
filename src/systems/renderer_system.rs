@@ -53,8 +53,13 @@ impl RendererSystem {
         data.sort_by(|a, b| a.figure.layer.cmp(&b.figure.layer));
 
         for FigureDrawData { figure, transform } in data {
-            self.renderer
-                .draw_rect(handle, &transform.position, &figure.size, &figure.color);
+            self.renderer.draw_rect(
+                handle,
+                &transform.position,
+                &figure.size,
+                &figure.color,
+                false,
+            );
         }
     }
 

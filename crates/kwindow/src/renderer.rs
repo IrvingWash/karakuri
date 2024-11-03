@@ -47,17 +47,22 @@ impl Renderer {
         position: &Vector2,
         size: &Size,
         color: &Color,
+        hollow: bool,
     ) {
         let half_width = size.width as f64 * 0.5;
         let half_height = size.height as f64 * 0.5;
 
-        d.draw_rectangle(
-            (position.x - half_width) as i32,
-            (position.y - half_height) as i32,
-            size.width as i32,
-            size.height as i32,
-            color_to_raylib(color),
-        );
+        let x = (position.x - half_width) as i32;
+        let y = (position.y - half_height) as i32;
+        let width = size.width as i32;
+        let height = size.height as i32;
+        let color = color_to_raylib(color);
+
+        if hollow {
+            d.draw_rectangle_lines(x, y, width, height, color);
+        } else {
+            d.draw_rectangle(x, y, width, height, color);
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
