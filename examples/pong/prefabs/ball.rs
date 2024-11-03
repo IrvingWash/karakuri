@@ -1,5 +1,6 @@
 use karakuri::components::{
-    BehaviorComponent, ComponentPayload, FigureComponent, TagComponent, TransformComponent,
+    BehaviorComponent, ComponentPayload, FigureComponent, RigidBodyComponent, TagComponent,
+    TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
@@ -18,6 +19,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             resolution: resolution.clone(),
             ..Default::default()
         })),
+        rigid_body: Some(RigidBodyComponent::default()),
         ..Default::default()
     }
 }
@@ -25,7 +27,6 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
 #[derive(Default, Debug)]
 struct Ball {
     speed: f64,
-    velocity: Vector2,
     left_paddle: Option<Entity>,
     right_paddle: Option<Entity>,
     resolution: Size,
@@ -40,17 +41,28 @@ impl BehaviorComponent for Ball {
             .registry
             .find_entity(&TagComponent::new(String::from("right-paddle")));
 
-        self.velocity.set(&Vector2::new(self.speed, self.speed));
+        let mut rigid_body = ctx
+            .registry
+            .get_component_mut::<RigidBodyComponent>(ctx.entity)
+            .unwrap();
+
+        rigid_body
+            .velocity
+            .set(&Vector2::new(self.speed, self.speed));
     }
 
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
-        let mut transform = ctx
+        let transform = ctx
             .registry
-            .get_component_mut::<TransformComponent>(&ctx.entity)
+            .get_component::<TransformComponent>(&ctx.entity)
             .unwrap();
         let figure = ctx
             .registry
             .get_component::<FigureComponent>(&ctx.entity)
+            .unwrap();
+        let mut rigid_body = ctx
+            .registry
+            .get_component_mut::<RigidBodyComponent>(ctx.entity)
             .unwrap();
 
         let left_paddle_transform = ctx
@@ -72,7 +84,7 @@ impl BehaviorComponent for Ball {
             &left_paddle_transform.position,
             &paddle_figure.size,
         ) {
-            self.velocity.x *= -1.0;
+            rigid_body.velocity.x *= -1.0;
         }
 
         if collision::aabb_centered(
@@ -81,16 +93,12 @@ impl BehaviorComponent for Ball {
             &right_paddle_transform.position,
             &paddle_figure.size,
         ) {
-            self.velocity.x *= -1.0;
+            rigid_body.velocity.x *= -1.0
         }
 
         if transform.position.y <= 0.0 || transform.position.y >= self.resolution.height as f64 {
-            self.velocity.y *= -1.0;
+            rigid_body.velocity.y *= -1.0;
         }
-
-        transform
-            .position
-            .add(&self.velocity.to_scaled(ctx.delta_time));
     }
 
     fn on_destroy(&mut self) {}
