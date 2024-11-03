@@ -70,7 +70,7 @@ impl PhysicsSystem {
                 let transform = registry
                     .get_component::<TransformComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
-                let _box_collider = registry
+                let box_collider = registry
                     .get_component::<BoxColliderComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
                 // TODO: This currently works only with figures, not with sprites
@@ -81,19 +81,20 @@ impl PhysicsSystem {
                 let other_transform = registry
                     .get_component::<TransformComponent>(other)
                     .unwrap_or_else(|| panic_queried::<TransformComponent>(*other));
-                let _other_box_collider = registry
+                let other_box_collider = registry
                     .get_component::<BoxColliderComponent>(other)
                     .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*other));
                 let other_figure = registry
                     .get_component::<FigureComponent>(other)
                     .unwrap_or_else(|| panic_queried::<FigureComponent>(*other));
 
-                // TODO: These values must be scaled by box collider
                 if aabb_centered(
-                    &transform.position,
-                    &figure.size,
-                    &other_transform.position,
-                    &other_figure.size,
+                    &transform.position.to_added(&box_collider.position_offset),
+                    &figure.size.to_scaled(&box_collider.size_scale),
+                    &other_transform
+                        .position
+                        .to_added(&other_box_collider.position_offset),
+                    &other_figure.size.to_scaled(&other_box_collider.size_scale),
                 ) {
                     registry
                         .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
