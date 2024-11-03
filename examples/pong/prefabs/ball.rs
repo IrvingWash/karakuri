@@ -68,6 +68,11 @@ impl BehaviorComponent for Ball {
         if transform.position.y <= 0.0 || transform.position.y >= self.resolution.height as f64 {
             rigid_body.velocity.y *= -1.0;
         }
+
+        // Destroy self if collided with right or left of the screen
+        if transform.position.x <= 0.0 || transform.position.y >= self.resolution.width as f64 {
+            ctx.spawner.destroy_entity(*ctx.entity);
+        }
     }
 
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
@@ -87,6 +92,10 @@ impl BehaviorComponent for Ball {
                 }
             }
         }
+    }
+
+    fn on_destroy(&mut self) {
+        println!("I (ball) am destroyed :(");
     }
 
     fn as_any(&self) -> &dyn std::any::Any {

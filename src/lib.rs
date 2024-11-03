@@ -3,6 +3,7 @@ mod errors;
 mod game;
 mod game_config;
 mod scene;
+mod spawner;
 mod systems;
 
 use scene::Scene;
@@ -15,3 +16,4 @@ pub use kec as ec;
 pub use kmath as math;
 pub use kutils as utils;
 pub use kwindow as window;
+pub use spawner::Spawner;
