@@ -69,7 +69,12 @@ struct MyBoxInteractive {}
 
 impl BehaviorComponent for MyBoxInteractive {
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
-        let speed = 10.0;
+        let speed = if ctx.input_processor.is_down(KeyboardKey::KEY_LEFT_SHIFT) {
+            90.0
+        } else {
+            30.0
+        };
+
         let delta_time = ctx.delta_time;
 
         let mut transform = ctx
