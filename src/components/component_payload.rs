@@ -1,6 +1,6 @@
 use super::{
-    AnimationComponent, BehaviorComponent, BoxCollider, FigureComponent, RigidBodyComponent,
-    SpriteComponent, TagComponent, TransformComponent,
+    AnimationComponent, BehaviorComponent, BoxColliderComponent, FigureComponent,
+    RigidBodyComponent, SpriteComponent, TagComponent, TransformComponent,
 };
 
 #[derive(Debug, Default)]
@@ -12,7 +12,7 @@ pub struct ComponentPayload {
     pub sprite: Option<SpriteComponent>,
     pub animation: Option<AnimationComponent>,
     pub rigid_body: Option<RigidBodyComponent>,
-    pub box_collider: Option<BoxCollider>,
+    pub box_collider: Option<BoxColliderComponent>,
 }
 
 #[cfg(test)]

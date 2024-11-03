@@ -116,7 +116,12 @@ impl Game {
                 });
         }
 
-        self.physics.affect(&mut self.registry, delta_time);
+        self.physics.affect(
+            &mut self.registry,
+            delta_time,
+            &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+        );
+
         self.animator.animate(&mut self.registry, time);
     }
 

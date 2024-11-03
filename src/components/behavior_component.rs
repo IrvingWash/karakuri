@@ -12,9 +12,13 @@ pub struct Ctx<'a> {
 }
 
 pub trait BehaviorComponent: Debug {
-    fn on_start(&mut self, ctx: Ctx);
-    fn on_update(&mut self, ctx: Ctx);
-    fn on_destroy(&mut self);
+    #[allow(unused_variables)]
+    fn on_start(&mut self, ctx: Ctx) {}
+    #[allow(unused_variables)]
+    fn on_update(&mut self, ctx: Ctx) {}
+    #[allow(unused_variables)]
+    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
+    fn on_destroy(&mut self) {}
 
     fn start(&mut self, ctx: Ctx) {
         self.on_start(ctx);
@@ -26,6 +30,10 @@ pub trait BehaviorComponent: Debug {
 
     fn destroy(&mut self) {
         self.on_destroy();
+    }
+
+    fn collide(&mut self, other: &Entity, ctx: Ctx) {
+        self.on_collision(other, ctx);
     }
 
     fn as_any(&self) -> &dyn Any;

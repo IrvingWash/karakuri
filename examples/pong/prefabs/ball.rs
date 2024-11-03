@@ -1,10 +1,10 @@
 use karakuri::components::{
-    BehaviorComponent, BoxCollider, ComponentPayload, FigureComponent, RigidBodyComponent,
-    TagComponent, TransformComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, FigureComponent,
+    RigidBodyComponent, TagComponent, TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
-use karakuri::utils::{collision, Color, Size};
+use karakuri::utils::{Color, Size};
 
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
@@ -15,12 +15,11 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
             resolution.height as f64 / 2.,
         ))),
         behavior: Some(Box::new(Ball {
-            speed: 30.0,
+            speed: 40.0,
             resolution: resolution.clone(),
-            ..Default::default()
         })),
         rigid_body: Some(RigidBodyComponent::default()),
-        box_collider: Some(BoxCollider::default()),
+        box_collider: Some(BoxColliderComponent::default()),
         ..Default::default()
     }
 }
@@ -28,20 +27,11 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
 #[derive(Default, Debug)]
 struct Ball {
     speed: f64,
-    left_paddle: Option<Entity>,
-    right_paddle: Option<Entity>,
     resolution: Size,
 }
 
 impl BehaviorComponent for Ball {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
-        self.left_paddle = ctx
-            .registry
-            .find_entity(&TagComponent::new(String::from("left-paddle")));
-        self.right_paddle = ctx
-            .registry
-            .find_entity(&TagComponent::new(String::from("right-paddle")));
-
+    fn on_start(&mut self, ctx: Ctx) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
@@ -52,57 +42,40 @@ impl BehaviorComponent for Ball {
             .set(&Vector2::new(self.speed, self.speed));
     }
 
-    fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, ctx: Ctx) {
         let transform = ctx
             .registry
             .get_component::<TransformComponent>(&ctx.entity)
-            .unwrap();
-        let figure = ctx
-            .registry
-            .get_component::<FigureComponent>(&ctx.entity)
             .unwrap();
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
             .unwrap();
 
-        let left_paddle_transform = ctx
-            .registry
-            .get_component::<TransformComponent>(&self.left_paddle.unwrap())
-            .unwrap();
-        let right_paddle_transform = ctx
-            .registry
-            .get_component::<TransformComponent>(&self.right_paddle.unwrap())
-            .unwrap();
-        let paddle_figure = ctx
-            .registry
-            .get_component::<FigureComponent>(&self.left_paddle.unwrap())
-            .unwrap();
-
-        if collision::aabb_centered(
-            &transform.position,
-            &figure.size,
-            &left_paddle_transform.position,
-            &paddle_figure.size,
-        ) {
-            rigid_body.velocity.x *= -1.0;
-        }
-
-        if collision::aabb_centered(
-            &transform.position,
-            &figure.size,
-            &right_paddle_transform.position,
-            &paddle_figure.size,
-        ) {
-            rigid_body.velocity.x *= -1.0
-        }
-
+        // Collide manually with the top and bottom of the screen
         if transform.position.y <= 0.0 || transform.position.y >= self.resolution.height as f64 {
             rigid_body.velocity.y *= -1.0;
         }
     }
 
-    fn on_destroy(&mut self) {}
+    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+        if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
+            if *other_tag.value() == String::from("left-paddle")
+                || *other_tag.value() == String::from("right-paddle")
+            {
+                let mut rigid_body = ctx
+                    .registry
+                    .get_component_mut::<RigidBodyComponent>(ctx.entity)
+                    .unwrap();
+
+                rigid_body.velocity.x *= -1.0;
+
+                if rand::random() {
+                    rigid_body.velocity.y *= -1.0;
+                }
+            }
+        }
+    }
 
     fn as_any(&self) -> &dyn std::any::Any {
         self

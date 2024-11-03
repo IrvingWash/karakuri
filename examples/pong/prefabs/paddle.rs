@@ -1,5 +1,5 @@
 use karakuri::components::{
-    BehaviorComponent, BoxCollider, ComponentPayload, FigureComponent, TagComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, FigureComponent, TagComponent,
     TransformComponent,
 };
 use karakuri::math::Vector2;
@@ -26,7 +26,7 @@ pub fn paddle_prefab(side: Side, resolution: &Size) -> ComponentPayload {
             speed: 30.0,
             resolution: resolution.clone(),
         })),
-        box_collider: Some(BoxCollider::default()),
+        box_collider: Some(BoxColliderComponent::default()),
         ..Default::default()
     }
 }
@@ -39,7 +39,7 @@ struct Paddle {
 }
 
 impl BehaviorComponent for Paddle {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: Ctx) {
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
@@ -64,7 +64,7 @@ impl BehaviorComponent for Paddle {
         }
     }
 
-    fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, ctx: Ctx) {
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
@@ -86,8 +86,6 @@ impl BehaviorComponent for Paddle {
             }
         }
     }
-
-    fn on_destroy(&mut self) {}
 
     fn as_any(&self) -> &dyn std::any::Any {
         self
