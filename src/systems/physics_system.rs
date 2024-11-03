@@ -129,8 +129,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
     ) {
-        if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
-        {
+        if let Some(mut behavior) = registry.get_dyn_component_mut::<dyn BehaviorComponent>(other) {
             behavior.collide(
                 entity,
                 Ctx {
