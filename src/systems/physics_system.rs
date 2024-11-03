@@ -1,6 +1,7 @@
 use std::cell::Ref;
 
 use kec::{Entity, Registry};
+use kmath::Vector2;
 use kutils::collision::aabb_centered;
 
 use crate::{
@@ -70,37 +71,14 @@ impl PhysicsSystem {
                 let (other_transform, other_box_collider) =
                     self.components_for_collision(other, registry);
 
-                let position = transform
-                    .position
-                    .to_added(&box_collider.position_offset)
-                    .to_subtracted(
-                        &box_collider
-                            .size
-                            .as_ref()
-                            .unwrap()
-                            .to_scaled_by_other(&transform.scale)
-                            .to_divided(2.0),
-                    );
-                let other_position = other_transform
-                    .position
-                    .to_added(&other_box_collider.position_offset)
-                    .to_subtracted(
-                        &other_box_collider
-                            .size
-                            .as_ref()
-                            .unwrap()
-                            .to_scaled_by_other(&other_transform.scale)
-                            .to_divided(2.0),
-                    );
-
                 if aabb_centered(
-                    &position,
+                    &self.create_position_for_collision(&transform, &box_collider),
                     &box_collider
                         .size
                         .as_ref()
                         .unwrap_or_else(|| panic_uninitialized_collider("size"))
                         .to_scaled_by_other(&transform.scale),
-                    &other_position,
+                    &self.create_position_for_collision(&other_transform, &other_box_collider),
                     &other_box_collider
                         .size
                         .as_ref()
@@ -125,6 +103,22 @@ impl PhysicsSystem {
                 }
             }
         }
+    }
+
+    fn create_position_for_collision(
+        &self,
+        transform: &Ref<TransformComponent>,
+        box_collider: &Ref<BoxColliderComponent>,
+    ) -> Vector2 {
+        let mut temp_box_collider_size = box_collider.size.as_ref().unwrap().create_copy();
+        temp_box_collider_size.scale_by_other(&transform.scale);
+        temp_box_collider_size.divide(2.0);
+
+        let mut temp_position = transform.position.create_copy();
+        temp_position.add(&box_collider.position_offset);
+        temp_position.subtract(&temp_box_collider_size);
+
+        temp_position
     }
 
     fn notify_collided_entity(

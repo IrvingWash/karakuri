@@ -32,6 +32,11 @@ impl Vector2 {
         self.y *= scaler;
     }
 
+    pub fn scale_by_other(&mut self, other: &Vector2) {
+        self.x *= other.x;
+        self.y *= other.y;
+    }
+
     pub fn divide(&mut self, divider: f64) {
         if divider == 0. {
             return;
