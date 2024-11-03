@@ -23,8 +23,8 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
     ) {
-        self.collide(registry, delta_time, input_processor);
         self.move_entities(registry, delta_time);
+        self.collide(registry, delta_time, input_processor);
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
