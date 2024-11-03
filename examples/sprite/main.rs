@@ -31,8 +31,6 @@ pub fn main() -> Result<(), String> {
                 clip_position: Vector2::new(10.0, 10.0),
                 ..Default::default()
             }),
-            figure: None,
-            behavior: None,
             ..Default::default()
         },
         ComponentPayload {
@@ -48,8 +46,6 @@ pub fn main() -> Result<(), String> {
                 tint: Color::YELLOW,
                 ..Default::default()
             }),
-            figure: None,
-            behavior: None,
             ..Default::default()
         },
         ComponentPayload {

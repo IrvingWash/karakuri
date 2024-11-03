@@ -33,7 +33,7 @@ impl AnimatorSystem {
                     % f64::from(animation.frame_count)) as u8;
 
             sprite.clip_position.x =
-                (i64::from(animation.current_frame) * sprite.clip_size.unwrap().width) as f64;
+                (f64::from(animation.current_frame) * sprite.clip_size.as_ref().unwrap().x) as f64;
         }
     }
 }

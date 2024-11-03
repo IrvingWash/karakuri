@@ -1,17 +1,21 @@
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, FigureComponent,
-    RigidBodyComponent, TagComponent, TransformComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent,
+    SpriteComponent, TagComponent, TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
-use karakuri::utils::{Color, Size};
+use karakuri::utils::Size;
 
 use super::paddle::PaddleSide;
 
 pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
+        sprite: Some(SpriteComponent {
+            texture_name: "square",
+            layer: 0,
+            ..Default::default()
+        }),
         tag: Some(TagComponent::new(String::from("ball"))),
-        figure: Some(FigureComponent::new(Size::new(30, 30), Color::WHITE, 0)),
         transform: Some(TransformComponent::from_position(Vector2::new(
             resolution.width as f64 / 2.,
             resolution.height as f64 / 2.,

@@ -6,10 +6,9 @@ use kutils::collision::aabb_centered;
 use crate::{
     adapters::InputProcessorAdapter,
     components::{
-        BehaviorComponent, BoxColliderComponent, Ctx, FigureComponent, RigidBodyComponent,
-        TransformComponent,
+        BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
-    errors::panic_queried,
+    errors::{panic_queried, panic_uninitialized_collider},
 };
 
 pub struct PhysicsSystem {}
@@ -60,7 +59,6 @@ impl PhysicsSystem {
             .query()
             .with_component::<TransformComponent>()
             .with_component::<BoxColliderComponent>()
-            .with_component::<FigureComponent>()
             .build();
 
         // Looks like this is O(n)
@@ -70,18 +68,24 @@ impl PhysicsSystem {
             for j in i + 1..collidable_entities.len() {
                 let other = collidable_entities[j];
 
-                let (transform, box_collider, figure) =
-                    self.components_for_collision(&entity, registry);
-                let (other_transform, other_box_collider, other_figure) =
+                let (transform, box_collider) = self.components_for_collision(&entity, registry);
+                let (other_transform, other_box_collider) =
                     self.components_for_collision(&other, registry);
 
                 if aabb_centered(
                     &transform.position.to_added(&box_collider.position_offset),
-                    &figure.size.to_scaled(&box_collider.size_scale),
+                    &box_collider
+                        .size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
+                        .to_scaled_by_other(&transform.scale),
                     &other_transform
                         .position
                         .to_added(&other_box_collider.position_offset),
-                    &other_figure.size.to_scaled(&other_box_collider.size_scale),
+                    &other_box_collider
+                        .size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_collider("size")),
                 ) {
                     self.notify_collided_entity(
                         &entity,
@@ -129,24 +133,14 @@ impl PhysicsSystem {
         &self,
         entity: &Entity,
         registry: &'a Registry,
-    ) -> (
-        Ref<'a, TransformComponent>,
-        Ref<'a, BoxColliderComponent>,
-        Ref<'a, FigureComponent>,
-    ) {
+    ) -> (Ref<'a, TransformComponent>, Ref<'a, BoxColliderComponent>) {
         let transform = registry
             .get_component::<TransformComponent>(entity)
             .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
         let box_collider = registry
             .get_component::<BoxColliderComponent>(entity)
             .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
-        // TODO: This currently works only with figures, not with sprites
-        // TODO: We should be able to collide even with invisible entities.
-        // I think we must populate box_collider from sprite/figure as we populate sprite from texture in Scene
-        let figure = registry
-            .get_component::<FigureComponent>(entity)
-            .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));
 
-        (transform, box_collider, figure)
+        (transform, box_collider)
     }
 }

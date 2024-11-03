@@ -71,21 +71,27 @@ impl Renderer {
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
         source_position: &Vector2,
-        source_size: &Size,
+        source_size: &Vector2,
         dest_position: &Vector2,
-        dest_size: &Size,
+        dest_size: &Vector2,
         scale: &Vector2,
         origin: &Vector2,
         rotation: f64,
         tint: &Color,
     ) {
-        let dest_width = dest_size.width * scale.x as i64;
-        let dest_height = dest_size.height * scale.y as i64;
+        let dest_width = dest_size.x * scale.x;
+        let dest_height = dest_size.y * scale.y;
+
+        let half_width = dest_width / 2.0;
+        let half_height = dest_height / 2.0;
 
         d.draw_texture_pro(
             texture,
             make_rectangle(source_position, source_size),
-            make_rectangle(dest_position, &Size::new(dest_width, dest_height)),
+            make_rectangle(
+                &Vector2::new(dest_position.x - half_width, dest_position.y - half_height),
+                &Vector2::new(dest_width, dest_height),
+            ),
             vector2_to_raylib(origin),
             rotation as f32,
             color_to_raylib(tint),
@@ -101,11 +107,11 @@ fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
     RaylibVector2::new(vector2.x as f32, vector2.y as f32)
 }
 
-fn make_rectangle(position: &Vector2, size: &Size) -> Rectangle {
+fn make_rectangle(position: &Vector2, size: &Vector2) -> Rectangle {
     Rectangle {
         x: position.x as f32,
         y: position.y as f32,
-        width: size.width as f32,
-        height: size.height as f32,
+        width: size.x as f32,
+        height: size.y as f32,
     }
 }

@@ -128,8 +128,6 @@ impl Game {
     fn render(&mut self) {
         let mut handle = self.renderer.start_frame(&mut self.ctx);
 
-        self.renderer.draw_figures(&mut handle, &mut self.registry);
-
         self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 

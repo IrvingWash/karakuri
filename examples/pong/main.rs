@@ -14,6 +14,9 @@ pub fn main() {
         target_fps: 60,
         title: "Pong",
     });
+
+    game.add_texture("square", "./examples/pong/assets/sprites/square.png");
+
     let resolution = game.resolution();
 
     game.set_scene(vec![

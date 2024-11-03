@@ -153,6 +153,15 @@ impl Vector2 {
         copy
     }
 
+    pub fn to_scaled_by_other(&self, other: &Vector2) -> Vector2 {
+        let mut copy = self.create_copy();
+
+        copy.x *= other.x;
+        copy.y *= other.y;
+
+        copy
+    }
+
     pub fn to_divided(&self, divider: f64) -> Vector2 {
         let mut copy = self.create_copy();
 

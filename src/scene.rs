@@ -2,11 +2,10 @@ use std::mem;
 
 use kec::{Entity, Registry};
 use kmath::Vector2;
-use kutils::Size;
 use kwindow::AssetStorage;
 
 use crate::{
-    components::{ComponentPayload, SpriteComponent},
+    components::{BoxColliderComponent, ComponentPayload, SpriteComponent},
     errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
 };
 
@@ -45,6 +44,8 @@ impl Scene {
         for bundle in entities_to_add {
             let entity = registry.create_entity();
 
+            let mut sprite_clone: Option<SpriteComponent> = None;
+
             if let Some(transform) = bundle.transform {
                 registry.add_component(&entity, transform);
             }
@@ -59,14 +60,14 @@ impl Scene {
             }
 
             if let Some(sprite) = bundle.sprite {
+                let populated_sprite = self.prepare_sprite_component(sprite, asset_storage);
+
+                sprite_clone = Some(populated_sprite.clone());
+
                 registry.add_component(
                     &entity,
-                    self.prepare_sprite_component(sprite, asset_storage),
+                    self.prepare_sprite_component(populated_sprite, asset_storage),
                 );
-            }
-
-            if let Some(figure) = bundle.figure {
-                registry.add_component(&entity, figure);
             }
 
             if let Some(mut animation) = bundle.animation {
@@ -80,11 +81,36 @@ impl Scene {
             }
 
             if let Some(box_collider) = bundle.box_collider {
-                registry.add_component(&entity, box_collider);
+                registry.add_component(
+                    &entity,
+                    self.prepare_box_collider_component(box_collider, sprite_clone),
+                );
             }
         }
 
         entities_to_start
+    }
+
+    fn prepare_box_collider_component(
+        &self,
+        mut box_collider: BoxColliderComponent,
+        sprite: Option<SpriteComponent>,
+    ) -> BoxColliderComponent {
+        match box_collider.size {
+            Some(_) => {}
+            None => match sprite {
+                None => box_collider.size = Some(Vector2::new(0.0, 0.0)),
+                Some(sprite) => {
+                    box_collider.size = Some(
+                        sprite
+                            .clip_size
+                            .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
+                    )
+                }
+            },
+        }
+
+        box_collider
     }
 
     fn prepare_sprite_component(
@@ -99,9 +125,9 @@ impl Scene {
         match &sprite.clip_size {
             Some(_) => {}
             None => {
-                sprite.clip_size = Some(Size::new(
-                    i64::from(texture.width),
-                    i64::from(texture.height),
+                sprite.clip_size = Some(Vector2::new(
+                    f64::from(texture.width),
+                    f64::from(texture.height),
                 ))
             }
         }
@@ -112,13 +138,15 @@ impl Scene {
                 sprite.rotation_origin = Some(Vector2::new(
                     sprite
                         .clip_size
+                        .as_ref()
                         .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
-                        .width as f64
+                        .x
                         / 2.0,
                     sprite
                         .clip_size
+                        .as_ref()
                         .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
-                        .height as f64
+                        .y
                         / 2.0,
                 ))
             }
