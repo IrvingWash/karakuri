@@ -115,6 +115,8 @@ impl PhysicsSystem {
             .get_component::<BoxColliderComponent>(entity)
             .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
         // TODO: This currently works only with figures, not with sprites
+        // TODO: We should be able to collide even with invisible entities.
+        // I think we must populate box_collider from sprite/figure as we populate sprite from texture in Scene
         let figure = registry
             .get_component::<FigureComponent>(entity)
             .unwrap_or_else(|| panic_queried::<FigureComponent>(*entity));
