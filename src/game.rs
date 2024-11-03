@@ -6,7 +6,7 @@ use crate::{
     adapters::InputProcessorAdapter,
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
-    systems::{AnimatorSystem, RendererSystem},
+    systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
     GameConfig, Scene,
 };
 
@@ -19,6 +19,7 @@ pub struct Game {
     asset_storage: AssetStorage,
     renderer: RendererSystem,
     animator: AnimatorSystem,
+    physics: PhysicsSystem,
 }
 
 impl Game {
@@ -45,6 +46,7 @@ impl Game {
             asset_storage,
             renderer: RendererSystem::new(renderer),
             animator: AnimatorSystem::new(),
+            physics: PhysicsSystem::new(),
         }
     }
 
@@ -114,6 +116,7 @@ impl Game {
                 });
         }
 
+        self.physics.affect(&mut self.registry, delta_time);
         self.animator.animate(&mut self.registry, time);
     }
 
