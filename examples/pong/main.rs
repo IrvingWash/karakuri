@@ -7,7 +7,7 @@ use prefabs::{
 
 mod prefabs;
 
-pub fn main() {
+pub fn main() -> Result<(), String> {
     let mut game = Game::new(&GameConfig {
         clear_color: Color::BLACK,
         resolution: Size::new(800, 600),
@@ -15,7 +15,7 @@ pub fn main() {
         title: "Pong",
     });
 
-    game.add_texture("square", "./examples/pong/assets/sprites/square.png");
+    game.add_texture("square", "./examples/pong/assets/sprites/square.png")?;
 
     let resolution = game.resolution();
 
@@ -26,4 +26,6 @@ pub fn main() {
     ]);
 
     game.start();
+
+    Ok(())
 }

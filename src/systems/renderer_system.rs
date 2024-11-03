@@ -66,12 +66,12 @@ impl RendererSystem {
                 handle,
                 texture,
                 &sprite.clip_position,
-                &sprite
+                sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
                 &transform.position,
-                &sprite
+                sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),

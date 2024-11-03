@@ -27,7 +27,7 @@ pub fn main() -> Result<(), String> {
             sprite: Some(SpriteComponent {
                 texture_name: "sonic-idle",
                 layer: 1,
-                clip_size: Some(Size::new(10, 10)),
+                clip_size: Some(Vector2::new(10.0, 10.0)),
                 clip_position: Vector2::new(10.0, 10.0),
                 ..Default::default()
             }),
@@ -54,7 +54,7 @@ pub fn main() -> Result<(), String> {
             sprite: Some(SpriteComponent {
                 texture_name: "radar",
                 layer: 99,
-                clip_size: Some(Size::new(64, 64)),
+                clip_size: Some(Vector2::new(64.0, 64.0)),
                 ..Default::default()
             }),
             animation: Some(AnimationComponent::new(8, 10, true)),

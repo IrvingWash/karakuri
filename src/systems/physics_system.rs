@@ -65,12 +65,10 @@ impl PhysicsSystem {
         for i in 0..collidable_entities.len() {
             let entity = collidable_entities[i];
 
-            for j in i + 1..collidable_entities.len() {
-                let other = collidable_entities[j];
-
+            for other in collidable_entities.iter().skip(i + 1) {
                 let (transform, box_collider) = self.components_for_collision(&entity, registry);
                 let (other_transform, other_box_collider) =
-                    self.components_for_collision(&other, registry);
+                    self.components_for_collision(other, registry);
 
                 if aabb_centered(
                     &transform.position.to_added(&box_collider.position_offset),
@@ -82,21 +80,21 @@ impl PhysicsSystem {
                     &other_transform
                         .position
                         .to_added(&other_box_collider.position_offset),
-                    &other_box_collider
+                    other_box_collider
                         .size
                         .as_ref()
                         .unwrap_or_else(|| panic_uninitialized_collider("size")),
                 ) {
                     self.notify_collided_entity(
                         &entity,
-                        &other,
+                        other,
                         registry,
                         delta_time,
                         input_processor,
                     );
 
                     self.notify_collided_entity(
-                        &other,
+                        other,
                         &entity,
                         registry,
                         delta_time,
@@ -107,11 +105,11 @@ impl PhysicsSystem {
         }
     }
 
-    fn notify_collided_entity<'a>(
+    fn notify_collided_entity(
         &self,
         entity: &Entity,
         other: &Entity,
-        registry: &'a Registry,
+        registry: &Registry,
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
     ) {
@@ -119,10 +117,10 @@ impl PhysicsSystem {
             .get_component_mut::<Box<dyn BehaviorComponent>>(other)
             .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(*other))
             .collide(
-                &entity,
+                entity,
                 Ctx {
                     delta_time,
-                    entity: &other,
+                    entity: other,
                     input_processor,
                     registry,
                 },
