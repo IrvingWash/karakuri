@@ -9,6 +9,10 @@ impl FpsController {
     }
 
     pub fn delta_time(&self, ctx: &RaylibHandle) -> f64 {
-        f64::from(ctx.get_frame_time())
+        f64::from(ctx.get_frame_time() * 10.0)
+    }
+
+    pub fn time(&self, ctx: &RaylibHandle) -> f64 {
+        ctx.get_time() * 1000.0
     }
 }

@@ -3,9 +3,8 @@ mod errors;
 mod game;
 mod game_config;
 mod scene;
+mod systems;
 
-use adapters::InputProcessorWrapper;
-use adapters::RendererAdapter;
 use scene::Scene;
 
 pub mod components;

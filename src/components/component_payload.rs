@@ -1,14 +1,17 @@
 use super::{
-    BehaviorComponent, FigureComponent, SpriteComponent, TagComponent, TransformComponent,
+    AnimationComponent, BehaviorComponent, BoxColliderComponent, RigidBodyComponent,
+    SpriteComponent, TagComponent, TransformComponent,
 };
 
 #[derive(Debug, Default)]
 pub struct ComponentPayload {
     pub transform: Option<TransformComponent>,
     pub tag: Option<TagComponent>,
-    pub figure: Option<FigureComponent>,
     pub behavior: Option<Box<dyn BehaviorComponent>>,
     pub sprite: Option<SpriteComponent>,
+    pub animation: Option<AnimationComponent>,
+    pub rigid_body: Option<RigidBodyComponent>,
+    pub box_collider: Option<BoxColliderComponent>,
 }
 
 #[cfg(test)]
@@ -27,8 +30,10 @@ mod component_payload_tests {
 
         assert!(component_payload.tag.is_some());
         assert!(component_payload.transform.is_some());
-        assert!(component_payload.figure.is_none());
         assert!(component_payload.behavior.is_none());
         assert!(component_payload.sprite.is_none());
+        assert!(component_payload.animation.is_none());
+        assert!(component_payload.rigid_body.is_none());
+        assert!(component_payload.box_collider.is_none());
     }
 }

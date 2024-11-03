@@ -3,19 +3,23 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
 
 use crate::{
+    adapters::InputProcessorAdapter,
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
-    GameConfig, InputProcessorWrapper, RendererAdapter, Scene,
+    systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
+    GameConfig, Scene,
 };
 
 pub struct Game {
     fps_controller: FpsController,
-    renderer_adapter: RendererAdapter,
     input_processor: InputProcessor,
     registry: Registry,
     scene: Scene,
     ctx: WindowCtx,
     asset_storage: AssetStorage,
+    renderer: RendererSystem,
+    animator: AnimatorSystem,
+    physics: PhysicsSystem,
 }
 
 impl Game {
@@ -35,12 +39,14 @@ impl Game {
 
         Self {
             fps_controller,
-            renderer_adapter: RendererAdapter::new(renderer),
             input_processor,
             registry: Registry::new(),
             scene: Scene::new(),
             ctx,
             asset_storage,
+            renderer: RendererSystem::new(renderer),
+            animator: AnimatorSystem::new(),
+            physics: PhysicsSystem::new(),
         }
     }
 
@@ -54,67 +60,80 @@ impl Game {
 
     pub fn start(&mut self) {
         loop {
+            let time = self.fps_controller.time(&self.ctx);
             let delta_time = self.fps_controller.delta_time(&self.ctx);
 
-            // Get input
-            let input_processor_wrapper =
-                InputProcessorWrapper::new(&self.input_processor, &self.ctx);
-
-            if input_processor_wrapper.should_close() {
+            if self.input_processor.should_close(&self.ctx) {
                 break;
             }
 
-            // Start new entities
-            let entities_to_start = self.scene.sync(&mut self.registry);
+            self.start_entities(delta_time, time);
 
-            for entity in entities_to_start {
-                self.registry
-                    .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
-                    .start(Ctx {
-                        entity: &entity,
-                        delta_time,
-                        registry: &self.registry,
-                        input_processor: &input_processor_wrapper,
-                    });
-            }
-
-            // Update
-            let updateable_entities = self
-                .registry
-                .query()
-                .with_component::<dyn BehaviorComponent>()
-                .build();
-
-            for entity in updateable_entities {
-                self.registry
-                    .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
-                    .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
-                    .update(Ctx {
-                        delta_time,
-                        registry: &self.registry,
-                        entity: &entity,
-                        input_processor: &input_processor_wrapper,
-                    });
-            }
+            self.update_entities(delta_time, time);
 
             self.render();
         }
     }
 
     pub fn resolution(&self) -> Size {
-        self.renderer_adapter.resolution(&self.ctx)
+        self.renderer.resolution(&self.ctx)
+    }
+
+    fn start_entities(&mut self, delta_time: f64, time: f64) {
+        let entities_to_start = self
+            .scene
+            .sync(&mut self.registry, &self.asset_storage, time);
+
+        for entity in entities_to_start {
+            self.registry
+                .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
+                .start(Ctx {
+                    entity: &entity,
+                    delta_time,
+                    registry: &self.registry,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                });
+        }
+    }
+
+    fn update_entities(&mut self, delta_time: f64, time: f64) {
+        let updateable_entities = self
+            .registry
+            .query()
+            .with_component::<dyn BehaviorComponent>()
+            .build();
+
+        for entity in updateable_entities {
+            self.registry
+                .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
+                .update(Ctx {
+                    delta_time,
+                    registry: &self.registry,
+                    entity: &entity,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                });
+        }
+
+        self.physics.affect(
+            &mut self.registry,
+            delta_time,
+            &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+        );
+
+        self.animator.animate(&mut self.registry, time);
     }
 
     fn render(&mut self) {
-        let mut handle = self.renderer_adapter.start_frame(&mut self.ctx);
+        let mut handle = self.renderer.start_frame(&mut self.ctx);
 
-        self.renderer_adapter
-            .draw_figures(&mut handle, &mut self.registry);
-
-        self.renderer_adapter
+        self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 
-        self.renderer_adapter.finish_frame(handle);
+        self.renderer
+            .draw_box_colliders(&mut handle, &mut self.registry);
+
+        self.renderer.finish_frame(handle);
     }
 }

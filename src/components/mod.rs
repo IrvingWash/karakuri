@@ -1,14 +1,18 @@
+mod animation_component;
 mod behavior_component;
+mod box_collider_component;
 mod component_payload;
-mod figure_component;
+mod rigid_body_component;
 mod sprite_component;
 mod tag_component;
 mod transform_component;
 
+pub use animation_component::AnimationComponent;
 pub use behavior_component::BehaviorComponent;
 pub use behavior_component::Ctx;
+pub use box_collider_component::BoxColliderComponent;
 pub use component_payload::ComponentPayload;
-pub use figure_component::FigureComponent;
+pub use rigid_body_component::RigidBodyComponent;
 pub use sprite_component::SpriteComponent;
 pub use tag_component::TagComponent;
 pub use transform_component::TransformComponent;

@@ -1,6 +1,13 @@
-use kec::{Entity, Registry};
+use std::mem;
 
-use crate::components::ComponentPayload;
+use kec::{Entity, Registry};
+use kmath::Vector2;
+use kwindow::AssetStorage;
+
+use crate::{
+    components::{BoxColliderComponent, ComponentPayload, SpriteComponent},
+    errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
+};
 
 #[derive(Debug, Default)]
 pub struct Scene {
@@ -24,11 +31,20 @@ impl Scene {
         self.entities_to_add.push(component_payload);
     }
 
-    pub fn sync(&mut self, registry: &mut Registry) -> Vec<Entity> {
+    pub fn sync(
+        &mut self,
+        registry: &mut Registry,
+        asset_storage: &AssetStorage,
+        time: f64,
+    ) -> Vec<Entity> {
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
-        for bundle in self.entities_to_add.drain(..) {
+        let entities_to_add = mem::take(&mut self.entities_to_add);
+
+        for bundle in entities_to_add {
             let entity = registry.create_entity();
+
+            let mut sprite_clone: Option<SpriteComponent> = None;
 
             if let Some(transform) = bundle.transform {
                 registry.add_component(&entity, transform);
@@ -44,14 +60,98 @@ impl Scene {
             }
 
             if let Some(sprite) = bundle.sprite {
-                registry.add_component(&entity, sprite);
+                let populated_sprite = self.prepare_sprite_component(sprite, asset_storage);
+
+                sprite_clone = Some(populated_sprite.clone());
+
+                registry.add_component(
+                    &entity,
+                    self.prepare_sprite_component(populated_sprite, asset_storage),
+                );
             }
 
-            if let Some(figure) = bundle.figure {
-                registry.add_component(&entity, figure);
+            if let Some(mut animation) = bundle.animation {
+                animation.start_time = time;
+
+                registry.add_component(&entity, animation);
+            }
+
+            if let Some(rigid_body) = bundle.rigid_body {
+                registry.add_component(&entity, rigid_body);
+            }
+
+            if let Some(box_collider) = bundle.box_collider {
+                registry.add_component(
+                    &entity,
+                    self.prepare_box_collider_component(box_collider, sprite_clone),
+                );
             }
         }
 
         entities_to_start
+    }
+
+    fn prepare_box_collider_component(
+        &self,
+        mut box_collider: BoxColliderComponent,
+        sprite: Option<SpriteComponent>,
+    ) -> BoxColliderComponent {
+        match box_collider.size {
+            Some(_) => {}
+            None => match sprite {
+                None => box_collider.size = Some(Vector2::new(0.0, 0.0)),
+                Some(sprite) => {
+                    box_collider.size = Some(
+                        sprite
+                            .clip_size
+                            .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
+                    )
+                }
+            },
+        }
+
+        box_collider
+    }
+
+    fn prepare_sprite_component(
+        &self,
+        mut sprite: SpriteComponent,
+        asset_storage: &AssetStorage,
+    ) -> SpriteComponent {
+        let texture = asset_storage
+            .texture(sprite.texture_name)
+            .unwrap_or_else(|| panic_not_loaded_texture(sprite.texture_name));
+
+        match &sprite.clip_size {
+            Some(_) => {}
+            None => {
+                sprite.clip_size = Some(Vector2::new(
+                    f64::from(texture.width),
+                    f64::from(texture.height),
+                ))
+            }
+        }
+
+        match &sprite.origin {
+            Some(_) => {}
+            None => {
+                sprite.origin = Some(Vector2::new(
+                    sprite
+                        .clip_size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                        .x
+                        / 2.0,
+                    sprite
+                        .clip_size
+                        .as_ref()
+                        .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                        .y
+                        / 2.0,
+                ))
+            }
+        }
+
+        sprite
     }
 }

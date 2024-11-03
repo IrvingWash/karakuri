@@ -45,19 +45,16 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         position: &Vector2,
-        size: &Size,
+        size: &Vector2,
         color: &Color,
     ) {
-        let half_width = size.width as f64 * 0.5;
-        let half_height = size.height as f64 * 0.5;
+        let x = position.x as i32;
+        let y = position.y as i32;
+        let width = size.x as i32;
+        let height = size.y as i32;
+        let color = color_to_raylib(color);
 
-        d.draw_rectangle(
-            (position.x - half_width) as i32,
-            (position.y - half_height) as i32,
-            size.width as i32,
-            size.height as i32,
-            color_to_raylib(color),
-        );
+        d.draw_rectangle_lines(x, y, width, height, color);
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -65,36 +62,24 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
-        source_position: &Option<Vector2>,
-        source_size: &Option<Size>,
+        source_position: &Vector2,
+        source_size: &Vector2,
         dest_position: &Vector2,
-        scale: &Vector2,
-        origin: Option<&Vector2>,
+        dest_size: &Vector2,
+        origin: &Vector2,
         rotation: f64,
-        tint: Option<&Color>,
+        tint: &Color,
     ) {
-        let dest_width = texture.width * scale.x as i32;
-        let dest_height = texture.height * scale.y as i32;
-
         d.draw_texture_pro(
             texture,
+            make_rectangle(source_position, source_size),
             make_rectangle(
-                source_position.as_ref().unwrap_or(&Vector2::ZERO),
-                source_size.as_ref().unwrap_or(&Size::new(
-                    i64::from(texture.width),
-                    i64::from(texture.height),
-                )),
+                &Vector2::new(dest_position.x, dest_position.y),
+                &Vector2::new(dest_size.x, dest_size.y),
             ),
-            make_rectangle(
-                dest_position,
-                &Size::new(i64::from(dest_width), i64::from(dest_height)),
-            ),
-            vector2_to_raylib(origin.unwrap_or(&Vector2::new(
-                f64::from(dest_width) * 0.5,
-                f64::from(dest_height) * 0.5,
-            ))),
+            vector2_to_raylib(origin),
             rotation as f32,
-            color_to_raylib(tint.unwrap_or(&Color::WHITE)),
+            color_to_raylib(tint),
         );
     }
 }
@@ -107,11 +92,11 @@ fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
     RaylibVector2::new(vector2.x as f32, vector2.y as f32)
 }
 
-fn make_rectangle(position: &Vector2, size: &Size) -> Rectangle {
+fn make_rectangle(position: &Vector2, size: &Vector2) -> Rectangle {
     Rectangle {
         x: position.x as f32,
         y: position.y as f32,
-        width: size.width as f32,
-        height: size.height as f32,
+        width: size.x as f32,
+        height: size.y as f32,
     }
 }
