@@ -13,8 +13,6 @@ use super::Spawner;
 
 #[derive(Debug, Default)]
 pub struct Scene {
-    entities_to_add: Vec<ComponentPayload>,
-    entities_to_destroy: Vec<Entity>,
     entities_to_remove: Vec<Entity>,
     spawner: Spawner,
 }
@@ -22,17 +20,13 @@ pub struct Scene {
 impl Scene {
     pub fn new() -> Self {
         Self {
-            entities_to_add: Vec::new(),
-            entities_to_destroy: Vec::new(),
             entities_to_remove: Vec::new(),
             spawner: Spawner::new(),
         }
     }
 
-    pub fn create_initial_entities(&mut self, entities: Vec<ComponentPayload>) {
-        for entity in entities {
-            self.entities_to_add.push(entity);
-        }
+    pub fn create_initial_entities(&mut self, mut entities: Vec<ComponentPayload>) {
+        self.spawner.entities_to_add.append(&mut entities);
     }
 
     pub fn sync(
@@ -41,20 +35,15 @@ impl Scene {
         asset_storage: &AssetStorage,
         time: f64,
     ) -> (Vec<Entity>, Vec<Entity>) {
-        self.entities_to_add
-            .append(&mut self.spawner.entities_to_add);
-        self.entities_to_destroy
-            .append(&mut self.spawner.entities_to_destroy);
-
         // Remove entities
-        for entity in self.entities_to_remove.drain(..) {
+        for entity in mem::take(&mut self.entities_to_remove) {
             registry.remove_entity(&entity);
         }
 
         // Create entities
         let mut entities_to_start: Vec<Entity> = Vec::new();
 
-        let entities_to_add = mem::take(&mut self.entities_to_add);
+        let entities_to_add = mem::take(&mut self.spawner.entities_to_add);
         for bundle in entities_to_add {
             let entity = registry.create_entity();
 
@@ -66,7 +55,7 @@ impl Scene {
 
             if let Some(behavior) = bundle.behavior {
                 registry.add_component(&entity, behavior);
-                entities_to_start.push(entity);
+                entities_to_start.push(entity.clone());
             }
 
             if let Some(tab) = bundle.tag {
@@ -104,7 +93,7 @@ impl Scene {
 
         (
             entities_to_start,
-            self.entities_to_destroy.drain(..).collect::<Vec<Entity>>(),
+            mem::take(&mut self.spawner.entities_to_destroy),
         )
     }
 
