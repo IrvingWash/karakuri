@@ -21,6 +21,7 @@ pub struct Game {
     animator: AnimatorSystem,
     physics: PhysicsSystem,
     timer: TimerAdapter,
+    debug: bool,
 }
 
 impl Game {
@@ -49,6 +50,7 @@ impl Game {
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
             timer: TimerAdapter::new(Timer::new()),
+            debug: config.debug,
         }
     }
 
@@ -161,8 +163,10 @@ impl Game {
         self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 
-        self.renderer
-            .draw_box_colliders(&mut handle, &mut self.registry);
+        if self.debug {
+            self.renderer
+                .draw_box_colliders(&mut handle, &mut self.registry);
+        }
 
         self.renderer.finish_frame(handle);
     }

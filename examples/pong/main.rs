@@ -13,6 +13,7 @@ pub fn main() -> Result<(), String> {
         resolution: Size::new(800, 600),
         target_fps: 60,
         title: "Pong",
+        ..Default::default()
     });
 
     game.add_texture("square", "./examples/pong/assets/sprites/square.png")?;
