@@ -12,7 +12,10 @@ pub fn main() -> Result<(), String> {
         target_fps: 60,
     });
 
-    game.add_texture("ship_blue", "./examples/shmup/assets/sprites/ship_blue.png")?;
+    game.add_texture(
+        "player-sheet",
+        "./examples/shmup/assets/sprites/player-sheet.png",
+    )?;
     game.add_texture(
         "laser_blue",
         "./examples/shmup/assets/sprites/laser_blue.png",

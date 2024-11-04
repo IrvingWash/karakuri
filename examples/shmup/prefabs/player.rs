@@ -1,8 +1,8 @@
 use std::cell::RefMut;
 
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent,
-    SpriteComponent, TagComponent, TransformComponent,
+    AnimationComponent, BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx,
+    RigidBodyComponent, SpriteComponent, TagComponent, TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
@@ -13,13 +13,21 @@ use super::player_laser::player_laser_prefab;
 
 pub fn player_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
-        transform: Some(TransformComponent::default()),
+        transform: Some(TransformComponent {
+            scale: Vector2::new(2.0, 2.0),
+            ..Default::default()
+        }),
         box_collider: Some(BoxColliderComponent::default()),
         rigid_body: Some(RigidBodyComponent::default()),
         tag: Some(TagComponent::new(String::from("player"))),
-        sprite: Some(SpriteComponent::from_texture_name("ship_blue")),
+        sprite: Some(SpriteComponent {
+            texture_name: "player-sheet",
+            clip_size: Some(Vector2::new(48.0, 58.0)),
+            layer: 99,
+            ..Default::default()
+        }),
         behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),
-        ..Default::default()
+        animation: Some(AnimationComponent::new(3, 6, true)),
     }
 }
 
@@ -55,9 +63,9 @@ impl Player {
         }
     }
 
-    fn fire(&self, ctx: &mut Ctx, transform: TransformComponent) {
+    fn fire(&self, ctx: &mut Ctx, position: Vector2) {
         if ctx.input_processor.is_pressed(KeyboardKey::KEY_SPACE) {
-            ctx.spawner.add_entity(player_laser_prefab(transform));
+            ctx.spawner.add_entity(player_laser_prefab(position));
         }
     }
 }
@@ -79,7 +87,9 @@ impl BehaviorComponent for Player {
             (self.resolution.height - 50) as f64,
         ));
 
-        box_collider.size.as_mut().unwrap().x = 30.0;
+        box_collider.size.as_mut().unwrap().x = 20.0;
+        box_collider.size.as_mut().unwrap().y = 30.0;
+        box_collider.position_offset.y = 5.0;
     }
 
     fn on_update(&mut self, mut ctx: karakuri::components::Ctx) {
@@ -93,14 +103,7 @@ impl BehaviorComponent for Player {
             .unwrap();
 
         self.movement_handler(&ctx, &mut rigid_body);
-        self.fire(
-            &mut ctx,
-            TransformComponent {
-                position: transform.position.create_copy(),
-                rotation: transform.rotation,
-                scale: transform.scale.create_copy(),
-            },
-        );
+        self.fire(&mut ctx, transform.position.create_copy());
     }
 
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
