@@ -13,25 +13,30 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 
 #[derive(Debug, Default)]
 pub struct Registry {
-    entity_count: usize,
+    next_unique_id: usize,
+    entities: Vec<Option<Entity>>,
     components: HashMap<TypeId, Vec<Orra>>,
     free_ids: HashSet<usize>,
     component_ids: HashMap<TypeId, usize>,
-    entity_signatures: HashMap<usize, Signature>,
+    entity_signatures: HashMap<Entity, Signature>,
 }
 
 impl Registry {
     pub fn new() -> Self {
         Self {
-            entity_count: 0,
+            next_unique_id: 0,
             components: HashMap::with_capacity(64),
             free_ids: HashSet::with_capacity(64),
             component_ids: HashMap::with_capacity(64),
             entity_signatures: HashMap::with_capacity(64),
+            entities: Vec::with_capacity(64),
         }
     }
 
     pub fn create_entity(&mut self) -> Entity {
+        let unique_id = self.next_unique_id;
+        self.next_unique_id += 1;
+
         match self
             .free_ids
             .iter()
@@ -39,27 +44,48 @@ impl Registry {
             .cloned()
             .and_then(|x| self.free_ids.take(&x))
         {
-            Some(id) => Entity::new(id),
+            Some(id) => {
+                let entity = Entity::new(id, unique_id);
+
+                self.entity_signatures
+                    .insert(entity.clone(), Signature::new());
+
+                self.entities[id] = Some(entity.clone());
+
+                entity
+            }
             None => {
-                let id = self.entity_count;
-                self.entity_count += 1;
+                let id = self.entities.len();
 
                 for component_vec in self.components.values_mut() {
                     component_vec.push(None);
                 }
 
-                self.entity_signatures.insert(id, Signature::new());
+                let entity = Entity::new(id, unique_id);
 
-                Entity::new(id)
+                self.entity_signatures
+                    .insert(entity.clone(), Signature::new());
+
+                self.entities.push(Some(entity.clone()));
+
+                entity
             }
         }
+    }
+
+    pub fn is_alive(&self, entity: &Entity) -> bool {
+        if let Some(held_entity) = &self.entities[entity.id()] {
+            return held_entity.unique_id() == entity.unique_id();
+        }
+
+        false
     }
 
     pub fn component_ids(&self) -> &HashMap<TypeId, usize> {
         &self.component_ids
     }
 
-    pub fn entity_signatures(&self) -> &HashMap<usize, Signature> {
+    pub fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
         &self.entity_signatures
     }
 
@@ -70,10 +96,9 @@ impl Registry {
             component_vec[id] = None;
         }
 
-        self.entity_signatures
-            .get_mut(&id)
-            .expect(NO_SIGNATURE_MESSAGE)
-            .reset();
+        self.entity_signatures.remove_entry(entity);
+
+        self.entities[id] = None;
 
         self.free_ids.insert(id);
     }
@@ -88,7 +113,7 @@ impl Registry {
         let component_id = self.component_ids.len();
         self.component_ids.insert(component_type, component_id);
 
-        let new_component_vec: Vec<Orra> = vec![None; self.entity_count];
+        let new_component_vec: Vec<Orra> = vec![None; self.entities.len()];
         self.components.insert(component_type, new_component_vec);
     }
 
@@ -112,7 +137,7 @@ impl Registry {
         })[id] = wrapped_component;
 
         self.entity_signatures
-            .get_mut(&id)
+            .get_mut(entity)
             .expect(NO_SIGNATURE_MESSAGE)
             .set(*component_id);
     }
@@ -179,7 +204,16 @@ impl Registry {
                     .eq(component_to_find),
             });
 
-            return id.map(Entity::new);
+            match id {
+                None => return None,
+                Some(id) => {
+                    return self
+                        .entity_signatures()
+                        .keys()
+                        .find(|entity| entity.id() == id)
+                        .cloned()
+                }
+            }
         }
 
         None
@@ -242,7 +276,7 @@ mod world_tests {
         registry.add_component(&sonic, Health(1));
         registry.add_component(&sonic, Speed(30));
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
 
         assert!(registry.get_component::<Health>(&eggman).is_some());
@@ -253,7 +287,7 @@ mod world_tests {
 
         registry.remove_entity(&eggman);
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 1);
         assert!(registry.free_ids.get(&0).is_some());
@@ -268,7 +302,7 @@ mod world_tests {
         registry.add_component(&tails, Health(1));
         registry.add_component(&tails, Speed(15));
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 0);
 

@@ -5,7 +5,7 @@ use kec::Entity;
 pub fn panic_queried<T: ?Sized>(entity: &Entity) -> ! {
     panic!(
         "Entity {} didn't have {}, though was queried for it.",
-        entity.id(),
+        entity.unique_id(),
         type_name::<T>()
     )
 }
