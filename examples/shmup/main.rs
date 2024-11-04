@@ -32,6 +32,7 @@ pub fn main() -> Result<(), String> {
         "enemy-straight",
         "./examples/shmup/assets/sprites/enemy-straight.png",
     )?;
+    game.add_texture("explosion", "./examples/shmup/assets/sprites/explosion.png")?;
 
     let resolution = game.resolution();
 
