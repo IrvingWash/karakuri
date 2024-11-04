@@ -82,6 +82,23 @@ impl Renderer {
             color_to_raylib(tint),
         );
     }
+
+    pub fn draw_text(
+        &self,
+        d: &mut RaylibDrawHandle,
+        text: &str,
+        position: &Vector2,
+        font_size: usize,
+        color: &Color,
+    ) {
+        d.draw_text(
+            text,
+            position.x as i32,
+            position.y as i32,
+            font_size as i32,
+            color_to_raylib(color),
+        );
+    }
 }
 
 fn color_to_raylib(color: &Color) -> RaylibColor {
