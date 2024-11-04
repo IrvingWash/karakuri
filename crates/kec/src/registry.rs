@@ -137,7 +137,7 @@ impl Registry {
         })[id] = wrapped_component;
 
         self.entity_signatures
-            .get_mut(&id)
+            .get_mut(&entity)
             .expect(NO_SIGNATURE_MESSAGE)
             .set(*component_id);
     }
