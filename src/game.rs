@@ -3,7 +3,7 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
-    adapters::InputProcessorAdapter,
+    adapters::{InputProcessorAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
     systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
@@ -20,7 +20,7 @@ pub struct Game {
     renderer: RendererSystem,
     animator: AnimatorSystem,
     physics: PhysicsSystem,
-    timer: Timer,
+    timer: TimerAdapter,
 }
 
 impl Game {
@@ -48,7 +48,7 @@ impl Game {
             renderer: RendererSystem::new(renderer),
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
-            timer: Timer::new(),
+            timer: TimerAdapter::new(Timer::new()),
         }
     }
 
@@ -68,8 +68,6 @@ impl Game {
             if self.input_processor.should_close(&self.ctx) {
                 break;
             }
-
-            self.timer.update(time);
 
             let (entities_to_start, entities_to_destroy) =
                 self.scene
@@ -138,6 +136,14 @@ impl Game {
                     timer: &mut self.timer,
                 });
         }
+
+        self.timer.update(
+            time,
+            &mut self.registry,
+            delta_time,
+            &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+            self.scene.spawner(),
+        );
 
         self.physics.affect(
             &mut self.registry,

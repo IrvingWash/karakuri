@@ -3,10 +3,9 @@ use std::cell::Ref;
 use kec::{Entity, Registry};
 use kmath::Vector2;
 use kutils::collision::aabb_centered;
-use kwindow::Timer;
 
 use crate::{
-    adapters::InputProcessorAdapter,
+    adapters::{InputProcessorAdapter, TimerAdapter},
     components::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
@@ -27,7 +26,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
-        timer: &mut Timer,
+        timer: &mut TimerAdapter,
     ) {
         self.move_entities(registry, delta_time);
         self.collide(registry, delta_time, input_processor, spawner, timer);
@@ -60,7 +59,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
-        timer: &mut Timer,
+        timer: &mut TimerAdapter,
     ) {
         let collidable_entities = registry
             .query()
@@ -140,7 +139,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
-        timer: &mut Timer,
+        timer: &mut TimerAdapter,
     ) {
         if let Some(mut behavior) = registry.get_dyn_component_mut::<dyn BehaviorComponent>(other) {
             behavior.collide(
