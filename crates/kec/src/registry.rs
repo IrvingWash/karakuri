@@ -14,7 +14,6 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 #[derive(Debug, Default)]
 pub struct Registry {
     next_unique_id: usize,
-    entity_count: usize,
     entities: Vec<Entity>,
     components: HashMap<TypeId, Vec<Orra>>,
     free_ids: HashSet<usize>,
@@ -26,7 +25,6 @@ impl Registry {
     pub fn new() -> Self {
         Self {
             next_unique_id: 0,
-            entity_count: 0,
             components: HashMap::with_capacity(64),
             free_ids: HashSet::with_capacity(64),
             component_ids: HashMap::with_capacity(64),
@@ -57,8 +55,7 @@ impl Registry {
                 entity
             }
             None => {
-                let id = self.entity_count;
-                self.entity_count += 1;
+                let id = self.entities.len();
 
                 for component_vec in self.components.values_mut() {
                     component_vec.push(None);
@@ -110,7 +107,7 @@ impl Registry {
         let component_id = self.component_ids.len();
         self.component_ids.insert(component_type, component_id);
 
-        let new_component_vec: Vec<Orra> = vec![None; self.entity_count];
+        let new_component_vec: Vec<Orra> = vec![None; self.entities.len()];
         self.components.insert(component_type, new_component_vec);
     }
 
@@ -273,7 +270,7 @@ mod world_tests {
         registry.add_component(&sonic, Health(1));
         registry.add_component(&sonic, Speed(30));
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
 
         assert!(registry.get_component::<Health>(&eggman).is_some());
@@ -284,7 +281,7 @@ mod world_tests {
 
         registry.remove_entity(&eggman);
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 1);
         assert!(registry.free_ids.get(&0).is_some());
@@ -299,7 +296,7 @@ mod world_tests {
         registry.add_component(&tails, Health(1));
         registry.add_component(&tails, Speed(15));
 
-        assert_eq!(registry.entity_count, 2);
+        assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 0);
 
