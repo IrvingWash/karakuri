@@ -70,8 +70,7 @@ impl Game {
             }
 
             let (entities_to_start, entities_to_destroy) =
-                self.scene
-                    .sync(&mut self.registry, &self.asset_storage, time);
+                self.scene.sync(&mut self.registry, &self.asset_storage);
 
             self.start_entities(&entities_to_start, delta_time);
 

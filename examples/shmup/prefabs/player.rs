@@ -1,8 +1,9 @@
 use std::cell::RefMut;
 
 use karakuri::components::{
-    AnimationComponent, BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx,
-    RigidBodyComponent, SpriteComponent, TagComponent, TransformComponent,
+    Animation, AnimationControllerComponent, AnimationParams, BehaviorComponent,
+    BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent, SpriteComponent, TagComponent,
+    TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
@@ -21,13 +22,35 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
         rigid_body: Some(RigidBodyComponent::default()),
         tag: Some(TagComponent::new(String::from("player"))),
         sprite: Some(SpriteComponent {
-            texture_name: "player-sheet",
+            texture_name: "player-straight",
             clip_size: Some(Vector2::new(48.0, 58.0)),
             layer: 99,
             ..Default::default()
         }),
         behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),
-        animation: Some(AnimationComponent::new(3, 6, true)),
+        animation_controller: Some(AnimationControllerComponent::new(vec![
+            Animation::new(AnimationParams {
+                name: "player-straight",
+                texture_name: "player-straight",
+                frame_count: 3,
+                frame_rate: 6,
+                looping: true,
+            }),
+            Animation::new(AnimationParams {
+                name: "player-left",
+                texture_name: "player-left",
+                frame_count: 3,
+                frame_rate: 6,
+                looping: true,
+            }),
+            Animation::new(AnimationParams {
+                name: "player-right",
+                texture_name: "player-right",
+                frame_count: 3,
+                frame_rate: 6,
+                looping: true,
+            }),
+        ])),
     }
 }
 
@@ -42,7 +65,12 @@ impl Player {
         Self { speed, resolution }
     }
 
-    fn movement_handler(&mut self, ctx: &Ctx, rigid_body: &mut RefMut<RigidBodyComponent>) {
+    fn movement_handler(
+        &mut self,
+        ctx: &Ctx,
+        rigid_body: &mut RefMut<RigidBodyComponent>,
+        animation_controller: &mut RefMut<AnimationControllerComponent>,
+    ) {
         let speed = if ctx.input_processor.is_down(KeyboardKey::KEY_LEFT_SHIFT) {
             self.speed * 2.0
         } else {
@@ -50,15 +78,19 @@ impl Player {
         };
 
         if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
+            animation_controller.set_animation("player-straight");
             rigid_body.velocity.y = -speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_A) {
+            animation_controller.set_animation("player-left");
             rigid_body.velocity.x = -speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
+            animation_controller.set_animation("player-straight");
             rigid_body.velocity.y = speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_D) {
+            animation_controller.set_animation("player-right");
             rigid_body.velocity.x = speed * ctx.delta_time;
         }
     }
@@ -101,8 +133,12 @@ impl BehaviorComponent for Player {
             .registry
             .get_component::<TransformComponent>(ctx.entity)
             .unwrap();
+        let mut animation_controller = ctx
+            .registry
+            .get_component_mut::<AnimationControllerComponent>(ctx.entity)
+            .unwrap();
 
-        self.movement_handler(&ctx, &mut rigid_body);
+        self.movement_handler(&ctx, &mut rigid_body, &mut animation_controller);
         self.fire(&mut ctx, transform.position.create_copy());
     }
 
