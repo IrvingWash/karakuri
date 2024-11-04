@@ -86,7 +86,7 @@ impl BehaviorComponent for Enemy {
 
     fn update(&mut self, ctx: Ctx) {
         if let Some(player) = &self.player {
-            if ctx.registry.unwrap_if_alive(player) {
+            if ctx.registry.is_alive(player) {
                 self.player.as_ref().unwrap();
             }
         }

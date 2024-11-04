@@ -76,7 +76,7 @@ impl Registry {
         }
     }
 
-    pub fn unwrap_if_alive(&self, entity: &Entity) -> bool {
+    pub fn is_alive(&self, entity: &Entity) -> bool {
         self.entities[entity.id()].unique_id() == entity.unique_id()
     }
 
