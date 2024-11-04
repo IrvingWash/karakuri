@@ -40,12 +40,12 @@ impl PhysicsSystem {
             .with_component::<RigidBodyComponent>()
             .build();
 
-        for entity in affected_entities {
+        for entity in &affected_entities {
             let mut transform = registry
-                .get_component_mut::<TransformComponent>(&entity)
+                .get_component_mut::<TransformComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
             let rigid_body = registry
-                .get_component::<RigidBodyComponent>(&entity)
+                .get_component::<RigidBodyComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<RigidBodyComponent>(entity));
 
             transform
@@ -70,10 +70,10 @@ impl PhysicsSystem {
 
         // Looks like this is O(n)
         for i in 0..collidable_entities.len() {
-            let entity = collidable_entities[i];
+            let entity = &collidable_entities[i];
 
             for other in collidable_entities.iter().skip(i + 1) {
-                let (transform, box_collider) = self.components_for_collision(&entity, registry);
+                let (transform, box_collider) = self.components_for_collision(entity, registry);
                 let (other_transform, other_box_collider) =
                     self.components_for_collision(other, registry);
 
@@ -92,7 +92,7 @@ impl PhysicsSystem {
                         .to_scaled_by_other(&other_transform.scale),
                 ) {
                     self.notify_collided_entity(
-                        &entity,
+                        entity,
                         other,
                         registry,
                         delta_time,
@@ -103,7 +103,7 @@ impl PhysicsSystem {
 
                     self.notify_collided_entity(
                         other,
-                        &entity,
+                        entity,
                         registry,
                         delta_time,
                         input_processor,
@@ -165,10 +165,10 @@ impl PhysicsSystem {
     ) -> (Ref<'a, TransformComponent>, Ref<'a, BoxColliderComponent>) {
         let transform = registry
             .get_component::<TransformComponent>(entity)
-            .unwrap_or_else(|| panic_queried::<TransformComponent>(*entity));
+            .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
         let box_collider = registry
             .get_component::<BoxColliderComponent>(entity)
-            .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(*entity));
+            .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
 
         (transform, box_collider)
     }
