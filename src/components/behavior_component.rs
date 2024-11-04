@@ -1,9 +1,11 @@
-use std::{any::Any, fmt::Debug};
+use std::{any::Any, collections::HashSet, fmt::Debug};
 
 use kec::{Entity, Registry};
-use kwindow::Timer;
 
-use crate::{adapters::InputProcessorAdapter, Spawner};
+use crate::{
+    adapters::{InputProcessorAdapter, TimerAdapter},
+    Spawner,
+};
 
 pub struct Ctx<'a> {
     pub delta_time: f64,
@@ -11,7 +13,7 @@ pub struct Ctx<'a> {
     pub entity: &'a Entity,
     pub input_processor: &'a InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
-    pub timer: &'a mut Timer,
+    pub timer: &'a mut TimerAdapter,
 }
 
 pub trait BehaviorComponent: Debug {
@@ -21,6 +23,8 @@ pub trait BehaviorComponent: Debug {
     fn on_update(&mut self, ctx: Ctx) {}
     #[allow(unused_variables)]
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
+    #[allow(unused_variables)]
+    fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {}
     fn on_destroy(&mut self) {}
 
     fn start(&mut self, ctx: Ctx) {
@@ -29,6 +33,10 @@ pub trait BehaviorComponent: Debug {
 
     fn update(&mut self, ctx: Ctx) {
         self.on_update(ctx);
+    }
+
+    fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
+        self.on_timer(finished_timers, ctx);
     }
 
     fn destroy(&mut self) {
