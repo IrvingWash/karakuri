@@ -14,3 +14,5 @@ sprite:
 	cargo run --example=sprite
 collisions:
 	cargo run --example=collisions
+shmup:
+	cargo run --example=shmup
