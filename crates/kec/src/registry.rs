@@ -1,7 +1,7 @@
 use std::{
     any::{type_name, Any, TypeId},
     cell::{Ref, RefCell, RefMut},
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     rc::Rc,
 };
 
@@ -15,7 +15,7 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 pub struct Registry {
     entity_count: usize,
     components: HashMap<TypeId, Vec<Orra>>,
-    free_ids: Vec<usize>,
+    free_ids: HashSet<usize>,
     component_ids: HashMap<TypeId, usize>,
     entity_signatures: HashMap<usize, Signature>,
 }
@@ -25,14 +25,20 @@ impl Registry {
         Self {
             entity_count: 0,
             components: HashMap::with_capacity(64),
-            free_ids: Vec::with_capacity(64),
+            free_ids: HashSet::with_capacity(64),
             component_ids: HashMap::with_capacity(64),
             entity_signatures: HashMap::with_capacity(64),
         }
     }
 
     pub fn create_entity(&mut self) -> Entity {
-        match self.free_ids.pop() {
+        match self
+            .free_ids
+            .iter()
+            .next()
+            .cloned()
+            .map_or(None, |x| self.free_ids.take(&x))
+        {
             Some(id) => Entity::new(id),
             None => {
                 let id = self.entity_count;
@@ -69,7 +75,7 @@ impl Registry {
             .expect(NO_SIGNATURE_MESSAGE)
             .reset();
 
-        self.free_ids.push(id);
+        self.free_ids.insert(id);
     }
 
     pub fn register_component<T: Any + ?Sized>(&mut self) {
@@ -326,7 +332,7 @@ mod world_tests {
         assert_eq!(registry.entity_count, 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 1);
-        assert_eq!(registry.free_ids[0], 0);
+        assert!(registry.free_ids.get(&0).is_some());
 
         assert!(registry.get_component::<Health>(&eggman).is_none());
         assert!(registry.get_component::<Health>(&sonic).is_some());

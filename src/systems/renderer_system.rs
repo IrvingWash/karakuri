@@ -41,12 +41,12 @@ impl RendererSystem {
             .with_component::<BoxColliderComponent>()
             .build();
 
-        for entity in entities_with_colliders {
+        for entity in &entities_with_colliders {
             let transform = registry
-                .get_component::<TransformComponent>(&entity)
+                .get_component::<TransformComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
             let box_collider = registry
-                .get_component::<BoxColliderComponent>(&entity)
+                .get_component::<BoxColliderComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
 
             let position = transform.position.to_added(&box_collider.position_offset);
@@ -96,13 +96,13 @@ impl RendererSystem {
 
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
-        for entity in drawable_entities {
+        for entity in &drawable_entities {
             data.push(SpriteDrawData {
                 transform: registry
-                    .get_component::<TransformComponent>(&entity)
+                    .get_component::<TransformComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<TransformComponent>(entity)),
                 sprite: registry
-                    .get_component::<SpriteComponent>(&entity)
+                    .get_component::<SpriteComponent>(entity)
                     .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity)),
             });
         }

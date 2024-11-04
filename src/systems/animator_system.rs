@@ -20,12 +20,12 @@ impl AnimatorSystem {
             .with_component::<SpriteComponent>()
             .build();
 
-        for entity in animated_entities {
+        for entity in &animated_entities {
             let mut animation = registry
-                .get_component_mut::<AnimationComponent>(&entity)
+                .get_component_mut::<AnimationComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<AnimationComponent>(entity));
             let mut sprite = registry
-                .get_component_mut::<SpriteComponent>(&entity)
+                .get_component_mut::<SpriteComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
             animation.current_frame =

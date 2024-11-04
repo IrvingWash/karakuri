@@ -75,7 +75,7 @@ impl Game {
                 self.scene
                     .sync(&mut self.registry, &self.asset_storage, time);
 
-            self.start_entities(entities_to_start, delta_time);
+            self.start_entities(&entities_to_start, delta_time);
 
             self.destroy_entities(entities_to_destroy);
 
@@ -89,13 +89,13 @@ impl Game {
         self.renderer.resolution(&self.ctx)
     }
 
-    fn start_entities(&mut self, entities_to_start: Vec<Entity>, delta_time: f64) {
+    fn start_entities(&mut self, entities_to_start: &[Entity], delta_time: f64) {
         for entity in entities_to_start {
             self.registry
-                .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                 .start(Ctx {
-                    entity: &entity,
+                    entity,
                     delta_time,
                     registry: &self.registry,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
@@ -125,14 +125,14 @@ impl Game {
             .with_component::<dyn BehaviorComponent>()
             .build();
 
-        for entity in updateable_entities {
+        for entity in &updateable_entities {
             self.registry
-                .get_dyn_component_mut::<dyn BehaviorComponent>(&entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                 .update(Ctx {
                     delta_time,
                     registry: &self.registry,
-                    entity: &entity,
+                    entity,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: &mut self.timer,

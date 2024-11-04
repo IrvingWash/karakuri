@@ -18,7 +18,7 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
         rigid_body: Some(RigidBodyComponent::default()),
         tag: Some(TagComponent::new(String::from("player"))),
         sprite: Some(SpriteComponent::from_texture_name("ship_blue")),
-        behavior: Some(Box::new(Player::new(50.0, resolution.clone()))),
+        behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),
         ..Default::default()
     }
 }
@@ -35,17 +35,23 @@ impl Player {
     }
 
     fn movement_handler(&mut self, ctx: &Ctx, rigid_body: &mut RefMut<RigidBodyComponent>) {
+        let speed = if ctx.input_processor.is_down(KeyboardKey::KEY_LEFT_SHIFT) {
+            self.speed * 2.0
+        } else {
+            self.speed
+        };
+
         if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
-            rigid_body.velocity.y = -self.speed * ctx.delta_time;
+            rigid_body.velocity.y = -speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_A) {
-            rigid_body.velocity.x = -self.speed * ctx.delta_time;
+            rigid_body.velocity.x = -speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
-            rigid_body.velocity.y = self.speed * ctx.delta_time;
+            rigid_body.velocity.y = speed * ctx.delta_time;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_D) {
-            rigid_body.velocity.x = self.speed * ctx.delta_time;
+            rigid_body.velocity.x = speed * ctx.delta_time;
         }
     }
 
@@ -100,7 +106,7 @@ impl BehaviorComponent for Player {
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "enemy" {
-                ctx.spawner.destroy_entity(*ctx.entity);
+                ctx.spawner.destroy_entity(ctx.entity.clone());
             }
         }
     }

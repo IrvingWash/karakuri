@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Eq, PartialOrd, Ord)]
 pub struct Entity {
     id: usize,
 }

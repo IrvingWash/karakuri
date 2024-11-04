@@ -26,7 +26,7 @@ impl BehaviorComponent for Enemy {
     fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "player_laser" {
-                ctx.spawner.destroy_entity(*ctx.entity);
+                ctx.spawner.destroy_entity(ctx.entity.clone());
             }
         }
     }
