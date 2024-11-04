@@ -13,16 +13,18 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 
 #[derive(Debug, Default)]
 pub struct Registry {
+    next_unique_id: usize,
     entity_count: usize,
     components: HashMap<TypeId, Vec<Orra>>,
     free_ids: HashSet<usize>,
     component_ids: HashMap<TypeId, usize>,
-    entity_signatures: HashMap<usize, Signature>,
+    entity_signatures: HashMap<Entity, Signature>,
 }
 
 impl Registry {
     pub fn new() -> Self {
         Self {
+            next_unique_id: 0,
             entity_count: 0,
             components: HashMap::with_capacity(64),
             free_ids: HashSet::with_capacity(64),
@@ -32,6 +34,9 @@ impl Registry {
     }
 
     pub fn create_entity(&mut self) -> Entity {
+        let unique_id = self.next_unique_id;
+        self.next_unique_id += 1;
+
         match self
             .free_ids
             .iter()
@@ -39,7 +44,14 @@ impl Registry {
             .cloned()
             .and_then(|x| self.free_ids.take(&x))
         {
-            Some(id) => Entity::new(id),
+            Some(id) => {
+                let entity = Entity::new(id, unique_id);
+
+                self.entity_signatures
+                    .insert(entity.clone(), Signature::new());
+
+                entity
+            }
             None => {
                 let id = self.entity_count;
                 self.entity_count += 1;
@@ -48,9 +60,12 @@ impl Registry {
                     component_vec.push(None);
                 }
 
-                self.entity_signatures.insert(id, Signature::new());
+                let entity = Entity::new(id, unique_id);
 
-                Entity::new(id)
+                self.entity_signatures
+                    .insert(entity.clone(), Signature::new());
+
+                entity
             }
         }
     }
@@ -59,7 +74,7 @@ impl Registry {
         &self.component_ids
     }
 
-    pub fn entity_signatures(&self) -> &HashMap<usize, Signature> {
+    pub fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
         &self.entity_signatures
     }
 
@@ -70,10 +85,7 @@ impl Registry {
             component_vec[id] = None;
         }
 
-        self.entity_signatures
-            .get_mut(&id)
-            .expect(NO_SIGNATURE_MESSAGE)
-            .reset();
+        self.entity_signatures.remove_entry(entity);
 
         self.free_ids.insert(id);
     }
@@ -112,7 +124,7 @@ impl Registry {
         })[id] = wrapped_component;
 
         self.entity_signatures
-            .get_mut(&id)
+            .get_mut(entity)
             .expect(NO_SIGNATURE_MESSAGE)
             .set(*component_id);
     }
@@ -179,7 +191,16 @@ impl Registry {
                     .eq(component_to_find),
             });
 
-            return id.map(Entity::new);
+            match id {
+                None => return None,
+                Some(id) => {
+                    return self
+                        .entity_signatures()
+                        .keys()
+                        .find(|entity| entity.id() == id)
+                        .cloned()
+                }
+            }
         }
 
         None
