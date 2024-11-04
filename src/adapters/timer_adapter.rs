@@ -58,7 +58,7 @@ impl TimerAdapter {
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity));
 
-            behavior.on_timer(
+            behavior.alarm(
                 &finished_timers,
                 Ctx {
                     delta_time,

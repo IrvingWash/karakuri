@@ -35,6 +35,10 @@ pub trait BehaviorComponent: Debug {
         self.on_update(ctx);
     }
 
+    fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
+        self.on_timer(finished_timers, ctx);
+    }
+
     fn destroy(&mut self) {
         self.on_destroy();
     }
