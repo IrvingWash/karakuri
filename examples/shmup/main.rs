@@ -25,8 +25,12 @@ pub fn main() -> Result<(), String> {
         "./examples/shmup/assets/sprites/player-right.png",
     )?;
     game.add_texture(
-        "laser_blue",
-        "./examples/shmup/assets/sprites/laser_blue.png",
+        "projectile-green",
+        "./examples/shmup/assets/sprites/projectile-green.png",
+    )?;
+    game.add_texture(
+        "projectile-blue",
+        "./examples/shmup/assets/sprites/projectile-blue.png",
     )?;
     game.add_texture(
         "enemy-straight",
