@@ -1,6 +1,6 @@
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use prefabs::{laser_destroyer_prefab, player_prefab};
+use prefabs::{enemy_prefab, laser_destroyer_prefab, player_prefab};
 
 mod prefabs;
 
@@ -17,10 +17,15 @@ pub fn main() -> Result<(), String> {
         "laser_blue",
         "./examples/shmup/assets/sprites/laser_blue.png",
     )?;
+    game.add_texture("enemy_red", "./examples/shmup/assets/sprites/enemy_red.png")?;
 
     let resolution = game.resolution();
 
-    game.set_scene(vec![player_prefab(&resolution), laser_destroyer_prefab()]);
+    game.set_scene(vec![
+        player_prefab(&resolution),
+        laser_destroyer_prefab(),
+        enemy_prefab(),
+    ]);
 
     game.start();
 

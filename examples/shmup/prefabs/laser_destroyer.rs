@@ -26,7 +26,7 @@ struct LaserDestroyer {}
 impl BehaviorComponent for LaserDestroyer {
     fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
-            if other_tag.value() == &String::from("player_laser") {
+            if other_tag.value() == "player_laser" {
                 ctx.spawner.destroy_entity(*other);
             }
         }

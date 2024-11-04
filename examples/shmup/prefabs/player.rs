@@ -4,6 +4,7 @@ use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent,
     SpriteComponent, TagComponent, TransformComponent,
 };
+use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
@@ -48,7 +49,7 @@ impl Player {
     }
 
     fn fire(&self, ctx: &mut Ctx, transform: TransformComponent) {
-        if ctx.input_processor.is_down(KeyboardKey::KEY_SPACE) {
+        if ctx.input_processor.is_pressed(KeyboardKey::KEY_SPACE) {
             ctx.spawner.add_entity(player_laser_prefab(transform));
         }
     }
@@ -93,6 +94,14 @@ impl BehaviorComponent for Player {
                 scale: transform.scale.create_copy(),
             },
         );
+    }
+
+    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+        if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
+            if other_tag.value() == "enemy" {
+                ctx.spawner.destroy_entity(*ctx.entity);
+            }
+        }
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
