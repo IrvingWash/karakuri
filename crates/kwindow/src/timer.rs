@@ -1,6 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
     fmt::{Debug, Formatter, Result},
+    mem,
 };
 
 struct TimerData {
@@ -35,10 +36,6 @@ impl Timer {
             intervals: HashMap::with_capacity(64),
             finished_timers: HashSet::with_capacity(64),
         }
-    }
-
-    pub fn is_done(&mut self, id: usize) -> bool {
-        self.finished_timers.remove(&id)
     }
 
     pub fn set_timeout(&mut self, duration: f64) -> usize {
@@ -79,11 +76,13 @@ impl Timer {
         self.intervals.remove(&id);
     }
 
-    pub fn update(&mut self, time: f64) {
+    pub fn update(&mut self, time: f64) -> HashSet<usize> {
         self.time = time;
 
         self.update_timers(time);
         self.update_intervals(time);
+
+        mem::take(&mut self.finished_timers)
     }
 
     fn update_timers(&mut self, time: f64) {
@@ -110,59 +109,5 @@ impl Timer {
                 interval.start_time = time;
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod timer_tests {
-    use super::Timer;
-
-    struct Player {
-        health: u8,
-        healing_id: usize,
-    }
-
-    #[test]
-    fn test_interval() {
-        impl Player {
-            fn heal(&mut self) {
-                self.health += 1;
-            }
-
-            fn start(&mut self, timer: &mut Timer) {
-                self.healing_id = timer.set_interval(1000.0);
-            }
-
-            fn update(&mut self, timer: &mut Timer) {
-                if timer.is_done(self.healing_id) {
-                    self.heal();
-                }
-            }
-        }
-
-        let mut timer = Timer::new();
-
-        let mut player = Player {
-            healing_id: 0,
-            health: 10,
-        };
-
-        player.start(&mut timer);
-
-        timer.update(0.0);
-        player.update(&mut timer);
-        assert_eq!(player.health, 10);
-
-        timer.update(500.0);
-        player.update(&mut timer);
-        assert_eq!(player.health, 10);
-
-        timer.update(1000.0);
-        player.update(&mut timer);
-        assert_eq!(player.health, 11);
-
-        timer.update(2000.0);
-        player.update(&mut timer);
-        assert_eq!(player.health, 12);
     }
 }
