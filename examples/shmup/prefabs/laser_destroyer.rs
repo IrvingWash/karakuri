@@ -18,7 +18,7 @@ pub fn laser_destroyer_prefab(position: LaserDestroyerPosition) -> ComponentPayl
                 if position == LaserDestroyerPosition::Top {
                     10.0
                 } else {
-                    200.0
+                    590.0
                 },
             ),
             ..Default::default()
