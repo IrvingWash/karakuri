@@ -37,7 +37,7 @@ impl Registry {
             .iter()
             .next()
             .cloned()
-            .map_or(None, |x| self.free_ids.take(&x))
+            .and_then(|x| self.free_ids.take(&x))
         {
             Some(id) => Entity::new(id),
             None => {
