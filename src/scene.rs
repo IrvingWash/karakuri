@@ -33,7 +33,6 @@ impl Scene {
         &mut self,
         registry: &mut Registry,
         asset_storage: &AssetStorage,
-        time: f64,
     ) -> (Vec<Entity>, Vec<Entity>) {
         // Remove entities
         for entity in mem::take(&mut self.entities_to_remove) {
@@ -73,9 +72,7 @@ impl Scene {
                 );
             }
 
-            if let Some(mut animation) = bundle.animation {
-                animation.start_time = time;
-
+            if let Some(animation) = bundle.animation_controller {
                 registry.add_component(&entity, animation);
             }
 

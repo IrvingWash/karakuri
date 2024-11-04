@@ -13,8 +13,16 @@ pub fn main() -> Result<(), String> {
     });
 
     game.add_texture(
-        "player-sheet",
-        "./examples/shmup/assets/sprites/player-sheet.png",
+        "player-straight",
+        "./examples/shmup/assets/sprites/player-straight.png",
+    )?;
+    game.add_texture(
+        "player-left",
+        "./examples/shmup/assets/sprites/player-left.png",
+    )?;
+    game.add_texture(
+        "player-right",
+        "./examples/shmup/assets/sprites/player-right.png",
     )?;
     game.add_texture(
         "laser_blue",

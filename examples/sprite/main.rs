@@ -1,5 +1,6 @@
 use karakuri::components::{
-    AnimationComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
+    Animation, AnimationControllerComponent, AnimationParams, ComponentPayload, SpriteComponent,
+    TagComponent, TransformComponent,
 };
 use karakuri::math::Vector2;
 use karakuri::utils::{Color, Size};
@@ -57,7 +58,15 @@ pub fn main() -> Result<(), String> {
                 clip_size: Some(Vector2::new(64.0, 64.0)),
                 ..Default::default()
             }),
-            animation: Some(AnimationComponent::new(8, 10, true)),
+            animation_controller: Some(AnimationControllerComponent::new(vec![
+                (Animation::new(AnimationParams {
+                    name: "idle",
+                    texture_name: "radar",
+                    frame_count: 8,
+                    frame_rate: 10,
+                    looping: true,
+                })),
+            ])),
             ..Default::default()
         },
     ]);

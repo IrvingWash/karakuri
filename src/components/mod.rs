@@ -1,4 +1,4 @@
-mod animation_component;
+mod animation_controller_component;
 mod behavior_component;
 mod box_collider_component;
 mod component_payload;
@@ -7,7 +7,9 @@ mod sprite_component;
 mod tag_component;
 mod transform_component;
 
-pub use animation_component::AnimationComponent;
+pub use animation_controller_component::{
+    Animation, AnimationControllerComponent, AnimationParams,
+};
 pub use behavior_component::BehaviorComponent;
 pub use behavior_component::Ctx;
 pub use box_collider_component::BoxColliderComponent;
