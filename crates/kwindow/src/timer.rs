@@ -17,6 +17,7 @@ impl Debug for TimerData {
 
 #[derive(Debug, Default)]
 pub struct Timer {
+    time: f64,
     next_id: usize,
     timeouts: HashMap<usize, TimerData>,
     intervals: HashMap<usize, TimerData>,
@@ -25,6 +26,7 @@ pub struct Timer {
 impl Timer {
     pub fn new() -> Self {
         Self {
+            time: 0.0,
             next_id: 0,
             timeouts: HashMap::with_capacity(64),
             intervals: HashMap::with_capacity(64),
@@ -39,7 +41,7 @@ impl Timer {
             id,
             TimerData {
                 duration,
-                start_time: 0.0,
+                start_time: self.time,
                 callback,
             },
         );
@@ -55,7 +57,7 @@ impl Timer {
             id,
             TimerData {
                 duration,
-                start_time: 0.0,
+                start_time: self.time,
                 callback,
             },
         );
@@ -72,6 +74,8 @@ impl Timer {
     }
 
     pub fn update(&mut self, time: f64) {
+        self.time = time;
+
         self.update_timers(time);
         self.update_intervals(time);
     }
