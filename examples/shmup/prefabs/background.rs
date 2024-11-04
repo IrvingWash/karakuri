@@ -2,7 +2,11 @@ use karakuri::components::{ComponentPayload, SpriteComponent, TransformComponent
 use kmath::Vector2;
 use kutils::Size;
 
-pub fn background_prefab(resolution: &Size, texture_name: &'static str) -> ComponentPayload {
+pub fn background_prefab(
+    resolution: &Size,
+    texture_name: &'static str,
+    layer: u8,
+) -> ComponentPayload {
     ComponentPayload {
         transform: Some(TransformComponent {
             position: Vector2::new(
@@ -14,7 +18,7 @@ pub fn background_prefab(resolution: &Size, texture_name: &'static str) -> Compo
         }),
         sprite: Some(SpriteComponent {
             texture_name,
-            layer: 0,
+            layer,
             ..Default::default()
         }),
         ..Default::default()

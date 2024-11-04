@@ -53,8 +53,8 @@ pub fn main() -> Result<(), String> {
         player_prefab(&resolution),
         laser_destroyer_prefab(),
         enemy_spawner_prefab(),
-        background_prefab(&resolution, "background"),
-        background_prefab(&resolution, "stars"),
+        background_prefab(&resolution, "background", 0),
+        background_prefab(&resolution, "stars", 1),
     ]);
 
     game.start();

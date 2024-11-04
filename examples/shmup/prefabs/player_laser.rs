@@ -6,12 +6,16 @@ use kmath::Vector2;
 
 pub fn player_laser_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
-        transform: Some(TransformComponent::from_position(position)),
+        transform: Some(TransformComponent {
+            position,
+            scale: Vector2::new(2.0, 2.0),
+            ..Default::default()
+        }),
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(String::from("player_laser"))),
         sprite: Some(SpriteComponent {
             texture_name: "projectile-green",
-            layer: 1,
+            layer: 2,
             ..Default::default()
         }),
         rigid_body: Some(RigidBodyComponent::default()),

@@ -9,17 +9,17 @@ pub fn enemy_laser_prefab(position: Vector2) -> ComponentPayload {
         transform: Some(TransformComponent {
             position,
             rotation: 180.0,
-            ..Default::default()
+            scale: Vector2::new(2.0, 2.0),
         }),
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(String::from("enemy_laser"))),
         sprite: Some(SpriteComponent {
             texture_name: "projectile-blue",
-            layer: 1,
+            layer: 2,
             ..Default::default()
         }),
         rigid_body: Some(RigidBodyComponent::default()),
-        behavior: Some(Box::new(EnemyLaser { speed: 70.0 })),
+        behavior: Some(Box::new(EnemyLaser { speed: 50.0 })),
         ..Default::default()
     }
 }

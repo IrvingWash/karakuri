@@ -23,7 +23,7 @@ pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
         sprite: Some(SpriteComponent {
             texture_name: "enemy-straight",
             clip_size: Some(Vector2::new(48.0, 48.0)),
-            layer: 2,
+            layer: 3,
             ..Default::default()
         }),
         behavior: Some(Box::new(Enemy::new())),
