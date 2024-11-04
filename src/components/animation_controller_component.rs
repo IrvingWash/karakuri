@@ -9,7 +9,7 @@ pub struct AnimationControllerComponent {
 impl AnimationControllerComponent {
     pub fn new(animations: Vec<Animation>) -> Self {
         let current = animations
-            .get(0)
+            .first()
             .expect("At east one animation should be provided.")
             .name;
         let mut animations_map = HashMap::with_capacity(5);
@@ -55,6 +55,7 @@ pub struct AnimationParams {
 }
 
 impl Animation {
+    #[allow(clippy::needless_pass_by_value)]
     pub fn new(params: AnimationParams) -> Self {
         let AnimationParams {
             name,
