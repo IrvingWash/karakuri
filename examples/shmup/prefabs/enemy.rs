@@ -6,6 +6,8 @@ use karakuri::components::{
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 
+use super::enemy_laser_prefab;
+
 pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
         transform: Some(TransformComponent {
@@ -47,6 +49,7 @@ pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
 #[derive(Debug)]
 struct Enemy {
     explosion_timer: i64,
+    shooting_timer: i64,
     is_destroying: bool,
 }
 
@@ -54,6 +57,7 @@ impl Enemy {
     fn new() -> Self {
         Self {
             explosion_timer: -1,
+            shooting_timer: -1,
             is_destroying: false,
         }
     }
@@ -68,6 +72,8 @@ impl BehaviorComponent for Enemy {
 
         box_collider.size.as_mut().unwrap().x = 30.0;
         box_collider.size.as_mut().unwrap().y = 25.0;
+
+        self.shooting_timer = ctx.timer.set_interval(1000.0) as i64;
     }
 
     fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
@@ -92,6 +98,16 @@ impl BehaviorComponent for Enemy {
         finished_timers: &std::collections::HashSet<usize>,
         ctx: karakuri::components::Ctx,
     ) {
+        if finished_timers.contains(&(self.shooting_timer as usize)) {
+            let transform = ctx
+                .registry
+                .get_component::<TransformComponent>(ctx.entity)
+                .unwrap();
+
+            ctx.spawner
+                .add_entity(enemy_laser_prefab(transform.position.clone()));
+        }
+
         if finished_timers.contains(&(self.explosion_timer as usize)) {
             ctx.spawner.destroy_entity(ctx.entity.clone());
         }

@@ -148,6 +148,12 @@ impl BehaviorComponent for Player {
                 ctx.spawner.destroy_entity(ctx.entity.clone());
             }
         }
+
+        if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
+            if other_tag.value() == "enemy_laser" {
+                ctx.spawner.destroy_entity(ctx.entity.clone());
+            }
+        }
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
