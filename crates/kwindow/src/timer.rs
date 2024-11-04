@@ -1,12 +1,12 @@
-use std::{cell::RefCell, collections::HashMap, fmt::Debug, rc::Weak};
+use std::{cell::RefCell, collections::HashMap, fmt::Debug, rc::Rc};
 
-struct Timeout {
+struct TimerData {
     duration: f64,
     start_time: f64,
-    callback: Weak<RefCell<dyn FnMut()>>,
+    callback: Rc<RefCell<dyn FnMut()>>,
 }
 
-impl Debug for Timeout {
+impl Debug for TimerData {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Timeout")
             .field("duration", &self.duration)
@@ -18,7 +18,8 @@ impl Debug for Timeout {
 #[derive(Debug, Default)]
 pub struct Timer {
     next_id: usize,
-    timeouts: HashMap<usize, Timeout>,
+    timeouts: HashMap<usize, TimerData>,
+    intervals: HashMap<usize, TimerData>,
 }
 
 impl Timer {
@@ -26,16 +27,33 @@ impl Timer {
         Self {
             next_id: 0,
             timeouts: HashMap::with_capacity(64),
+            intervals: HashMap::with_capacity(64),
         }
     }
 
-    pub fn set_timeout(&mut self, callback: Weak<RefCell<dyn FnMut()>>, duration: f64) -> usize {
+    pub fn set_timeout(&mut self, callback: Rc<RefCell<dyn FnMut()>>, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
 
         self.timeouts.insert(
             id,
-            Timeout {
+            TimerData {
+                duration,
+                start_time: 0.0,
+                callback,
+            },
+        );
+
+        id
+    }
+
+    pub fn set_interval(&mut self, callback: Rc<RefCell<dyn FnMut()>>, duration: f64) -> usize {
+        let id = self.next_id;
+        self.next_id += 1;
+
+        self.intervals.insert(
+            id,
+            TimerData {
                 duration,
                 start_time: 0.0,
                 callback,
@@ -49,14 +67,21 @@ impl Timer {
         self.timeouts.remove(&id);
     }
 
+    pub fn clear_interval(&mut self, id: usize) {
+        self.intervals.remove(&id);
+    }
+
     pub fn update(&mut self, time: f64) {
+        self.update_timers(time);
+        self.update_intervals(time);
+    }
+
+    fn update_timers(&mut self, time: f64) {
         let mut timeouts_to_remove: Vec<usize> = Vec::with_capacity(self.timeouts.capacity());
 
         for (id, timeout) in &self.timeouts {
-            if timeout.duration + timeout.start_time >= time {
-                if let Some(callback) = timeout.callback.upgrade() {
-                    (callback.borrow_mut())()
-                }
+            if timeout.duration + timeout.start_time <= time {
+                (timeout.callback.borrow_mut())();
 
                 timeouts_to_remove.push(*id);
             }
@@ -64,6 +89,16 @@ impl Timer {
 
         for id in timeouts_to_remove {
             self.timeouts.remove(&id);
+        }
+    }
+
+    fn update_intervals(&mut self, time: f64) {
+        for (_, interval) in &mut self.intervals {
+            if interval.duration + interval.start_time <= time {
+                (interval.callback.borrow_mut())();
+
+                interval.start_time = time;
+            }
         }
     }
 }
@@ -91,11 +126,42 @@ mod timer_tests {
         let player = Rc::new(RefCell::new(Player { health: 10 }));
         let player_clone = Rc::clone(&player);
 
-        let callback: Rc<RefCell<dyn FnMut()>> =
-            Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
+        let callback = Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
 
-        timer.set_timeout(Rc::downgrade(&callback), 1000.0);
+        timer.set_timeout(callback, 1000.0);
+        assert_eq!(player.borrow().health, 10);
 
-        player.borrow_mut().heal();
+        timer.update(500.0);
+        assert_eq!(player.borrow().health, 10);
+
+        timer.update(1000.0);
+        assert_eq!(player.borrow().health, 11);
+    }
+
+    #[test]
+    fn test_intervals() {
+        let mut timer = Timer::new();
+
+        let player = Rc::new(RefCell::new(Player { health: 10 }));
+        let player_clone = Rc::clone(&player);
+
+        let callback = Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
+
+        let id = timer.set_interval(callback, 1000.0);
+        assert_eq!(player.borrow().health, 10);
+
+        timer.update(500.0);
+        assert_eq!(player.borrow().health, 10);
+
+        timer.update(1000.0);
+        assert_eq!(player.borrow().health, 11);
+
+        timer.update(2000.0);
+        assert_eq!(player.borrow().health, 12);
+
+        timer.clear_interval(id);
+
+        timer.update(5000.0);
+        assert_eq!(player.borrow().health, 12);
     }
 }
