@@ -15,6 +15,7 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 pub struct Registry {
     next_unique_id: usize,
     entity_count: usize,
+    entities: Vec<Entity>,
     components: HashMap<TypeId, Vec<Orra>>,
     free_ids: HashSet<usize>,
     component_ids: HashMap<TypeId, usize>,
@@ -30,6 +31,7 @@ impl Registry {
             free_ids: HashSet::with_capacity(64),
             component_ids: HashMap::with_capacity(64),
             entity_signatures: HashMap::with_capacity(64),
+            entities: Vec::with_capacity(64),
         }
     }
 
@@ -50,6 +52,8 @@ impl Registry {
                 self.entity_signatures
                     .insert(entity.clone(), Signature::new());
 
+                self.entities[id] = entity.clone();
+
                 entity
             }
             None => {
@@ -65,9 +69,15 @@ impl Registry {
                 self.entity_signatures
                     .insert(entity.clone(), Signature::new());
 
+                self.entities.push(entity.clone());
+
                 entity
             }
         }
+    }
+
+    pub fn unwrap_if_alive(&self, entity: &Entity) -> bool {
+        self.entities[entity.id()].unique_id() == entity.unique_id()
     }
 
     pub fn component_ids(&self) -> &HashMap<TypeId, usize> {

@@ -53,6 +53,7 @@ struct Enemy {
     explosion_timer: i64,
     shooting_timer: i64,
     is_destroying: bool,
+    player: Option<Entity>,
 }
 
 impl Enemy {
@@ -61,6 +62,7 @@ impl Enemy {
             explosion_timer: -1,
             shooting_timer: -1,
             is_destroying: false,
+            player: None,
         }
     }
 }
@@ -76,6 +78,18 @@ impl BehaviorComponent for Enemy {
         box_collider.size.as_mut().unwrap().y = 25.0;
 
         self.shooting_timer = ctx.timer.set_interval(1000.0) as i64;
+
+        self.player = ctx
+            .registry
+            .find_entity(&TagComponent::new(String::from("player")));
+    }
+
+    fn update(&mut self, ctx: Ctx) {
+        if let Some(player) = &self.player {
+            if ctx.registry.unwrap_if_alive(player) {
+                self.player.as_ref().unwrap();
+            }
+        }
     }
 
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
