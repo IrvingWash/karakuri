@@ -1,6 +1,9 @@
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use prefabs::{background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, player_prefab};
+use prefabs::{
+    background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, player_prefab,
+    LaserDestroyerPosition,
+};
 
 mod prefabs;
 
@@ -10,7 +13,7 @@ pub fn main() -> Result<(), String> {
         clear_color: Color::BLACK,
         resolution: Size::new(800, 600),
         target_fps: 60,
-        debug: false,
+        debug: true,
     });
 
     game.add_texture(
@@ -51,7 +54,8 @@ pub fn main() -> Result<(), String> {
 
     game.set_scene(vec![
         player_prefab(&resolution),
-        laser_destroyer_prefab(),
+        laser_destroyer_prefab(LaserDestroyerPosition::Top),
+        laser_destroyer_prefab(LaserDestroyerPosition::Bottom),
         enemy_spawner_prefab(),
         background_prefab(&resolution, "background", 0),
         background_prefab(&resolution, "stars", 1),

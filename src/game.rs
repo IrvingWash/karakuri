@@ -76,7 +76,7 @@ impl Game {
 
             self.start_entities(&entities_to_start, delta_time);
 
-            self.destroy_entities(entities_to_destroy);
+            self.destroy_entities(entities_to_destroy, delta_time);
 
             self.update_entities(delta_time, time);
 
@@ -92,7 +92,7 @@ impl Game {
         for entity in entities_to_start {
             self.registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
-                .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                 .start(Ctx {
                     entity,
                     delta_time,
@@ -104,13 +104,20 @@ impl Game {
         }
     }
 
-    fn destroy_entities(&mut self, entities_to_destroy: Vec<Entity>) {
+    fn destroy_entities(&mut self, entities_to_destroy: Vec<Entity>, delta_time: f64) {
         for entity in &entities_to_destroy {
             if let Some(mut behavior) = self
                 .registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
             {
-                behavior.destroy();
+                behavior.destroy(Ctx {
+                    delta_time,
+                    registry: &self.registry,
+                    entity,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    spawner: self.scene.spawner(),
+                    timer: &mut self.timer,
+                });
             }
         }
 
@@ -127,7 +134,7 @@ impl Game {
         for entity in &updateable_entities {
             self.registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
-                .unwrap_or_else(|| panic_queried::<Box<dyn BehaviorComponent>>(entity))
+                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                 .update(Ctx {
                     delta_time,
                     registry: &self.registry,
@@ -158,6 +165,9 @@ impl Game {
     }
 
     fn render(&mut self) {
+        let fps = self.ctx.get_fps().to_string();
+        let resolution = self.resolution();
+
         let mut handle = self.renderer.start_frame(&mut self.ctx);
 
         self.renderer
@@ -166,6 +176,8 @@ impl Game {
         if self.debug {
             self.renderer
                 .draw_box_colliders(&mut handle, &mut self.registry);
+
+            self.renderer.draw_fps(&mut handle, &fps, &resolution);
         }
 
         self.renderer.finish_frame(handle);

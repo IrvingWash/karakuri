@@ -1,6 +1,8 @@
+use std::collections::HashSet;
+
 use karakuri::components::{
     Animation, AnimationControllerComponent, AnimationParams, BehaviorComponent,
-    BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent, TagComponent,
+    BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent, SpriteComponent, TagComponent,
     TransformComponent,
 };
 use karakuri::ec::Entity;
@@ -76,7 +78,7 @@ impl BehaviorComponent for Enemy {
         self.shooting_timer = ctx.timer.set_interval(1000.0) as i64;
     }
 
-    fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
+    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "player_laser" && !self.is_destroying {
                 let mut animation_controller = ctx
@@ -95,11 +97,7 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn on_timer(
-        &mut self,
-        finished_timers: &std::collections::HashSet<usize>,
-        ctx: karakuri::components::Ctx,
-    ) {
+    fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
         if finished_timers.contains(&(self.shooting_timer as usize)) {
             let transform = ctx
                 .registry
