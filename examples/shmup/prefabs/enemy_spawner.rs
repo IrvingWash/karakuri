@@ -1,4 +1,4 @@
-use karakuri::components::{BehaviorComponent, ComponentPayload, TagComponent};
+use karakuri::components::{BehaviorComponent, ComponentPayload, Ctx, TagComponent};
 use kmath::Vector2;
 use rand::Rng;
 
@@ -25,7 +25,7 @@ impl EnemySpawner {
 }
 
 impl BehaviorComponent for EnemySpawner {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: Ctx) {
         self.timer_id = ctx.timer.set_interval(self.rate) as i64;
     }
 
@@ -40,6 +40,10 @@ impl BehaviorComponent for EnemySpawner {
                 100.0,
             )));
         }
+    }
+
+    fn on_destroy(&mut self, ctx: Ctx) {
+        ctx.timer.clear_interval(self.timer_id as usize);
     }
 
     fn as_any(&self) -> &dyn std::any::Any {

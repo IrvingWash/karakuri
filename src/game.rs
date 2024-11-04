@@ -21,6 +21,7 @@ pub struct Game {
     animator: AnimatorSystem,
     physics: PhysicsSystem,
     timer: TimerAdapter,
+    debug: bool,
 }
 
 impl Game {
@@ -49,6 +50,7 @@ impl Game {
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
             timer: TimerAdapter::new(Timer::new()),
+            debug: config.debug,
         }
     }
 
@@ -74,7 +76,7 @@ impl Game {
 
             self.start_entities(&entities_to_start, delta_time);
 
-            self.destroy_entities(entities_to_destroy);
+            self.destroy_entities(entities_to_destroy, delta_time);
 
             self.update_entities(delta_time, time);
 
@@ -102,13 +104,20 @@ impl Game {
         }
     }
 
-    fn destroy_entities(&mut self, entities_to_destroy: Vec<Entity>) {
+    fn destroy_entities(&mut self, entities_to_destroy: Vec<Entity>, delta_time: f64) {
         for entity in &entities_to_destroy {
             if let Some(mut behavior) = self
                 .registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
             {
-                behavior.destroy();
+                behavior.destroy(Ctx {
+                    delta_time,
+                    registry: &self.registry,
+                    entity,
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    spawner: self.scene.spawner(),
+                    timer: &mut self.timer,
+                });
             }
         }
 
@@ -156,13 +165,20 @@ impl Game {
     }
 
     fn render(&mut self) {
+        let fps = self.ctx.get_fps().to_string();
+        let resolution = self.resolution();
+
         let mut handle = self.renderer.start_frame(&mut self.ctx);
 
         self.renderer
             .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
 
-        self.renderer
-            .draw_box_colliders(&mut handle, &mut self.registry);
+        if self.debug {
+            self.renderer
+                .draw_box_colliders(&mut handle, &mut self.registry);
+
+            self.renderer.draw_fps(&mut handle, &fps, &resolution);
+        }
 
         self.renderer.finish_frame(handle);
     }

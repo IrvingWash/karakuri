@@ -29,7 +29,7 @@ impl<'a> Query<'a> {
             .iter()
             .filter_map(|(key, value)| {
                 if value.is_superset(&signature) {
-                    return Some(Entity::new(*key));
+                    return Some(key.clone());
                 }
 
                 None

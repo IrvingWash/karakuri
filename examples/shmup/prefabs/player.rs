@@ -24,10 +24,10 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
         sprite: Some(SpriteComponent {
             texture_name: "player-straight",
             clip_size: Some(Vector2::new(48.0, 58.0)),
-            layer: 99,
+            layer: 4,
             ..Default::default()
         }),
-        behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),
+        behavior: Some(Box::new(Player::new(30.0, resolution.clone()))),
         animation_controller: Some(AnimationControllerComponent::new(vec![
             Animation::new(AnimationParams {
                 name: "player-straight",
@@ -50,6 +50,13 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
                 frame_rate: 6,
                 looping: true,
             }),
+            Animation::new(AnimationParams {
+                frame_count: 8,
+                frame_rate: 8,
+                name: "explosion",
+                texture_name: "explosion",
+                looping: true,
+            }),
         ])),
     }
 }
@@ -58,11 +65,18 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
 struct Player {
     speed: f64,
     resolution: Size,
+    is_destroying: bool,
+    explosion_timer: i64,
 }
 
 impl Player {
     fn new(speed: f64, resolution: Size) -> Self {
-        Self { speed, resolution }
+        Self {
+            speed,
+            resolution,
+            is_destroying: false,
+            explosion_timer: -1,
+        }
     }
 
     fn movement_handler(
@@ -79,19 +93,19 @@ impl Player {
 
         if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
             animation_controller.set_animation("player-straight");
-            rigid_body.velocity.y = -speed * ctx.delta_time;
+            rigid_body.velocity.y = -speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_A) {
             animation_controller.set_animation("player-left");
-            rigid_body.velocity.x = -speed * ctx.delta_time;
+            rigid_body.velocity.x = -speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
             animation_controller.set_animation("player-straight");
-            rigid_body.velocity.y = speed * ctx.delta_time;
+            rigid_body.velocity.y = speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_D) {
             animation_controller.set_animation("player-right");
-            rigid_body.velocity.x = speed * ctx.delta_time;
+            rigid_body.velocity.x = speed;
         }
     }
 
@@ -129,6 +143,13 @@ impl BehaviorComponent for Player {
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
             .unwrap();
+
+        if self.is_destroying {
+            rigid_body.velocity.reset();
+
+            return;
+        }
+
         let transform = ctx
             .registry
             .get_component::<TransformComponent>(ctx.entity)
@@ -143,10 +164,29 @@ impl BehaviorComponent for Player {
     }
 
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+        if self.is_destroying {
+            return;
+        }
+
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
-            if other_tag.value() == "enemy" {
-                ctx.spawner.destroy_entity(ctx.entity.clone());
+            if other_tag.value() == "enemy" || other_tag.value() == "enemy_laser" {
+                let mut animation_controller = ctx
+                    .registry
+                    .get_component_mut::<AnimationControllerComponent>(ctx.entity)
+                    .unwrap();
+
+                animation_controller.set_animation("explosion");
+
+                self.explosion_timer = ctx.timer.set_timeout(3000.0) as i64;
+
+                self.is_destroying = true;
             }
+        }
+    }
+
+    fn on_timer(&mut self, finished_timers: &std::collections::HashSet<usize>, ctx: Ctx) {
+        if finished_timers.contains(&(self.explosion_timer as usize)) {
+            ctx.spawner.destroy_entity(ctx.entity.clone());
         }
     }
 

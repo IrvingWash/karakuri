@@ -12,6 +12,7 @@ pub fn main() -> Result<(), String> {
         resolution: Size::new(800, 600),
         target_fps: 60,
         title: "Sprites",
+        ..Default::default()
     });
 
     game.add_texture("sonic-idle", "./examples/sprite/assets/sprites/sonic.png")?;

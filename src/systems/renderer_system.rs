@@ -34,6 +34,19 @@ impl RendererSystem {
         self.renderer.resolution(ctx)
     }
 
+    pub fn draw_fps(&self, handle: &mut DrawHandle, fps: &str, resolution: &Size) {
+        self.renderer.draw_text(
+            handle,
+            fps,
+            &Vector2::new(
+                resolution.width as f64 - 28.0,
+                resolution.height as f64 - 28.0,
+            ),
+            14,
+            &Color::WHITE,
+        );
+    }
+
     pub fn draw_box_colliders(&self, handle: &mut DrawHandle, registry: &mut Registry) {
         let entities_with_colliders = registry
             .query()
@@ -44,7 +57,7 @@ impl RendererSystem {
         for entity in &entities_with_colliders {
             let transform = registry
                 .get_component::<TransformComponent>(entity)
-                .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
+                .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
             let box_collider = registry
                 .get_component::<BoxColliderComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));

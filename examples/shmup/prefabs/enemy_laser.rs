@@ -2,41 +2,41 @@ use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
     TagComponent, TransformComponent,
 };
-use kmath::Vector2;
+use karakuri::math::Vector2;
 
-pub fn player_laser_prefab(position: Vector2) -> ComponentPayload {
+pub fn enemy_laser_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
         transform: Some(TransformComponent {
             position,
+            rotation: 180.0,
             scale: Vector2::new(2.0, 2.0),
-            ..Default::default()
         }),
         box_collider: Some(BoxColliderComponent::default()),
-        tag: Some(TagComponent::new(String::from("player_laser"))),
+        tag: Some(TagComponent::new(String::from("enemy_laser"))),
         sprite: Some(SpriteComponent {
-            texture_name: "projectile-green",
+            texture_name: "projectile-blue",
             layer: 2,
             ..Default::default()
         }),
         rigid_body: Some(RigidBodyComponent::default()),
-        behavior: Some(Box::new(PlayerLaser { speed: 100.0 })),
+        behavior: Some(Box::new(EnemyLaser { speed: 50.0 })),
         ..Default::default()
     }
 }
 
 #[derive(Debug)]
-struct PlayerLaser {
+struct EnemyLaser {
     speed: f64,
 }
 
-impl BehaviorComponent for PlayerLaser {
+impl BehaviorComponent for EnemyLaser {
     fn on_start(&mut self, ctx: karakuri::components::Ctx) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
             .unwrap();
 
-        rigid_body.velocity.y = -self.speed;
+        rigid_body.velocity.y = self.speed;
     }
 
     fn as_any(&self) -> &dyn std::any::Any {

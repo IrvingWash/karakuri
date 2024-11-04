@@ -94,7 +94,7 @@ impl BehaviorComponent for Ball {
         }
     }
 
-    fn on_destroy(&mut self) {
+    fn on_destroy(&mut self, _ctx: Ctx) {
         println!("I (ball) am sadly destroyed :(");
     }
 
