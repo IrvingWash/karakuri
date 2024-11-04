@@ -13,6 +13,10 @@ pub fn main() -> Result<(), String> {
     });
 
     game.add_texture("ship_blue", "./examples/shmup/assets/sprites/ship_blue.png")?;
+    game.add_texture(
+        "laser_blue",
+        "./examples/shmup/assets/sprites/laser_blue.png",
+    )?;
 
     let resolution = game.resolution();
 

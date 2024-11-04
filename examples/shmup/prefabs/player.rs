@@ -8,6 +8,8 @@ use karakuri::utils::Size;
 use kmath::Vector2;
 use kwindow::KeyboardKey;
 
+use super::player_laser::player_laser_prefab;
+
 pub fn player_prefab(resolution: &Size) -> ComponentPayload {
     ComponentPayload {
         transform: Some(TransformComponent::default()),
@@ -44,6 +46,12 @@ impl Player {
             rigid_body.velocity.x = self.speed * ctx.delta_time;
         }
     }
+
+    fn fire(&self, ctx: &mut Ctx, transform: TransformComponent) {
+        if ctx.input_processor.is_down(KeyboardKey::KEY_SPACE) {
+            ctx.spawner.add_entity(player_laser_prefab(transform));
+        }
+    }
 }
 
 impl BehaviorComponent for Player {
@@ -66,13 +74,25 @@ impl BehaviorComponent for Player {
         box_collider.size.as_mut().unwrap().x = 30.0;
     }
 
-    fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, mut ctx: karakuri::components::Ctx) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
             .unwrap();
+        let transform = ctx
+            .registry
+            .get_component::<TransformComponent>(ctx.entity)
+            .unwrap();
 
         self.movement_handler(&ctx, &mut rigid_body);
+        self.fire(
+            &mut ctx,
+            TransformComponent {
+                position: transform.position.create_copy(),
+                rotation: transform.rotation,
+                scale: transform.scale.create_copy(),
+            },
+        );
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
