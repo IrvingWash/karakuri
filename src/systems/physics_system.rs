@@ -3,6 +3,7 @@ use std::cell::Ref;
 use kec::{Entity, Registry};
 use kmath::Vector2;
 use kutils::collision::aabb_centered;
+use kwindow::Timer;
 
 use crate::{
     adapters::InputProcessorAdapter,
@@ -26,9 +27,10 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
+        timer: &mut Timer,
     ) {
         self.move_entities(registry, delta_time);
-        self.collide(registry, delta_time, input_processor, spawner);
+        self.collide(registry, delta_time, input_processor, spawner, timer);
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
@@ -58,6 +60,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
+        timer: &mut Timer,
     ) {
         let collidable_entities = registry
             .query()
@@ -95,6 +98,7 @@ impl PhysicsSystem {
                         delta_time,
                         input_processor,
                         spawner,
+                        timer,
                     );
 
                     self.notify_collided_entity(
@@ -104,6 +108,7 @@ impl PhysicsSystem {
                         delta_time,
                         input_processor,
                         spawner,
+                        timer,
                     );
                 }
             }
@@ -126,6 +131,7 @@ impl PhysicsSystem {
         temp_position
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn notify_collided_entity(
         &self,
         entity: &Entity,
@@ -134,6 +140,7 @@ impl PhysicsSystem {
         delta_time: f64,
         input_processor: &InputProcessorAdapter,
         spawner: &mut Spawner,
+        timer: &mut Timer,
     ) {
         if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
         {
@@ -145,6 +152,7 @@ impl PhysicsSystem {
                     input_processor,
                     registry,
                     spawner,
+                    timer,
                 },
             );
         }

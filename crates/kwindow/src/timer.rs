@@ -1,4 +1,9 @@
-use std::{cell::RefCell, collections::HashMap, fmt::Debug, rc::Rc};
+use std::{
+    cell::RefCell,
+    collections::HashMap,
+    fmt::{Debug, Formatter, Result},
+    rc::Rc,
+};
 
 struct TimerData {
     duration: f64,
@@ -7,7 +12,7 @@ struct TimerData {
 }
 
 impl Debug for TimerData {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         f.debug_struct("Timeout")
             .field("duration", &self.duration)
             .field("start_time", &self.start_time)
@@ -97,7 +102,7 @@ impl Timer {
     }
 
     fn update_intervals(&mut self, time: f64) {
-        for (_, interval) in &mut self.intervals {
+        for interval in self.intervals.values_mut() {
             if interval.duration + interval.start_time <= time {
                 (interval.callback.borrow_mut())();
 
