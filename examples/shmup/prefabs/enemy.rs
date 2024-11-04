@@ -23,6 +23,15 @@ pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
 struct Enemy {}
 
 impl BehaviorComponent for Enemy {
+    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+        let mut box_collider = ctx
+            .registry
+            .get_component_mut::<BoxColliderComponent>(ctx.entity)
+            .unwrap();
+
+        box_collider.size.as_mut().unwrap().x = 50.0;
+    }
+
     fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "player_laser" {
