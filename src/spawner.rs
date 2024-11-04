@@ -58,8 +58,8 @@ mod tests {
     fn test_remove_entity() {
         let mut spawner = Spawner::new();
 
-        spawner.destroy_entity(Entity::new(5));
-        spawner.destroy_entity(Entity::new(7));
+        spawner.destroy_entity(Entity::new(5, 0));
+        spawner.destroy_entity(Entity::new(7, 1));
 
         assert_eq!(spawner.entities_to_destroy.len(), 2);
     }

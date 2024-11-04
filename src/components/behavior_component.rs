@@ -25,7 +25,8 @@ pub trait BehaviorComponent: Debug {
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
     #[allow(unused_variables)]
     fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {}
-    fn on_destroy(&mut self) {}
+    #[allow(unused_variables)]
+    fn on_destroy(&mut self, ctx: Ctx) {}
 
     fn start(&mut self, ctx: Ctx) {
         self.on_start(ctx);
@@ -39,8 +40,8 @@ pub trait BehaviorComponent: Debug {
         self.on_timer(finished_timers, ctx);
     }
 
-    fn destroy(&mut self) {
-        self.on_destroy();
+    fn destroy(&mut self, ctx: Ctx) {
+        self.on_destroy(ctx);
     }
 
     fn collide(&mut self, other: &Entity, ctx: Ctx) {
