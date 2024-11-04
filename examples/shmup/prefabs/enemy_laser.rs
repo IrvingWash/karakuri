@@ -13,7 +13,11 @@ pub fn enemy_laser_prefab(position: Vector2) -> ComponentPayload {
         }),
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(String::from("enemy_laser"))),
-        sprite: Some(SpriteComponent::from_texture_name("projectile-blue")),
+        sprite: Some(SpriteComponent {
+            texture_name: "projectile-blue",
+            layer: 1,
+            ..Default::default()
+        }),
         rigid_body: Some(RigidBodyComponent::default()),
         behavior: Some(Box::new(EnemyLaser { speed: 70.0 })),
         ..Default::default()

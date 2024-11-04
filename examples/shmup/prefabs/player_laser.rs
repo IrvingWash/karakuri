@@ -9,7 +9,11 @@ pub fn player_laser_prefab(position: Vector2) -> ComponentPayload {
         transform: Some(TransformComponent::from_position(position)),
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(String::from("player_laser"))),
-        sprite: Some(SpriteComponent::from_texture_name("projectile-green")),
+        sprite: Some(SpriteComponent {
+            texture_name: "projectile-green",
+            layer: 1,
+            ..Default::default()
+        }),
         rigid_body: Some(RigidBodyComponent::default()),
         behavior: Some(Box::new(PlayerLaser { speed: 100.0 })),
         ..Default::default()

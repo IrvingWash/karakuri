@@ -24,7 +24,7 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
         sprite: Some(SpriteComponent {
             texture_name: "player-straight",
             clip_size: Some(Vector2::new(48.0, 58.0)),
-            layer: 99,
+            layer: 3,
             ..Default::default()
         }),
         behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),

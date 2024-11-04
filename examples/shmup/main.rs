@@ -1,6 +1,6 @@
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use prefabs::{enemy_spawner_prefab, laser_destroyer_prefab, player_prefab};
+use prefabs::{background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, player_prefab};
 
 mod prefabs;
 
@@ -38,6 +38,14 @@ pub fn main() -> Result<(), String> {
         "./examples/shmup/assets/sprites/enemy-straight.png",
     )?;
     game.add_texture("explosion", "./examples/shmup/assets/sprites/explosion.png")?;
+    game.add_texture(
+        "background",
+        "./examples/shmup/assets/sprites/background/background.png",
+    )?;
+    game.add_texture(
+        "stars",
+        "./examples/shmup/assets/sprites/background/stars.png",
+    )?;
 
     let resolution = game.resolution();
 
@@ -45,6 +53,8 @@ pub fn main() -> Result<(), String> {
         player_prefab(&resolution),
         laser_destroyer_prefab(),
         enemy_spawner_prefab(),
+        background_prefab(&resolution, "background"),
+        background_prefab(&resolution, "stars"),
     ]);
 
     game.start();
