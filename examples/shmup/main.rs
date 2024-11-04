@@ -1,6 +1,6 @@
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use prefabs::player_prefab;
+use prefabs::{laser_destroyer_prefab, player_prefab};
 
 mod prefabs;
 
@@ -20,7 +20,7 @@ pub fn main() -> Result<(), String> {
 
     let resolution = game.resolution();
 
-    game.set_scene(vec![player_prefab(&resolution)]);
+    game.set_scene(vec![player_prefab(&resolution), laser_destroyer_prefab()]);
 
     game.start();
 

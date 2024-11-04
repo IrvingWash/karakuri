@@ -4,9 +4,9 @@ use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent,
     SpriteComponent, TagComponent, TransformComponent,
 };
+use karakuri::math::Vector2;
 use karakuri::utils::Size;
-use kmath::Vector2;
-use kwindow::KeyboardKey;
+use karakuri::window::KeyboardKey;
 
 use super::player_laser::player_laser_prefab;
 
