@@ -1,14 +1,11 @@
 use std::{
-    cell::RefCell,
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fmt::{Debug, Formatter, Result},
-    rc::Rc,
 };
 
 struct TimerData {
     duration: f64,
     start_time: f64,
-    callback: Rc<RefCell<dyn FnMut()>>,
 }
 
 impl Debug for TimerData {
@@ -26,6 +23,7 @@ pub struct Timer {
     next_id: usize,
     timeouts: HashMap<usize, TimerData>,
     intervals: HashMap<usize, TimerData>,
+    finished_timers: HashSet<usize>,
 }
 
 impl Timer {
@@ -35,10 +33,15 @@ impl Timer {
             next_id: 0,
             timeouts: HashMap::with_capacity(64),
             intervals: HashMap::with_capacity(64),
+            finished_timers: HashSet::with_capacity(64),
         }
     }
 
-    pub fn set_timeout(&mut self, callback: Rc<RefCell<dyn FnMut()>>, duration: f64) -> usize {
+    pub fn is_done(&mut self, id: usize) -> bool {
+        self.finished_timers.remove(&id)
+    }
+
+    pub fn set_timeout(&mut self, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
 
@@ -47,14 +50,13 @@ impl Timer {
             TimerData {
                 duration,
                 start_time: self.time,
-                callback,
             },
         );
 
         id
     }
 
-    pub fn set_interval(&mut self, callback: Rc<RefCell<dyn FnMut()>>, duration: f64) -> usize {
+    pub fn set_interval(&mut self, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
 
@@ -63,7 +65,6 @@ impl Timer {
             TimerData {
                 duration,
                 start_time: self.time,
-                callback,
             },
         );
 
@@ -90,7 +91,7 @@ impl Timer {
 
         for (id, timeout) in &self.timeouts {
             if timeout.duration + timeout.start_time <= time {
-                (timeout.callback.borrow_mut())();
+                self.finished_timers.insert(*id);
 
                 timeouts_to_remove.push(*id);
             }
@@ -102,9 +103,9 @@ impl Timer {
     }
 
     fn update_intervals(&mut self, time: f64) {
-        for interval in self.intervals.values_mut() {
+        for (id, interval) in &mut self.intervals {
             if interval.duration + interval.start_time <= time {
-                (interval.callback.borrow_mut())();
+                self.finished_timers.insert(*id);
 
                 interval.start_time = time;
             }
@@ -114,63 +115,54 @@ impl Timer {
 
 #[cfg(test)]
 mod timer_tests {
-    use std::{cell::RefCell, rc::Rc};
-
     use super::Timer;
 
     struct Player {
         health: u8,
+        healing_id: usize,
     }
 
-    impl Player {
-        fn heal(&mut self) {
-            self.health += 1;
+    #[test]
+    fn test_interval() {
+        impl Player {
+            fn heal(&mut self) {
+                self.health += 1;
+            }
+
+            fn start(&mut self, timer: &mut Timer) {
+                self.healing_id = timer.set_interval(1000.0);
+            }
+
+            fn update(&mut self, timer: &mut Timer) {
+                if timer.is_done(self.healing_id) {
+                    self.heal();
+                }
+            }
         }
-    }
 
-    #[test]
-    fn test_timeouts() {
         let mut timer = Timer::new();
 
-        let player = Rc::new(RefCell::new(Player { health: 10 }));
-        let player_clone = Rc::clone(&player);
+        let mut player = Player {
+            healing_id: 0,
+            health: 10,
+        };
 
-        let callback = Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
+        player.start(&mut timer);
 
-        timer.set_timeout(callback, 1000.0);
-        assert_eq!(player.borrow().health, 10);
-
-        timer.update(500.0);
-        assert_eq!(player.borrow().health, 10);
-
-        timer.update(1000.0);
-        assert_eq!(player.borrow().health, 11);
-    }
-
-    #[test]
-    fn test_intervals() {
-        let mut timer = Timer::new();
-
-        let player = Rc::new(RefCell::new(Player { health: 10 }));
-        let player_clone = Rc::clone(&player);
-
-        let callback = Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
-
-        let id = timer.set_interval(callback, 1000.0);
-        assert_eq!(player.borrow().health, 10);
+        timer.update(0.0);
+        player.update(&mut timer);
+        assert_eq!(player.health, 10);
 
         timer.update(500.0);
-        assert_eq!(player.borrow().health, 10);
+        player.update(&mut timer);
+        assert_eq!(player.health, 10);
 
         timer.update(1000.0);
-        assert_eq!(player.borrow().health, 11);
+        player.update(&mut timer);
+        assert_eq!(player.health, 11);
 
         timer.update(2000.0);
-        assert_eq!(player.borrow().health, 12);
-
-        timer.clear_interval(id);
-
-        timer.update(5000.0);
-        assert_eq!(player.borrow().health, 12);
+        player.update(&mut timer);
+        assert_eq!(player.health, 12);
     }
 }
