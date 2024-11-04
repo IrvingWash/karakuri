@@ -5,11 +5,9 @@ use karakuri::components::{
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 
-pub fn enemy_prefab() -> ComponentPayload {
+pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
-        transform: Some(TransformComponent::from_position(Vector2::new(
-            300.0, 200.0,
-        ))),
+        transform: Some(TransformComponent::from_position(position)),
         box_collider: Some(BoxColliderComponent::default()),
         rigid_body: Some(RigidBodyComponent {
             velocity: Vector2::new(1.0, 1.0),

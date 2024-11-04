@@ -1,6 +1,7 @@
 use std::{any::Any, fmt::Debug};
 
 use kec::{Entity, Registry};
+use kwindow::Timer;
 
 use crate::{adapters::InputProcessorAdapter, Spawner};
 
@@ -10,6 +11,7 @@ pub struct Ctx<'a> {
     pub entity: &'a Entity,
     pub input_processor: &'a InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
+    pub timer: &'a mut Timer,
 }
 
 pub trait BehaviorComponent: Debug {
