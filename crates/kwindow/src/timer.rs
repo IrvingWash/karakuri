@@ -1,10 +1,18 @@
-use std::collections::HashMap;
+use std::{cell::RefCell, collections::HashMap, fmt::Debug, rc::Weak};
 
-#[derive(Debug)]
 struct Timeout {
     duration: f64,
     start_time: f64,
-    callback: fn(),
+    callback: Weak<RefCell<dyn FnMut()>>,
+}
+
+impl Debug for Timeout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Timeout")
+            .field("duration", &self.duration)
+            .field("start_time", &self.start_time)
+            .finish()
+    }
 }
 
 #[derive(Debug, Default)]
@@ -21,7 +29,7 @@ impl Timer {
         }
     }
 
-    pub fn set_timeout(&mut self, callback: fn(), duration: f64) -> usize {
+    pub fn set_timeout(&mut self, callback: Weak<RefCell<dyn FnMut()>>, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
 
@@ -46,7 +54,9 @@ impl Timer {
 
         for (id, timeout) in &self.timeouts {
             if timeout.duration + timeout.start_time >= time {
-                (timeout.callback)();
+                if let Some(callback) = timeout.callback.upgrade() {
+                    (callback.borrow_mut())()
+                }
 
                 timeouts_to_remove.push(*id);
             }
@@ -60,6 +70,8 @@ impl Timer {
 
 #[cfg(test)]
 mod timer_tests {
+    use std::{cell::RefCell, rc::Rc};
+
     use super::Timer;
 
     struct Player {
@@ -76,8 +88,14 @@ mod timer_tests {
     fn test_timeouts() {
         let mut timer = Timer::new();
 
-        let mut player = Player { health: 10 };
+        let player = Rc::new(RefCell::new(Player { health: 10 }));
+        let player_clone = Rc::clone(&player);
 
-        timer.set_timeout(Player::heal, 1000.0);
+        let callback: Rc<RefCell<dyn FnMut()>> =
+            Rc::new(RefCell::new(move || player_clone.borrow_mut().heal()));
+
+        timer.set_timeout(Rc::downgrade(&callback), 1000.0);
+
+        player.borrow_mut().heal();
     }
 }
