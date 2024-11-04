@@ -2,10 +2,11 @@ use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
     TagComponent, TransformComponent,
 };
+use kmath::Vector2;
 
-pub fn player_laser_prefab(transform: TransformComponent) -> ComponentPayload {
+pub fn player_laser_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
-        transform: Some(transform),
+        transform: Some(TransformComponent::from_position(position)),
         box_collider: Some(BoxColliderComponent::default()),
         tag: Some(TagComponent::new(String::from("player_laser"))),
         sprite: Some(SpriteComponent::from_texture_name("laser_blue")),

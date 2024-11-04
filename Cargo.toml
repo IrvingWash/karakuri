@@ -20,7 +20,7 @@ members = ["crates/*"]
 
 [workspace.lints.clippy]
 needless_pass_by_ref_mut = "forbid"
-needless_pass_by_value = "forbid"
+needless_pass_by_value = "deny"
 absolute_paths = "forbid"
 absurd_extreme_comparisons = "forbid"
 assertions_on_result_states = "forbid"
