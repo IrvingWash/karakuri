@@ -1,6 +1,6 @@
 use kec::{Entity, Registry};
 use kutils::Size;
-use kwindow::{AssetStorage, FpsController, InputProcessor, Window, WindowCtx};
+use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
     adapters::InputProcessorAdapter,
@@ -20,6 +20,7 @@ pub struct Game {
     renderer: RendererSystem,
     animator: AnimatorSystem,
     physics: PhysicsSystem,
+    timer: Timer,
 }
 
 impl Game {
@@ -47,6 +48,7 @@ impl Game {
             renderer: RendererSystem::new(renderer),
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
+            timer: Timer::new(),
         }
     }
 
@@ -66,6 +68,8 @@ impl Game {
             if self.input_processor.should_close(&self.ctx) {
                 break;
             }
+
+            self.timer.update(time);
 
             let (entities_to_start, entities_to_destroy) =
                 self.scene
@@ -96,6 +100,7 @@ impl Game {
                     registry: &self.registry,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
+                    timer: &mut self.timer,
                 });
         }
     }
@@ -130,6 +135,7 @@ impl Game {
                     entity: &entity,
                     input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
+                    timer: &mut self.timer,
                 });
         }
 
@@ -138,6 +144,7 @@ impl Game {
             delta_time,
             &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
             self.scene.spawner(),
+            &mut self.timer,
         );
 
         self.animator.animate(&mut self.registry, time);

@@ -18,10 +18,7 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
         rigid_body: Some(RigidBodyComponent::default()),
         tag: Some(TagComponent::new(String::from("player"))),
         sprite: Some(SpriteComponent::from_texture_name("ship_blue")),
-        behavior: Some(Box::new(Player {
-            resolution: resolution.clone(),
-            speed: 50.0,
-        })),
+        behavior: Some(Box::new(Player::new(50.0, resolution.clone()))),
         ..Default::default()
     }
 }
@@ -33,6 +30,10 @@ struct Player {
 }
 
 impl Player {
+    fn new(speed: f64, resolution: Size) -> Self {
+        Self { speed, resolution }
+    }
+
     fn movement_handler(&mut self, ctx: &Ctx, rigid_body: &mut RefMut<RigidBodyComponent>) {
         if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
             rigid_body.velocity.y = -self.speed * ctx.delta_time;

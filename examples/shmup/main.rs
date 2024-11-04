@@ -1,6 +1,6 @@
 use karakuri::utils::{Color, Size};
 use karakuri::{Game, GameConfig};
-use prefabs::{enemy_prefab, laser_destroyer_prefab, player_prefab};
+use prefabs::{enemy_spawner_prefab, laser_destroyer_prefab, player_prefab};
 
 mod prefabs;
 
@@ -24,7 +24,7 @@ pub fn main() -> Result<(), String> {
     game.set_scene(vec![
         player_prefab(&resolution),
         laser_destroyer_prefab(),
-        enemy_prefab(),
+        enemy_spawner_prefab(),
     ]);
 
     game.start();
