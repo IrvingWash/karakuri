@@ -27,7 +27,7 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
             layer: 4,
             ..Default::default()
         }),
-        behavior: Some(Box::new(Player::new(100.0, resolution.clone()))),
+        behavior: Some(Box::new(Player::new(30.0, resolution.clone()))),
         animation_controller: Some(AnimationControllerComponent::new(vec![
             Animation::new(AnimationParams {
                 name: "player-straight",
@@ -93,19 +93,19 @@ impl Player {
 
         if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
             animation_controller.set_animation("player-straight");
-            rigid_body.velocity.y = -speed * ctx.delta_time;
+            rigid_body.velocity.y = -speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_A) {
             animation_controller.set_animation("player-left");
-            rigid_body.velocity.x = -speed * ctx.delta_time;
+            rigid_body.velocity.x = -speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
             animation_controller.set_animation("player-straight");
-            rigid_body.velocity.y = speed * ctx.delta_time;
+            rigid_body.velocity.y = speed;
         }
         if ctx.input_processor.is_down(KeyboardKey::KEY_D) {
             animation_controller.set_animation("player-right");
-            rigid_body.velocity.x = speed * ctx.delta_time;
+            rigid_body.velocity.x = speed;
         }
     }
 
