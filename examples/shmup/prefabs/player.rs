@@ -106,7 +106,7 @@ impl BehaviorComponent for Player {
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "enemy" {
-                ctx.spawner.destroy_entity(*ctx.entity);
+                ctx.spawner.destroy_entity(ctx.entity.clone());
             }
         }
     }

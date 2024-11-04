@@ -71,7 +71,7 @@ impl BehaviorComponent for Ball {
 
         // Destroy self if collided with right or left of the screen
         if transform.position.x <= 0.0 || transform.position.y >= self.resolution.width as f64 {
-            ctx.spawner.destroy_entity(*ctx.entity);
+            ctx.spawner.destroy_entity(ctx.entity.clone());
         }
     }
 
