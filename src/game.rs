@@ -108,7 +108,7 @@ impl Game {
         for entity in &entities_to_destroy {
             if let Some(mut behavior) = self
                 .registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
             {
                 behavior.destroy(Ctx {
                     delta_time,
