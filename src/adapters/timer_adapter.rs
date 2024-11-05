@@ -50,12 +50,12 @@ impl TimerAdapter {
 
         let updatable_entities = registry
             .query()
-            .with_component::<Box<dyn BehaviorComponent>>()
+            .with_component::<dyn BehaviorComponent>()
             .build();
 
         for entity in &updatable_entities {
             let mut behavior = registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity));
 
             behavior.alarm(
