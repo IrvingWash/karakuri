@@ -244,6 +244,14 @@ mod vector2_tests {
     }
 
     #[test]
+    fn test_default() {
+        let v = Vector2::default();
+
+        assert_eq!(v.x, 0.0);
+        assert_eq!(v.y, 0.0);
+    }
+
+    #[test]
     fn test_add() {
         let mut v = Vector2::new(X1, Y1);
         let other = Vector2::new(X2, Y2);
@@ -298,6 +306,16 @@ mod vector2_tests {
     }
 
     #[test]
+    fn test_scale_by_other() {
+        let mut v = Vector2::new(X1, Y1);
+
+        v.scale_by_other(&Vector2::new(X2, Y2));
+
+        assert_eq!(v.x, X1 * X2);
+        assert_eq!(v.y, Y1 * Y2);
+    }
+
+    #[test]
     fn test_to_scaled() {
         let v = Vector2::new(X1, Y1);
 
@@ -308,6 +326,27 @@ mod vector2_tests {
     }
 
     #[test]
+    fn test_to_scaled_by_other() {
+        let v = Vector2::new(X1, Y1);
+
+        let result = v.to_scaled_by_other(&Vector2::new(X2, Y2));
+
+        assert_eq!(result.x, X1 * X2);
+        assert_eq!(result.y, Y1 * Y2);
+    }
+
+    #[test]
+    fn test_to_moved_towards() {
+        let a = Vector2::new(X1, Y1);
+        let b = Vector2::new(X2, Y2);
+
+        let result = a.to_moved_towards(&b, 10.0);
+
+        assert_eq!(result.x, 11.96815278536125);
+        assert_eq!(result.y, -33.6025477771711);
+    }
+
+    #[test]
     fn test_divide() {
         let mut v = Vector2::new(X1, Y1);
 
@@ -315,6 +354,22 @@ mod vector2_tests {
 
         assert_eq!(v.x, X1 / X2);
         assert_eq!(v.y, Y1 / X2);
+
+        v.divide(0.0);
+
+        assert_eq!(v.x, X1 / X2);
+        assert_eq!(v.y, Y1 / X2);
+    }
+
+    #[test]
+    pub fn test_move_towards() {
+        let mut a = Vector2::new(X1, Y1);
+        let b = Vector2::new(X2, Y2);
+
+        a.move_towards(&b, 10.0);
+
+        assert_eq!(a.x, 11.96815278536125);
+        assert_eq!(a.y, -33.6025477771711);
     }
 
     #[test]
