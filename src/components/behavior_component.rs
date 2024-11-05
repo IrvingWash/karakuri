@@ -19,34 +19,40 @@ pub struct Ctx<'a> {
 pub trait BehaviorComponent: Debug {
     #[allow(unused_variables)]
     fn on_start(&mut self, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_update(&mut self, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_destroy(&mut self, ctx: Ctx) {}
 
-    fn start(&mut self, ctx: Ctx) {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl dyn BehaviorComponent {
+    pub fn start(&mut self, ctx: Ctx) {
         self.on_start(ctx);
     }
 
-    fn update(&mut self, ctx: Ctx) {
+    pub fn update(&mut self, ctx: Ctx) {
         self.on_update(ctx);
     }
 
-    fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
+    pub fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
         self.on_timer(finished_timers, ctx);
     }
 
-    fn destroy(&mut self, ctx: Ctx) {
+    pub fn destroy(&mut self, ctx: Ctx) {
         self.on_destroy(ctx);
     }
 
-    fn collide(&mut self, other: &Entity, ctx: Ctx) {
+    pub fn collide(&mut self, other: &Entity, ctx: Ctx) {
         self.on_collision(other, ctx);
     }
-
-    fn as_any(&self) -> &dyn Any;
 }

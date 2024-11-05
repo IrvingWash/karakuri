@@ -84,7 +84,7 @@ impl BehaviorComponent for Enemy {
             .find_entity(&TagComponent::new(String::from("player")));
     }
 
-    fn update(&mut self, ctx: Ctx) {
+    fn on_update(&mut self, ctx: Ctx) {
         if let Some(player) = &self.player {
             if ctx.registry.is_alive(player) {
                 self.player.as_ref().unwrap();
