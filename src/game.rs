@@ -3,7 +3,7 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
-    adapters::{InputProcessorAdapter, TimerAdapter},
+    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
     systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
@@ -96,7 +96,7 @@ impl Game {
                 .start(Ctx {
                     entity,
                     delta_time,
-                    registry: &self.registry,
+                    registry: &RegistryAdapter::new(&self.registry),
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: TimerAdapter::new(&mut self.timer),
@@ -112,7 +112,7 @@ impl Game {
             {
                 behavior.destroy(Ctx {
                     delta_time,
-                    registry: &self.registry,
+                    registry: &RegistryAdapter::new(&self.registry),
                     entity,
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
@@ -141,7 +141,7 @@ impl Game {
 
             behavior.update(Ctx {
                 delta_time,
-                registry: &self.registry,
+                registry: &RegistryAdapter::new(&self.registry),
                 entity,
                 input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                 spawner: self.scene.spawner(),
@@ -152,7 +152,7 @@ impl Game {
                 &finished_timers,
                 Ctx {
                     delta_time,
-                    registry: &self.registry,
+                    registry: &RegistryAdapter::new(&self.registry),
                     entity,
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),

@@ -6,7 +6,7 @@ use kutils::collision::aabb_centered;
 use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
-    adapters::{InputProcessorAdapter, TimerAdapter},
+    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
@@ -155,7 +155,7 @@ impl PhysicsSystem {
                     delta_time,
                     entity: other,
                     input_processor: InputProcessorAdapter::new(input_processor, ctx),
-                    registry,
+                    registry: &RegistryAdapter::new(registry),
                     spawner,
                     timer: TimerAdapter::new(timer),
                 },

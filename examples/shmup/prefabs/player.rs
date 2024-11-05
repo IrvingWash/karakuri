@@ -138,7 +138,7 @@ impl BehaviorComponent for Player {
         box_collider.position_offset.y = 5.0;
     }
 
-    fn on_update(&mut self, mut ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, mut ctx: Ctx) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
