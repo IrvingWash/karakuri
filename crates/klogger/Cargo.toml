@@ -1,9 +1,9 @@
 [package]
-name = "kec"
+name = "klogger"
 version = "0.1.0"
 edition = "2021"
 publish = false
-description = "Simple Entity Component implementation"
+description = "Logger"
 homepage = "https://github.com/IrvingWash/karakuri"
 repository = "https://github.com/IrvingWash/karakuri.git"
 documentation = "https://github.com/IrvingWash/karakuri"
@@ -12,7 +12,3 @@ authors = ["WI"]
 
 [lints]
 workspace = true
-
-[dependencies]
-bit-set = "0.8.0"
-klogger = { path = "../klogger" }

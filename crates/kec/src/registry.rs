@@ -155,10 +155,10 @@ impl Registry {
             .unwrap_or_else(|| panic_registered_without_id::<T>());
 
         self.components.get_mut(&component_type).unwrap_or_else(|| {
-            panic!(
+            klogger::terminate(&format!(
                 "Component {} should have been already registered, but doesn't have a component vec.",
                 type_name::<T>()
-            )
+            ))
         })[id] = wrapped_component;
 
         self.entity_signatures
@@ -272,10 +272,10 @@ impl Registry {
                 None => false,
                 Some(component) => Self::borrow_downcast::<T>(component)
                     .unwrap_or_else(|| {
-                        panic!(
+                        klogger::terminate(&format!(
                             "Failed to downcast component {} although it was found",
                             type_name::<T>()
-                        )
+                        ))
                     })
                     .eq(component_to_find),
             });
@@ -303,8 +303,12 @@ impl Registry {
         let r = cell.borrow();
         if (*r).type_id() == TypeId::of::<T>() {
             Some(Ref::map(r, |x| {
-                x.downcast_ref::<T>()
-                    .unwrap_or_else(|| panic!("Failed to downcast component {}", type_name::<T>()))
+                x.downcast_ref::<T>().unwrap_or_else(|| {
+                    klogger::terminate(&format!(
+                        "Failed to downcast component {}",
+                        type_name::<T>()
+                    ))
+                })
             }))
         } else {
             None
@@ -316,7 +320,10 @@ impl Registry {
         if (*r).type_id() == TypeId::of::<T>() {
             Some(RefMut::map(r, |x| {
                 x.downcast_mut::<T>().unwrap_or_else(|| {
-                    panic!("Failed to mutably downcast component {}", type_name::<T>())
+                    klogger::terminate(&format!(
+                        "Failed to mutably downcast component {}",
+                        type_name::<T>()
+                    ))
                 })
             }))
         } else {
