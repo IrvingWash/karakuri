@@ -6,13 +6,17 @@ const RED: &str = "31m";
 const CYAN: &str = "35m";
 
 pub fn info(message: &str) {
-    println!("{KARAKURI}: {ANSI_START}{BLUE}{message}{ANSI_END}");
+    println!("{KARAKURI} info: {ANSI_START}{BLUE}{message}{ANSI_END}");
 }
 
 pub fn warn(message: &str) {
-    println!("{KARAKURI}: {ANSI_START}{CYAN}{message}{ANSI_END}");
+    println!("{KARAKURI} warn: {ANSI_START}{CYAN}{message}{ANSI_END}");
 }
 
 pub fn error(message: &str) {
-    println!("{KARAKURI}: {ANSI_START}{RED}{message}{ANSI_END}");
+    println!("{KARAKURI} error: {ANSI_START}{RED}{message}{ANSI_END}");
+}
+
+pub fn terminate(message: &str) -> ! {
+    panic!("{KARAKURI} terminate: {ANSI_START}{RED}{message}{ANSI_END}");
 }

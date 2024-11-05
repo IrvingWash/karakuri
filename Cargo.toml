@@ -59,6 +59,7 @@ kec = { path = "crates/kec" }
 kmath = { path = "crates/kmath" }
 kutils = { path = "crates/kutils" }
 kwindow = { path = "crates/kwindow" }
+klogger = { path = "crates/klogger" }
 
 [dev-dependencies]
 rand = "0.8.5"

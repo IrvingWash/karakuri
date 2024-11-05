@@ -229,6 +229,7 @@ name = "karakuri"
 version = "0.0.0"
 dependencies = [
  "kec",
+ "klogger",
  "kmath",
  "kutils",
  "kwindow",
@@ -240,6 +241,7 @@ name = "kec"
 version = "0.1.0"
 dependencies = [
  "bit-set",
+ "klogger",
 ]
 
 [[package]]

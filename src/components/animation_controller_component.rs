@@ -29,9 +29,9 @@ impl AnimationControllerComponent {
     }
 
     pub fn current(&mut self) -> &mut Animation {
-        self.animations
-            .get_mut(self.current)
-            .unwrap_or_else(|| panic!("Couldn't find animation `{}`", self.current))
+        self.animations.get_mut(self.current).unwrap_or_else(|| {
+            klogger::terminate(&format!("Couldn't find animation `{}`", self.current))
+        })
     }
 }
 
