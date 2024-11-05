@@ -11,9 +11,9 @@ pub struct Ctx<'a> {
     pub delta_time: f64,
     pub registry: &'a Registry,
     pub entity: &'a Entity,
-    pub input_processor: &'a InputProcessorAdapter<'a>,
+    pub input_processor: InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
-    pub timer: &'a mut TimerAdapter,
+    pub timer: TimerAdapter<'a>,
 }
 
 pub trait BehaviorComponent: Debug {

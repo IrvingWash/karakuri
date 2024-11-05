@@ -68,7 +68,7 @@ impl Enemy {
 }
 
 impl BehaviorComponent for Enemy {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, mut ctx: Ctx) {
         let mut box_collider = ctx
             .registry
             .get_component_mut::<BoxColliderComponent>(ctx.entity)
@@ -92,7 +92,7 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+    fn on_collision(&mut self, other: &Entity, mut ctx: Ctx) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "player_laser" && !self.is_destroying {
                 let mut animation_controller = ctx

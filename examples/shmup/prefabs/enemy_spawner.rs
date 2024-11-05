@@ -25,7 +25,7 @@ impl EnemySpawner {
 }
 
 impl BehaviorComponent for EnemySpawner {
-    fn on_start(&mut self, ctx: Ctx) {
+    fn on_start(&mut self, mut ctx: Ctx) {
         self.timer_id = ctx.timer.set_interval(self.rate) as i64;
     }
 
@@ -42,7 +42,7 @@ impl BehaviorComponent for EnemySpawner {
         }
     }
 
-    fn on_destroy(&mut self, ctx: Ctx) {
+    fn on_destroy(&mut self, mut ctx: Ctx) {
         ctx.timer.clear_interval(self.timer_id as usize);
     }
 

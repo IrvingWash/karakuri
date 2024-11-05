@@ -20,7 +20,7 @@ pub struct Game {
     renderer: RendererSystem,
     animator: AnimatorSystem,
     physics: PhysicsSystem,
-    timer: TimerAdapter,
+    timer: Timer,
     debug: bool,
 }
 
@@ -49,7 +49,7 @@ impl Game {
             renderer: RendererSystem::new(renderer),
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
-            timer: TimerAdapter::new(Timer::new()),
+            timer: Timer::new(),
             debug: config.debug,
         }
     }
@@ -97,9 +97,9 @@ impl Game {
                     entity,
                     delta_time,
                     registry: &self.registry,
-                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: &mut self.timer,
+                    timer: TimerAdapter::new(&mut self.timer),
                 });
         }
     }
@@ -114,9 +114,9 @@ impl Game {
                     delta_time,
                     registry: &self.registry,
                     entity,
-                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: &mut self.timer,
+                    timer: TimerAdapter::new(&mut self.timer),
                 });
             }
         }
@@ -131,34 +131,43 @@ impl Game {
             .with_component::<Box<dyn BehaviorComponent>>()
             .build();
 
+        let finished_timers = self.timer.finished_timers(time);
+
         for entity in &updateable_entities {
-            self.registry
+            let mut behavior = self
+                .registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
-                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
-                .update(Ctx {
+                .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity));
+
+            behavior.update(Ctx {
+                delta_time,
+                registry: &self.registry,
+                entity,
+                input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                spawner: self.scene.spawner(),
+                timer: TimerAdapter::new(&mut self.timer),
+            });
+
+            behavior.alarm(
+                &finished_timers,
+                Ctx {
                     delta_time,
                     registry: &self.registry,
                     entity,
-                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: &mut self.timer,
-                });
+                    timer: TimerAdapter::new(&mut self.timer),
+                },
+            );
         }
-
-        self.timer.update(
-            time,
-            &mut self.registry,
-            delta_time,
-            &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
-            self.scene.spawner(),
-        );
 
         self.physics.affect(
             &mut self.registry,
             delta_time,
-            &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+            &self.input_processor,
             self.scene.spawner(),
             &mut self.timer,
+            &self.ctx,
         );
 
         self.animator.animate(&mut self.registry, time);
