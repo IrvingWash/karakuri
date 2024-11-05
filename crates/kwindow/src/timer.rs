@@ -76,16 +76,16 @@ impl Timer {
         self.intervals.remove(&id);
     }
 
-    pub fn update(&mut self, time: f64) -> HashSet<usize> {
+    pub fn finished_timers(&mut self, time: f64) -> HashSet<usize> {
         self.time = time;
 
-        self.update_timers(time);
+        self.update_timeouts(time);
         self.update_intervals(time);
 
         mem::take(&mut self.finished_timers)
     }
 
-    fn update_timers(&mut self, time: f64) {
+    fn update_timeouts(&mut self, time: f64) {
         let mut timeouts_to_remove: Vec<usize> = Vec::with_capacity(self.timeouts.capacity());
 
         for (id, timeout) in &self.timeouts {

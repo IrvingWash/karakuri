@@ -1,52 +1,58 @@
 use std::{any::Any, collections::HashSet, fmt::Debug};
 
-use kec::{Entity, Registry};
+use kec::Entity;
 
 use crate::{
-    adapters::{InputProcessorAdapter, TimerAdapter},
+    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     Spawner,
 };
 
 pub struct Ctx<'a> {
     pub delta_time: f64,
-    pub registry: &'a Registry,
+    pub registry: &'a RegistryAdapter<'a>,
     pub entity: &'a Entity,
-    pub input_processor: &'a InputProcessorAdapter<'a>,
+    pub input_processor: InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
-    pub timer: &'a mut TimerAdapter,
+    pub timer: TimerAdapter<'a>,
 }
 
 pub trait BehaviorComponent: Debug {
     #[allow(unused_variables)]
     fn on_start(&mut self, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_update(&mut self, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {}
+
     #[allow(unused_variables)]
     fn on_destroy(&mut self, ctx: Ctx) {}
 
-    fn start(&mut self, ctx: Ctx) {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl dyn BehaviorComponent {
+    pub fn start(&mut self, ctx: Ctx) {
         self.on_start(ctx);
     }
 
-    fn update(&mut self, ctx: Ctx) {
+    pub fn update(&mut self, ctx: Ctx) {
         self.on_update(ctx);
     }
 
-    fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
+    pub fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
         self.on_timer(finished_timers, ctx);
     }
 
-    fn destroy(&mut self, ctx: Ctx) {
+    pub fn destroy(&mut self, ctx: Ctx) {
         self.on_destroy(ctx);
     }
 
-    fn collide(&mut self, other: &Entity, ctx: Ctx) {
+    pub fn collide(&mut self, other: &Entity, ctx: Ctx) {
         self.on_collision(other, ctx);
     }
-
-    fn as_any(&self) -> &dyn Any;
 }

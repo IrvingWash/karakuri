@@ -138,7 +138,7 @@ impl BehaviorComponent for Player {
         box_collider.position_offset.y = 5.0;
     }
 
-    fn on_update(&mut self, mut ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, mut ctx: Ctx) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
@@ -163,7 +163,7 @@ impl BehaviorComponent for Player {
         self.fire(&mut ctx, transform.position.create_copy());
     }
 
-    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+    fn on_collision(&mut self, other: &Entity, mut ctx: Ctx) {
         if self.is_destroying {
             return;
         }

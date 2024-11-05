@@ -3,9 +3,10 @@ use std::cell::Ref;
 use kec::{Entity, Registry};
 use kmath::Vector2;
 use kutils::collision::aabb_centered;
+use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
-    adapters::{InputProcessorAdapter, TimerAdapter},
+    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
@@ -24,12 +25,13 @@ impl PhysicsSystem {
         &self,
         registry: &mut Registry,
         delta_time: f64,
-        input_processor: &InputProcessorAdapter,
+        input_processor: &InputProcessor,
         spawner: &mut Spawner,
-        timer: &mut TimerAdapter,
+        timer: &mut Timer,
+        ctx: &WindowCtx,
     ) {
         self.move_entities(registry, delta_time);
-        self.collide(registry, delta_time, input_processor, spawner, timer);
+        self.collide(registry, delta_time, input_processor, spawner, timer, ctx);
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
@@ -57,9 +59,10 @@ impl PhysicsSystem {
         &self,
         registry: &mut Registry,
         delta_time: f64,
-        input_processor: &InputProcessorAdapter,
+        input_processor: &InputProcessor,
         spawner: &mut Spawner,
-        timer: &mut TimerAdapter,
+        timer: &mut Timer,
+        ctx: &WindowCtx,
     ) {
         let collidable_entities = registry
             .query()
@@ -98,6 +101,7 @@ impl PhysicsSystem {
                         input_processor,
                         spawner,
                         timer,
+                        ctx,
                     );
 
                     self.notify_collided_entity(
@@ -108,6 +112,7 @@ impl PhysicsSystem {
                         input_processor,
                         spawner,
                         timer,
+                        ctx,
                     );
                 }
             }
@@ -137,9 +142,10 @@ impl PhysicsSystem {
         other: &Entity,
         registry: &Registry,
         delta_time: f64,
-        input_processor: &InputProcessorAdapter,
+        input_processor: &InputProcessor,
         spawner: &mut Spawner,
-        timer: &mut TimerAdapter,
+        timer: &mut Timer,
+        ctx: &WindowCtx,
     ) {
         if let Some(mut behavior) = registry.get_dyn_component_mut::<dyn BehaviorComponent>(other) {
             behavior.collide(
@@ -147,10 +153,10 @@ impl PhysicsSystem {
                 Ctx {
                     delta_time,
                     entity: other,
-                    input_processor,
-                    registry,
+                    input_processor: InputProcessorAdapter::new(input_processor, ctx),
+                    registry: &RegistryAdapter::new(registry),
                     spawner,
-                    timer,
+                    timer: TimerAdapter::new(timer),
                 },
             );
         }
