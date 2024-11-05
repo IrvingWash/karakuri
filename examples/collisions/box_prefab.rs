@@ -1,14 +1,15 @@
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, SpriteComponent, TagComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, SpriteComponent, TagComponent,
     TransformComponent,
 };
-use kmath::Vector2;
-use kutils::Color;
-use kwindow::KeyboardKey;
+use karakuri::ec::Entity;
+use karakuri::math::Vector2;
+use karakuri::utils::Color;
+use karakuri::window::KeyboardKey;
 
 pub fn box_prefab(interactive: bool) -> ComponentPayload {
     let tag = if interactive {
-        String::from("interactive_box")
+        String::from("controlled_box")
     } else {
         String::from("box")
     };
@@ -24,9 +25,9 @@ pub fn box_prefab(interactive: bool) -> ComponentPayload {
             rotation: 0.0,
         }),
         behavior: if interactive {
-            Some(Box::new(MyBoxInteractive {}))
+            Some(Box::new(MyBoxControlled {}))
         } else {
-            Some(Box::new(MyBox {}))
+            Some(Box::new(MyBox::default()))
         },
         sprite: Some(SpriteComponent {
             texture_name: "square",
@@ -37,24 +38,45 @@ pub fn box_prefab(interactive: bool) -> ComponentPayload {
     }
 }
 
-#[derive(Debug)]
-struct MyBox {}
+#[derive(Debug, Default)]
+struct MyBox {
+    controlled: Option<Entity>,
+}
 
 impl BehaviorComponent for MyBox {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
 
-    fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: Ctx) {
+        self.controlled = ctx
+            .registry
+            .find_entity(&TagComponent::new(String::from("controlled_box")));
+    }
+
+    fn on_update(&mut self, ctx: Ctx) {
         let mut sprite = ctx
             .registry
             .get_component_mut::<SpriteComponent>(ctx.entity)
             .unwrap();
 
         sprite.tint = Color::WHITE;
+
+        let mut transform = ctx
+            .registry
+            .get_component_mut::<TransformComponent>(ctx.entity)
+            .unwrap();
+
+        transform.position.move_towards(
+            &ctx.registry
+                .get_component::<TransformComponent>(self.controlled.as_ref().unwrap())
+                .unwrap()
+                .position,
+            10.0 * ctx.delta_time,
+        );
     }
 
-    fn on_collision(&mut self, _other: &kec::Entity, ctx: karakuri::components::Ctx) {
+    fn on_collision(&mut self, _other: &kec::Entity, ctx: Ctx) {
         let mut sprite = ctx
             .registry
             .get_component_mut::<SpriteComponent>(ctx.entity)
@@ -65,9 +87,9 @@ impl BehaviorComponent for MyBox {
 }
 
 #[derive(Debug)]
-struct MyBoxInteractive {}
+struct MyBoxControlled {}
 
-impl BehaviorComponent for MyBoxInteractive {
+impl BehaviorComponent for MyBoxControlled {
     fn on_update(&mut self, ctx: karakuri::components::Ctx) {
         let speed = if ctx.input_processor.is_down(KeyboardKey::KEY_LEFT_SHIFT) {
             90.0
