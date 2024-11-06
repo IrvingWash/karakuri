@@ -26,6 +26,7 @@ pub struct Game {
 }
 
 impl Game {
+    #[inline]
     pub fn new(config: &GameConfig) -> Self {
         let Window {
             fps_controller,
@@ -56,14 +57,17 @@ impl Game {
         }
     }
 
+    #[inline]
     pub fn set_scene(&mut self, entities: Vec<ComponentPayload>) {
         self.scene.create_initial_entities(entities);
     }
 
+    #[inline]
     pub fn add_texture(&mut self, name: &'static str, path: &'static str) -> Result<(), String> {
         self.asset_storage.add_texture(name, path, &mut self.ctx)
     }
 
+    #[inline]
     pub fn start(&mut self) {
         loop {
             let time = self.fps_controller.time(&self.ctx);
@@ -86,6 +90,7 @@ impl Game {
         }
     }
 
+    #[inline]
     pub fn resolution(&self) -> Size {
         self.renderer.resolution(&self.ctx)
     }

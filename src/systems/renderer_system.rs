@@ -18,22 +18,27 @@ pub struct RendererSystem {
 }
 
 impl RendererSystem {
+    #[inline]
     pub fn new(renderer: Renderer) -> Self {
         Self { renderer }
     }
 
+    #[inline]
     pub fn start_frame<'a>(&self, ctx: &'a mut WindowCtx) -> DrawHandle<'a> {
         self.renderer.start_frame(ctx)
     }
 
+    #[inline]
     pub fn finish_frame(&self, handle: DrawHandle) {
         self.renderer.finish_frame(handle);
     }
 
+    #[inline]
     pub fn resolution(&self, ctx: &WindowCtx) -> Size {
         self.renderer.resolution(ctx)
     }
 
+    #[inline]
     pub fn draw_fps(&self, handle: &mut DrawHandle, fps: &str, resolution: &Size) {
         self.renderer.draw_text(
             handle,
@@ -47,6 +52,7 @@ impl RendererSystem {
         );
     }
 
+    #[inline]
     pub fn draw_box_colliders(&self, handle: &mut DrawHandle, registry: &mut Registry) {
         let entities_with_colliders = registry
             .query()
@@ -95,6 +101,7 @@ impl RendererSystem {
         }
     }
 
+    #[inline]
     pub fn draw_sprites(
         &self,
         handle: &mut DrawHandle,

@@ -28,6 +28,7 @@ pub struct Timer {
 }
 
 impl Timer {
+    #[inline]
     pub fn new() -> Self {
         Self {
             time: 0.0,
@@ -38,6 +39,7 @@ impl Timer {
         }
     }
 
+    #[inline]
     pub fn set_timeout(&mut self, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
@@ -53,6 +55,7 @@ impl Timer {
         id
     }
 
+    #[inline]
     pub fn set_interval(&mut self, duration: f64) -> usize {
         let id = self.next_id;
         self.next_id += 1;
@@ -68,14 +71,17 @@ impl Timer {
         id
     }
 
+    #[inline]
     pub fn clear_timeout(&mut self, id: usize) {
         self.timeouts.remove(&id);
     }
 
+    #[inline]
     pub fn clear_interval(&mut self, id: usize) {
         self.intervals.remove(&id);
     }
 
+    #[inline]
     pub fn consume_finished_timers(&mut self, time: f64) -> HashSet<usize> {
         self.time = time;
 

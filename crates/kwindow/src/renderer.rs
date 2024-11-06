@@ -15,6 +15,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
+    #[inline]
     pub fn new(thread: RaylibThread, clear_color: &Color) -> Renderer {
         Self {
             thread,
@@ -22,6 +23,7 @@ impl Renderer {
         }
     }
 
+    #[inline]
     pub fn resolution(&self, ctx: &RaylibHandle) -> Size {
         Size {
             width: i64::from(ctx.get_screen_width()),
@@ -29,6 +31,7 @@ impl Renderer {
         }
     }
 
+    #[inline]
     pub fn start_frame<'a>(&self, ctx: &'a mut RaylibHandle) -> RaylibDrawHandle<'a> {
         let mut d = ctx.begin_drawing(&self.thread);
 
@@ -37,10 +40,12 @@ impl Renderer {
         d
     }
 
+    #[inline]
     pub fn finish_frame(&self, d: RaylibDrawHandle) {
         drop(d);
     }
 
+    #[inline]
     pub fn draw_rect(
         &self,
         d: &mut RaylibDrawHandle,
@@ -58,6 +63,7 @@ impl Renderer {
     }
 
     #[allow(clippy::too_many_arguments)]
+    #[inline]
     pub fn draw_texture(
         &self,
         d: &mut RaylibDrawHandle,
@@ -83,6 +89,7 @@ impl Renderer {
         );
     }
 
+    #[inline]
     pub fn draw_text(
         &self,
         d: &mut RaylibDrawHandle,

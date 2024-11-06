@@ -12,6 +12,7 @@ pub struct EventBundle {
 }
 
 impl EventBundle {
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.finished_timers.is_empty() && self.custom_events.is_empty()
     }
@@ -23,6 +24,7 @@ pub struct EventBuss {
 }
 
 impl EventBuss {
+    #[inline]
     pub fn add(&mut self, event: Event) {
         match event {
             Event::Custom(e) => {
@@ -34,6 +36,7 @@ impl EventBuss {
         }
     }
 
+    #[inline]
     pub fn consume_events(&mut self) -> EventBundle {
         mem::take(&mut self.events)
     }

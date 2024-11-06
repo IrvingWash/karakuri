@@ -11,6 +11,7 @@ pub struct AssetStorage {
 }
 
 impl AssetStorage {
+    #[inline]
     pub fn new(thread: RaylibThread) -> Self {
         Self {
             textures: HashMap::new(),
@@ -18,6 +19,7 @@ impl AssetStorage {
         }
     }
 
+    #[inline]
     pub fn add_texture(
         &mut self,
         name: &'static str,
@@ -35,6 +37,7 @@ impl AssetStorage {
         Ok(())
     }
 
+    #[inline]
     pub fn texture(&self, name: &'static str) -> Option<&Texture2D> {
         self.textures.get(&name)
     }

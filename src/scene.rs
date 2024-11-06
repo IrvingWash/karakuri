@@ -18,6 +18,7 @@ pub struct Scene {
 }
 
 impl Scene {
+    #[inline]
     pub fn new() -> Self {
         Self {
             entities_to_remove: Vec::new(),
@@ -25,10 +26,12 @@ impl Scene {
         }
     }
 
+    #[inline]
     pub fn create_initial_entities(&mut self, mut entities: Vec<ComponentPayload>) {
         self.spawner.entities_to_add.append(&mut entities);
     }
 
+    #[inline]
     pub fn sync(
         &mut self,
         registry: &mut Registry,
@@ -100,10 +103,12 @@ impl Scene {
         )
     }
 
+    #[inline]
     pub fn set_entities_to_remove(&mut self, entities: Vec<Entity>) {
         self.entities_to_remove = entities;
     }
 
+    #[inline]
     pub fn spawner(&mut self) -> &mut Spawner {
         &mut self.spawner
     }

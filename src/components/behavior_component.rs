@@ -24,22 +24,27 @@ pub trait BehaviorComponent: Debug {
 }
 
 impl dyn BehaviorComponent {
+    #[inline]
     pub fn start(&mut self, ctx: UpdateContext) {
         self.on_start(ctx);
     }
 
+    #[inline]
     pub fn update(&mut self, ctx: UpdateContext) {
         self.on_update(ctx);
     }
 
+    #[inline]
     pub fn notify(&mut self, events: &EventBundle, ctx: UpdateContext) {
         self.on_events(events, ctx);
     }
 
+    #[inline]
     pub fn destroy(&mut self, ctx: UpdateContext) {
         self.on_destroy(ctx);
     }
 
+    #[inline]
     pub fn collide(&mut self, other: &Entity, ctx: UpdateContext) {
         self.on_collision(other, ctx);
     }

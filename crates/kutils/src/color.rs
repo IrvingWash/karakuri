@@ -7,6 +7,7 @@ pub struct Color {
 }
 
 impl Color {
+    #[inline]
     pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
         Color {
             red,
@@ -16,6 +17,7 @@ impl Color {
         }
     }
 
+    #[inline]
     pub fn solid(red: u8, green: u8, blue: u8) -> Color {
         Color {
             red,
@@ -25,6 +27,7 @@ impl Color {
         }
     }
 
+    #[inline]
     pub const fn to_tuple(&self) -> (u8, u8, u8, u8) {
         (self.red, self.green, self.blue, self.alpha)
     }
