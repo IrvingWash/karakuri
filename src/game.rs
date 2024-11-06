@@ -6,7 +6,7 @@ use crate::{
     adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload},
     errors::panic_queried,
-    systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
+    systems::{physics_system::AffectParams, AnimatorSystem, PhysicsSystem, RendererSystem},
     Event, EventBuss, GameConfig, Scene, UpdateContext,
 };
 
@@ -174,15 +174,15 @@ impl Game {
             }
         }
 
-        self.physics.affect(
-            &mut self.registry,
+        self.physics.affect(AffectParams {
+            registry: &mut self.registry,
             delta_time,
-            &self.input_processor,
-            self.scene.spawner(),
-            &mut self.timer,
-            &self.ctx,
-            &mut self.event_buss,
-        );
+            input_processor: &self.input_processor,
+            spawner: self.scene.spawner(),
+            timer: &mut self.timer,
+            ctx: &self.ctx,
+            event_buss: &mut self.event_buss,
+        });
 
         self.animator.animate(&mut self.registry, time);
     }
