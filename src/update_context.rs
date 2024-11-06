@@ -5,6 +5,7 @@ use crate::{
     Spawner,
 };
 
+#[derive(Debug)]
 pub struct UpdateContext<'a> {
     pub delta_time: f64,
     pub registry: &'a RegistryAdapter<'a>,
