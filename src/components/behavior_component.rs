@@ -2,59 +2,45 @@ use std::{any::Any, fmt::Debug};
 
 use kec::Entity;
 
-use crate::{
-    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
-    event_buss::EventBundle,
-    Spawner,
-};
-
-pub struct Ctx<'a> {
-    pub delta_time: f64,
-    pub registry: &'a RegistryAdapter<'a>,
-    pub entity: &'a Entity,
-    pub input_processor: InputProcessorAdapter<'a>,
-    pub spawner: &'a mut Spawner,
-    pub timer: TimerAdapter<'a>,
-    pub event_sender: EventSender<'a>,
-}
+use crate::{event_buss::EventBundle, UpdateContext};
 
 pub trait BehaviorComponent: Debug {
     #[allow(unused_variables)]
-    fn on_start(&mut self, ctx: Ctx) {}
+    fn on_start(&mut self, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
-    fn on_update(&mut self, ctx: Ctx) {}
+    fn on_update(&mut self, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
-    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
+    fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
-    fn on_events(&mut self, events: &EventBundle, ctx: Ctx) {}
+    fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
-    fn on_destroy(&mut self, ctx: Ctx) {}
+    fn on_destroy(&mut self, ctx: UpdateContext) {}
 
     fn as_any(&self) -> &dyn Any;
 }
 
 impl dyn BehaviorComponent {
-    pub fn start(&mut self, ctx: Ctx) {
+    pub fn start(&mut self, ctx: UpdateContext) {
         self.on_start(ctx);
     }
 
-    pub fn update(&mut self, ctx: Ctx) {
+    pub fn update(&mut self, ctx: UpdateContext) {
         self.on_update(ctx);
     }
 
-    pub fn notify(&mut self, events: &EventBundle, ctx: Ctx) {
+    pub fn notify(&mut self, events: &EventBundle, ctx: UpdateContext) {
         self.on_events(events, ctx);
     }
 
-    pub fn destroy(&mut self, ctx: Ctx) {
+    pub fn destroy(&mut self, ctx: UpdateContext) {
         self.on_destroy(ctx);
     }
 
-    pub fn collide(&mut self, other: &Entity, ctx: Ctx) {
+    pub fn collide(&mut self, other: &Entity, ctx: UpdateContext) {
         self.on_collision(other, ctx);
     }
 }

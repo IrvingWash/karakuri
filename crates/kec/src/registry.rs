@@ -74,7 +74,7 @@ impl Registry {
     }
 
     pub fn is_alive(&self, entity: &Entity) -> bool {
-        if let Some(held_entity) = &self.entities[entity.id()] {
+        if let Some(held_entity) = &self.entities[entity.key()] {
             return held_entity.unique_id() == entity.unique_id();
         }
 
@@ -90,17 +90,17 @@ impl Registry {
     }
 
     pub fn remove_entity(&mut self, entity: &Entity) {
-        let id = entity.id();
+        let entity_key = entity.key();
 
         for component_vec in self.components.values_mut() {
-            component_vec[id] = None;
+            component_vec[entity_key] = None;
         }
 
         self.entity_signatures.remove_entry(entity);
 
-        self.entities[id] = None;
+        self.entities[entity_key] = None;
 
-        self.free_ids.insert(id);
+        self.free_ids.insert(entity_key);
     }
 
     pub fn register_component<T: Any + ?Sized>(&mut self) {
@@ -145,7 +145,7 @@ impl Registry {
     pub fn add_component<T: Any>(&mut self, entity: &Entity, component: T) {
         self.register_component::<T>();
 
-        let id = entity.id();
+        let entity_key = entity.key();
         let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
@@ -159,7 +159,7 @@ impl Registry {
                 "Component {} should have been already registered, but doesn't have a component vec.",
                 type_name::<T>()
             ))
-        })[id] = wrapped_component;
+        })[entity_key] = wrapped_component;
 
         self.entity_signatures
             .get_mut(entity)
@@ -180,7 +180,7 @@ impl Registry {
 
     pub fn get_component<T: Any>(&self, entity: &Entity) -> Option<Ref<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.id()] {
+            match &component_vec[entity.key()] {
                 None => return None,
                 Some(component) => return Self::borrow_downcast::<T>(component),
             }
@@ -205,7 +205,7 @@ impl Registry {
 
     pub fn get_component_mut<T: Any>(&self, entity: &Entity) -> Option<RefMut<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.id()] {
+            match &component_vec[entity.key()] {
                 None => return None,
                 Some(component) => return Self::borrow_downcast_mut::<T>(component),
             }
@@ -268,7 +268,7 @@ impl Registry {
 
     pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: &T) -> Option<Entity> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            let id = component_vec.iter().position(|component| match component {
+            let key = component_vec.iter().position(|component| match component {
                 None => false,
                 Some(component) => Self::borrow_downcast::<T>(component)
                     .unwrap_or_else(|| {
@@ -280,13 +280,13 @@ impl Registry {
                     .eq(component_to_find),
             });
 
-            match id {
+            match key {
                 None => return None,
                 Some(id) => {
                     return self
                         .entity_signatures()
                         .keys()
-                        .find(|entity| entity.id() == id)
+                        .find(|entity| entity.key() == id)
                         .cloned()
                 }
             }

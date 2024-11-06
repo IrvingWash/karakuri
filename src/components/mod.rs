@@ -11,7 +11,6 @@ pub use animation_controller_component::{
     Animation, AnimationControllerComponent, AnimationParams,
 };
 pub use behavior_component::BehaviorComponent;
-pub use behavior_component::Ctx;
 pub use box_collider_component::BoxColliderComponent;
 pub use component_payload::ComponentPayload;
 pub use rigid_body_component::RigidBodyComponent;

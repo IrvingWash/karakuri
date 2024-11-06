@@ -1,10 +1,11 @@
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent,
-    SpriteComponent, TagComponent, TransformComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
+    TagComponent, TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
+use karakuri::UpdateContext;
 use kwindow::KeyboardKey;
 
 use super::paddle::PaddleSide;
@@ -39,7 +40,7 @@ struct Ball {
 }
 
 impl BehaviorComponent for Ball {
-    fn on_update(&mut self, ctx: Ctx) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         if ctx.input_processor.is_pressed(KeyboardKey::KEY_SPACE) {
             let mut rigid_body = ctx
                 .registry
@@ -75,7 +76,7 @@ impl BehaviorComponent for Ball {
         }
     }
 
-    fn on_collision(&mut self, other: &Entity, ctx: Ctx) {
+    fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if *other_tag.value() == PaddleSide::Left.to_string()
                 || *other_tag.value() == PaddleSide::Right.to_string()
@@ -94,7 +95,7 @@ impl BehaviorComponent for Ball {
         }
     }
 
-    fn on_destroy(&mut self, _ctx: Ctx) {
+    fn on_destroy(&mut self, _ctx: UpdateContext) {
         println!("I (ball) am sadly destroyed :(");
     }
 

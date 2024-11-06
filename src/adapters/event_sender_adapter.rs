@@ -13,11 +13,11 @@ impl From<SendableEvent> for Event {
 }
 
 #[derive(Debug)]
-pub struct EventSender<'a> {
+pub struct EventSenderAdapter<'a> {
     event_buss: &'a mut EventBuss,
 }
 
-impl<'a> EventSender<'a> {
+impl<'a> EventSenderAdapter<'a> {
     pub fn new(event_buss: &'a mut EventBuss) -> Self {
         Self { event_buss }
     }

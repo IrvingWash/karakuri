@@ -1,10 +1,11 @@
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, SpriteComponent, TagComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, SpriteComponent, TagComponent,
     TransformComponent,
 };
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
+use karakuri::UpdateContext;
 
 #[derive(PartialEq, Debug)]
 pub enum PaddleSide {
@@ -51,7 +52,7 @@ struct Paddle {
 }
 
 impl BehaviorComponent for Paddle {
-    fn on_start(&mut self, ctx: Ctx) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
@@ -78,7 +79,7 @@ impl BehaviorComponent for Paddle {
         }
     }
 
-    fn on_update(&mut self, ctx: Ctx) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(&ctx.entity)
@@ -101,7 +102,7 @@ impl BehaviorComponent for Paddle {
         }
     }
 
-    fn on_collision(&mut self, other: &kec::Entity, ctx: Ctx) {
+    fn on_collision(&mut self, other: &kec::Entity, ctx: UpdateContext) {
         let tag = ctx.registry.get_component::<TagComponent>(other).unwrap();
 
         println!("{} collided with {}", self.side.to_string(), tag.value())

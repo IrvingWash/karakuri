@@ -34,12 +34,13 @@ impl Scene {
         registry: &mut Registry,
         asset_storage: &AssetStorage,
     ) -> (Vec<Entity>, Vec<Entity>) {
-        // Remove entities
+        // Delete intersection of entities to destroy and entities to remove from entities to destroy
         self.spawner.entities_to_destroy = mem::take(&mut self.spawner.entities_to_destroy)
             .into_iter()
             .filter(|e| !self.entities_to_remove.contains(e))
             .collect();
 
+        // Actually delete already destroyed entities
         for entity in mem::take(&mut self.entities_to_remove) {
             registry.remove_entity(&entity);
         }
