@@ -19,7 +19,7 @@ pub struct RendererSystem {
 
 impl RendererSystem {
     #[inline]
-    pub fn new(renderer: Renderer) -> Self {
+    pub const fn new(renderer: Renderer) -> Self {
         Self { renderer }
     }
 

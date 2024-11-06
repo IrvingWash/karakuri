@@ -8,17 +8,17 @@ pub struct Entity {
 
 impl Entity {
     #[inline]
-    pub fn new(key: usize, unique_id: usize) -> Self {
+    pub const fn new(key: usize, unique_id: usize) -> Self {
         Self { key, unique_id }
     }
 
     #[inline]
-    pub fn key(&self) -> usize {
+    pub const fn key(&self) -> usize {
         self.key
     }
 
     #[inline]
-    pub fn unique_id(&self) -> usize {
+    pub const fn unique_id(&self) -> usize {
         self.unique_id
     }
 }

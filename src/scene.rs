@@ -19,7 +19,7 @@ pub struct Scene {
 
 impl Scene {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             entities_to_remove: Vec::new(),
             spawner: Spawner::new(),

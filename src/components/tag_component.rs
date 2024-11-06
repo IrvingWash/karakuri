@@ -5,12 +5,12 @@ pub struct TagComponent {
 
 impl TagComponent {
     #[inline]
-    pub fn new(value: String) -> Self {
+    pub const fn new(value: String) -> Self {
         Self { value }
     }
 
     #[inline]
-    pub fn value(&self) -> &String {
+    pub const fn value(&self) -> &String {
         &self.value
     }
 }

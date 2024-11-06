@@ -10,7 +10,7 @@ pub struct AnimatorSystem {}
 
 impl AnimatorSystem {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {}
     }
 

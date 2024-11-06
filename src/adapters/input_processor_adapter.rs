@@ -8,7 +8,7 @@ pub struct InputProcessorAdapter<'a> {
 
 impl<'a> InputProcessorAdapter<'a> {
     #[inline]
-    pub fn new(input_processor: &'a InputProcessor, ctx: &'a WindowCtx) -> Self {
+    pub const fn new(input_processor: &'a InputProcessor, ctx: &'a WindowCtx) -> Self {
         Self {
             input_processor,
             ctx,

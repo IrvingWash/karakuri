@@ -5,7 +5,7 @@ pub struct InputProcessor {}
 
 impl InputProcessor {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {}
     }
 

@@ -12,7 +12,7 @@ impl Default for Vector2 {
 
 impl Vector2 {
     #[inline]
-    pub fn new(x: f64, y: f64) -> Vector2 {
+    pub const fn new(x: f64, y: f64) -> Vector2 {
         Self { x, y }
     }
 
@@ -119,7 +119,7 @@ impl Vector2 {
     }
 
     #[inline]
-    pub fn create_copy(&self) -> Vector2 {
+    pub const fn create_copy(&self) -> Vector2 {
         Vector2::new(self.x, self.y)
     }
 

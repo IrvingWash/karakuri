@@ -15,7 +15,7 @@ impl Default for TransformComponent {
 
 impl TransformComponent {
     #[inline]
-    pub fn new(position: Vector2, scale: Vector2, rotation: f64) -> Self {
+    pub const fn new(position: Vector2, scale: Vector2, rotation: f64) -> Self {
         Self {
             position,
             scale,

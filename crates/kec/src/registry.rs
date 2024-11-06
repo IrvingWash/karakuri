@@ -85,12 +85,12 @@ impl Registry {
     }
 
     #[inline]
-    pub fn component_ids(&self) -> &HashMap<TypeId, usize> {
+    pub const fn component_ids(&self) -> &HashMap<TypeId, usize> {
         &self.component_ids
     }
 
     #[inline]
-    pub fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
+    pub const fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
         &self.entity_signatures
     }
 

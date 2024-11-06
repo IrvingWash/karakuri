@@ -8,7 +8,7 @@ pub struct Color {
 
 impl Color {
     #[inline]
-    pub fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
+    pub const fn new(red: u8, green: u8, blue: u8, alpha: u8) -> Color {
         Color {
             red,
             green,
@@ -18,7 +18,7 @@ impl Color {
     }
 
     #[inline]
-    pub fn solid(red: u8, green: u8, blue: u8) -> Color {
+    pub const fn solid(red: u8, green: u8, blue: u8) -> Color {
         Color {
             red,
             green,

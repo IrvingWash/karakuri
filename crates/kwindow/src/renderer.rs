@@ -112,11 +112,11 @@ fn color_to_raylib(color: &Color) -> RaylibColor {
     RaylibColor::from(color.to_tuple())
 }
 
-fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
+const fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
     RaylibVector2::new(vector2.x as f32, vector2.y as f32)
 }
 
-fn make_rectangle(position: &Vector2, size: &Vector2) -> Rectangle {
+const fn make_rectangle(position: &Vector2, size: &Vector2) -> Rectangle {
     Rectangle {
         x: position.x as f32,
         y: position.y as f32,

@@ -16,7 +16,7 @@ impl Default for Spawner {
 
 impl Spawner {
     #[inline]
-    pub fn new() -> Spawner {
+    pub const fn new() -> Spawner {
         Spawner {
             entities_to_add: Vec::new(),
             entities_to_destroy: Vec::new(),

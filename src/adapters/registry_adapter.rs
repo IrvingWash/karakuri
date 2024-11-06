@@ -9,7 +9,7 @@ pub struct RegistryAdapter<'a> {
 
 impl<'a> RegistryAdapter<'a> {
     #[inline]
-    pub fn new(registry: &'a Registry) -> Self {
+    pub const fn new(registry: &'a Registry) -> Self {
         Self { registry }
     }
 
