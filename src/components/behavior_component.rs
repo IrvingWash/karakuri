@@ -1,9 +1,10 @@
-use std::{any::Any, collections::HashSet, fmt::Debug};
+use std::{any::Any, fmt::Debug};
 
 use kec::Entity;
 
 use crate::{
-    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    event_buss::EventBundle,
     Spawner,
 };
 
@@ -14,6 +15,7 @@ pub struct Ctx<'a> {
     pub input_processor: InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
     pub timer: TimerAdapter<'a>,
+    pub event_sender: EventSender<'a>,
 }
 
 pub trait BehaviorComponent: Debug {
@@ -27,7 +29,7 @@ pub trait BehaviorComponent: Debug {
     fn on_collision(&mut self, other: &Entity, ctx: Ctx) {}
 
     #[allow(unused_variables)]
-    fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {}
+    fn on_events(&mut self, events: &EventBundle, ctx: Ctx) {}
 
     #[allow(unused_variables)]
     fn on_destroy(&mut self, ctx: Ctx) {}
@@ -44,8 +46,8 @@ impl dyn BehaviorComponent {
         self.on_update(ctx);
     }
 
-    pub fn alarm(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
-        self.on_timer(finished_timers, ctx);
+    pub fn notify(&mut self, events: &EventBundle, ctx: Ctx) {
+        self.on_events(events, ctx);
     }
 
     pub fn destroy(&mut self, ctx: Ctx) {

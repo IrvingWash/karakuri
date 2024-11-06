@@ -9,6 +9,7 @@ use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
+use karakuri::{EventBundle, SendableEvent};
 
 use super::player_laser::player_laser_prefab;
 
@@ -180,12 +181,18 @@ impl BehaviorComponent for Player {
                 self.explosion_timer = ctx.timer.set_timeout(3000.0) as i64;
 
                 self.is_destroying = true;
+
+                ctx.event_sender
+                    .add(SendableEvent::Custom(String::from("player_died")));
             }
         }
     }
 
-    fn on_timer(&mut self, finished_timers: &std::collections::HashSet<usize>, ctx: Ctx) {
-        if finished_timers.contains(&(self.explosion_timer as usize)) {
+    fn on_events(&mut self, events: &EventBundle, ctx: Ctx) {
+        if events
+            .finished_timers
+            .contains(&(self.explosion_timer as usize))
+        {
             ctx.spawner.destroy_entity(ctx.entity.clone());
         }
     }

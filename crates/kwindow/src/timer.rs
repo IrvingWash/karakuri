@@ -76,7 +76,7 @@ impl Timer {
         self.intervals.remove(&id);
     }
 
-    pub fn finished_timers(&mut self, time: f64) -> HashSet<usize> {
+    pub fn consume_finished_timers(&mut self, time: f64) -> HashSet<usize> {
         self.time = time;
 
         self.update_timeouts(time);

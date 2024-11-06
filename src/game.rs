@@ -3,11 +3,11 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
-    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
     systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
-    GameConfig, Scene,
+    Event, EventBuss, GameConfig, Scene,
 };
 
 pub struct Game {
@@ -21,6 +21,7 @@ pub struct Game {
     animator: AnimatorSystem,
     physics: PhysicsSystem,
     timer: Timer,
+    event_buss: EventBuss,
     debug: bool,
 }
 
@@ -50,6 +51,7 @@ impl Game {
             animator: AnimatorSystem::new(),
             physics: PhysicsSystem::new(),
             timer: Timer::new(),
+            event_buss: EventBuss::default(),
             debug: config.debug,
         }
     }
@@ -100,6 +102,7 @@ impl Game {
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: TimerAdapter::new(&mut self.timer),
+                    event_sender: EventSender::new(&mut self.event_buss),
                 });
         }
     }
@@ -117,6 +120,7 @@ impl Game {
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: TimerAdapter::new(&mut self.timer),
+                    event_sender: EventSender::new(&mut self.event_buss),
                 });
             }
         }
@@ -131,7 +135,10 @@ impl Game {
             .with_component::<dyn BehaviorComponent>()
             .build();
 
-        let finished_timers = self.timer.finished_timers(time);
+        self.event_buss
+            .add(Event::Timer(self.timer.consume_finished_timers(time)));
+
+        let events = self.event_buss.consume_events();
 
         for entity in &updateable_entities {
             let mut behavior = self
@@ -146,19 +153,26 @@ impl Game {
                 input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                 spawner: self.scene.spawner(),
                 timer: TimerAdapter::new(&mut self.timer),
+                event_sender: EventSender::new(&mut self.event_buss),
             });
 
-            behavior.alarm(
-                &finished_timers,
-                Ctx {
-                    delta_time,
-                    registry: &RegistryAdapter::new(&self.registry),
-                    entity,
-                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
-                    spawner: self.scene.spawner(),
-                    timer: TimerAdapter::new(&mut self.timer),
-                },
-            );
+            if !events.is_empty() {
+                behavior.notify(
+                    &events,
+                    Ctx {
+                        delta_time,
+                        registry: &RegistryAdapter::new(&self.registry),
+                        entity,
+                        input_processor: InputProcessorAdapter::new(
+                            &self.input_processor,
+                            &self.ctx,
+                        ),
+                        spawner: self.scene.spawner(),
+                        timer: TimerAdapter::new(&mut self.timer),
+                        event_sender: EventSender::new(&mut self.event_buss),
+                    },
+                );
+            }
         }
 
         self.physics.affect(
@@ -168,6 +182,7 @@ impl Game {
             self.scene.spawner(),
             &mut self.timer,
             &self.ctx,
+            &mut self.event_buss,
         );
 
         self.animator.animate(&mut self.registry, time);
