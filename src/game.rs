@@ -137,7 +137,6 @@ impl Game {
 
         self.event_buss
             .add(Event::Timer(self.timer.consume_finished_timers(time)));
-
         let events = self.event_buss.consume_events();
 
         for entity in &updateable_entities {
