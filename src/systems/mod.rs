@@ -1,6 +1,7 @@
 mod animator_system;
-mod physics_system;
 mod renderer_system;
+
+pub mod physics_system;
 
 pub use animator_system::AnimatorSystem;
 pub use physics_system::PhysicsSystem;

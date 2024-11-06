@@ -1,5 +1,6 @@
 use kwindow::Timer;
 
+#[derive(Debug)]
 pub struct TimerAdapter<'a> {
     timer: &'a mut Timer,
 }

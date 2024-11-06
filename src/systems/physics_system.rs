@@ -16,32 +16,25 @@ use crate::{
 
 pub struct PhysicsSystem {}
 
+pub struct AffectParams<'a> {
+    pub registry: &'a mut Registry,
+    pub delta_time: f64,
+    pub input_processor: &'a InputProcessor,
+    pub spawner: &'a mut Spawner,
+    pub timer: &'a mut Timer,
+    pub ctx: &'a WindowCtx,
+    pub event_buss: &'a mut EventBuss,
+}
+
 impl PhysicsSystem {
     pub fn new() -> Self {
         Self {}
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn affect(
-        &self,
-        registry: &mut Registry,
-        delta_time: f64,
-        input_processor: &InputProcessor,
-        spawner: &mut Spawner,
-        timer: &mut Timer,
-        ctx: &WindowCtx,
-        event_buss: &mut EventBuss,
-    ) {
-        self.move_entities(registry, delta_time);
-        self.collide(
-            registry,
-            delta_time,
-            input_processor,
-            spawner,
-            timer,
-            ctx,
-            event_buss,
-        );
+    pub fn affect(&self, params: AffectParams) {
+        self.move_entities(params.registry, params.delta_time);
+        self.collide_entities(params);
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
@@ -66,17 +59,9 @@ impl PhysicsSystem {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn collide(
-        &self,
-        registry: &mut Registry,
-        delta_time: f64,
-        input_processor: &InputProcessor,
-        spawner: &mut Spawner,
-        timer: &mut Timer,
-        ctx: &WindowCtx,
-        event_buss: &mut EventBuss,
-    ) {
-        let collidable_entities = registry
+    fn collide_entities(&self, mut params: AffectParams) {
+        let collidable_entities = params
+            .registry
             .query()
             .with_component::<TransformComponent>()
             .with_component::<BoxColliderComponent>()
@@ -87,9 +72,10 @@ impl PhysicsSystem {
             let entity = &collidable_entities[i];
 
             for other in collidable_entities.iter().skip(i + 1) {
-                let (transform, box_collider) = self.components_for_collision(entity, registry);
+                let (transform, box_collider) =
+                    self.components_for_collision(entity, params.registry);
                 let (other_transform, other_box_collider) =
-                    self.components_for_collision(other, registry);
+                    self.components_for_collision(other, params.registry);
 
                 if aabb_centered(
                     &self.create_position_for_collision(&transform, &box_collider),
@@ -105,29 +91,14 @@ impl PhysicsSystem {
                         .unwrap_or_else(|| panic_uninitialized_collider("size"))
                         .to_scaled_by_other(&other_transform.scale),
                 ) {
-                    self.notify_collided_entity(
-                        entity,
-                        other,
-                        registry,
-                        delta_time,
-                        input_processor,
-                        spawner,
-                        timer,
-                        ctx,
-                        event_buss,
-                    );
+                    drop(transform);
+                    drop(box_collider);
+                    drop(other_transform);
+                    drop(other_box_collider);
 
-                    self.notify_collided_entity(
-                        other,
-                        entity,
-                        registry,
-                        delta_time,
-                        input_processor,
-                        spawner,
-                        timer,
-                        ctx,
-                        event_buss,
-                    );
+                    self.notify_collided_entity(entity, other, &mut params);
+
+                    self.notify_collided_entity(other, entity, &mut params);
                 }
             }
         }
@@ -150,30 +121,24 @@ impl PhysicsSystem {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn notify_collided_entity(
-        &self,
-        entity: &Entity,
-        other: &Entity,
-        registry: &Registry,
-        delta_time: f64,
-        input_processor: &InputProcessor,
-        spawner: &mut Spawner,
-        timer: &mut Timer,
-        ctx: &WindowCtx,
-        event_buss: &mut EventBuss,
-    ) {
-        if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
+    fn notify_collided_entity(&self, entity: &Entity, other: &Entity, params: &mut AffectParams) {
+        if let Some(mut behavior) = params
+            .registry
+            .get_component_mut::<Box<dyn BehaviorComponent>>(other)
         {
             behavior.collide(
                 entity,
                 UpdateContext {
-                    delta_time,
+                    delta_time: params.delta_time,
                     entity: other,
-                    input_processor: InputProcessorAdapter::new(input_processor, ctx),
-                    registry: &RegistryAdapter::new(registry),
-                    spawner,
-                    timer: TimerAdapter::new(timer),
-                    event_sender: EventSenderAdapter::new(event_buss),
+                    registry: &RegistryAdapter::new(params.registry),
+                    input_processor: &InputProcessorAdapter::new(
+                        params.input_processor,
+                        params.ctx,
+                    ),
+                    spawner: params.spawner,
+                    timer: &mut TimerAdapter::new(params.timer),
+                    event_sender: &mut EventSenderAdapter::new(params.event_buss),
                 },
             );
         }

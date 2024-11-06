@@ -6,7 +6,7 @@ use crate::{
     adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload},
     errors::panic_queried,
-    systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
+    systems::{physics_system::AffectParams, AnimatorSystem, PhysicsSystem, RendererSystem},
     Event, EventBuss, GameConfig, Scene, UpdateContext,
 };
 
@@ -99,10 +99,10 @@ impl Game {
                     entity,
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
-                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                    timer: &mut TimerAdapter::new(&mut self.timer),
+                    event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                 });
         }
     }
@@ -117,10 +117,10 @@ impl Game {
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
                     entity,
-                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                    timer: &mut TimerAdapter::new(&mut self.timer),
+                    event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                 });
             }
         }
@@ -149,10 +149,10 @@ impl Game {
                 delta_time,
                 registry: &RegistryAdapter::new(&self.registry),
                 entity,
-                input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                 spawner: self.scene.spawner(),
-                timer: TimerAdapter::new(&mut self.timer),
-                event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                timer: &mut TimerAdapter::new(&mut self.timer),
+                event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
             });
 
             if !events.is_empty() {
@@ -162,27 +162,27 @@ impl Game {
                         delta_time,
                         registry: &RegistryAdapter::new(&self.registry),
                         entity,
-                        input_processor: InputProcessorAdapter::new(
+                        input_processor: &InputProcessorAdapter::new(
                             &self.input_processor,
                             &self.ctx,
                         ),
                         spawner: self.scene.spawner(),
-                        timer: TimerAdapter::new(&mut self.timer),
-                        event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                        timer: &mut TimerAdapter::new(&mut self.timer),
+                        event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                     },
                 );
             }
         }
 
-        self.physics.affect(
-            &mut self.registry,
+        self.physics.affect(AffectParams {
+            registry: &mut self.registry,
             delta_time,
-            &self.input_processor,
-            self.scene.spawner(),
-            &mut self.timer,
-            &self.ctx,
-            &mut self.event_buss,
-        );
+            input_processor: &self.input_processor,
+            spawner: self.scene.spawner(),
+            timer: &mut self.timer,
+            ctx: &self.ctx,
+            event_buss: &mut self.event_buss,
+        });
 
         self.animator.animate(&mut self.registry, time);
     }

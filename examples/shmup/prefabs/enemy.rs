@@ -67,7 +67,7 @@ impl Enemy {
 }
 
 impl BehaviorComponent for Enemy {
-    fn on_start(&mut self, mut ctx: UpdateContext) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut box_collider = ctx
             .registry
             .get_component_mut::<BoxColliderComponent>(ctx.entity)
@@ -91,7 +91,7 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn on_collision(&mut self, other: &Entity, mut ctx: UpdateContext) {
+    fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value() == "player_laser" && !self.is_destroying {
                 let mut animation_controller = ctx
@@ -110,7 +110,7 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn on_events(&mut self, events: &EventBundle, mut ctx: UpdateContext) {
+    fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {
         if events
             .finished_timers
             .contains(&(self.shooting_timer as usize))
