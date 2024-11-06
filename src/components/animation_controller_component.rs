@@ -7,6 +7,7 @@ pub struct AnimationControllerComponent {
 }
 
 impl AnimationControllerComponent {
+    #[inline]
     pub fn new(animations: Vec<Animation>) -> Self {
         let current = animations
             .first()
@@ -24,10 +25,12 @@ impl AnimationControllerComponent {
         }
     }
 
+    #[inline]
     pub fn set_animation(&mut self, name: &'static str) {
         self.current = name;
     }
 
+    #[inline]
     pub fn current(&mut self) -> &mut Animation {
         self.animations.get_mut(self.current).unwrap_or_else(|| {
             klogger::terminate(&format!("Couldn't find animation `{}`", self.current))
@@ -56,7 +59,7 @@ pub struct AnimationParams {
 
 impl Animation {
     #[allow(clippy::needless_pass_by_value)]
-    pub fn new(params: AnimationParams) -> Self {
+    pub const fn new(params: AnimationParams) -> Self {
         let AnimationParams {
             name,
             texture_name,

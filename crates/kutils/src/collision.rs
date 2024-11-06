@@ -1,5 +1,6 @@
 use kmath::Vector2;
 
+#[inline]
 pub fn aabb_centered(
     position_a: &Vector2,
     size_a: &Vector2,

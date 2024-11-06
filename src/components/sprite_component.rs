@@ -25,6 +25,7 @@ impl Default for SpriteComponent {
 }
 
 impl SpriteComponent {
+    #[inline]
     pub fn from_texture_name(texture_name: &'static str) -> Self {
         Self {
             texture_name,

@@ -8,14 +8,17 @@ pub struct RegistryAdapter<'a> {
 }
 
 impl<'a> RegistryAdapter<'a> {
-    pub fn new(registry: &'a Registry) -> Self {
+    #[inline]
+    pub const fn new(registry: &'a Registry) -> Self {
         Self { registry }
     }
 
+    #[inline]
     pub fn is_alive(&self, entity: &Entity) -> bool {
         self.registry.is_alive(entity)
     }
 
+    #[inline]
     pub fn get_component<T: 'static>(&self, entity: &Entity) -> Option<Ref<'_, T>> {
         self.registry.get_component(entity)
     }
@@ -24,6 +27,7 @@ impl<'a> RegistryAdapter<'a> {
         self.registry.get_dyn_component(entity)
     }
 
+    #[inline]
     pub fn get_component_mut<T: 'static>(&self, entity: &Entity) -> Option<RefMut<'_, T>> {
         self.registry.get_component_mut(entity)
     }
@@ -35,6 +39,7 @@ impl<'a> RegistryAdapter<'a> {
         self.registry.get_dyn_component_mut(entity)
     }
 
+    #[inline]
     pub fn find_entity<T: 'static + PartialEq>(&self, component_to_find: &T) -> Option<Entity> {
         self.registry.find_entity(component_to_find)
     }

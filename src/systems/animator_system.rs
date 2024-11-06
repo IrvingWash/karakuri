@@ -9,10 +9,12 @@ use crate::{
 pub struct AnimatorSystem {}
 
 impl AnimatorSystem {
-    pub fn new() -> Self {
+    #[inline]
+    pub const fn new() -> Self {
         Self {}
     }
 
+    #[inline]
     pub fn animate(&self, registry: &mut Registry, time: f64) {
         let animated_entities = registry
             .query()

@@ -27,11 +27,13 @@ pub struct AffectParams<'a> {
 }
 
 impl PhysicsSystem {
-    pub fn new() -> Self {
+    #[inline]
+    pub const fn new() -> Self {
         Self {}
     }
 
     #[allow(clippy::too_many_arguments)]
+    #[inline]
     pub fn affect(&self, params: AffectParams) {
         self.move_entities(params.registry, params.delta_time);
         self.collide_entities(params);

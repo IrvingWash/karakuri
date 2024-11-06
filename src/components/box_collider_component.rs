@@ -16,7 +16,8 @@ impl Default for BoxColliderComponent {
 }
 
 impl BoxColliderComponent {
-    pub fn new(position_offset: Vector2, size: Vector2) -> Self {
+    #[inline]
+    pub const fn new(position_offset: Vector2, size: Vector2) -> Self {
         Self {
             position_offset,
             size: Some(size),

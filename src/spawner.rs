@@ -15,17 +15,20 @@ impl Default for Spawner {
 }
 
 impl Spawner {
-    pub fn new() -> Spawner {
+    #[inline]
+    pub const fn new() -> Spawner {
         Spawner {
             entities_to_add: Vec::new(),
             entities_to_destroy: Vec::new(),
         }
     }
 
+    #[inline]
     pub fn add_entity(&mut self, components: ComponentPayload) {
         self.entities_to_add.push(components);
     }
 
+    #[inline]
     pub fn destroy_entity(&mut self, entity: Entity) {
         self.entities_to_destroy.push(entity);
     }

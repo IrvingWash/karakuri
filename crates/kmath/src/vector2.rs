@@ -11,32 +11,38 @@ impl Default for Vector2 {
 }
 
 impl Vector2 {
-    pub fn new(x: f64, y: f64) -> Vector2 {
+    #[inline]
+    pub const fn new(x: f64, y: f64) -> Vector2 {
         Self { x, y }
     }
 
     pub const ZERO: Vector2 = Vector2 { x: 0., y: 0. };
 
+    #[inline]
     pub fn add(&mut self, other: &Vector2) {
         self.x += other.x;
         self.y += other.y;
     }
 
+    #[inline]
     pub fn subtract(&mut self, other: &Vector2) {
         self.x -= other.x;
         self.y -= other.y;
     }
 
+    #[inline]
     pub fn scale(&mut self, scaler: f64) {
         self.x *= scaler;
         self.y *= scaler;
     }
 
+    #[inline]
     pub fn scale_by_other(&mut self, other: &Vector2) {
         self.x *= other.x;
         self.y *= other.y;
     }
 
+    #[inline]
     pub fn divide(&mut self, divider: f64) {
         if divider == 0. {
             return;
@@ -46,43 +52,52 @@ impl Vector2 {
         self.y /= divider;
     }
 
+    #[inline]
     pub fn translate(&mut self, increment: f64) {
         self.x += increment;
         self.y += increment;
     }
 
+    #[inline]
     pub fn set(&mut self, other: &Vector2) {
         self.x = other.x;
         self.y = other.y;
     }
 
+    #[inline]
     pub fn reset(&mut self) {
         self.x = 0.;
         self.y = 0.;
     }
 
+    #[inline]
     pub fn squared_magnitude(&self) -> f64 {
         self.x.powi(2) + self.y.powi(2)
     }
 
+    #[inline]
     pub fn magnitude(&self) -> f64 {
         self.squared_magnitude().sqrt()
     }
 
+    #[inline]
     pub fn dot_product(&self, other: &Vector2) -> f64 {
         self.x * other.x + self.y * other.y
     }
 
+    #[inline]
     pub fn cross_product(&self, other: &Vector2) -> f64 {
         self.x * other.y - self.y * other.x
     }
 
+    #[inline]
     pub fn normalize(&mut self) {
         let magnitude = self.magnitude();
 
         self.divide(magnitude);
     }
 
+    #[inline]
     pub fn create_perpendicular(&self) -> Vector2 {
         let mut flipped_vector = Vector2::new(self.y, -self.x);
 
@@ -91,6 +106,7 @@ impl Vector2 {
         flipped_vector
     }
 
+    #[inline]
     pub fn rotate(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
@@ -102,10 +118,12 @@ impl Vector2 {
         self.y = y;
     }
 
-    pub fn create_copy(&self) -> Vector2 {
+    #[inline]
+    pub const fn create_copy(&self) -> Vector2 {
         Vector2::new(self.x, self.y)
     }
 
+    #[inline]
     pub fn rotate_at(&mut self, pivot: &Vector2, angle: f64) {
         let x = self.x - pivot.x;
         let y = self.y - pivot.y;
@@ -118,6 +136,7 @@ impl Vector2 {
         self.set(&temporary_vector);
     }
 
+    #[inline]
     pub fn move_towards(&mut self, other: &Vector2, max_distance: f64) {
         let mut disposition = other.to_subtracted(self);
 
@@ -134,6 +153,7 @@ impl Vector2 {
         self.set(&disposition);
     }
 
+    #[inline]
     pub fn to_added(&self, other: &Vector2) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -142,6 +162,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_subtracted(&self, other: &Vector2) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -150,6 +171,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_scaled(&self, scaler: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -158,6 +180,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_scaled_by_other(&self, other: &Vector2) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -167,6 +190,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_divided(&self, divider: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -175,6 +199,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_translated(&self, increment: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -183,6 +208,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_normalized(&self) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -191,6 +217,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_rotated(&self, angle: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -199,6 +226,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_rotated_at(&self, pivot: &Vector2, angle: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
@@ -207,6 +235,7 @@ impl Vector2 {
         copy
     }
 
+    #[inline]
     pub fn to_moved_towards(&self, other: &Vector2, max_distance: f64) -> Vector2 {
         let mut copy = self.create_copy();
 

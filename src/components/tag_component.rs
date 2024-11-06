@@ -4,11 +4,13 @@ pub struct TagComponent {
 }
 
 impl TagComponent {
-    pub fn new(value: String) -> Self {
+    #[inline]
+    pub const fn new(value: String) -> Self {
         Self { value }
     }
 
-    pub fn value(&self) -> &String {
+    #[inline]
+    pub const fn value(&self) -> &String {
         &self.value
     }
 }

@@ -8,6 +8,7 @@ pub struct Query<'a> {
 }
 
 impl<'a> Query<'a> {
+    #[inline]
     pub fn new(registry: &'a mut Registry) -> Self {
         Self {
             registry,
@@ -15,6 +16,7 @@ impl<'a> Query<'a> {
         }
     }
 
+    #[inline]
     pub fn build(mut self) -> Vec<Entity> {
         self.queried_component_ids.dedup();
 
@@ -37,6 +39,7 @@ impl<'a> Query<'a> {
             .collect()
     }
 
+    #[inline]
     pub fn with_component<T: Any + ?Sized>(mut self) -> Query<'a> {
         let component_type = TypeId::of::<T>();
 

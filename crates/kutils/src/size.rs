@@ -7,11 +7,13 @@ pub struct Size {
 }
 
 impl Size {
-    pub fn new(width: i64, height: i64) -> Self {
+    #[inline]
+    pub const fn new(width: i64, height: i64) -> Self {
         Self { width, height }
     }
 
-    pub fn to_scaled(&self, vector2: &Vector2) -> Size {
+    #[inline]
+    pub const fn to_scaled(&self, vector2: &Vector2) -> Size {
         Size {
             width: self.width * vector2.x as i64,
             height: self.height * vector2.y as i64,

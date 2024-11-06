@@ -7,15 +7,18 @@ pub struct Entity {
 }
 
 impl Entity {
-    pub fn new(key: usize, unique_id: usize) -> Self {
+    #[inline]
+    pub const fn new(key: usize, unique_id: usize) -> Self {
         Self { key, unique_id }
     }
 
-    pub fn key(&self) -> usize {
+    #[inline]
+    pub const fn key(&self) -> usize {
         self.key
     }
 
-    pub fn unique_id(&self) -> usize {
+    #[inline]
+    pub const fn unique_id(&self) -> usize {
         self.unique_id
     }
 }

@@ -22,6 +22,7 @@ pub struct Registry {
 }
 
 impl Registry {
+    #[inline]
     pub fn new() -> Self {
         Self {
             next_unique_id: 0,
@@ -33,6 +34,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn create_entity(&mut self) -> Entity {
         let unique_id = self.next_unique_id;
         self.next_unique_id += 1;
@@ -73,6 +75,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn is_alive(&self, entity: &Entity) -> bool {
         if let Some(held_entity) = &self.entities[entity.key()] {
             return held_entity.unique_id() == entity.unique_id();
@@ -81,14 +84,17 @@ impl Registry {
         false
     }
 
-    pub fn component_ids(&self) -> &HashMap<TypeId, usize> {
+    #[inline]
+    pub const fn component_ids(&self) -> &HashMap<TypeId, usize> {
         &self.component_ids
     }
 
-    pub fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
+    #[inline]
+    pub const fn entity_signatures(&self) -> &HashMap<Entity, Signature> {
         &self.entity_signatures
     }
 
+    #[inline]
     pub fn remove_entity(&mut self, entity: &Entity) {
         let entity_key = entity.key();
 
@@ -103,6 +109,7 @@ impl Registry {
         self.free_ids.insert(entity_key);
     }
 
+    #[inline]
     pub fn register_component<T: Any + ?Sized>(&mut self) {
         let component_type = TypeId::of::<T>();
 
@@ -117,6 +124,7 @@ impl Registry {
         self.components.insert(component_type, new_component_vec);
     }
 
+    #[inline]
     pub fn add_dyn_component<T: Any + ?Sized>(&mut self, entity: &Entity, component: Box<T>) {
         self.register_component::<T>();
 
@@ -142,6 +150,7 @@ impl Registry {
             .set(*component_id);
     }
 
+    #[inline]
     pub fn add_component<T: Any>(&mut self, entity: &Entity, component: T) {
         self.register_component::<T>();
 
@@ -167,6 +176,7 @@ impl Registry {
             .set(*component_id);
     }
 
+    #[inline]
     pub fn get_dyn_component<T: Any + ?Sized>(&self, entity: &Entity) -> Option<Ref<Box<T>>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             match &component_vec[entity.key()] {
@@ -178,6 +188,7 @@ impl Registry {
         None
     }
 
+    #[inline]
     pub fn get_component<T: Any>(&self, entity: &Entity) -> Option<Ref<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             match &component_vec[entity.key()] {
@@ -189,6 +200,7 @@ impl Registry {
         None
     }
 
+    #[inline]
     pub fn get_dyn_component_mut<T: Any + ?Sized>(
         &self,
         entity: &Entity,
@@ -203,6 +215,7 @@ impl Registry {
         None
     }
 
+    #[inline]
     pub fn get_component_mut<T: Any>(&self, entity: &Entity) -> Option<RefMut<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             match &component_vec[entity.key()] {
@@ -214,6 +227,7 @@ impl Registry {
         None
     }
 
+    #[inline]
     pub fn get_component_vec<T: Any>(&self) -> Vec<Option<Ref<T>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
@@ -227,6 +241,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn get_dyn_component_vec<T: Any + ?Sized>(&self) -> Vec<Option<Ref<Box<T>>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
@@ -240,6 +255,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn get_component_vec_mut<T: Any>(&self) -> Vec<Option<RefMut<T>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
@@ -253,6 +269,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn get_dyn_component_vec_mut<T: Any + ?Sized>(&self) -> Vec<Option<RefMut<Box<T>>>> {
         match self.components.get(&TypeId::of::<T>()) {
             None => Vec::new(),
@@ -266,6 +283,7 @@ impl Registry {
         }
     }
 
+    #[inline]
     pub fn find_entity<T: Any + PartialEq>(&self, component_to_find: &T) -> Option<Entity> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
             let key = component_vec.iter().position(|component| match component {
@@ -295,6 +313,7 @@ impl Registry {
         None
     }
 
+    #[inline]
     pub fn query(&mut self) -> Query {
         Query::new(self)
     }
@@ -315,7 +334,7 @@ impl Registry {
         }
     }
 
-    pub fn borrow_downcast_mut<T: Any>(cell: &RefCell<dyn Any>) -> Option<RefMut<T>> {
+    fn borrow_downcast_mut<T: Any>(cell: &RefCell<dyn Any>) -> Option<RefMut<T>> {
         let r = cell.borrow_mut();
         if (*r).type_id() == TypeId::of::<T>() {
             Some(RefMut::map(r, |x| {
