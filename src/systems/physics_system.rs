@@ -6,11 +6,12 @@ use kutils::collision::aabb_centered;
 use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
-    adapters::{InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
     errors::{panic_queried, panic_uninitialized_collider},
+    event_buss::EventBuss,
     spawner::Spawner,
 };
 
@@ -21,6 +22,7 @@ impl PhysicsSystem {
         Self {}
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn affect(
         &self,
         registry: &mut Registry,
@@ -29,9 +31,18 @@ impl PhysicsSystem {
         spawner: &mut Spawner,
         timer: &mut Timer,
         ctx: &WindowCtx,
+        event_buss: &mut EventBuss,
     ) {
         self.move_entities(registry, delta_time);
-        self.collide(registry, delta_time, input_processor, spawner, timer, ctx);
+        self.collide(
+            registry,
+            delta_time,
+            input_processor,
+            spawner,
+            timer,
+            ctx,
+            event_buss,
+        );
     }
 
     fn move_entities(&self, registry: &mut Registry, delta_time: f64) {
@@ -55,6 +66,7 @@ impl PhysicsSystem {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn collide(
         &self,
         registry: &mut Registry,
@@ -63,6 +75,7 @@ impl PhysicsSystem {
         spawner: &mut Spawner,
         timer: &mut Timer,
         ctx: &WindowCtx,
+        event_buss: &mut EventBuss,
     ) {
         let collidable_entities = registry
             .query()
@@ -102,6 +115,7 @@ impl PhysicsSystem {
                         spawner,
                         timer,
                         ctx,
+                        event_buss,
                     );
 
                     self.notify_collided_entity(
@@ -113,6 +127,7 @@ impl PhysicsSystem {
                         spawner,
                         timer,
                         ctx,
+                        event_buss,
                     );
                 }
             }
@@ -146,6 +161,7 @@ impl PhysicsSystem {
         spawner: &mut Spawner,
         timer: &mut Timer,
         ctx: &WindowCtx,
+        event_buss: &mut EventBuss,
     ) {
         if let Some(mut behavior) = registry.get_component_mut::<Box<dyn BehaviorComponent>>(other)
         {
@@ -158,6 +174,7 @@ impl PhysicsSystem {
                     registry: &RegistryAdapter::new(registry),
                     spawner,
                     timer: TimerAdapter::new(timer),
+                    event_sender: EventSender::new(event_buss),
                 },
             );
         }

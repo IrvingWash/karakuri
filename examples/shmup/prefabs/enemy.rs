@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use karakuri::components::{
     Animation, AnimationControllerComponent, AnimationParams, BehaviorComponent,
     BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent, SpriteComponent, TagComponent,
@@ -7,6 +5,7 @@ use karakuri::components::{
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
+use karakuri::EventBundle;
 
 use super::enemy_laser_prefab;
 
@@ -111,8 +110,11 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn on_timer(&mut self, finished_timers: &HashSet<usize>, ctx: Ctx) {
-        if finished_timers.contains(&(self.shooting_timer as usize)) {
+    fn on_events(&mut self, events: &EventBundle, mut ctx: Ctx) {
+        if events
+            .finished_timers
+            .contains(&(self.shooting_timer as usize))
+        {
             let transform = ctx
                 .registry
                 .get_component::<TransformComponent>(ctx.entity)
@@ -122,8 +124,15 @@ impl BehaviorComponent for Enemy {
                 .add_entity(enemy_laser_prefab(transform.position.clone()));
         }
 
-        if finished_timers.contains(&(self.explosion_timer as usize)) {
+        if events
+            .finished_timers
+            .contains(&(self.explosion_timer as usize))
+        {
             ctx.spawner.destroy_entity(ctx.entity.clone());
+        }
+
+        if events.custom_events.contains("player_died") {
+            ctx.timer.clear_interval(self.shooting_timer as usize);
         }
     }
 
