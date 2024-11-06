@@ -1,11 +1,12 @@
 use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, Ctx, SpriteComponent, TagComponent,
+    BehaviorComponent, BoxColliderComponent, ComponentPayload, SpriteComponent, TagComponent,
     TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Color;
 use karakuri::window::KeyboardKey;
+use karakuri::UpdateContext;
 
 pub fn box_prefab(interactive: bool) -> ComponentPayload {
     let tag = if interactive {
@@ -48,13 +49,13 @@ impl BehaviorComponent for MyBox {
         self
     }
 
-    fn on_start(&mut self, ctx: Ctx) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         self.controlled = ctx
             .registry
             .find_entity(&TagComponent::new(String::from("controlled_box")));
     }
 
-    fn on_update(&mut self, ctx: Ctx) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         let mut sprite = ctx
             .registry
             .get_component_mut::<SpriteComponent>(ctx.entity)
@@ -76,7 +77,7 @@ impl BehaviorComponent for MyBox {
         );
     }
 
-    fn on_collision(&mut self, _other: &kec::Entity, ctx: Ctx) {
+    fn on_collision(&mut self, _other: &kec::Entity, ctx: UpdateContext) {
         let mut sprite = ctx
             .registry
             .get_component_mut::<SpriteComponent>(ctx.entity)
@@ -90,7 +91,7 @@ impl BehaviorComponent for MyBox {
 struct MyBoxControlled {}
 
 impl BehaviorComponent for MyBoxControlled {
-    fn on_update(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         let speed = if ctx.input_processor.is_down(KeyboardKey::KEY_LEFT_SHIFT) {
             90.0
         } else {

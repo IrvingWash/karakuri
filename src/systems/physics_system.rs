@@ -7,12 +7,11 @@ use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
     adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
-    components::{
-        BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
-    },
+    components::{BehaviorComponent, BoxColliderComponent, RigidBodyComponent, TransformComponent},
     errors::{panic_queried, panic_uninitialized_collider},
     event_buss::EventBuss,
     spawner::Spawner,
+    update_context::UpdateContext,
 };
 
 pub struct PhysicsSystem {}
@@ -167,7 +166,7 @@ impl PhysicsSystem {
         {
             behavior.collide(
                 entity,
-                Ctx {
+                UpdateContext {
                     delta_time,
                     entity: other,
                     input_processor: InputProcessorAdapter::new(input_processor, ctx),

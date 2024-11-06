@@ -2,14 +2,14 @@ use std::cell::RefMut;
 
 use karakuri::components::{
     Animation, AnimationControllerComponent, AnimationParams, BehaviorComponent,
-    BoxColliderComponent, ComponentPayload, Ctx, RigidBodyComponent, SpriteComponent, TagComponent,
+    BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent, TagComponent,
     TransformComponent,
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
 use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
-use karakuri::{EventBundle, SendableEvent};
+use karakuri::{EventBundle, SendableEvent, UpdateContext};
 
 use super::player_laser::player_laser_prefab;
 
@@ -82,7 +82,7 @@ impl Player {
 
     fn movement_handler(
         &mut self,
-        ctx: &Ctx,
+        ctx: &UpdateContext,
         rigid_body: &mut RefMut<RigidBodyComponent>,
         animation_controller: &mut RefMut<AnimationControllerComponent>,
     ) {
@@ -110,7 +110,7 @@ impl Player {
         }
     }
 
-    fn fire(&self, ctx: &mut Ctx, position: Vector2) {
+    fn fire(&self, ctx: &mut UpdateContext, position: Vector2) {
         if ctx.input_processor.is_pressed(KeyboardKey::KEY_SPACE) {
             ctx.spawner.add_entity(player_laser_prefab(position));
         }
@@ -118,7 +118,7 @@ impl Player {
 }
 
 impl BehaviorComponent for Player {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut transform = ctx
             .registry
             .get_component_mut::<TransformComponent>(ctx.entity)
@@ -139,7 +139,7 @@ impl BehaviorComponent for Player {
         box_collider.position_offset.y = 5.0;
     }
 
-    fn on_update(&mut self, mut ctx: Ctx) {
+    fn on_update(&mut self, mut ctx: UpdateContext) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)
@@ -164,7 +164,7 @@ impl BehaviorComponent for Player {
         self.fire(&mut ctx, transform.position.create_copy());
     }
 
-    fn on_collision(&mut self, other: &Entity, mut ctx: Ctx) {
+    fn on_collision(&mut self, other: &Entity, mut ctx: UpdateContext) {
         if self.is_destroying {
             return;
         }
@@ -188,7 +188,7 @@ impl BehaviorComponent for Player {
         }
     }
 
-    fn on_events(&mut self, events: &EventBundle, ctx: Ctx) {
+    fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {
         if events
             .finished_timers
             .contains(&(self.explosion_timer as usize))

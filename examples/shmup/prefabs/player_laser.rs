@@ -1,6 +1,9 @@
-use karakuri::components::{
-    BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
-    TagComponent, TransformComponent,
+use karakuri::{
+    components::{
+        BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent,
+        SpriteComponent, TagComponent, TransformComponent,
+    },
+    UpdateContext,
 };
 use kmath::Vector2;
 
@@ -30,7 +33,7 @@ struct PlayerLaser {
 }
 
 impl BehaviorComponent for PlayerLaser {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)

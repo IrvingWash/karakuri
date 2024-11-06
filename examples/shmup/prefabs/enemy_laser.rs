@@ -3,6 +3,7 @@ use karakuri::components::{
     TagComponent, TransformComponent,
 };
 use karakuri::math::Vector2;
+use karakuri::UpdateContext;
 
 pub fn enemy_laser_prefab(position: Vector2) -> ComponentPayload {
     ComponentPayload {
@@ -30,7 +31,7 @@ struct EnemyLaser {
 }
 
 impl BehaviorComponent for EnemyLaser {
-    fn on_start(&mut self, ctx: karakuri::components::Ctx) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut rigid_body = ctx
             .registry
             .get_component_mut::<RigidBodyComponent>(ctx.entity)

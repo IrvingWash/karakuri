@@ -3,6 +3,7 @@ use karakuri::components::{
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
+use karakuri::UpdateContext;
 
 #[derive(Debug, PartialEq)]
 pub enum LaserDestroyerPosition {
@@ -39,7 +40,7 @@ struct LaserDestroyer {
 }
 
 impl BehaviorComponent for LaserDestroyer {
-    fn on_collision(&mut self, other: &Entity, ctx: karakuri::components::Ctx) {
+    fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {
         if let Some(other_tag) = ctx.registry.get_component::<TagComponent>(other) {
             if other_tag.value()
                 == if self.position == LaserDestroyerPosition::Top {

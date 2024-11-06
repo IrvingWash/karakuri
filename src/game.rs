@@ -4,10 +4,10 @@ use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, Window
 
 use crate::{
     adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
-    components::{BehaviorComponent, ComponentPayload, Ctx},
+    components::{BehaviorComponent, ComponentPayload},
     errors::panic_queried,
     systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
-    Event, EventBuss, GameConfig, Scene,
+    Event, EventBuss, GameConfig, Scene, UpdateContext,
 };
 
 pub struct Game {
@@ -95,7 +95,7 @@ impl Game {
             self.registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
-                .start(Ctx {
+                .start(UpdateContext {
                     entity,
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
@@ -113,7 +113,7 @@ impl Game {
                 .registry
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
             {
-                behavior.destroy(Ctx {
+                behavior.destroy(UpdateContext {
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
                     entity,
@@ -145,7 +145,7 @@ impl Game {
                 .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity));
 
-            behavior.update(Ctx {
+            behavior.update(UpdateContext {
                 delta_time,
                 registry: &RegistryAdapter::new(&self.registry),
                 entity,
@@ -158,7 +158,7 @@ impl Game {
             if !events.is_empty() {
                 behavior.notify(
                     &events,
-                    Ctx {
+                    UpdateContext {
                         delta_time,
                         registry: &RegistryAdapter::new(&self.registry),
                         entity,

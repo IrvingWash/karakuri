@@ -6,6 +6,7 @@ mod game_config;
 mod scene;
 mod spawner;
 mod systems;
+mod update_context;
 
 use event_buss::{Event, EventBuss};
 use scene::Scene;
@@ -21,3 +22,4 @@ pub use kmath as math;
 pub use kutils as utils;
 pub use kwindow as window;
 pub use spawner::Spawner;
+pub use update_context::UpdateContext;
