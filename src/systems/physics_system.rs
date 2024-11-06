@@ -6,7 +6,7 @@ use kutils::collision::aabb_centered;
 use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
-    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{
         BehaviorComponent, BoxColliderComponent, Ctx, RigidBodyComponent, TransformComponent,
     },
@@ -174,7 +174,7 @@ impl PhysicsSystem {
                     registry: &RegistryAdapter::new(registry),
                     spawner,
                     timer: TimerAdapter::new(timer),
-                    event_sender: EventSender::new(event_buss),
+                    event_sender: EventSenderAdapter::new(event_buss),
                 },
             );
         }

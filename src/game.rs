@@ -3,7 +3,7 @@ use kutils::Size;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
-    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload, Ctx},
     errors::panic_queried,
     systems::{AnimatorSystem, PhysicsSystem, RendererSystem},
@@ -102,7 +102,7 @@ impl Game {
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSender::new(&mut self.event_buss),
+                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
                 });
         }
     }
@@ -120,7 +120,7 @@ impl Game {
                     input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
                     timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSender::new(&mut self.event_buss),
+                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
                 });
             }
         }
@@ -153,7 +153,7 @@ impl Game {
                 input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                 spawner: self.scene.spawner(),
                 timer: TimerAdapter::new(&mut self.timer),
-                event_sender: EventSender::new(&mut self.event_buss),
+                event_sender: EventSenderAdapter::new(&mut self.event_buss),
             });
 
             if !events.is_empty() {
@@ -169,7 +169,7 @@ impl Game {
                         ),
                         spawner: self.scene.spawner(),
                         timer: TimerAdapter::new(&mut self.timer),
-                        event_sender: EventSender::new(&mut self.event_buss),
+                        event_sender: EventSenderAdapter::new(&mut self.event_buss),
                     },
                 );
             }

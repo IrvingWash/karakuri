@@ -3,7 +3,7 @@ use std::{any::Any, fmt::Debug};
 use kec::Entity;
 
 use crate::{
-    adapters::{EventSender, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     event_buss::EventBundle,
     Spawner,
 };
@@ -15,7 +15,7 @@ pub struct Ctx<'a> {
     pub input_processor: InputProcessorAdapter<'a>,
     pub spawner: &'a mut Spawner,
     pub timer: TimerAdapter<'a>,
-    pub event_sender: EventSender<'a>,
+    pub event_sender: EventSenderAdapter<'a>,
 }
 
 pub trait BehaviorComponent: Debug {
