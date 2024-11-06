@@ -120,7 +120,7 @@ impl Registry {
     pub fn add_dyn_component<T: Any + ?Sized>(&mut self, entity: &Entity, component: Box<T>) {
         self.register_component::<T>();
 
-        let id = entity.id();
+        let id = entity.key();
         let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
@@ -169,7 +169,7 @@ impl Registry {
 
     pub fn get_dyn_component<T: Any + ?Sized>(&self, entity: &Entity) -> Option<Ref<Box<T>>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.id()] {
+            match &component_vec[entity.key()] {
                 None => return None,
                 Some(component) => return Self::borrow_downcast::<Box<T>>(component),
             }
@@ -194,7 +194,7 @@ impl Registry {
         entity: &Entity,
     ) -> Option<RefMut<Box<T>>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.id()] {
+            match &component_vec[entity.key()] {
                 None => return None,
                 Some(component) => return Self::borrow_downcast_mut::<Box<T>>(component),
             }
