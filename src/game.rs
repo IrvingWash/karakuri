@@ -99,10 +99,10 @@ impl Game {
                     entity,
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
-                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                    timer: &mut TimerAdapter::new(&mut self.timer),
+                    event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                 });
         }
     }
@@ -117,10 +117,10 @@ impl Game {
                     delta_time,
                     registry: &RegistryAdapter::new(&self.registry),
                     entity,
-                    input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                    input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                     spawner: self.scene.spawner(),
-                    timer: TimerAdapter::new(&mut self.timer),
-                    event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                    timer: &mut TimerAdapter::new(&mut self.timer),
+                    event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                 });
             }
         }
@@ -149,10 +149,10 @@ impl Game {
                 delta_time,
                 registry: &RegistryAdapter::new(&self.registry),
                 entity,
-                input_processor: InputProcessorAdapter::new(&self.input_processor, &self.ctx),
+                input_processor: &InputProcessorAdapter::new(&self.input_processor, &self.ctx),
                 spawner: self.scene.spawner(),
-                timer: TimerAdapter::new(&mut self.timer),
-                event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                timer: &mut TimerAdapter::new(&mut self.timer),
+                event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
             });
 
             if !events.is_empty() {
@@ -162,13 +162,13 @@ impl Game {
                         delta_time,
                         registry: &RegistryAdapter::new(&self.registry),
                         entity,
-                        input_processor: InputProcessorAdapter::new(
+                        input_processor: &InputProcessorAdapter::new(
                             &self.input_processor,
                             &self.ctx,
                         ),
                         spawner: self.scene.spawner(),
-                        timer: TimerAdapter::new(&mut self.timer),
-                        event_sender: EventSenderAdapter::new(&mut self.event_buss),
+                        timer: &mut TimerAdapter::new(&mut self.timer),
+                        event_sender: &mut EventSenderAdapter::new(&mut self.event_buss),
                     },
                 );
             }

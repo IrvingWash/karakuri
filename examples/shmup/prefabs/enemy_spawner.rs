@@ -28,11 +28,11 @@ impl EnemySpawner {
 }
 
 impl BehaviorComponent for EnemySpawner {
-    fn on_start(&mut self, mut ctx: UpdateContext) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         self.timer_id = ctx.timer.set_interval(self.rate) as i64;
     }
 
-    fn on_events(&mut self, events: &EventBundle, mut ctx: UpdateContext) {
+    fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {
         if events.finished_timers.contains(&(self.timer_id as usize)) {
             ctx.spawner.add_entity(enemy_prefab(Vector2::new(
                 800.0 * rand::thread_rng().gen::<f64>(),
@@ -45,7 +45,7 @@ impl BehaviorComponent for EnemySpawner {
         }
     }
 
-    fn on_destroy(&mut self, mut ctx: UpdateContext) {
+    fn on_destroy(&mut self, ctx: UpdateContext) {
         ctx.timer.clear_interval(self.timer_id as usize);
     }
 

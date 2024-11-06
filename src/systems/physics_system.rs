@@ -33,7 +33,7 @@ impl PhysicsSystem {
         event_buss: &mut EventBuss,
     ) {
         self.move_entities(registry, delta_time);
-        self.collide(
+        self.collide_entities(
             registry,
             delta_time,
             input_processor,
@@ -66,7 +66,7 @@ impl PhysicsSystem {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn collide(
+    fn collide_entities(
         &self,
         registry: &mut Registry,
         delta_time: f64,
@@ -169,11 +169,11 @@ impl PhysicsSystem {
                 UpdateContext {
                     delta_time,
                     entity: other,
-                    input_processor: InputProcessorAdapter::new(input_processor, ctx),
                     registry: &RegistryAdapter::new(registry),
+                    input_processor: &InputProcessorAdapter::new(input_processor, ctx),
                     spawner,
-                    timer: TimerAdapter::new(timer),
-                    event_sender: EventSenderAdapter::new(event_buss),
+                    timer: &mut TimerAdapter::new(timer),
+                    event_sender: &mut EventSenderAdapter::new(event_buss),
                 },
             );
         }

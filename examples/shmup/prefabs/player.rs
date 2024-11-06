@@ -164,7 +164,7 @@ impl BehaviorComponent for Player {
         self.fire(&mut ctx, transform.position.create_copy());
     }
 
-    fn on_collision(&mut self, other: &Entity, mut ctx: UpdateContext) {
+    fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {
         if self.is_destroying {
             return;
         }
