@@ -4,14 +4,12 @@ lint:
 fmt:
 	cargo fmt --all
 test:
-	cargo test --workspace --verbose
+	cargo test --workspace
 check: fmt lint test
 
 # run examples
 pong:
 	cargo run --example=pong
-sprite:
-	cargo run --example=sprite
 collisions:
 	cargo run --example=collisions
 shmup:
