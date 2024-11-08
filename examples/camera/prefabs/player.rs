@@ -4,18 +4,22 @@ use karakuri::components::{
     BehaviorComponent, ComponentPayload, SpriteComponent, TagComponent, TransformComponent,
 };
 use karakuri::math::Vector2;
-use karakuri::utils::Size;
+use karakuri::utils::Color;
+use karakuri::window::KeyboardKey;
 use karakuri::InputProcessorAdapter;
-use kwindow::KeyboardKey;
 
-pub fn player_prefab(resolution: &Size) -> ComponentPayload {
+pub fn player_prefab() -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("player"))),
         transform: Some(TransformComponent::from_position(Vector2::new(
-            resolution.width as f64 / 2.0,
-            resolution.height as f64 / 2.0,
+            465.0, 490.0,
         ))),
-        sprite: Some(SpriteComponent::from_texture_name("player")),
+        sprite: Some(SpriteComponent {
+            texture_name: "player",
+            layer: 1,
+            tint: Color::RED,
+            ..Default::default()
+        }),
         behavior: Some(Box::new(Player::new(50.0))),
         ..Default::default()
     }
@@ -52,6 +56,8 @@ impl Player {
         if input_processor.is_down(KeyboardKey::KEY_D) {
             transform.position.x += self.speed * delta_time;
         }
+
+        dbg!(&transform.position);
     }
 }
 

@@ -19,4 +19,12 @@ impl Size {
             height: self.height * vector2.y as i64,
         }
     }
+
+    #[inline]
+    pub fn halved(&self) -> Size {
+        Size {
+            width: self.width / 2,
+            height: self.height / 2,
+        }
+    }
 }
