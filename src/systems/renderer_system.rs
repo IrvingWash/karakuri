@@ -19,14 +19,21 @@ use crate::errors::{
 pub struct RendererSystem {
     renderer: Renderer,
     default_camera: Rc<RefCell<CameraComponent>>,
+    default_target_position: Vector2,
 }
 
 impl RendererSystem {
     #[inline]
-    pub fn new(renderer: Renderer) -> Self {
+    pub fn new(renderer: Renderer, ctx: &WindowCtx) -> Self {
+        let resolution = renderer.resolution(ctx);
+
         Self {
             renderer,
             default_camera: Rc::new(RefCell::new(CameraComponent::default())),
+            default_target_position: Vector2::new(
+                resolution.width as f64,
+                resolution.height as f64,
+            ),
         }
     }
 
@@ -122,11 +129,27 @@ impl RendererSystem {
             .build();
 
         let operator = registry.query().with_component::<CameraComponent>().build();
-        let camera = match operator.get(0) {
-            Some(operator) => registry
-                .get_component::<CameraComponent>(operator)
-                .unwrap_or_else(|| panic_queried::<CameraComponent>(operator)),
-            None => self.default_camera.borrow(),
+        let (camera, target_position) = match operator.get(0) {
+            Some(operator) => {
+                let camera = registry
+                    .get_component::<CameraComponent>(operator)
+                    .unwrap_or_else(|| panic_queried::<CameraComponent>(operator));
+
+                let target_position = match &camera.target {
+                    Some(target) => registry
+                        .get_component::<TransformComponent>(&target)
+                        .unwrap_or_else(|| panic_queried::<TransformComponent>(target))
+                        .position
+                        .clone(),
+                    None => self.default_target_position.clone(),
+                };
+
+                (camera, target_position)
+            }
+            None => (
+                self.default_camera.borrow(),
+                self.default_target_position.clone(),
+            ),
         };
 
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
