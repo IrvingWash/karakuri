@@ -1,5 +1,5 @@
 use kmath::Vector2;
-use kutils::{Color, Size};
+use kutils::Color;
 use raylib::{
     color::Color as RaylibColor,
     math::{Rectangle, Vector2 as RaylibVector2},
@@ -24,10 +24,10 @@ impl Renderer {
     }
 
     #[inline]
-    pub fn resolution(&self, ctx: &RaylibHandle) -> Size {
-        Size {
-            width: i64::from(ctx.get_screen_width()),
-            height: i64::from(ctx.get_screen_height()),
+    pub fn resolution(&self, ctx: &RaylibHandle) -> Vector2 {
+        Vector2 {
+            x: f64::from(ctx.get_screen_width()),
+            y: f64::from(ctx.get_screen_height()),
         }
     }
 
@@ -68,6 +68,7 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
+        camera_position: &Vector2,
         source_position: &Vector2,
         source_size: &Vector2,
         dest_position: &Vector2,
@@ -80,7 +81,10 @@ impl Renderer {
             texture,
             make_rectangle(source_position, source_size),
             make_rectangle(
-                &Vector2::new(dest_position.x, dest_position.y),
+                &Vector2::new(
+                    dest_position.x - (camera_position.x),
+                    dest_position.y - (camera_position.y),
+                ),
                 &Vector2::new(dest_size.x, dest_size.y),
             ),
             vector2_to_raylib(origin),

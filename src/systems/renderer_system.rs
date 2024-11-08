@@ -2,10 +2,12 @@ use std::cell::Ref;
 
 use kec::Registry;
 use kmath::Vector2;
-use kutils::{Color, Size};
+use kutils::Color;
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
-use crate::components::{BoxColliderComponent, SpriteComponent, TransformComponent};
+use crate::components::{
+    BoxColliderComponent, CameraComponent, SpriteComponent, TransformComponent,
+};
 
 use crate::errors::{
     panic_not_loaded_texture, panic_queried, panic_uninitialized_collider,
@@ -34,19 +36,16 @@ impl RendererSystem {
     }
 
     #[inline]
-    pub fn resolution(&self, ctx: &WindowCtx) -> Size {
+    pub fn resolution(&self, ctx: &WindowCtx) -> Vector2 {
         self.renderer.resolution(ctx)
     }
 
     #[inline]
-    pub fn draw_fps(&self, handle: &mut DrawHandle, fps: &str, resolution: &Size) {
+    pub fn draw_fps(&self, handle: &mut DrawHandle, fps: &str, resolution: &Vector2) {
         self.renderer.draw_text(
             handle,
             fps,
-            &Vector2::new(
-                resolution.width as f64 - 28.0,
-                resolution.height as f64 - 28.0,
-            ),
+            &Vector2::new(resolution.x - 28.0, resolution.y - 28.0),
             14,
             &Color::WHITE,
         );
@@ -107,7 +106,24 @@ impl RendererSystem {
         handle: &mut DrawHandle,
         registry: &mut Registry,
         asset_storage: &AssetStorage,
+        resolution: &Vector2,
     ) {
+        let operator = registry
+            .query()
+            .with_component::<CameraComponent>()
+            .build()
+            .first()
+            .cloned();
+
+        let operator_position = match operator {
+            Some(operator) => registry
+                .get_component::<TransformComponent>(&operator)
+                .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
+                .position
+                .clone(),
+            None => Vector2::ZERO, // TODO: Check things without an operator
+        };
+
         let drawable_entities = registry
             .query()
             .with_component::<TransformComponent>()
@@ -137,6 +153,7 @@ impl RendererSystem {
             self.renderer.draw_texture(
                 handle,
                 texture,
+                &operator_position.to_subtracted(&resolution.to_divided(2.0)),
                 &sprite.clip_position,
                 sprite
                     .clip_size

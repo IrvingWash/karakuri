@@ -1,5 +1,5 @@
 use kec::{Entity, Registry};
-use kutils::Size;
+use kmath::Vector2;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
@@ -39,7 +39,7 @@ impl Game {
             asset_storage,
         } = Window::new(
             config.title,
-            config.resolution,
+            &config.resolution,
             &config.clear_color,
             config.target_fps,
         );
@@ -95,7 +95,7 @@ impl Game {
     }
 
     #[inline]
-    pub fn resolution(&self) -> Size {
+    pub fn resolution(&self) -> Vector2 {
         self.renderer_system.resolution(&self.ctx)
     }
 
@@ -184,6 +184,7 @@ impl Game {
         }
 
         self.camera_system.update(&mut self.registry);
+
         self.physics_system.affect(AffectParams {
             registry: &mut self.registry,
             delta_time,
@@ -203,8 +204,12 @@ impl Game {
 
         let mut handle = self.renderer_system.start_frame(&mut self.ctx);
 
-        self.renderer_system
-            .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
+        self.renderer_system.draw_sprites(
+            &mut handle,
+            &mut self.registry,
+            &self.asset_storage,
+            &resolution,
+        );
 
         if self.debug {
             self.renderer_system

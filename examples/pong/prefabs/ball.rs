@@ -4,13 +4,12 @@ use karakuri::components::{
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
-use karakuri::utils::Size;
 use karakuri::UpdateContext;
 use kwindow::KeyboardKey;
 
 use super::paddle::PaddleSide;
 
-pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
+pub fn ball_prefab(resolution: &Vector2) -> ComponentPayload {
     ComponentPayload {
         sprite: Some(SpriteComponent {
             texture_name: "square",
@@ -19,7 +18,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
         }),
         tag: Some(TagComponent::new(String::from("ball"))),
         transform: Some(TransformComponent {
-            position: Vector2::new(resolution.width as f64 / 2., resolution.height as f64 / 2.),
+            position: Vector2::new(resolution.x / 2.0, resolution.y / 2.0),
             scale: Vector2::new(0.7, 0.7),
             ..Default::default()
         }),
@@ -36,7 +35,7 @@ pub fn ball_prefab(resolution: &Size) -> ComponentPayload {
 #[derive(Default, Debug)]
 struct Ball {
     speed: f64,
-    resolution: Size,
+    resolution: Vector2,
 }
 
 impl BehaviorComponent for Ball {
@@ -66,12 +65,12 @@ impl BehaviorComponent for Ball {
             .unwrap();
 
         // Collide manually with the top and bottom of the screen
-        if transform.position.y <= 0.0 || transform.position.y >= self.resolution.height as f64 {
+        if transform.position.y <= 0.0 || transform.position.y >= self.resolution.y {
             rigid_body.velocity.y *= -1.0;
         }
 
         // Destroy self if collided with right or left of the screen
-        if transform.position.x <= 0.0 || transform.position.y >= self.resolution.width as f64 {
+        if transform.position.x <= 0.0 || transform.position.y >= self.resolution.x {
             ctx.spawner.destroy_entity(ctx.entity.clone());
         }
     }

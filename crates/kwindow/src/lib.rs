@@ -1,4 +1,5 @@
-use kutils::{Color, Size};
+use kmath::Vector2;
+use kutils::Color;
 use raylib::RaylibHandle;
 
 mod asset_storage;
@@ -27,9 +28,9 @@ pub struct Window {
 
 impl Window {
     #[inline]
-    pub fn new(title: &str, resolution: Size, clear_color: &Color, target_fps: u32) -> Self {
+    pub fn new(title: &str, resolution: &Vector2, clear_color: &Color, target_fps: u32) -> Self {
         let (mut rl, thread) = raylib::init()
-            .size(resolution.width as i32, resolution.height as i32)
+            .size(resolution.x as i32, resolution.y as i32)
             .title(title)
             // .fullscreen()
             .build();
