@@ -215,7 +215,7 @@ impl Game {
 
         if self.debug {
             self.renderer_system
-                .draw_box_colliders(&mut handle, &mut self.registry);
+                .draw_box_colliders(&mut handle, &mut self.registry, &resolution);
 
             self.renderer_system
                 .draw_fps(&mut handle, &fps, &resolution);

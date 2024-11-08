@@ -4,7 +4,7 @@ use kwindow::KeyboardKey;
 pub fn operator_prefab() -> ComponentPayload {
     ComponentPayload {
         camera: Some(CameraComponent {
-            zoom: 1.0,
+            zoom: 0.5,
             ..Default::default()
         }),
         behavior: Some(Box::new(Operator {})),
@@ -35,6 +35,7 @@ impl BehaviorComponent for Operator {
                 .unwrap();
 
             camera.target = None;
+            camera.zoom = 1.0;
         }
 
         if ctx.input_processor.is_pressed(KeyboardKey::KEY_P) {
@@ -46,6 +47,16 @@ impl BehaviorComponent for Operator {
             camera.target = ctx
                 .registry
                 .find_entity(&TagComponent::new(String::from("player")));
+            camera.zoom = 0.5;
+        }
+    }
+
+    fn on_events(&mut self, events: &karakuri::EventBundle, ctx: karakuri::UpdateContext) {
+        if events.custom_events.contains("player_died") {
+            ctx.registry
+                .get_component_mut::<CameraComponent>(ctx.entity)
+                .unwrap()
+                .target = None;
         }
     }
 

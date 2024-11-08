@@ -52,7 +52,37 @@ impl RendererSystem {
     }
 
     #[inline]
-    pub fn draw_box_colliders(&self, handle: &mut DrawHandle, registry: &mut Registry) {
+    pub fn draw_box_colliders(
+        &self,
+        handle: &mut DrawHandle,
+        registry: &mut Registry,
+        resolution: &Vector2,
+    ) {
+        let operator = registry
+            .query()
+            .with_component::<CameraComponent>()
+            .build()
+            .first()
+            .cloned();
+
+        let (operator_position, zoom) = match operator {
+            Some(operator) => {
+                let position = registry
+                    .get_component::<TransformComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
+                    .position
+                    .clone();
+
+                let camera = registry
+                    .get_component::<CameraComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<CameraComponent>(&operator))
+                    .zoom;
+
+                (position, camera)
+            }
+            None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
+        };
+
         let entities_with_colliders = registry
             .query()
             .with_component::<TransformComponent>()
@@ -89,12 +119,17 @@ impl RendererSystem {
 
             self.renderer.draw_rect(
                 handle,
-                &halved_position,
+                &halved_position.to_scaled(zoom).to_subtracted(
+                    &operator_position
+                        .to_scaled(zoom)
+                        .to_subtracted(&resolution.to_divided(2.0)),
+                ),
                 &box_collider
                     .size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_collider("size"))
-                    .to_scaled_by_other(&transform.scale),
+                    .to_scaled_by_other(&transform.scale)
+                    .to_scaled(zoom),
                 &Color::GREEN,
             );
         }
