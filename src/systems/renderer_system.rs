@@ -130,7 +130,7 @@ impl RendererSystem {
 
                 (position, camera)
             }
-            None => (resolution.to_divided(2.0), CameraComponent::default().zoom), // TODO: Check things without an operator
+            None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
         };
 
         let drawable_entities = registry
