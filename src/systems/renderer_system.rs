@@ -1,14 +1,11 @@
-use std::cell::{Ref, RefCell};
-use std::rc::Rc;
+use std::cell::Ref;
 
 use kec::Registry;
 use kmath::Vector2;
 use kutils::{Color, Size};
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
-use crate::components::{
-    BoxColliderComponent, CameraComponent, SpriteComponent, TransformComponent,
-};
+use crate::components::{BoxColliderComponent, SpriteComponent, TransformComponent};
 
 use crate::errors::{
     panic_not_loaded_texture, panic_queried, panic_uninitialized_collider,
@@ -18,23 +15,12 @@ use crate::errors::{
 #[derive(Debug)]
 pub struct RendererSystem {
     renderer: Renderer,
-    default_camera: Rc<RefCell<CameraComponent>>,
-    default_target_position: Vector2,
 }
 
 impl RendererSystem {
     #[inline]
-    pub fn new(renderer: Renderer, ctx: &WindowCtx) -> Self {
-        let halved_resolution = renderer.resolution(ctx).halved();
-
-        Self {
-            renderer,
-            default_camera: Rc::new(RefCell::new(CameraComponent::default())),
-            default_target_position: Vector2::new(
-                halved_resolution.width as f64,
-                halved_resolution.height as f64,
-            ),
-        }
+    pub const fn new(renderer: Renderer) -> Self {
+        Self { renderer }
     }
 
     #[inline]
@@ -128,32 +114,6 @@ impl RendererSystem {
             .with_component::<SpriteComponent>()
             .build();
 
-        // TODO: This is too large. Maybe CameraSystem?
-        // Or maybe even Camera struct?
-        let operator = registry.query().with_component::<CameraComponent>().build();
-        let (camera, target_position) = match operator.get(0) {
-            Some(operator) => {
-                let camera = registry
-                    .get_component::<CameraComponent>(operator)
-                    .unwrap_or_else(|| panic_queried::<CameraComponent>(operator));
-
-                let target_position = match &camera.target {
-                    Some(target) => registry
-                        .get_component::<TransformComponent>(&target)
-                        .unwrap_or_else(|| panic_queried::<TransformComponent>(target))
-                        .position
-                        .clone(),
-                    None => self.default_target_position.clone(),
-                };
-
-                (camera, target_position.to_divided(2.0))
-            }
-            None => (
-                self.default_camera.borrow(),
-                self.default_target_position.clone(),
-            ),
-        };
-
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
         for entity in &drawable_entities {
@@ -182,7 +142,7 @@ impl RendererSystem {
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
-                &transform.position.to_subtracted(&target_position),
+                &transform.position,
                 &sprite
                     .clip_size
                     .as_ref()
