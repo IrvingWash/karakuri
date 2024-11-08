@@ -1,3 +1,4 @@
+use core::panic;
 use std::mem;
 
 use kec::{Entity, Registry};
@@ -5,7 +6,7 @@ use kmath::Vector2;
 use kwindow::AssetStorage;
 
 use crate::{
-    components::{BoxColliderComponent, ComponentPayload, SpriteComponent},
+    components::{BoxColliderComponent, CameraComponent, ComponentPayload, SpriteComponent},
     errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
 };
 
@@ -94,6 +95,14 @@ impl Scene {
                     &entity,
                     self.prepare_box_collider_component(box_collider, sprite_clone),
                 );
+            }
+
+            if let Some(camera) = bundle.camera {
+                if registry.has::<CameraComponent>() {
+                    panic!("Only one camera is allowed on the scene.");
+                }
+
+                registry.add_component(&entity, camera);
             }
         }
 

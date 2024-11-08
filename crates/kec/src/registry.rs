@@ -237,6 +237,15 @@ impl Registry {
         Query::new(self)
     }
 
+    #[inline]
+    pub fn has<T: Any>(&self) -> bool {
+        if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
+            return component_vec.iter().any(|component| component.is_some());
+        }
+
+        false
+    }
+
     fn borrow_downcast<T: Any>(cell: &Rc<RefCell<dyn Any>>) -> Option<Ref<T>> {
         let r = cell.borrow();
         if (*r).type_id() == TypeId::of::<T>() {
