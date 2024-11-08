@@ -59,6 +59,7 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
                 looping: true,
             }),
         ])),
+        ..Default::default()
     }
 }
 

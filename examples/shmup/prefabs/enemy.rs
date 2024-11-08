@@ -44,6 +44,7 @@ pub fn enemy_prefab(position: Vector2) -> ComponentPayload {
                 looping: true,
             }),
         ])),
+        ..Default::default()
     }
 }
 
