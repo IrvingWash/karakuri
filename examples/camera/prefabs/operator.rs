@@ -3,6 +3,7 @@ use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload,
 pub fn operator_prefab() -> ComponentPayload {
     ComponentPayload {
         camera: Some(CameraComponent {
+            zoom: 2.0,
             ..Default::default()
         }),
         behavior: Some(Box::new(Operator {})),

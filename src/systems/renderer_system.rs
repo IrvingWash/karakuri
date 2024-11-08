@@ -115,13 +115,22 @@ impl RendererSystem {
             .first()
             .cloned();
 
-        let operator_position = match operator {
-            Some(operator) => registry
-                .get_component::<TransformComponent>(&operator)
-                .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
-                .position
-                .clone(),
-            None => Vector2::ZERO, // TODO: Check things without an operator
+        let (operator_position, zoom) = match operator {
+            Some(operator) => {
+                let position = registry
+                    .get_component::<TransformComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
+                    .position
+                    .clone();
+
+                let camera = registry
+                    .get_component::<CameraComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<CameraComponent>(&operator))
+                    .zoom;
+
+                (position, camera)
+            }
+            None => (Vector2::ZERO, CameraComponent::default().zoom), // TODO: Check things without an operator
         };
 
         let drawable_entities = registry
@@ -153,13 +162,14 @@ impl RendererSystem {
             self.renderer.draw_texture(
                 handle,
                 texture,
-                &operator_position.to_subtracted(&resolution.to_divided(2.0)),
                 &sprite.clip_position,
                 sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
-                &transform.position,
+                &transform
+                    .position
+                    .to_subtracted(&operator_position.to_subtracted(&resolution.to_divided(2.0))),
                 &sprite
                     .clip_size
                     .as_ref()

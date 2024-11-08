@@ -68,7 +68,6 @@ impl Renderer {
         &self,
         d: &mut RaylibDrawHandle,
         texture: &Texture2D,
-        camera_position: &Vector2,
         source_position: &Vector2,
         source_size: &Vector2,
         dest_position: &Vector2,
@@ -81,10 +80,7 @@ impl Renderer {
             texture,
             make_rectangle(source_position, source_size),
             make_rectangle(
-                &Vector2::new(
-                    dest_position.x - (camera_position.x),
-                    dest_position.y - (camera_position.y),
-                ),
+                &Vector2::new(dest_position.x, dest_position.y),
                 &Vector2::new(dest_size.x, dest_size.y),
             ),
             vector2_to_raylib(origin),
