@@ -138,6 +138,8 @@ impl Game {
     }
 
     fn update_entities(&mut self, delta_time: f64, time: f64) {
+        let resolution = self.resolution();
+
         let updateable_entities = self
             .registry
             .query()
@@ -183,7 +185,7 @@ impl Game {
             }
         }
 
-        self.camera_system.update(&mut self.registry);
+        self.camera_system.update(&mut self.registry, &resolution);
 
         self.physics_system.affect(AffectParams {
             registry: &mut self.registry,

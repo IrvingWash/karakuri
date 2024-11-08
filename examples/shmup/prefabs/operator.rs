@@ -1,4 +1,5 @@
 use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload, TagComponent};
+use kwindow::KeyboardKey;
 
 pub fn operator_prefab() -> ComponentPayload {
     ComponentPayload {
@@ -24,6 +25,28 @@ impl BehaviorComponent for Operator {
         camera.target = ctx
             .registry
             .find_entity(&TagComponent::new(String::from("player")));
+    }
+
+    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
+        if ctx.input_processor.is_pressed(KeyboardKey::KEY_O) {
+            let mut camera = ctx
+                .registry
+                .get_component_mut::<CameraComponent>(ctx.entity)
+                .unwrap();
+
+            camera.target = None;
+        }
+
+        if ctx.input_processor.is_pressed(KeyboardKey::KEY_P) {
+            let mut camera = ctx
+                .registry
+                .get_component_mut::<CameraComponent>(ctx.entity)
+                .unwrap();
+
+            camera.target = ctx
+                .registry
+                .find_entity(&TagComponent::new(String::from("player")));
+        }
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
