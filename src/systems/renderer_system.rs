@@ -167,19 +167,23 @@ impl RendererSystem {
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
-                &transform
-                    .position
-                    .to_subtracted(&operator_position.to_subtracted(&resolution.to_divided(2.0))),
+                &transform.position.to_scaled(zoom).to_subtracted(
+                    &operator_position
+                        .to_scaled(zoom)
+                        .to_subtracted(&resolution.to_divided(2.0)),
+                ),
                 &sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
-                    .to_scaled_by_other(&transform.scale),
+                    .to_scaled_by_other(&transform.scale)
+                    .to_scaled(zoom),
                 &sprite
                     .origin
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("rotation_origin"))
-                    .to_scaled_by_other(&transform.scale),
+                    .to_scaled_by_other(&transform.scale)
+                    .to_scaled(zoom),
                 transform.rotation,
                 &sprite.tint,
             );
