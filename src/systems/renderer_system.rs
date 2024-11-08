@@ -1,11 +1,14 @@
-use std::cell::Ref;
+use std::cell::{Ref, RefCell, RefMut};
+use std::rc::Rc;
 
 use kec::Registry;
 use kmath::Vector2;
 use kutils::{Color, Size};
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
-use crate::components::{BoxColliderComponent, SpriteComponent, TransformComponent};
+use crate::components::{
+    BoxColliderComponent, CameraComponent, SpriteComponent, TransformComponent,
+};
 
 use crate::errors::{
     panic_not_loaded_texture, panic_queried, panic_uninitialized_collider,
@@ -15,12 +18,16 @@ use crate::errors::{
 #[derive(Debug)]
 pub struct RendererSystem {
     renderer: Renderer,
+    default_camera: Rc<RefCell<CameraComponent>>,
 }
 
 impl RendererSystem {
     #[inline]
-    pub const fn new(renderer: Renderer) -> Self {
-        Self { renderer }
+    pub fn new(renderer: Renderer) -> Self {
+        Self {
+            renderer,
+            default_camera: Rc::new(RefCell::new(CameraComponent::default())),
+        }
     }
 
     #[inline]
@@ -113,6 +120,14 @@ impl RendererSystem {
             .with_component::<TransformComponent>()
             .with_component::<SpriteComponent>()
             .build();
+
+        let operator = registry.query().with_component::<CameraComponent>().build();
+        let camera = match operator.get(0) {
+            Some(operator) => registry
+                .get_component::<CameraComponent>(operator)
+                .unwrap_or_else(|| panic_queried::<CameraComponent>(operator)),
+            None => self.default_camera.borrow(),
+        };
 
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
