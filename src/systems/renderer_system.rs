@@ -1,4 +1,4 @@
-use std::cell::{Ref, RefCell, RefMut};
+use std::cell::{Ref, RefCell};
 use std::rc::Rc;
 
 use kec::Registry;
@@ -25,14 +25,14 @@ pub struct RendererSystem {
 impl RendererSystem {
     #[inline]
     pub fn new(renderer: Renderer, ctx: &WindowCtx) -> Self {
-        let resolution = renderer.resolution(ctx);
+        let halved_resolution = renderer.resolution(ctx).halved();
 
         Self {
             renderer,
             default_camera: Rc::new(RefCell::new(CameraComponent::default())),
             default_target_position: Vector2::new(
-                resolution.width as f64,
-                resolution.height as f64,
+                halved_resolution.width as f64,
+                halved_resolution.height as f64,
             ),
         }
     }
@@ -128,6 +128,8 @@ impl RendererSystem {
             .with_component::<SpriteComponent>()
             .build();
 
+        // TODO: This is too large. Maybe CameraSystem?
+        // Or maybe even Camera struct?
         let operator = registry.query().with_component::<CameraComponent>().build();
         let (camera, target_position) = match operator.get(0) {
             Some(operator) => {
@@ -144,7 +146,7 @@ impl RendererSystem {
                     None => self.default_target_position.clone(),
                 };
 
-                (camera, target_position)
+                (camera, target_position.to_divided(2.0))
             }
             None => (
                 self.default_camera.borrow(),
@@ -180,7 +182,7 @@ impl RendererSystem {
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
-                &transform.position,
+                &transform.position.to_subtracted(&target_position),
                 &sprite
                     .clip_size
                     .as_ref()

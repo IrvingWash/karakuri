@@ -56,8 +56,6 @@ impl Player {
         if input_processor.is_down(KeyboardKey::KEY_D) {
             transform.position.x += self.speed * delta_time;
         }
-
-        dbg!(&transform.position);
     }
 }
 
