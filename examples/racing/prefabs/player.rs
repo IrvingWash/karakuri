@@ -11,11 +11,13 @@ use karakuri::InputProcessorAdapter;
 pub fn player_prefab() -> ComponentPayload {
     ComponentPayload {
         tag: Some(TagComponent::new(String::from("player"))),
-        transform: Some(TransformComponent::from_position(Vector2::new(
-            465.0, 490.0,
-        ))),
+        transform: Some(TransformComponent {
+            position: Vector2::new(465.0, 490.0),
+            rotation: 90.0,
+            ..Default::default()
+        }),
         sprite: Some(SpriteComponent {
-            texture_name: "player",
+            texture_name: "car",
             layer: 1,
             tint: Color::RED,
             ..Default::default()
@@ -43,18 +45,22 @@ impl Player {
     ) {
         if input_processor.is_down(KeyboardKey::KEY_W) {
             transform.position.y -= self.speed * delta_time;
+            transform.rotation = 0.0;
         }
 
         if input_processor.is_down(KeyboardKey::KEY_A) {
             transform.position.x -= self.speed * delta_time;
+            transform.rotation = 270.0;
         }
 
         if input_processor.is_down(KeyboardKey::KEY_S) {
             transform.position.y += self.speed * delta_time;
+            transform.rotation = 180.0;
         }
 
         if input_processor.is_down(KeyboardKey::KEY_D) {
             transform.position.x += self.speed * delta_time;
+            transform.rotation = 90.0;
         }
     }
 }

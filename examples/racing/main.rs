@@ -16,10 +16,10 @@ pub fn main() -> Result<(), String> {
 
     let halved_resolution = game.resolution().to_divided(2.0);
 
-    game.add_texture("player", "./examples/camera/assets/sprites/square.png")?;
+    game.add_texture("car", "./examples/racing/assets/sprites/car.png")?;
     game.add_texture(
         "race_track",
-        "./examples/camera/assets/sprites/race_track.png",
+        "./examples/racing/assets/sprites/race_track.png",
     )?;
 
     game.set_scene(vec![

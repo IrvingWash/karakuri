@@ -14,5 +14,5 @@ collisions:
 	cargo run --example=collisions
 shmup:
 	cargo run --example=shmup
-camera:
-	cargo run --example=camera
+racing:
+	cargo run --example=racing
