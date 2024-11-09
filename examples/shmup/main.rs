@@ -2,8 +2,8 @@ use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
 use kmath::Vector2;
 use prefabs::{
-    background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, operator_prefab,
-    player_prefab, LaserDestroyerPosition,
+    background_prefab, enemy_spawner_prefab, laser_destroyer::LaserDestroyerPosition,
+    laser_destroyer_prefab, operator_prefab, player_prefab,
 };
 
 mod prefabs;
