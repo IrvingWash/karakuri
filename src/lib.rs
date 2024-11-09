@@ -13,6 +13,8 @@ use scene::Scene;
 
 pub mod components;
 
+pub use adapters::asset_storage_adapter;
+pub use adapters::asset_storage_adapter::AssetStorageAdapter;
 pub use adapters::{InputProcessorAdapter, SendableEvent};
 pub use event_buss::EventBundle;
 pub use game::Game;

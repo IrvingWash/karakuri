@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 
 use raylib::{texture::Texture2D, RaylibThread};
 
@@ -6,6 +6,7 @@ use crate::WindowCtx;
 
 #[derive(Debug)]
 pub struct AssetStorage {
+    textures_base_path: Option<PathBuf>,
     textures: HashMap<&'static str, Texture2D>,
     thread: RaylibThread,
 }
@@ -16,7 +17,13 @@ impl AssetStorage {
         Self {
             textures: HashMap::new(),
             thread,
+            textures_base_path: None,
         }
+    }
+
+    #[inline]
+    pub fn set_textures_base_path(&mut self, base_path: &'static str) {
+        self.textures_base_path = Some(PathBuf::from(base_path));
     }
 
     #[inline]
@@ -30,7 +37,21 @@ impl AssetStorage {
             return Ok(());
         }
 
-        let texture = ctx.load_texture(&self.thread, path)?;
+        let full_path = match &self.textures_base_path {
+            None => path.to_owned(),
+            Some(base_path) => {
+                let mut clone = base_path.clone();
+
+                clone.push(path);
+
+                match clone.to_str() {
+                    None => return Err(String::from("Incorrect path")),
+                    Some(str) => str.to_owned(),
+                }
+            }
+        };
+
+        let texture = ctx.load_texture(&self.thread, &full_path)?;
 
         self.textures.insert(name, texture);
 
