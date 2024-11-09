@@ -1,7 +1,10 @@
 use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
 use raylib::{
-    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    color::Color,
+    consts::KeyboardKey,
+    math::{Rectangle, Vector2 as RaylibVector2},
+    prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
 };
 
@@ -15,6 +18,8 @@ pub struct App {
 
     particles: Vec<Particle>,
     push_force: Vector2,
+
+    liquid: Rectangle,
 }
 
 impl App {
@@ -27,6 +32,7 @@ impl App {
             thread,
             particles: Vec::new(),
             push_force: Vector2::ZERO,
+            liquid: Rectangle::default(),
         }
     }
 
@@ -38,25 +44,16 @@ impl App {
         self.rl.set_target_fps(60);
         self.running = true;
 
-        self.particles.push(Particle::new(
-            Vector2::new(50.0, 100.0),
-            Vector2::ZERO,
-            0.5,
-            2.0,
-        ));
+        self.liquid.x = 0.0;
+        self.liquid.y = (self.rl.get_screen_height() / 2) as f32;
+        self.liquid.width = self.rl.get_screen_width() as f32;
+        self.liquid.height = (self.rl.get_screen_height() / 2) as f32;
 
         self.particles.push(Particle::new(
             Vector2::new(100.0, 100.0),
             Vector2::ZERO,
             1.0,
             4.0,
-        ));
-
-        self.particles.push(Particle::new(
-            Vector2::new(150.0, 100.0),
-            Vector2::ZERO,
-            2.0,
-            8.0,
         ));
     }
 
@@ -85,11 +82,13 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         for particle in &mut self.particles {
-            let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
-            particle.apply_force(&wind_force);
-
-            let weight_force = particle_force_generator::weight(particle.mass, PIXELS_PER_METER);
+            let weight_force = particle_force_generator::weight(particle, PIXELS_PER_METER);
             particle.apply_force(&weight_force);
+
+            if particle.position.y >= self.liquid.y.into() {
+                let drag_force = particle_force_generator::drag(particle, 0.01);
+                particle.apply_force(&drag_force);
+            }
 
             particle.apply_force(&self.push_force);
 
@@ -105,6 +104,12 @@ impl App {
         let mut d = self.rl.begin_drawing(&self.thread);
 
         d.clear_background(Color::GRAY);
+
+        d.draw_rectangle_v(
+            RaylibVector2::new(self.liquid.x, self.liquid.y),
+            RaylibVector2::new(self.liquid.width, self.liquid.height),
+            Color::BLUE,
+        );
 
         for particle in &mut self.particles {
             d.draw_circle_v(
