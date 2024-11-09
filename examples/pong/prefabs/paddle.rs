@@ -66,7 +66,7 @@ impl BehaviorComponent for Paddle {
         if self.side == PaddleSide::Left {
             transform.position.set(&Vector2::new(
                 edge_offset + sprite.clip_size.as_ref().unwrap().x / 2.0,
-                self.resolution.x / 2.0,
+                self.resolution.y / 2.0,
             ));
         } else {
             transform.position.set(&Vector2::new(

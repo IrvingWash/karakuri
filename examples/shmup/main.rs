@@ -2,8 +2,8 @@ use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
 use kmath::Vector2;
 use prefabs::{
-    background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, operator_prefab,
-    player_prefab, LaserDestroyerPosition,
+    background_prefab, enemy_spawner_prefab, laser_destroyer::LaserDestroyerPosition,
+    laser_destroyer_prefab, operator_prefab, player_prefab,
 };
 
 mod prefabs;
@@ -43,7 +43,7 @@ pub fn main() -> Result<(), String> {
     )?;
     game.add_texture("explosion", "./examples/shmup/assets/sprites/explosion.png")?;
     game.add_texture(
-        "background",
+        "cosmos",
         "./examples/shmup/assets/sprites/background/background.png",
     )?;
     game.add_texture(
@@ -59,7 +59,7 @@ pub fn main() -> Result<(), String> {
         laser_destroyer_prefab(LaserDestroyerPosition::Top),
         laser_destroyer_prefab(LaserDestroyerPosition::Bottom),
         enemy_spawner_prefab(),
-        background_prefab(&resolution, "background", 0),
+        background_prefab(&resolution, "cosmos", 0),
         background_prefab(&resolution, "stars", 1),
     ]);
 
