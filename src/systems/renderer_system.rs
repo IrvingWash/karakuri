@@ -2,6 +2,7 @@ use std::cell::Ref;
 
 use kec::Registry;
 use kmath::Vector2;
+use kutils::collision::aabb;
 use kutils::Color;
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
@@ -17,12 +18,16 @@ use crate::errors::{
 #[derive(Debug)]
 pub struct RendererSystem {
     renderer: Renderer,
+    culling: bool,
 }
 
 impl RendererSystem {
     #[inline]
     pub const fn new(renderer: Renderer) -> Self {
-        Self { renderer }
+        Self {
+            renderer,
+            culling: false,
+        }
     }
 
     #[inline]
@@ -58,6 +63,16 @@ impl RendererSystem {
         registry: &mut Registry,
         resolution: &Vector2,
     ) {
+        if self.culling {
+            self.renderer.draw_text(
+                handle,
+                "Culling",
+                &Vector2::new(28.0, 572.0),
+                14,
+                &Color::RED,
+            );
+        }
+
         let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let entities_with_colliders = registry
@@ -105,12 +120,14 @@ impl RendererSystem {
 
     #[inline]
     pub fn draw_sprites(
-        &self,
+        &mut self,
         handle: &mut DrawHandle,
         registry: &mut Registry,
         asset_storage: &AssetStorage,
         resolution: &Vector2,
     ) {
+        self.culling = false;
+
         let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let drawable_entities = registry
@@ -122,14 +139,35 @@ impl RendererSystem {
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
         for entity in &drawable_entities {
-            data.push(SpriteDrawData {
-                transform: registry
-                    .get_component::<TransformComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity)),
-                sprite: registry
-                    .get_component::<SpriteComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity)),
-            });
+            let transform = registry
+                .get_component::<TransformComponent>(entity)
+                .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
+            let sprite = registry
+                .get_component::<SpriteComponent>(entity)
+                .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
+
+            let scaled_clip_size = sprite
+                .clip_size
+                .as_ref()
+                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                .to_scaled(zoom)
+                .to_scaled_by_other(&transform.scale);
+
+            if aabb(
+                &operator_position
+                    .to_scaled(zoom)
+                    .to_subtracted(&resolution.to_divided(2.0)),
+                resolution,
+                &transform
+                    .position
+                    .to_scaled(zoom)
+                    .to_subtracted(&scaled_clip_size.to_divided(2.0)),
+                &scaled_clip_size,
+            ) {
+                data.push(SpriteDrawData { transform, sprite });
+            } else {
+                self.culling = true;
+            }
         }
 
         data.sort_by(|a, b| a.sprite.layer.cmp(&b.sprite.layer));
