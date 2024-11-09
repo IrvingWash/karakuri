@@ -11,7 +11,7 @@ pub fn main() -> Result<(), String> {
         debug: true,
         resolution: Vector2::new(800.0, 600.0),
         target_fps: 60,
-        title: "Camera",
+        title: "Racing",
     });
 
     let halved_resolution = game.resolution().to_divided(2.0);
