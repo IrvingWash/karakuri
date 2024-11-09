@@ -75,23 +75,14 @@ impl RendererSystem {
                 .unwrap_or_else(|| panic_queried::<BoxColliderComponent>(entity));
 
             let position = transform.position.to_added(&box_collider.position_offset);
-            let halved_position = Vector2::new(
-                position.x
-                    - box_collider
-                        .size
-                        .as_ref()
-                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
-                        .x
-                        * transform.scale.x
-                        / 2.0,
-                position.y
-                    - box_collider
-                        .size
-                        .as_ref()
-                        .unwrap_or_else(|| panic_uninitialized_collider("size"))
-                        .y
-                        * transform.scale.y
-                        / 2.0,
+
+            let halved_position = position.to_subtracted(
+                &box_collider
+                    .size
+                    .as_ref()
+                    .unwrap()
+                    .to_scaled_by_other(&transform.scale)
+                    .to_divided(2.0),
             );
 
             self.renderer.draw_rect(
