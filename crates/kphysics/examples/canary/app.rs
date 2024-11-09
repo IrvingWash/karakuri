@@ -31,17 +31,24 @@ impl App {
 
     pub fn setup(&mut self) {
         self.rl.toggle_borderless_windowed();
+        self.rl.set_target_fps(60);
+        self.running = true;
 
         self.particle = Some(Particle::new(Vector2::new(50.0, 100.0), Vector2::ZERO, 1.0));
-
-        self.running = true;
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
     }
 
-    pub fn update(&self) {}
+    pub fn update(&mut self) {
+        let particle = self.particle.as_mut().unwrap();
+
+        particle.velocity = Vector2::new(100.0, 30.0);
+        particle
+            .position
+            .add(&particle.velocity.to_scaled(self.rl.get_frame_time().into()));
+    }
 
     pub fn render(&mut self) {
         let mut d = self.rl.begin_drawing(&self.thread);
