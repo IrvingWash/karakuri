@@ -32,7 +32,7 @@ impl Window {
         let (mut rl, thread) = raylib::init()
             .size(resolution.x as i32, resolution.y as i32)
             .title(title)
-            // .fullscreen()
+            // TODO: .fullscreen()
             .build();
 
         rl.set_window_focused();
