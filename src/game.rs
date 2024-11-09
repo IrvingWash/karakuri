@@ -3,7 +3,10 @@ use kmath::Vector2;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
-    adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
+    adapters::{
+        AssetStorageAdapter, EventSenderAdapter, InputProcessorAdapter, RegistryAdapter,
+        TimerAdapter,
+    },
     components::{BehaviorComponent, ComponentPayload},
     errors::panic_queried,
     systems::{
@@ -67,8 +70,8 @@ impl Game {
     }
 
     #[inline]
-    pub fn add_texture(&mut self, name: &'static str, path: &'static str) -> Result<(), String> {
-        self.asset_storage.add_texture(name, path, &mut self.ctx)
+    pub fn asset_storage(&mut self) -> AssetStorageAdapter {
+        AssetStorageAdapter::new(&mut self.asset_storage, &mut self.ctx)
     }
 
     #[inline]

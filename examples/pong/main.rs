@@ -1,3 +1,4 @@
+use karakuri::asset_storage_adapter::TexturePayload;
 use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
 use kmath::Vector2;
@@ -17,7 +18,10 @@ pub fn main() -> Result<(), String> {
         ..Default::default()
     });
 
-    game.add_texture("square", "./examples/pong/assets/sprites/square.png")?;
+    game.asset_storage().add_textures(vec![TexturePayload {
+        name: "square",
+        path: "./examples/pong/assets/sprites/square.png",
+    }])?;
 
     let resolution = game.resolution();
 

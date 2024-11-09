@@ -1,3 +1,4 @@
+use karakuri::asset_storage_adapter::TexturePayload;
 use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
 
@@ -15,7 +16,10 @@ pub fn main() -> Result<(), String> {
         ..Default::default()
     });
 
-    game.add_texture("square", "./examples/collisions/assets/sprites/square.png")?;
+    game.asset_storage().add_textures(vec![TexturePayload {
+        name: "square",
+        path: "./examples/collisions/assets/sprites/square.png",
+    }])?;
 
     game.set_scene(vec![box_prefab(true), box_prefab(false)]);
 

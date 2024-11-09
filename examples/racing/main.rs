@@ -1,4 +1,4 @@
-use karakuri::{Game, GameConfig};
+use karakuri::{asset_storage_adapter::TexturePayload, Game, GameConfig};
 use kmath::Vector2;
 use kutils::Color;
 use prefabs::{operator_prefab, player_prefab, race_track_prefab};
@@ -16,11 +16,18 @@ pub fn main() -> Result<(), String> {
 
     let halved_resolution = game.resolution().to_divided(2.0);
 
-    game.add_texture("car", "./examples/racing/assets/sprites/car.png")?;
-    game.add_texture(
-        "race_track",
-        "./examples/racing/assets/sprites/race_track.png",
-    )?;
+    game.asset_storage()
+        .set_textures_base_path("./examples/racing/assets/sprites")
+        .add_textures(vec![
+            TexturePayload {
+                name: "car",
+                path: "car.png",
+            },
+            TexturePayload {
+                name: "race_track",
+                path: "race_track.png",
+            },
+        ])?;
 
     game.set_scene(vec![
         player_prefab(),
