@@ -4,6 +4,8 @@ use raylib::{
     color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
+const PIXELS_PER_METER: f64 = 50.0;
+
 #[derive(Debug)]
 pub struct App {
     rl: RaylibHandle,
@@ -42,12 +44,18 @@ impl App {
     }
 
     pub fn update(&mut self) {
+        let delta_time = self.rl.get_frame_time();
+
         let particle = self.particle.as_mut().unwrap();
 
-        particle.velocity = Vector2::new(100.0, 30.0);
+        let acceleration = Vector2::new(0.0, 9.8 * PIXELS_PER_METER);
+
+        particle
+            .velocity
+            .add(&acceleration.to_scaled(delta_time.into()));
         particle
             .position
-            .add(&particle.velocity.to_scaled(self.rl.get_frame_time().into()));
+            .add(&particle.velocity.to_scaled(delta_time.into()));
     }
 
     pub fn render(&mut self) {
