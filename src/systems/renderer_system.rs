@@ -2,6 +2,7 @@ use std::cell::Ref;
 
 use kec::Registry;
 use kmath::Vector2;
+use kutils::collision::aabb;
 use kutils::Color;
 use kwindow::{AssetStorage, DrawHandle, Renderer, WindowCtx};
 
@@ -122,14 +123,24 @@ impl RendererSystem {
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
         for entity in &drawable_entities {
-            data.push(SpriteDrawData {
-                transform: registry
-                    .get_component::<TransformComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(entity)),
-                sprite: registry
-                    .get_component::<SpriteComponent>(entity)
-                    .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity)),
-            });
+            let transform = registry
+                .get_component::<TransformComponent>(entity)
+                .unwrap_or_else(|| panic_queried::<TransformComponent>(entity));
+            let sprite = registry
+                .get_component::<SpriteComponent>(entity)
+                .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
+
+            if aabb(
+                &operator_position,
+                resolution,
+                &transform.position,
+                sprite
+                    .clip_size
+                    .as_ref()
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
+            ) {
+                data.push(SpriteDrawData { transform, sprite });
+            }
         }
 
         data.sort_by(|a, b| a.sprite.layer.cmp(&b.sprite.layer));

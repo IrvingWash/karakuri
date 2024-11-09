@@ -1,7 +1,7 @@
 use kmath::Vector2;
 
 #[inline]
-pub fn aabb_centered(
+pub fn aabb(
     position_a: &Vector2,
     size_a: &Vector2,
     position_b: &Vector2,
