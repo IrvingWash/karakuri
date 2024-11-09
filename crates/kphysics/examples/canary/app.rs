@@ -1,8 +1,10 @@
 use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
+use rand::Rng;
 use raylib::{
     color::Color,
     consts::KeyboardKey,
+    consts::MouseButton,
     math::{Rectangle, Vector2 as RaylibVector2},
     prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
@@ -48,13 +50,25 @@ impl App {
         self.liquid.y = (self.rl.get_screen_height() / 2) as f32;
         self.liquid.width = self.rl.get_screen_width() as f32;
         self.liquid.height = (self.rl.get_screen_height() / 2) as f32;
-
-        self.particles
-            .push(Particle::new(Vector2::new(100.0, 100.0), 1.0, 4.0));
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
+
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
+
+            let factor = rand::thread_rng().gen_range(1.0..=5.0);
+
+            self.particles.push(Particle::new(
+                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                factor,
+                factor * 2.0,
+            ));
+        }
 
         if self.rl.is_key_down(KeyboardKey::KEY_UP) {
             self.push_force
@@ -82,7 +96,7 @@ impl App {
             particle.apply_force(&weight_force);
 
             if particle.position.y >= self.liquid.y.into() {
-                let drag_force = particle_force_generator::drag(particle, 0.04);
+                let drag_force = particle_force_generator::drag(particle, 0.1);
                 particle.apply_force(&drag_force);
             }
 

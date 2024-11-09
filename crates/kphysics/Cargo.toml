@@ -10,10 +10,13 @@ documentation = "https://github.com/IrvingWash/karakuri"
 license = "MIT"
 authors = ["WI"]
 
+[lints]
+workspace = true
+
 [dependencies]
 kmath = { path = "../kmath" }
 klogger = { path = "../klogger" }
-raylib = "5.0.2"
 
-[lints]
-workspace = true
+[dev-dependencies]
+raylib = "5.0.2"
+rand = "0.8.5"
