@@ -1,7 +1,5 @@
 use kmath::Vector2;
 
-use crate::Particle;
-
-pub fn weight(particle: &mut Particle, k: f64) {
-    particle.apply_force(&Vector2::new(0.0, 9.8 * k * particle.mass));
+pub fn weight(mass: f64, k: f64) -> Vector2 {
+    Vector2::new(0.0, 9.8 * k * mass)
 }

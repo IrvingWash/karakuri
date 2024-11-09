@@ -43,14 +43,14 @@ impl App {
         ));
 
         self.particles.push(Particle::new(
-            Vector2::new(60.0, 100.0),
+            Vector2::new(100.0, 100.0),
             Vector2::ZERO,
             1.0,
             4.0,
         ));
 
         self.particles.push(Particle::new(
-            Vector2::new(70.0, 100.0),
+            Vector2::new(150.0, 100.0),
             Vector2::ZERO,
             2.0,
             8.0,
@@ -68,7 +68,8 @@ impl App {
             let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
             particle.apply_force(&wind_force);
 
-            particle_force_generator::weight(particle, PIXELS_PER_METER);
+            let weight_force = particle_force_generator::weight(particle.mass, PIXELS_PER_METER);
+            particle.apply_force(&weight_force);
 
             particle.integrate(delta_time.into());
         }
