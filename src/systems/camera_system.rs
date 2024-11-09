@@ -10,6 +10,7 @@ use crate::{
 pub struct CameraSystem {}
 
 impl CameraSystem {
+    #[inline]
     pub fn update(&self, registry: &mut Registry, resolution: &Vector2) {
         let operators = registry.query().with_component::<CameraComponent>().build();
 

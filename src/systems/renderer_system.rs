@@ -58,30 +58,7 @@ impl RendererSystem {
         registry: &mut Registry,
         resolution: &Vector2,
     ) {
-        let operator = registry
-            .query()
-            .with_component::<CameraComponent>()
-            .build()
-            .first()
-            .cloned();
-
-        let (operator_position, zoom) = match operator {
-            Some(operator) => {
-                let position = registry
-                    .get_component::<TransformComponent>(&operator)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
-                    .position
-                    .clone();
-
-                let camera = registry
-                    .get_component::<CameraComponent>(&operator)
-                    .unwrap_or_else(|| panic_queried::<CameraComponent>(&operator))
-                    .zoom;
-
-                (position, camera)
-            }
-            None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
-        };
+        let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let entities_with_colliders = registry
             .query()
@@ -143,30 +120,7 @@ impl RendererSystem {
         asset_storage: &AssetStorage,
         resolution: &Vector2,
     ) {
-        let operator = registry
-            .query()
-            .with_component::<CameraComponent>()
-            .build()
-            .first()
-            .cloned();
-
-        let (operator_position, zoom) = match operator {
-            Some(operator) => {
-                let position = registry
-                    .get_component::<TransformComponent>(&operator)
-                    .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
-                    .position
-                    .clone();
-
-                let camera = registry
-                    .get_component::<CameraComponent>(&operator)
-                    .unwrap_or_else(|| panic_queried::<CameraComponent>(&operator))
-                    .zoom;
-
-                (position, camera)
-            }
-            None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
-        };
+        let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let drawable_entities = registry
             .query()
@@ -223,6 +177,33 @@ impl RendererSystem {
                 &sprite.tint,
             );
         }
+    }
+
+    fn make_camera(&self, registry: &mut Registry, resolution: &Vector2) -> (Vector2, f64) {
+        let operator = registry
+            .query()
+            .with_component::<CameraComponent>()
+            .build()
+            .first()
+            .cloned();
+
+        return match operator {
+            Some(operator) => {
+                let position = registry
+                    .get_component::<TransformComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<TransformComponent>(&operator))
+                    .position
+                    .clone();
+
+                let zoom = registry
+                    .get_component::<CameraComponent>(&operator)
+                    .unwrap_or_else(|| panic_queried::<CameraComponent>(&operator))
+                    .zoom;
+
+                (position, zoom)
+            }
+            None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
+        };
     }
 }
 
