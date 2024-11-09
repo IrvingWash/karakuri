@@ -34,17 +34,15 @@ impl Particle {
     }
 
     pub fn apply_force(&mut self, force: &Vector2) {
-        self.accumulated_forces.add(&force);
+        self.accumulated_forces.add(force);
     }
 
     pub fn integrate(&mut self, delta_time: f64) {
         let acceleration = self.accumulated_forces.to_divided(self.mass);
 
-        self.velocity
-            .add(&acceleration.to_scaled(delta_time.into()));
+        self.velocity.add(&acceleration.to_scaled(delta_time));
 
-        self.position
-            .add(&self.velocity.to_scaled(delta_time.into()));
+        self.position.add(&self.velocity.to_scaled(delta_time));
 
         self.clear_forces();
     }

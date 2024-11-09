@@ -12,7 +12,7 @@ pub struct App {
     thread: RaylibThread,
     running: bool,
 
-    particle: Option<Particle>,
+    particles: Vec<Particle>,
 }
 
 impl App {
@@ -23,7 +23,7 @@ impl App {
             running: false,
             rl: handle,
             thread,
-            particle: None,
+            particles: Vec::new(),
         }
     }
 
@@ -35,11 +35,25 @@ impl App {
         self.rl.set_target_fps(60);
         self.running = true;
 
-        self.particle = Some(Particle::new(
+        self.particles.push(Particle::new(
             Vector2::new(50.0, 100.0),
+            Vector2::ZERO,
+            0.5,
+            2.0,
+        ));
+
+        self.particles.push(Particle::new(
+            Vector2::new(50.0, 115.0),
             Vector2::ZERO,
             1.0,
             4.0,
+        ));
+
+        self.particles.push(Particle::new(
+            Vector2::new(50.0, 130.0),
+            Vector2::ZERO,
+            2.0,
+            8.0,
         ));
     }
 
@@ -50,10 +64,15 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        let wind_force = Vector2::new(1.0 * PIXELS_PER_METER, 0.0);
+        let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
+        let weight_force = Vector2::new(0.0, 9.8 * PIXELS_PER_METER);
 
-        self.particle.as_mut().unwrap().apply_force(&wind_force);
-        self.particle.as_mut().unwrap().integrate(delta_time.into());
+        for particle in &mut self.particles {
+            particle.apply_force(&wind_force);
+            particle.apply_force(&weight_force);
+
+            particle.integrate(delta_time.into());
+        }
 
         self.keep_in_window();
     }
@@ -63,41 +82,43 @@ impl App {
 
         d.clear_background(Color::GRAY);
 
-        d.draw_circle_v(
-            vector2_to_raylib(&self.particle.as_ref().unwrap().position),
-            self.particle.as_ref().unwrap().radius as f32,
-            Color::WHITE,
-        );
+        for particle in &mut self.particles {
+            d.draw_circle_v(
+                vector2_to_raylib(&particle.position),
+                particle.radius as f32,
+                Color::WHITE,
+            );
+        }
     }
 
     fn keep_in_window(&mut self) {
-        let particle = self.particle.as_mut().unwrap();
-
         let width: f64 = self.rl.get_screen_width().into();
         let height: f64 = self.rl.get_screen_height().into();
 
-        if particle.position.x + particle.radius > width {
-            particle.position.x = width - particle.radius;
-            particle.velocity.x *= -0.9;
+        for particle in &mut self.particles {
+            if particle.position.x + particle.radius > width {
+                particle.position.x = width - particle.radius;
+                particle.velocity.x *= -0.9;
 
-            return;
-        }
+                return;
+            }
 
-        if particle.position.x - particle.radius < 0.0 {
-            particle.position.x = particle.radius;
-            particle.velocity.x *= -0.9;
+            if particle.position.x - particle.radius < 0.0 {
+                particle.position.x = particle.radius;
+                particle.velocity.x *= -0.9;
 
-            return;
-        }
+                return;
+            }
 
-        if particle.position.y + particle.radius > height {
-            particle.position.y = height - particle.radius;
-            particle.velocity.y *= -0.9;
-        }
+            if particle.position.y + particle.radius > height {
+                particle.position.y = height - particle.radius;
+                particle.velocity.y *= -0.9;
+            }
 
-        if particle.position.y - particle.radius < 0.0 {
-            particle.position.y = particle.radius;
-            particle.velocity.y *= -0.9;
+            if particle.position.y - particle.radius < 0.0 {
+                particle.position.y = particle.radius;
+                particle.velocity.y *= -0.9;
+            }
         }
     }
 }
