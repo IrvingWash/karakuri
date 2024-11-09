@@ -132,26 +132,23 @@ impl RendererSystem {
                 .get_component::<SpriteComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
+            let scaled_clip_size = sprite
+                .clip_size
+                .as_ref()
+                .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                .to_scaled(zoom)
+                .to_scaled_by_other(&transform.scale);
+
             if aabb(
                 &operator_position
                     .to_scaled(zoom)
                     .to_subtracted(&resolution.to_divided(2.0)),
                 &resolution,
-                &transform.position.to_scaled(zoom).to_subtracted(
-                    &sprite
-                        .clip_size
-                        .as_ref()
-                        .unwrap()
-                        .to_scaled(zoom)
-                        .to_scaled_by_other(&transform.scale)
-                        .to_divided(2.0),
-                ),
-                &sprite
-                    .clip_size
-                    .as_ref()
-                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                &transform
+                    .position
                     .to_scaled(zoom)
-                    .to_scaled_by_other(&transform.scale),
+                    .to_subtracted(&scaled_clip_size.to_divided(2.0)),
+                &scaled_clip_size,
             ) {
                 data.push(SpriteDrawData { transform, sprite });
             } else {
