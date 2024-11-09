@@ -1,3 +1,3 @@
-pub fn green() {
-    println!("Hello, Physics!");
-}
+mod particle;
+
+pub use particle::Particle;

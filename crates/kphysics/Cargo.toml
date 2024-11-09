@@ -13,6 +13,7 @@ authors = ["WI"]
 [dependencies]
 kmath = { path = "../kmath" }
 klogger = { path = "../klogger" }
+raylib = "5.0.2"
 
 [lints]
 workspace = true
