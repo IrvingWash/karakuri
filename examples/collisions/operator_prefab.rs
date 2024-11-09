@@ -16,38 +16,18 @@ pub fn operator_prefab() -> ComponentPayload {
 struct Operator {}
 
 impl BehaviorComponent for Operator {
-    fn on_start(&mut self, ctx: karakuri::UpdateContext) {
+    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
         let mut camera = ctx
             .registry
             .get_component_mut::<CameraComponent>(ctx.entity)
             .unwrap();
 
-        camera.target = ctx
-            .registry
-            .find_entity(&TagComponent::new(String::from("player")));
-    }
-
-    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
-        if ctx.input_processor.is_pressed(KeyboardKey::KEY_O) {
-            let mut camera = ctx
-                .registry
-                .get_component_mut::<CameraComponent>(ctx.entity)
-                .unwrap();
-
-            camera.target = None;
-            camera.zoom = 1.0;
+        if ctx.input_processor.is_down(KeyboardKey::KEY_W) {
+            camera.zoom += 0.1 * ctx.delta_time;
         }
 
-        if ctx.input_processor.is_pressed(KeyboardKey::KEY_P) {
-            let mut camera = ctx
-                .registry
-                .get_component_mut::<CameraComponent>(ctx.entity)
-                .unwrap();
-
-            camera.target = ctx
-                .registry
-                .find_entity(&TagComponent::new(String::from("player")));
-            camera.zoom = 0.5;
+        if ctx.input_processor.is_down(KeyboardKey::KEY_S) {
+            camera.zoom -= 0.1 * ctx.delta_time;
         }
     }
 
