@@ -1,10 +1,13 @@
-use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload, TagComponent};
+use karakuri::{
+    components::{BehaviorComponent, CameraComponent, ComponentPayload, TagComponent},
+    EventBundle, UpdateContext,
+};
 use kwindow::KeyboardKey;
 
 pub fn operator_prefab() -> ComponentPayload {
     ComponentPayload {
         camera: Some(CameraComponent {
-            zoom: 0.5,
+            zoom: 0.7,
             ..Default::default()
         }),
         behavior: Some(Box::new(Operator {})),
@@ -16,7 +19,7 @@ pub fn operator_prefab() -> ComponentPayload {
 struct Operator {}
 
 impl BehaviorComponent for Operator {
-    fn on_start(&mut self, ctx: karakuri::UpdateContext) {
+    fn on_start(&mut self, ctx: UpdateContext) {
         let mut camera = ctx
             .registry
             .get_component_mut::<CameraComponent>(ctx.entity)
@@ -27,7 +30,7 @@ impl BehaviorComponent for Operator {
             .find_entity(&TagComponent::new(String::from("player")));
     }
 
-    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         if ctx.input_processor.is_pressed(KeyboardKey::KEY_O) {
             let mut camera = ctx
                 .registry
@@ -47,11 +50,11 @@ impl BehaviorComponent for Operator {
             camera.target = ctx
                 .registry
                 .find_entity(&TagComponent::new(String::from("player")));
-            camera.zoom = 0.5;
+            camera.zoom = 0.7;
         }
     }
 
-    fn on_events(&mut self, events: &karakuri::EventBundle, ctx: karakuri::UpdateContext) {
+    fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {
         if events.custom_events.contains("player_died") {
             ctx.registry
                 .get_component_mut::<CameraComponent>(ctx.entity)

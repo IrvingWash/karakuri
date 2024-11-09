@@ -1,4 +1,7 @@
-use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload};
+use karakuri::{
+    components::{BehaviorComponent, CameraComponent, ComponentPayload},
+    UpdateContext,
+};
 use kwindow::KeyboardKey;
 
 pub fn operator_prefab() -> ComponentPayload {
@@ -16,7 +19,7 @@ pub fn operator_prefab() -> ComponentPayload {
 struct Operator {}
 
 impl BehaviorComponent for Operator {
-    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         let mut camera = ctx
             .registry
             .get_component_mut::<CameraComponent>(ctx.entity)
