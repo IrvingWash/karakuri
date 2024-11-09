@@ -2,7 +2,7 @@ use std::cell::Ref;
 
 use kec::{Entity, Registry};
 use kmath::Vector2;
-use kutils::collision::aabb_centered;
+use kutils::collision::aabb;
 use kwindow::{InputProcessor, Timer, WindowCtx};
 
 use crate::{
@@ -75,7 +75,7 @@ impl PhysicsSystem {
                 let (other_transform, other_box_collider) =
                     self.components_for_collision(other, params.registry);
 
-                if aabb_centered(
+                if aabb(
                     &self.create_position_for_collision(&transform, &box_collider),
                     &box_collider
                         .size

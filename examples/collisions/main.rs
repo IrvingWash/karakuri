@@ -3,6 +3,7 @@ use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
 
 mod box_prefab;
+mod operator_prefab;
 
 use box_prefab::box_prefab;
 use kmath::Vector2;
@@ -21,7 +22,11 @@ pub fn main() -> Result<(), String> {
         path: "./examples/collisions/assets/sprites/square.png",
     }])?;
 
-    game.set_scene(vec![box_prefab(true), box_prefab(false)]);
+    game.set_scene(vec![
+        box_prefab(true),
+        box_prefab(false),
+        operator_prefab::operator_prefab(),
+    ]);
 
     game.start();
 
