@@ -32,11 +32,15 @@ impl App {
     }
 
     pub fn setup(&mut self) {
-        self.rl.toggle_borderless_windowed();
         self.rl.set_target_fps(60);
         self.running = true;
 
-        self.particle = Some(Particle::new(Vector2::new(50.0, 100.0), Vector2::ZERO, 1.0));
+        self.particle = Some(Particle::new(
+            Vector2::new(50.0, 100.0),
+            Vector2::ZERO,
+            1.0,
+            4.0,
+        ));
     }
 
     pub fn input(&mut self) {
@@ -48,7 +52,7 @@ impl App {
 
         let particle = self.particle.as_mut().unwrap();
 
-        let acceleration = Vector2::new(0.0, 9.8 * PIXELS_PER_METER);
+        let acceleration = Vector2::new(2.0 * PIXELS_PER_METER, 9.8 * PIXELS_PER_METER);
 
         particle
             .velocity
@@ -56,6 +60,8 @@ impl App {
         particle
             .position
             .add(&particle.velocity.to_scaled(delta_time.into()));
+
+        self.keep_in_window();
     }
 
     pub fn render(&mut self) {
@@ -65,9 +71,40 @@ impl App {
 
         d.draw_circle_v(
             vector2_to_raylib(&self.particle.as_ref().unwrap().position),
-            4.0,
+            self.particle.as_ref().unwrap().radius as f32,
             Color::WHITE,
         );
+    }
+
+    fn keep_in_window(&mut self) {
+        let particle = self.particle.as_mut().unwrap();
+
+        let width: f64 = self.rl.get_screen_width().into();
+        let height: f64 = self.rl.get_screen_height().into();
+
+        if particle.position.x + particle.radius > width {
+            particle.position.x = width - particle.radius;
+            particle.velocity.x *= -0.9;
+
+            return;
+        }
+
+        if particle.position.x - particle.radius < 0.0 {
+            particle.position.x = particle.radius;
+            particle.velocity.x *= -0.9;
+
+            return;
+        }
+
+        if particle.position.y + particle.radius > height {
+            particle.position.y = height - particle.radius;
+            particle.velocity.y *= -0.9;
+        }
+
+        if particle.position.y - particle.radius < 0.0 {
+            particle.position.y = particle.radius;
+            particle.velocity.y *= -0.9;
+        }
     }
 }
 
