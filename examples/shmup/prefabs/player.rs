@@ -7,13 +7,12 @@ use karakuri::components::{
 };
 use karakuri::ec::Entity;
 use karakuri::math::Vector2;
-use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
 use karakuri::{EventBundle, SendableEvent, UpdateContext};
 
 use super::player_laser::player_laser_prefab;
 
-pub fn player_prefab(resolution: &Size) -> ComponentPayload {
+pub fn player_prefab(resolution: &Vector2) -> ComponentPayload {
     ComponentPayload {
         transform: Some(TransformComponent {
             scale: Vector2::new(2.0, 2.0),
@@ -59,19 +58,20 @@ pub fn player_prefab(resolution: &Size) -> ComponentPayload {
                 looping: true,
             }),
         ])),
+        ..Default::default()
     }
 }
 
 #[derive(Debug)]
 struct Player {
     speed: f64,
-    resolution: Size,
+    resolution: Vector2,
     is_destroying: bool,
     explosion_timer: i64,
 }
 
 impl Player {
-    fn new(speed: f64, resolution: Size) -> Self {
+    fn new(speed: f64, resolution: Vector2) -> Self {
         Self {
             speed,
             resolution,
@@ -130,8 +130,8 @@ impl BehaviorComponent for Player {
             .unwrap();
 
         transform.position.set(&Vector2::new(
-            self.resolution.width as f64 / 2.0,
-            (self.resolution.height - 50) as f64,
+            self.resolution.x / 2.0,
+            self.resolution.y - 50.0,
         ));
 
         box_collider.size.as_mut().unwrap().x = 20.0;

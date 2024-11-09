@@ -13,7 +13,7 @@ use scene::Scene;
 
 pub mod components;
 
-pub use adapters::SendableEvent;
+pub use adapters::{InputProcessorAdapter, SendableEvent};
 pub use event_buss::EventBundle;
 pub use game::Game;
 pub use game_config::GameConfig;
@@ -21,5 +21,6 @@ pub use kec as ec;
 pub use kmath as math;
 pub use kutils as utils;
 pub use kwindow as window;
+pub use kwindow::KeyboardKey;
 pub use spawner::Spawner;
 pub use update_context::UpdateContext;

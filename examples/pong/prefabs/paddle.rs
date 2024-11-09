@@ -3,7 +3,6 @@ use karakuri::components::{
     TransformComponent,
 };
 use karakuri::math::Vector2;
-use karakuri::utils::Size;
 use karakuri::window::KeyboardKey;
 use karakuri::UpdateContext;
 
@@ -22,7 +21,7 @@ impl PaddleSide {
     }
 }
 
-pub fn paddle_prefab(side: PaddleSide, resolution: &Size) -> ComponentPayload {
+pub fn paddle_prefab(side: PaddleSide, resolution: &Vector2) -> ComponentPayload {
     ComponentPayload {
         sprite: Some(SpriteComponent {
             texture_name: "square",
@@ -48,7 +47,7 @@ pub fn paddle_prefab(side: PaddleSide, resolution: &Size) -> ComponentPayload {
 struct Paddle {
     side: PaddleSide,
     speed: f64,
-    resolution: Size,
+    resolution: Vector2,
 }
 
 impl BehaviorComponent for Paddle {
@@ -67,14 +66,12 @@ impl BehaviorComponent for Paddle {
         if self.side == PaddleSide::Left {
             transform.position.set(&Vector2::new(
                 edge_offset + sprite.clip_size.as_ref().unwrap().x / 2.0,
-                (self.resolution.height / 2) as f64,
+                self.resolution.x / 2.0,
             ));
         } else {
             transform.position.set(&Vector2::new(
-                (self.resolution.width as f64)
-                    - edge_offset
-                    - sprite.clip_size.as_ref().unwrap().x / 2.0,
-                (self.resolution.height / 2) as f64,
+                self.resolution.x - edge_offset - sprite.clip_size.as_ref().unwrap().x / 2.0,
+                self.resolution.y / 2.0,
             ));
         }
     }

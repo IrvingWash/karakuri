@@ -1,5 +1,6 @@
-use karakuri::utils::{Color, Size};
+use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
+use kmath::Vector2;
 use prefabs::{
     ball::ball_prefab,
     paddle::{paddle_prefab, PaddleSide},
@@ -10,7 +11,7 @@ mod prefabs;
 pub fn main() -> Result<(), String> {
     let mut game = Game::new(&GameConfig {
         clear_color: Color::BLACK,
-        resolution: Size::new(800, 600),
+        resolution: Vector2::new(800.0, 600.0),
         target_fps: 60,
         title: "Pong",
         ..Default::default()

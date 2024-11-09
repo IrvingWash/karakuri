@@ -14,3 +14,5 @@ collisions:
 	cargo run --example=collisions
 shmup:
 	cargo run --example=shmup
+racing:
+	cargo run --example=racing

@@ -10,11 +10,6 @@ pub struct AnimatorSystem {}
 
 impl AnimatorSystem {
     #[inline]
-    pub const fn new() -> Self {
-        Self {}
-    }
-
-    #[inline]
     pub fn animate(&self, registry: &mut Registry, time: f64) {
         let animated_entities = registry
             .query()
