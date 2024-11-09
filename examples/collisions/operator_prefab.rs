@@ -1,4 +1,4 @@
-use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload, TagComponent};
+use karakuri::components::{BehaviorComponent, CameraComponent, ComponentPayload};
 use kwindow::KeyboardKey;
 
 pub fn operator_prefab() -> ComponentPayload {

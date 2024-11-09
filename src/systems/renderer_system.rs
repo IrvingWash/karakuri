@@ -18,12 +18,16 @@ use crate::errors::{
 #[derive(Debug)]
 pub struct RendererSystem {
     renderer: Renderer,
+    culling: bool,
 }
 
 impl RendererSystem {
     #[inline]
     pub const fn new(renderer: Renderer) -> Self {
-        Self { renderer }
+        Self {
+            renderer,
+            culling: false,
+        }
     }
 
     #[inline]
@@ -59,6 +63,16 @@ impl RendererSystem {
         registry: &mut Registry,
         resolution: &Vector2,
     ) {
+        if self.culling {
+            self.renderer.draw_text(
+                handle,
+                "Culling",
+                &Vector2::new(28.0, 572.0),
+                14,
+                &Color::RED,
+            );
+        }
+
         let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let entities_with_colliders = registry
@@ -106,12 +120,14 @@ impl RendererSystem {
 
     #[inline]
     pub fn draw_sprites(
-        &self,
+        &mut self,
         handle: &mut DrawHandle,
         registry: &mut Registry,
         asset_storage: &AssetStorage,
         resolution: &Vector2,
     ) {
+        self.culling = false;
+
         let (operator_position, zoom) = self.make_camera(registry, resolution);
 
         let drawable_entities = registry
@@ -121,8 +137,6 @@ impl RendererSystem {
             .build();
 
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
-
-        let mut culling = false;
 
         for entity in &drawable_entities {
             let transform = registry
@@ -152,7 +166,7 @@ impl RendererSystem {
             ) {
                 data.push(SpriteDrawData { transform, sprite });
             } else {
-                culling = true;
+                self.culling = true;
             }
         }
 
@@ -190,16 +204,6 @@ impl RendererSystem {
                     .to_scaled(zoom),
                 transform.rotation,
                 &sprite.tint,
-            );
-        }
-
-        if culling {
-            self.renderer.draw_text(
-                handle,
-                "Culling",
-                &Vector2::new(28.0, 572.0),
-                14,
-                &Color::RED,
             );
         }
     }
