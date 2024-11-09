@@ -43,14 +43,14 @@ impl App {
         ));
 
         self.particles.push(Particle::new(
-            Vector2::new(50.0, 115.0),
+            Vector2::new(60.0, 100.0),
             Vector2::ZERO,
             1.0,
             4.0,
         ));
 
         self.particles.push(Particle::new(
-            Vector2::new(50.0, 130.0),
+            Vector2::new(70.0, 100.0),
             Vector2::ZERO,
             2.0,
             8.0,
@@ -65,9 +65,10 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
-        let weight_force = Vector2::new(0.0, 9.8 * PIXELS_PER_METER);
 
         for particle in &mut self.particles {
+            let weight_force = Vector2::new(0.0, 9.8 * PIXELS_PER_METER * particle.mass);
+
             particle.apply_force(&wind_force);
             particle.apply_force(&weight_force);
 
