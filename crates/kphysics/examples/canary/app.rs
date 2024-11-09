@@ -1,5 +1,5 @@
 use kmath::Vector2;
-use kphysics::Particle;
+use kphysics::{particle_force_generator, Particle};
 use raylib::{
     color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
@@ -64,13 +64,11 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
-
         for particle in &mut self.particles {
-            let weight_force = Vector2::new(0.0, 9.8 * PIXELS_PER_METER * particle.mass);
-
+            let wind_force = Vector2::new(0.2 * PIXELS_PER_METER, 0.0);
             particle.apply_force(&wind_force);
-            particle.apply_force(&weight_force);
+
+            particle_force_generator::weight(particle, PIXELS_PER_METER);
 
             particle.integrate(delta_time.into());
         }
