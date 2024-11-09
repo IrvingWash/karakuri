@@ -25,10 +25,10 @@ impl Default for Particle {
 
 impl Particle {
     #[inline]
-    pub fn new(position: Vector2, velocity: Vector2, mass: f64, radius: f64) -> Self {
+    pub fn new(position: Vector2, mass: f64, radius: f64) -> Self {
         Self {
             position,
-            velocity,
+            velocity: Vector2::ZERO,
             mass,
             inverse_mass: if mass != 0.0 { 1.0 / mass } else { 0.0 },
             radius,

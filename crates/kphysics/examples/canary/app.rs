@@ -24,7 +24,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Canary").build();
+        let (handle, thread) = raylib::init().title("Canary").size(1340, 800).build();
 
         Self {
             running: false,
@@ -49,12 +49,8 @@ impl App {
         self.liquid.width = self.rl.get_screen_width() as f32;
         self.liquid.height = (self.rl.get_screen_height() / 2) as f32;
 
-        self.particles.push(Particle::new(
-            Vector2::new(100.0, 100.0),
-            Vector2::ZERO,
-            1.0,
-            4.0,
-        ));
+        self.particles
+            .push(Particle::new(Vector2::new(100.0, 100.0), 1.0, 4.0));
     }
 
     pub fn input(&mut self) {
@@ -86,7 +82,7 @@ impl App {
             particle.apply_force(&weight_force);
 
             if particle.position.y >= self.liquid.y.into() {
-                let drag_force = particle_force_generator::drag(particle, 0.01);
+                let drag_force = particle_force_generator::drag(particle, 0.04);
                 particle.apply_force(&drag_force);
             }
 
