@@ -1,6 +1,6 @@
 use super::{
-    AnimationControllerComponent, BehaviorComponent, BoxColliderComponent, RigidBodyComponent,
-    SpriteComponent, TagComponent, TransformComponent,
+    camera_component::CameraComponent, AnimationControllerComponent, BehaviorComponent,
+    BoxColliderComponent, RigidBodyComponent, SpriteComponent, TagComponent, TransformComponent,
 };
 
 #[derive(Debug, Default)]
@@ -12,6 +12,7 @@ pub struct ComponentPayload {
     pub animation_controller: Option<AnimationControllerComponent>,
     pub rigid_body: Option<RigidBodyComponent>,
     pub box_collider: Option<BoxColliderComponent>,
+    pub camera: Option<CameraComponent>,
 }
 
 #[cfg(test)]
@@ -35,5 +36,6 @@ mod component_payload_tests {
         assert!(component_payload.animation_controller.is_none());
         assert!(component_payload.rigid_body.is_none());
         assert!(component_payload.box_collider.is_none());
+        assert!(component_payload.camera.is_none());
     }
 }

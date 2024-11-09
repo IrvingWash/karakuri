@@ -1,6 +1,7 @@
 mod animation_controller_component;
 mod behavior_component;
 mod box_collider_component;
+mod camera_component;
 mod component_payload;
 mod rigid_body_component;
 mod sprite_component;
@@ -12,6 +13,7 @@ pub use animation_controller_component::{
 };
 pub use behavior_component::BehaviorComponent;
 pub use box_collider_component::BoxColliderComponent;
+pub use camera_component::CameraComponent;
 pub use component_payload::ComponentPayload;
 pub use rigid_body_component::RigidBodyComponent;
 pub use sprite_component::SpriteComponent;

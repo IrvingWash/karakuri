@@ -1,8 +1,9 @@
-use karakuri::utils::{Color, Size};
+use karakuri::utils::Color;
 use karakuri::{Game, GameConfig};
+use kmath::Vector2;
 use prefabs::{
-    background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, player_prefab,
-    LaserDestroyerPosition,
+    background_prefab, enemy_spawner_prefab, laser_destroyer_prefab, operator_prefab,
+    player_prefab, LaserDestroyerPosition,
 };
 
 mod prefabs;
@@ -11,7 +12,7 @@ pub fn main() -> Result<(), String> {
     let mut game = Game::new(&GameConfig {
         title: "Shmup",
         clear_color: Color::BLACK,
-        resolution: Size::new(800, 600),
+        resolution: Vector2::new(800.0, 600.0),
         target_fps: 60,
         debug: true,
     });
@@ -53,6 +54,7 @@ pub fn main() -> Result<(), String> {
     let resolution = game.resolution();
 
     game.set_scene(vec![
+        operator_prefab(),
         player_prefab(&resolution),
         laser_destroyer_prefab(LaserDestroyerPosition::Top),
         laser_destroyer_prefab(LaserDestroyerPosition::Bottom),

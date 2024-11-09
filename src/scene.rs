@@ -5,7 +5,10 @@ use kmath::Vector2;
 use kwindow::AssetStorage;
 
 use crate::{
-    components::{BoxColliderComponent, ComponentPayload, SpriteComponent},
+    components::{
+        BoxColliderComponent, CameraComponent, ComponentPayload, SpriteComponent,
+        TransformComponent,
+    },
     errors::{panic_not_loaded_texture, panic_uninitialized_sprite},
 };
 
@@ -57,8 +60,9 @@ impl Scene {
 
             let mut sprite_clone: Option<SpriteComponent> = None;
 
-            if let Some(transform) = bundle.transform {
-                registry.add_component(&entity, transform);
+            match bundle.transform {
+                Some(transform) => registry.add_component(&entity, transform),
+                None => registry.add_component(&entity, TransformComponent::default()),
             }
 
             if let Some(behavior) = bundle.behavior {
@@ -94,6 +98,14 @@ impl Scene {
                     &entity,
                     self.prepare_box_collider_component(box_collider, sprite_clone),
                 );
+            }
+
+            if let Some(camera) = bundle.camera {
+                if registry.has::<CameraComponent>() {
+                    klogger::terminate("Only one camera is allowed on the scene.");
+                }
+
+                registry.add_component(&entity, camera);
             }
         }
 

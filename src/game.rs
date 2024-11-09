@@ -1,12 +1,14 @@
 use kec::{Entity, Registry};
-use kutils::Size;
+use kmath::Vector2;
 use kwindow::{AssetStorage, FpsController, InputProcessor, Timer, Window, WindowCtx};
 
 use crate::{
     adapters::{EventSenderAdapter, InputProcessorAdapter, RegistryAdapter, TimerAdapter},
     components::{BehaviorComponent, ComponentPayload},
     errors::panic_queried,
-    systems::{physics_system::AffectParams, AnimatorSystem, PhysicsSystem, RendererSystem},
+    systems::{
+        physics_system::AffectParams, AnimatorSystem, CameraSystem, PhysicsSystem, RendererSystem,
+    },
     Event, EventBuss, GameConfig, Scene, UpdateContext,
 };
 
@@ -17,9 +19,10 @@ pub struct Game {
     scene: Scene,
     ctx: WindowCtx,
     asset_storage: AssetStorage,
-    renderer: RendererSystem,
-    animator: AnimatorSystem,
-    physics: PhysicsSystem,
+    renderer_system: RendererSystem,
+    animator_system: AnimatorSystem,
+    physics_system: PhysicsSystem,
+    camera_system: CameraSystem,
     timer: Timer,
     event_buss: EventBuss,
     debug: bool,
@@ -36,7 +39,7 @@ impl Game {
             asset_storage,
         } = Window::new(
             config.title,
-            config.resolution,
+            &config.resolution,
             &config.clear_color,
             config.target_fps,
         );
@@ -48,9 +51,10 @@ impl Game {
             scene: Scene::new(),
             ctx,
             asset_storage,
-            renderer: RendererSystem::new(renderer),
-            animator: AnimatorSystem::new(),
-            physics: PhysicsSystem::new(),
+            renderer_system: RendererSystem::new(renderer),
+            animator_system: AnimatorSystem::default(),
+            physics_system: PhysicsSystem::default(),
+            camera_system: CameraSystem::default(),
             timer: Timer::new(),
             event_buss: EventBuss::default(),
             debug: config.debug,
@@ -91,8 +95,8 @@ impl Game {
     }
 
     #[inline]
-    pub fn resolution(&self) -> Size {
-        self.renderer.resolution(&self.ctx)
+    pub fn resolution(&self) -> Vector2 {
+        self.renderer_system.resolution(&self.ctx)
     }
 
     fn start_entities(&mut self, entities_to_start: &[Entity], delta_time: f64) {
@@ -134,6 +138,8 @@ impl Game {
     }
 
     fn update_entities(&mut self, delta_time: f64, time: f64) {
+        let resolution = self.resolution();
+
         let updateable_entities = self
             .registry
             .query()
@@ -179,7 +185,9 @@ impl Game {
             }
         }
 
-        self.physics.affect(AffectParams {
+        self.camera_system.update(&mut self.registry, &resolution);
+
+        self.physics_system.affect(AffectParams {
             registry: &mut self.registry,
             delta_time,
             input_processor: &self.input_processor,
@@ -189,25 +197,30 @@ impl Game {
             event_buss: &mut self.event_buss,
         });
 
-        self.animator.animate(&mut self.registry, time);
+        self.animator_system.animate(&mut self.registry, time);
     }
 
     fn render(&mut self) {
         let fps = self.ctx.get_fps().to_string();
         let resolution = self.resolution();
 
-        let mut handle = self.renderer.start_frame(&mut self.ctx);
+        let mut handle = self.renderer_system.start_frame(&mut self.ctx);
 
-        self.renderer
-            .draw_sprites(&mut handle, &mut self.registry, &self.asset_storage);
+        self.renderer_system.draw_sprites(
+            &mut handle,
+            &mut self.registry,
+            &self.asset_storage,
+            &resolution,
+        );
 
         if self.debug {
-            self.renderer
-                .draw_box_colliders(&mut handle, &mut self.registry);
+            self.renderer_system
+                .draw_box_colliders(&mut handle, &mut self.registry, &resolution);
 
-            self.renderer.draw_fps(&mut handle, &fps, &resolution);
+            self.renderer_system
+                .draw_fps(&mut handle, &fps, &resolution);
         }
 
-        self.renderer.finish_frame(handle);
+        self.renderer_system.finish_frame(handle);
     }
 }
