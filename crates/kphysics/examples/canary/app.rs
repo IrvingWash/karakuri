@@ -50,16 +50,10 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        let particle = self.particle.as_mut().unwrap();
-
         let acceleration = Vector2::new(2.0 * PIXELS_PER_METER, 9.8 * PIXELS_PER_METER);
 
-        particle
-            .velocity
-            .add(&acceleration.to_scaled(delta_time.into()));
-        particle
-            .position
-            .add(&particle.velocity.to_scaled(delta_time.into()));
+        self.particle.as_mut().unwrap().acceleration = acceleration;
+        self.particle.as_mut().unwrap().integrate(delta_time.into());
 
         self.keep_in_window();
     }

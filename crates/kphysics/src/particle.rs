@@ -5,7 +5,8 @@ pub struct Particle {
     pub position: Vector2,
     pub velocity: Vector2,
     pub mass: f64,
-    pub radius: f64, // For debug
+    pub radius: f64,           // For debug
+    pub acceleration: Vector2, // Delete ASAP
 }
 
 impl Particle {
@@ -16,6 +17,14 @@ impl Particle {
             velocity,
             mass,
             radius,
+            acceleration: Vector2::ZERO,
         }
+    }
+
+    pub fn integrate(&mut self, delta_time: f64) {
+        self.velocity
+            .add(&self.acceleration.to_scaled(delta_time.into()));
+        self.position
+            .add(&self.velocity.to_scaled(delta_time.into()));
     }
 }
