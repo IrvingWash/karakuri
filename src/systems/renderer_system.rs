@@ -122,6 +122,8 @@ impl RendererSystem {
 
         let mut data: Vec<SpriteDrawData> = Vec::with_capacity(drawable_entities.capacity());
 
+        let mut culling = false;
+
         for entity in &drawable_entities {
             let transform = registry
                 .get_component::<TransformComponent>(entity)
@@ -131,15 +133,24 @@ impl RendererSystem {
                 .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
             if aabb(
-                &operator_position,
-                resolution,
-                &transform.position,
+                &operator_position.to_subtracted(&resolution.to_scaled(zoom).to_divided(2.0)),
+                &resolution.to_scaled(zoom),
+                &transform.position.to_subtracted(
+                    &sprite
+                        .clip_size
+                        .as_ref()
+                        .unwrap()
+                        .to_scaled(zoom)
+                        .to_divided(2.0),
+                ),
                 sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
             ) {
                 data.push(SpriteDrawData { transform, sprite });
+            } else {
+                culling = true;
             }
         }
 
@@ -177,6 +188,16 @@ impl RendererSystem {
                     .to_scaled(zoom),
                 transform.rotation,
                 &sprite.tint,
+            );
+        }
+
+        if culling {
+            self.renderer.draw_text(
+                handle,
+                "Culling",
+                &Vector2::new(28.0, 572.0),
+                14,
+                &Color::RED,
             );
         }
     }
