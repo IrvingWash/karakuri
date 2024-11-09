@@ -133,13 +133,25 @@ impl RendererSystem {
                 .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
             if aabb(
-                &operator_position,
-                resolution,
-                &transform.position,
+                &operator_position
+                    .to_scaled(zoom)
+                    .to_subtracted(&resolution.to_divided(2.0)),
+                &resolution,
+                &transform.position.to_scaled(zoom).to_subtracted(
+                    &sprite
+                        .clip_size
+                        .as_ref()
+                        .unwrap()
+                        .to_scaled(zoom)
+                        .to_scaled_by_other(&transform.scale)
+                        .to_divided(2.0),
+                ),
                 &sprite
                     .clip_size
                     .as_ref()
-                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
+                    .unwrap_or_else(|| panic_uninitialized_sprite("clip_size"))
+                    .to_scaled(zoom)
+                    .to_scaled_by_other(&transform.scale),
             ) {
                 data.push(SpriteDrawData { transform, sprite });
             } else {
