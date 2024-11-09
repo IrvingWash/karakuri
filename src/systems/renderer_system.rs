@@ -157,7 +157,7 @@ impl RendererSystem {
                 &operator_position
                     .to_scaled(zoom)
                     .to_subtracted(&resolution.to_divided(2.0)),
-                &resolution,
+                resolution,
                 &transform
                     .position
                     .to_scaled(zoom)
