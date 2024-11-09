@@ -133,17 +133,10 @@ impl RendererSystem {
                 .unwrap_or_else(|| panic_queried::<SpriteComponent>(entity));
 
             if aabb(
-                &operator_position.to_subtracted(&resolution.to_scaled(zoom).to_divided(2.0)),
-                &resolution.to_scaled(zoom),
-                &transform.position.to_subtracted(
-                    &sprite
-                        .clip_size
-                        .as_ref()
-                        .unwrap()
-                        .to_scaled(zoom)
-                        .to_divided(2.0),
-                ),
-                sprite
+                &operator_position,
+                resolution,
+                &transform.position,
+                &sprite
                     .clip_size
                     .as_ref()
                     .unwrap_or_else(|| panic_uninitialized_sprite("clip_size")),
