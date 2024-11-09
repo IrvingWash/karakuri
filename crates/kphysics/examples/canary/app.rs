@@ -1,7 +1,8 @@
 use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
 use raylib::{
-    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -13,6 +14,7 @@ pub struct App {
     running: bool,
 
     particles: Vec<Particle>,
+    push_force: Vector2,
 }
 
 impl App {
@@ -24,6 +26,7 @@ impl App {
             rl: handle,
             thread,
             particles: Vec::new(),
+            push_force: Vector2::ZERO,
         }
     }
 
@@ -59,6 +62,23 @@ impl App {
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
+
+        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
+            self.push_force
+                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_RIGHT) {
+            self.push_force
+                .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
+            self.push_force
+                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
+            self.push_force
+                .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
+        }
     }
 
     pub fn update(&mut self) {
@@ -71,10 +91,14 @@ impl App {
             let weight_force = particle_force_generator::weight(particle.mass, PIXELS_PER_METER);
             particle.apply_force(&weight_force);
 
+            particle.apply_force(&self.push_force);
+
             particle.integrate(delta_time.into());
         }
 
         self.keep_in_window();
+
+        self.push_force.reset();
     }
 
     pub fn render(&mut self) {
@@ -96,26 +120,26 @@ impl App {
         let height: f64 = self.rl.get_screen_height().into();
 
         for particle in &mut self.particles {
-            if particle.position.x + particle.radius > width {
+            if particle.position.x + particle.radius >= width {
                 particle.position.x = width - particle.radius;
                 particle.velocity.x *= -0.9;
 
                 return;
             }
 
-            if particle.position.x - particle.radius < 0.0 {
+            if particle.position.x - particle.radius <= 0.0 {
                 particle.position.x = particle.radius;
                 particle.velocity.x *= -0.9;
 
                 return;
             }
 
-            if particle.position.y + particle.radius > height {
+            if particle.position.y + particle.radius >= height {
                 particle.position.y = height - particle.radius;
                 particle.velocity.y *= -0.9;
             }
 
-            if particle.position.y - particle.radius < 0.0 {
+            if particle.position.y - particle.radius <= 0.0 {
                 particle.position.y = particle.radius;
                 particle.velocity.y *= -0.9;
             }
