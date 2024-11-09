@@ -253,6 +253,14 @@ name = "kmath"
 version = "0.1.0"
 
 [[package]]
+name = "kphysics"
+version = "0.1.0"
+dependencies = [
+ "klogger",
+ "kmath",
+]
+
+[[package]]
 name = "kutils"
 version = "0.1.0"
 dependencies = [

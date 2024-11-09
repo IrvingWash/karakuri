@@ -1,0 +1,18 @@
+[package]
+name = "kphysics"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Physics"
+homepage = "https://github.com/IrvingWash/karakuri"
+repository = "https://github.com/IrvingWash/karakuri.git"
+documentation = "https://github.com/IrvingWash/karakuri"
+license = "MIT"
+authors = ["WI"]
+
+[dependencies]
+kmath = { path = "../kmath" }
+klogger = { path = "../klogger" }
+
+[lints]
+workspace = true
