@@ -1,9 +1,8 @@
 use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
-use rand::Rng;
 use raylib::{
-    color::Color, consts::KeyboardKey, consts::MouseButton, math::Vector2 as RaylibVector2,
-    prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -15,7 +14,6 @@ pub struct App {
     running: bool,
 
     particles: Vec<Particle>,
-    push_force: Vector2,
 
     mouse_position: RaylibVector2,
     is_targeting: bool,
@@ -30,7 +28,6 @@ impl App {
             rl: handle,
             thread,
             particles: Vec::new(),
-            push_force: Vector2::ZERO,
             mouse_position: RaylibVector2::zero(),
             is_targeting: false,
         }
@@ -43,29 +40,24 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
+        // Anchor
         self.particles
-            .push(Particle::new(Vector2::new(200.0, 200.0), 1.0, 6.0));
+            .push(Particle::new(Vector2::new(600.0, 10.0), 0.0, 5.0));
 
-        self.particles
-            .push(Particle::new(Vector2::new(500.0, 500.0), 20.0, 20.0));
+        // Bobs
+        for i in 1..=10 {
+            self.particles.push(Particle::new(
+                Vector2::new(600.0, i as f64 * 15.0),
+                2.0,
+                5.0,
+            ))
+        }
 
         self.running = true;
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
-
-        if self.rl.is_key_pressed(KeyboardKey::KEY_SPACE) {
-            let mouse_position = self.rl.get_mouse_position();
-
-            let factor = rand::thread_rng().gen_range(1.0..=3.0);
-
-            self.particles.push(Particle::new(
-                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                factor,
-                factor * 2.0,
-            ));
-        }
 
         if self.rl.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
             self.is_targeting = true;
@@ -82,68 +74,46 @@ impl App {
             let mouse_position =
                 Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
 
-            for (i, particle) in self.particles.iter_mut().enumerate() {
-                if i % 2 != 0 {
-                    continue;
-                }
+            let particle = self.particles.last_mut().unwrap();
 
-                let impulse_direction = particle
-                    .position
-                    .to_subtracted(&mouse_position)
-                    .to_normalized();
+            let impulse_direction = particle
+                .position
+                .to_subtracted(&mouse_position)
+                .to_normalized();
 
-                let impulse_magnitude =
-                    particle.position.to_subtracted(&mouse_position).magnitude() * 5.0;
+            let impulse_magnitude =
+                particle.position.to_subtracted(&mouse_position).magnitude() * 5.0;
 
-                particle
-                    .velocity
-                    .set(&impulse_direction.to_scaled(impulse_magnitude));
-            }
-        }
-
-        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
-            self.push_force
-                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_RIGHT) {
-            self.push_force
-                .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
-            self.push_force
-                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
-            self.push_force
-                .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
+            particle
+                .velocity
+                .set(&impulse_direction.to_scaled(impulse_magnitude));
         }
     }
 
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        for particle in &mut self.particles {
-            particle.apply_force(&particle_force_generator::friction(&particle, 20.0));
+        for i in 1..self.particles.len() {
+            let current = &self.particles[i];
+            let previous = &self.particles[i - 1];
 
-            particle.apply_force(&self.push_force);
+            let spring_force = particle_force_generator::spring(&current, &previous, 15.0, 300.0);
+
+            self.particles[i].apply_force(&spring_force);
+            self.particles[i - 1].apply_force(&spring_force.to_scaled(-1.0));
+        }
+
+        for particle in &mut self.particles {
+            particle.apply_force(&particle_force_generator::drag(particle, 0.002));
+            particle.apply_force(&particle_force_generator::weight(
+                particle,
+                PIXELS_PER_METER,
+            ));
 
             particle.integrate(delta_time.into());
         }
 
-        let gravity = particle_force_generator::gravitation(
-            &self.particles[0],
-            &self.particles[1],
-            1000.0,
-            5.0,
-            100.0,
-        );
-
-        self.particles[0].apply_force(&gravity);
-        self.particles[1].apply_force(&gravity.to_scaled(-1.0));
-
         self.keep_in_window();
-
-        self.push_force.reset();
     }
 
     pub fn render(&mut self) {
@@ -151,31 +121,35 @@ impl App {
 
         d.clear_background(Color::GRAY);
 
+        // Visualize force being applied by mouse
         if self.is_targeting {
-            for (i, particle) in self.particles.iter().enumerate() {
-                if i % 2 != 0 {
-                    continue;
-                }
+            let particle = self.particles.last_mut().unwrap();
 
-                d.draw_line(
-                    self.mouse_position.x as i32,
-                    self.mouse_position.y as i32,
-                    particle.position.x as i32,
-                    particle.position.y as i32,
-                    Color::RED,
-                );
-            }
+            d.draw_line(
+                self.mouse_position.x as i32,
+                self.mouse_position.y as i32,
+                particle.position.x as i32,
+                particle.position.y as i32,
+                Color::RED,
+            );
         }
 
-        for (i, particle) in self.particles.iter().enumerate() {
+        // Draw spring between particles
+        for i in 1..self.particles.len() {
+            d.draw_line_ex(
+                vector2_to_raylib(&self.particles[i - 1].position),
+                vector2_to_raylib(&self.particles[i].position),
+                15.0,
+                Color::GREEN,
+            );
+        }
+
+        // Draw the particles
+        for particle in &self.particles {
             d.draw_circle_v(
                 vector2_to_raylib(&particle.position),
                 particle.radius as f32,
-                if i % 2 == 0 {
-                    Color::BLUE
-                } else {
-                    Color::ORANGE
-                },
+                Color::WHEAT,
             );
         }
     }

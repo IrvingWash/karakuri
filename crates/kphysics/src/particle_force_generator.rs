@@ -4,6 +4,10 @@ use crate::Particle;
 
 #[inline]
 pub const fn weight(particle: &Particle, k: f64) -> Vector2 {
+    if particle.mass == 0.0 {
+        return Vector2::ZERO;
+    }
+
     Vector2::new(0.0, 9.8 * k * particle.mass)
 }
 
@@ -39,6 +43,10 @@ pub fn gravitation(
     min_distance: f64,
     max_distance: f64,
 ) -> Vector2 {
+    if a.mass == 0.0 && b.mass == 0.0 {
+        return Vector2::ZERO;
+    }
+
     let disposition = b.position.to_subtracted(&a.position);
 
     let squared_distance = disposition
@@ -50,4 +58,17 @@ pub fn gravitation(
     let attraction_magnitude = g * (a.mass * b.mass) / squared_distance;
 
     attraction_direction.to_scaled(attraction_magnitude)
+}
+
+#[inline]
+pub fn spring(particle: &Particle, anchor: &Particle, rest_length: f64, k: f64) -> Vector2 {
+    let disposition = particle.position.to_subtracted(&anchor.position);
+
+    let displacement = disposition.magnitude() - rest_length;
+
+    let spring_direction = disposition.to_normalized();
+
+    let spring_magnitude = -k * displacement;
+
+    spring_direction.to_scaled(spring_magnitude)
 }
