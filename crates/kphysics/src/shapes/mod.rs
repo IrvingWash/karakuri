@@ -7,4 +7,3 @@ pub use circle::Circle;
 pub use polygon::Polygon;
 pub use rectangle::Rectangle;
 pub use shape::Shape;
-pub use shape::ShapeKind;

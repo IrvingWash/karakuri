@@ -1,5 +1,9 @@
 use kmath::Vector2;
-use kphysics::{force_generator, RigidBody};
+use kphysics::{
+    force_generator,
+    shapes::{Circle, Shape},
+    RigidBody,
+};
 use raylib::{
     color::Color,
     consts::{KeyboardKey, MouseButton},
@@ -49,14 +53,26 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        self.rigid_bodies
-            .push(RigidBody::new(Vector2::new(100.0, 100.0), 1.0, 6.0));
-        self.rigid_bodies
-            .push(RigidBody::new(Vector2::new(300.0, 100.0), 1.0, 6.0));
-        self.rigid_bodies
-            .push(RigidBody::new(Vector2::new(300.0, 300.0), 1.0, 6.0));
-        self.rigid_bodies
-            .push(RigidBody::new(Vector2::new(100.0, 300.0), 1.0, 6.0));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(100.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(300.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(300.0, 300.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(100.0, 300.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
 
         self.running = true;
     }
@@ -242,11 +258,13 @@ impl App {
 
         // Draw the rigid_bodies
         for rigid_body in &self.rigid_bodies {
-            d.draw_circle_v(
-                vector2_to_raylib(&rigid_body.position),
-                rigid_body.radius as f32,
-                Color::WHEAT,
-            );
+            if rigid_body.shape.is_circle() {
+                d.draw_circle_v(
+                    vector2_to_raylib(&rigid_body.position),
+                    rigid_body.shape.circle().unwrap().radius as f32,
+                    Color::WHEAT,
+                );
+            }
         }
     }
 
@@ -255,28 +273,32 @@ impl App {
         let height: f64 = self.rl.get_screen_height().into();
 
         for rigid_body in &mut self.rigid_bodies {
-            if rigid_body.position.x + rigid_body.radius >= width {
-                rigid_body.position.x = width - rigid_body.radius;
-                rigid_body.velocity.x *= -0.9;
+            if rigid_body.shape.is_circle() {
+                let radius = rigid_body.shape.circle().unwrap().radius;
 
-                return;
-            }
+                if rigid_body.position.x + radius >= width {
+                    rigid_body.position.x = width - radius;
+                    rigid_body.velocity.x *= -0.9;
 
-            if rigid_body.position.x - rigid_body.radius <= 0.0 {
-                rigid_body.position.x = rigid_body.radius;
-                rigid_body.velocity.x *= -0.9;
+                    return;
+                }
 
-                return;
-            }
+                if rigid_body.position.x - radius <= 0.0 {
+                    rigid_body.position.x = radius;
+                    rigid_body.velocity.x *= -0.9;
 
-            if rigid_body.position.y + rigid_body.radius >= height {
-                rigid_body.position.y = height - rigid_body.radius;
-                rigid_body.velocity.y *= -0.9;
-            }
+                    return;
+                }
 
-            if rigid_body.position.y - rigid_body.radius <= 0.0 {
-                rigid_body.position.y = rigid_body.radius;
-                rigid_body.velocity.y *= -0.9;
+                if rigid_body.position.y + radius >= height {
+                    rigid_body.position.y = height - radius;
+                    rigid_body.velocity.y *= -0.9;
+                }
+
+                if rigid_body.position.y - radius <= 0.0 {
+                    rigid_body.position.y = radius;
+                    rigid_body.velocity.y *= -0.9;
+                }
             }
         }
     }

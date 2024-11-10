@@ -1,38 +1,27 @@
 use kmath::Vector2;
 
+use crate::shapes::Shape;
+
 #[derive(Debug)]
 pub struct RigidBody {
     pub position: Vector2,
     pub velocity: Vector2,
     pub mass: f64,
     pub inverse_mass: f64,
-    pub radius: f64, // For debug
     pub accumulated_forces: Vector2,
-}
-
-impl Default for RigidBody {
-    fn default() -> Self {
-        Self {
-            position: Vector2::ZERO,
-            velocity: Vector2::ZERO,
-            mass: 1.0,
-            inverse_mass: 1.0,
-            radius: 0.0,
-            accumulated_forces: Vector2::ZERO,
-        }
-    }
+    pub shape: Shape,
 }
 
 impl RigidBody {
     #[inline]
-    pub const fn new(position: Vector2, mass: f64, radius: f64) -> Self {
+    pub fn new(position: Vector2, mass: f64, shape: Shape) -> Self {
         Self {
             position,
             velocity: Vector2::ZERO,
             mass,
             inverse_mass: if mass != 0.0 { 1.0 / mass } else { 0.0 },
-            radius,
             accumulated_forces: Vector2::ZERO,
+            shape,
         }
     }
 
