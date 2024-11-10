@@ -1,7 +1,10 @@
 use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
 use raylib::{
-    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    color::Color,
+    consts::{KeyboardKey, MouseButton},
+    math::Vector2 as RaylibVector2,
+    prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
 };
 
@@ -14,6 +17,8 @@ pub struct App {
     running: bool,
 
     particles: Vec<Particle>,
+
+    push_force: Vector2,
 
     mouse_position: RaylibVector2,
     is_targeting: bool,
@@ -30,6 +35,7 @@ impl App {
             particles: Vec::new(),
             mouse_position: RaylibVector2::zero(),
             is_targeting: false,
+            push_force: Vector2::ZERO,
         }
     }
 
@@ -45,7 +51,7 @@ impl App {
             .push(Particle::new(Vector2::new(600.0, 10.0), 0.0, 5.0));
 
         // Bobs
-        for i in 1..=10 {
+        for i in 1..=15 {
             self.particles.push(Particle::new(
                 Vector2::new(600.0, i as f64 * 15.0),
                 2.0,
@@ -88,6 +94,15 @@ impl App {
                 .velocity
                 .set(&impulse_direction.to_scaled(impulse_magnitude));
         }
+
+        if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
+            self.push_force
+                .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_RIGHT) {
+            self.push_force
+                .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
+        }
     }
 
     pub fn update(&mut self) {
@@ -109,11 +124,14 @@ impl App {
                 particle,
                 PIXELS_PER_METER,
             ));
+            particle.apply_force(&self.push_force);
 
             particle.integrate(delta_time.into());
         }
 
         self.keep_in_window();
+
+        self.push_force.reset();
     }
 
     pub fn render(&mut self) {
