@@ -2,12 +2,8 @@ use kmath::Vector2;
 use kphysics::{particle_force_generator, Particle};
 use rand::Rng;
 use raylib::{
-    color::Color,
-    consts::KeyboardKey,
-    consts::MouseButton,
-    math::{Rectangle, Vector2 as RaylibVector2},
-    prelude::RaylibDraw,
-    RaylibHandle, RaylibThread,
+    color::Color, consts::KeyboardKey, consts::MouseButton, math::Vector2 as RaylibVector2,
+    prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -21,7 +17,8 @@ pub struct App {
     particles: Vec<Particle>,
     push_force: Vector2,
 
-    liquid: Rectangle,
+    mouse_position: RaylibVector2,
+    is_targeting: bool,
 }
 
 impl App {
@@ -34,7 +31,8 @@ impl App {
             thread,
             particles: Vec::new(),
             push_force: Vector2::ZERO,
-            liquid: Rectangle::default(),
+            mouse_position: RaylibVector2::zero(),
+            is_targeting: false,
         }
     }
 
@@ -45,29 +43,51 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
         self.running = true;
-
-        self.liquid.x = 0.0;
-        self.liquid.y = (self.rl.get_screen_height() / 2) as f32;
-        self.liquid.width = self.rl.get_screen_width() as f32;
-        self.liquid.height = (self.rl.get_screen_height() / 2) as f32;
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        if self
-            .rl
-            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
-        {
+        if self.rl.is_key_pressed(KeyboardKey::KEY_SPACE) {
             let mouse_position = self.rl.get_mouse_position();
 
-            let factor = rand::thread_rng().gen_range(1.0..=5.0);
+            let factor = rand::thread_rng().gen_range(1.0..=3.0);
 
             self.particles.push(Particle::new(
                 Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 factor,
                 factor * 2.0,
             ));
+        }
+
+        if self.rl.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
+            self.is_targeting = true;
+
+            self.mouse_position = self.rl.get_mouse_position();
+        }
+
+        if self
+            .rl
+            .is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            self.is_targeting = false;
+
+            let mouse_position =
+                Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
+
+            for particle in &mut self.particles {
+                let impulse_direction = particle
+                    .position
+                    .to_subtracted(&mouse_position)
+                    .to_normalized();
+
+                let impulse_magnitude =
+                    particle.position.to_subtracted(&mouse_position).magnitude() * 5.0;
+
+                particle
+                    .velocity
+                    .set(&impulse_direction.to_scaled(impulse_magnitude));
+            }
         }
 
         if self.rl.is_key_down(KeyboardKey::KEY_UP) {
@@ -92,13 +112,7 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         for particle in &mut self.particles {
-            let weight_force = particle_force_generator::weight(particle, PIXELS_PER_METER);
-            particle.apply_force(&weight_force);
-
-            if particle.position.y >= self.liquid.y.into() {
-                let drag_force = particle_force_generator::drag(particle, 0.1);
-                particle.apply_force(&drag_force);
-            }
+            particle.apply_force(&particle_force_generator::friction(&particle, 100.0));
 
             particle.apply_force(&self.push_force);
 
@@ -115,11 +129,17 @@ impl App {
 
         d.clear_background(Color::GRAY);
 
-        d.draw_rectangle_v(
-            RaylibVector2::new(self.liquid.x, self.liquid.y),
-            RaylibVector2::new(self.liquid.width, self.liquid.height),
-            Color::BLUE,
-        );
+        if self.is_targeting {
+            for particle in &self.particles {
+                d.draw_line(
+                    self.mouse_position.x as i32,
+                    self.mouse_position.y as i32,
+                    particle.position.x as i32,
+                    particle.position.y as i32,
+                    Color::RED,
+                );
+            }
+        }
 
         for particle in &mut self.particles {
             d.draw_circle_v(

@@ -3,7 +3,6 @@ use app::App;
 mod app;
 
 pub fn main() {
-    dbg!("hey");
     let mut app = App::new();
 
     app.setup();
@@ -13,6 +12,4 @@ pub fn main() {
         app.update();
         app.render();
     }
-
-    dbg!(app.is_running());
 }
