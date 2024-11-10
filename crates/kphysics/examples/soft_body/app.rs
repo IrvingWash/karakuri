@@ -10,6 +10,9 @@ use raylib::{
 
 const PIXELS_PER_METER: f64 = 50.0;
 
+const STIFFNESS: f64 = 1500.0;
+const REST_LENGTH: f64 = 200.0;
+
 #[derive(Debug)]
 pub struct App {
     rl: RaylibHandle,
@@ -26,7 +29,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Spring").size(1340, 800).build();
+        let (handle, thread) = raylib::init().title("Soft Body").size(1340, 800).build();
 
         Self {
             running: false,
@@ -46,18 +49,14 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        // Anchor
         self.particles
-            .push(Particle::new(Vector2::new(600.0, 10.0), 0.0, 5.0));
-
-        // Bobs
-        for i in 1..=15 {
-            self.particles.push(Particle::new(
-                Vector2::new(600.0, i as f64 * 15.0),
-                2.0,
-                5.0,
-            ))
-        }
+            .push(Particle::new(Vector2::new(100.0, 100.0), 1.0, 6.0));
+        self.particles
+            .push(Particle::new(Vector2::new(300.0, 100.0), 1.0, 6.0));
+        self.particles
+            .push(Particle::new(Vector2::new(300.0, 300.0), 1.0, 6.0));
+        self.particles
+            .push(Particle::new(Vector2::new(100.0, 300.0), 1.0, 6.0));
 
         self.running = true;
     }
@@ -103,20 +102,72 @@ impl App {
             self.push_force
                 .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
         }
+        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
+            self.push_force
+                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
+            self.push_force
+                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
+        }
     }
 
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        for i in 1..self.particles.len() {
-            let current = &self.particles[i];
-            let previous = &self.particles[i - 1];
+        let ab_spring_force = particle_force_generator::spring(
+            &self.particles[0],
+            &self.particles[1],
+            200.,
+            STIFFNESS,
+        );
+        self.particles[0].apply_force(&ab_spring_force);
+        self.particles[1].apply_force(&ab_spring_force.to_scaled(-1.));
 
-            let spring_force = particle_force_generator::spring(&current, &previous, 15.0, 300.0);
+        let bc_spring_force = particle_force_generator::spring(
+            &self.particles[1],
+            &self.particles[2],
+            REST_LENGTH,
+            STIFFNESS,
+        );
+        self.particles[1].apply_force(&bc_spring_force);
+        self.particles[2].apply_force(&bc_spring_force.to_scaled(-1.));
 
-            self.particles[i].apply_force(&spring_force);
-            self.particles[i - 1].apply_force(&spring_force.to_scaled(-1.0));
-        }
+        let cd_spring_force = particle_force_generator::spring(
+            &self.particles[2],
+            &self.particles[3],
+            REST_LENGTH,
+            STIFFNESS,
+        );
+        self.particles[2].apply_force(&cd_spring_force);
+        self.particles[3].apply_force(&cd_spring_force.to_scaled(-1.));
+
+        let da_spring_force = particle_force_generator::spring(
+            &self.particles[3],
+            &self.particles[0],
+            REST_LENGTH,
+            STIFFNESS,
+        );
+        self.particles[3].apply_force(&da_spring_force);
+        self.particles[0].apply_force(&da_spring_force.to_scaled(-1.));
+
+        let ac_spring_force = particle_force_generator::spring(
+            &self.particles[0],
+            &self.particles[2],
+            REST_LENGTH,
+            STIFFNESS,
+        );
+        self.particles[0].apply_force(&ac_spring_force);
+        self.particles[2].apply_force(&ac_spring_force.to_scaled(-1.));
+
+        let bd_spring_force = particle_force_generator::spring(
+            &self.particles[1],
+            &self.particles[3],
+            REST_LENGTH,
+            STIFFNESS,
+        );
+        self.particles[1].apply_force(&bd_spring_force);
+        self.particles[3].apply_force(&bd_spring_force.to_scaled(-1.));
 
         for particle in &mut self.particles {
             particle.apply_force(&particle_force_generator::drag(particle, 0.002));
@@ -152,15 +203,42 @@ impl App {
             );
         }
 
-        // Draw spring between particles
-        for i in 1..self.particles.len() {
-            d.draw_line_ex(
-                vector2_to_raylib(&self.particles[i - 1].position),
-                vector2_to_raylib(&self.particles[i].position),
-                15.0,
-                Color::GREEN,
-            );
-        }
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[0].position),
+            vector2_to_raylib(&self.particles[1].position),
+            15.0,
+            Color::GREEN,
+        );
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[1].position),
+            vector2_to_raylib(&self.particles[2].position),
+            15.0,
+            Color::GREEN,
+        );
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[2].position),
+            vector2_to_raylib(&self.particles[3].position),
+            15.0,
+            Color::GREEN,
+        );
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[3].position),
+            vector2_to_raylib(&self.particles[0].position),
+            15.0,
+            Color::GREEN,
+        );
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[0].position),
+            vector2_to_raylib(&self.particles[2].position),
+            15.0,
+            Color::GREEN,
+        );
+        d.draw_line_ex(
+            vector2_to_raylib(&self.particles[1].position),
+            vector2_to_raylib(&self.particles[3].position),
+            15.0,
+            Color::GREEN,
+        );
 
         // Draw the particles
         for particle in &self.particles {
