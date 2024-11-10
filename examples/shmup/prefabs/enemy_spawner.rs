@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::{
     components::{BehaviorComponent, ComponentPayload, TagComponent},
     EventBundle, UpdateContext,
@@ -49,7 +51,7 @@ impl BehaviorComponent for EnemySpawner {
         ctx.timer.clear_interval(self.timer_id as usize);
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

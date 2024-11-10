@@ -44,6 +44,6 @@ mod transform_tests {
 
         assert_eq!(transform.position, Vector2::new(10.25, 5.));
         assert_eq!(transform.scale, Vector2::new(1., 1.));
-        assert_eq!(transform.rotation, 0.);
+        assert_eq!(transform.rotation, 0.0);
     }
 }

@@ -76,7 +76,7 @@ impl App {
             self.is_targeting = false;
 
             let mouse_position =
-                Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
+                Vector2::new(self.mouse_position.x.into(), self.mouse_position.y.into());
 
             let rigid_body = self.rigid_bodies.last_mut().unwrap();
 

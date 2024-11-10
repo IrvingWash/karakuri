@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, SpriteComponent, TagComponent,
     TransformComponent,
@@ -45,7 +47,7 @@ struct MyBox {
 }
 
 impl BehaviorComponent for MyBox {
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 
@@ -122,7 +124,7 @@ impl BehaviorComponent for MyBoxControlled {
         }
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

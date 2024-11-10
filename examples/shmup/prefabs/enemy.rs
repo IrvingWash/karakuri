@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::components::{
     Animation, AnimationControllerComponent, AnimationParams, BehaviorComponent,
     BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent, TagComponent,
@@ -137,7 +139,7 @@ impl BehaviorComponent for Enemy {
         }
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

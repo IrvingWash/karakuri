@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::cell::RefMut;
 
 use karakuri::components::{
@@ -81,7 +82,7 @@ impl Player {
     }
 
     fn movement_handler(
-        &mut self,
+        &self,
         ctx: &UpdateContext,
         rigid_body: &mut RefMut<RigidBodyComponent>,
         animation_controller: &mut RefMut<AnimationControllerComponent>,
@@ -197,7 +198,7 @@ impl BehaviorComponent for Player {
         }
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

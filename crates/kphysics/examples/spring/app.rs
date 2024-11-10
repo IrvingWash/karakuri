@@ -60,7 +60,7 @@ impl App {
         // Bobs
         for i in 1..=15 {
             self.rigid_bodies.push(RigidBody::new(
-                Vector2::new(600.0, i as f64 * 15.0),
+                Vector2::new(600.0, f64::from(i) * 15.0),
                 2.0,
                 Shape::Circle(Circle::new(5.0)),
             ))
@@ -85,7 +85,7 @@ impl App {
             self.is_targeting = false;
 
             let mouse_position =
-                Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
+                Vector2::new(self.mouse_position.x.into(), self.mouse_position.y.into());
 
             let rigid_body = self.rigid_bodies.last_mut().unwrap();
 
@@ -122,7 +122,7 @@ impl App {
             let current = &self.rigid_bodies[i];
             let previous = &self.rigid_bodies[i - 1];
 
-            let spring_force = force_generator::spring(&current, &previous, 15.0, 300.0);
+            let spring_force = force_generator::spring(current, previous, 15.0, 300.0);
 
             self.rigid_bodies[i].apply_force(&spring_force);
             self.rigid_bodies[i - 1].apply_force(&spring_force.to_scaled(-1.0));
