@@ -13,7 +13,6 @@ use raylib::{
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
-static mut ANGLE: f64 = 0.0;
 
 #[derive(Debug)]
 pub struct App {
@@ -114,7 +113,10 @@ impl App {
             rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
             rigid_body.apply_force(&self.push_force);
 
+            rigid_body.apply_torque(60.0);
+
             rigid_body.integrate_linear(delta_time.into());
+            rigid_body.integrate_angular(delta_time.into());
         }
 
         self.keep_in_window();
@@ -145,16 +147,11 @@ impl App {
             if rigid_body.shape.is_circle() {
                 let radius = rigid_body.shape.circle().unwrap().radius;
 
-                let (angle_cos, angle_sin) = unsafe {
-                    ANGLE += 0.01;
-                    (ANGLE.cos(), ANGLE.sin())
-                };
-
                 d.draw_line(
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
-                    (rigid_body.position.x + angle_cos * radius) as i32,
-                    (rigid_body.position.y + angle_sin * radius) as i32,
+                    (rigid_body.position.x + rigid_body.rotation.cos() * radius) as i32,
+                    (rigid_body.position.y + rigid_body.rotation.sin() * radius) as i32,
                     Color::WHITE,
                 );
                 d.draw_circle_lines(
