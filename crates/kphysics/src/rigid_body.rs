@@ -78,6 +78,12 @@ impl RigidBody {
         self.clear_torque();
     }
 
+    // TODO: integrates and this one should be combined into single `update`
+    #[inline]
+    pub fn update_vertices(&mut self) {
+        self.shape.update_vertices(&self.position, self.rotation);
+    }
+
     fn clear_forces(&mut self) {
         self.accumulated_forces.reset();
     }

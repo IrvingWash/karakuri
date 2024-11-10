@@ -1,3 +1,5 @@
+use kmath::Vector2;
+
 use super::{Circle, Polygon, Rectangle};
 
 #[derive(Debug)]
@@ -57,6 +59,15 @@ impl Shape {
         }
 
         None
+    }
+
+    #[inline]
+    pub fn update_vertices(&mut self, position: &Vector2, rotation: f64) {
+        match self {
+            Shape::Circle(_) => (),
+            Shape::Rectangle(rectangle) => rectangle.update_vertices(position, rotation),
+            Shape::Polygon(polygon) => polygon.update_vertices(position, rotation),
+        }
     }
 }
 

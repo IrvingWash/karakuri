@@ -84,6 +84,7 @@ impl App {
 
             rigid_body.integrate_linear(delta_time.into());
             rigid_body.integrate_angular(delta_time.into());
+            rigid_body.update_vertices();
         }
 
         self.keep_in_window();
@@ -118,13 +119,13 @@ impl App {
 
             // Draw rectangular rigid bodies
             if let Some(rectangle) = rigid_body.shape.rectangle() {
-                for i in 0..rectangle.vertices.len() {
+                for i in 0..rectangle.world_vertices.len() {
                     let curr = i;
-                    let next = (i + 1) % rectangle.vertices.len();
+                    let next = (i + 1) % rectangle.world_vertices.len();
 
                     d.draw_line_ex(
-                        vector2_to_raylib(&rectangle.vertices[curr]),
-                        vector2_to_raylib(&rectangle.vertices[next]),
+                        vector2_to_raylib(&rectangle.world_vertices[curr]),
+                        vector2_to_raylib(&rectangle.world_vertices[next]),
                         1.0,
                         Color::WHITE,
                     );
