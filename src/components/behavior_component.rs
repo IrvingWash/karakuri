@@ -6,18 +6,23 @@ use crate::{event_buss::EventBundle, UpdateContext};
 
 pub trait BehaviorComponent: Debug {
     #[allow(unused_variables)]
+    #[inline]
     fn on_start(&mut self, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
+    #[inline]
     fn on_update(&mut self, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
+    #[inline]
     fn on_collision(&mut self, other: &Entity, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
+    #[inline]
     fn on_events(&mut self, events: &EventBundle, ctx: UpdateContext) {}
 
     #[allow(unused_variables)]
+    #[inline]
     fn on_destroy(&mut self, ctx: UpdateContext) {}
 
     fn as_any(&self) -> &dyn Any;

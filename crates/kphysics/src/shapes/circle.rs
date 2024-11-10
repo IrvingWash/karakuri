@@ -4,9 +4,13 @@ pub struct Circle {
 }
 
 impl Circle {
+    #[inline]
     pub fn new(radius: f64) -> Self {
         Self { radius }
     }
 
-    pub const MOMENT_OF_INERTIA: f64 = 0.0;
+    #[inline]
+    pub fn moment_of_inertia(&self) -> f64 {
+        0.5 * (self.radius.powi(2))
+    }
 }

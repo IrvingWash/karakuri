@@ -6,6 +6,7 @@ pub struct Signature {
 }
 
 impl From<Vec<usize>> for Signature {
+    #[inline]
     fn from(value: Vec<usize>) -> Self {
         let mut sig = Self::new();
 

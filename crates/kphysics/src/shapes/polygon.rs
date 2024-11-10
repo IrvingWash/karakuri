@@ -6,9 +6,13 @@ pub struct Polygon {
 }
 
 impl Polygon {
+    #[inline]
     pub fn new(vertices: Vec<Vector2>) -> Self {
         Self { vertices }
     }
 
-    pub const MOMENT_OF_INERTIA: f64 = 0.0;
+    #[inline]
+    pub fn moment_of_inertia(&self) -> f64 {
+        todo!()
+    }
 }

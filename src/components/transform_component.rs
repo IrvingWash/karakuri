@@ -8,6 +8,7 @@ pub struct TransformComponent {
 }
 
 impl Default for TransformComponent {
+    #[inline]
     fn default() -> Self {
         Self::new(Vector2::ZERO, Vector2::new(1., 1.), 0.)
     }

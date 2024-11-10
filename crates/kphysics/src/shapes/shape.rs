@@ -8,44 +8,51 @@ pub enum Shape {
 }
 
 impl Shape {
+    #[inline]
     pub fn moment_of_inertia(&self) -> f64 {
         match self {
-            Shape::Circle(_) => Circle::MOMENT_OF_INERTIA,
-            Shape::Polygon(_) => Polygon::MOMENT_OF_INERTIA,
-            Self::Rectangle(_) => Rectangle::MOMENT_OF_INERTIA,
+            Self::Circle(circle) => circle.moment_of_inertia(),
+            Self::Polygon(polygon) => polygon.moment_of_inertia(),
+            Self::Rectangle(rectangle) => rectangle.moment_of_inertia(),
         }
     }
 
+    #[inline]
     pub fn is_circle(&self) -> bool {
-        matches!(self, Shape::Circle(_))
+        matches!(self, Self::Circle(_))
     }
 
+    #[inline]
     pub fn is_polygon(&self) -> bool {
-        matches!(self, Shape::Polygon(_))
+        matches!(self, Self::Polygon(_))
     }
 
+    #[inline]
     pub fn is_rectangle(&self) -> bool {
-        matches!(self, Shape::Rectangle(_))
+        matches!(self, Self::Rectangle(_))
     }
 
+    #[inline]
     pub fn circle(&self) -> Option<&Circle> {
-        if let Shape::Circle(circle) = &self {
+        if let Self::Circle(circle) = &self {
             return Some(circle);
         }
 
         None
     }
 
+    #[inline]
     pub fn polygon(&self) -> Option<&Polygon> {
-        if let Shape::Polygon(polygon) = &self {
+        if let Self::Polygon(polygon) = &self {
             return Some(polygon);
         }
 
         None
     }
 
+    #[inline]
     pub fn rectangle(&self) -> Option<&Rectangle> {
-        if let Shape::Rectangle(rectangle) = &self {
+        if let Self::Rectangle(rectangle) = &self {
             return Some(rectangle);
         }
 
@@ -54,12 +61,14 @@ impl Shape {
 }
 
 impl From<Circle> for Shape {
+    #[inline]
     fn from(value: Circle) -> Self {
         Shape::Circle(value)
     }
 }
 
 impl From<Polygon> for Shape {
+    #[inline]
     fn from(value: Polygon) -> Self {
         Shape::Polygon(value)
     }

@@ -7,6 +7,7 @@ pub struct BoxColliderComponent {
 }
 
 impl Default for BoxColliderComponent {
+    #[inline]
     fn default() -> Self {
         Self {
             position_offset: Vector2::ZERO,

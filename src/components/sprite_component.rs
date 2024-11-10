@@ -12,6 +12,7 @@ pub struct SpriteComponent {
 }
 
 impl Default for SpriteComponent {
+    #[inline]
     fn default() -> Self {
         Self {
             texture_name: "",

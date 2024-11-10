@@ -193,7 +193,7 @@ impl App {
             rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
             rigid_body.apply_force(&self.push_force);
 
-            rigid_body.integrate(delta_time.into());
+            rigid_body.integrate_linear(delta_time.into());
         }
 
         self.keep_in_window();

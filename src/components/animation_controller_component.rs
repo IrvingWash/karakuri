@@ -59,6 +59,7 @@ pub struct AnimationParams {
 
 impl Animation {
     #[allow(clippy::needless_pass_by_value)]
+    #[inline]
     pub const fn new(params: AnimationParams) -> Self {
         let AnimationParams {
             name,
