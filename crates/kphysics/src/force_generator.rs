@@ -1,25 +1,25 @@
 use kmath::Vector2;
 
-use crate::Particle;
+use crate::RigidBody;
 
 #[inline]
-pub const fn weight(particle: &Particle, k: f64) -> Vector2 {
-    if particle.mass == 0.0 {
+pub const fn weight(rigid_body: &RigidBody, k: f64) -> Vector2 {
+    if rigid_body.mass == 0.0 {
         return Vector2::ZERO;
     }
 
-    Vector2::new(0.0, 9.8 * k * particle.mass)
+    Vector2::new(0.0, 9.8 * k * rigid_body.mass)
 }
 
 #[inline]
-pub fn drag(particle: &Particle, k: f64) -> Vector2 {
-    let velocity_squared_magnitude = particle.velocity.squared_magnitude();
+pub fn drag(rigid_body: &RigidBody, k: f64) -> Vector2 {
+    let velocity_squared_magnitude = rigid_body.velocity.squared_magnitude();
 
     if velocity_squared_magnitude <= 0.0 {
         return Vector2::ZERO;
     }
 
-    let drag_direction = particle.velocity.to_normalized().to_scaled(-1.0);
+    let drag_direction = rigid_body.velocity.to_normalized().to_scaled(-1.0);
 
     let drag_magnitude = k * velocity_squared_magnitude;
 
@@ -27,8 +27,8 @@ pub fn drag(particle: &Particle, k: f64) -> Vector2 {
 }
 
 #[inline]
-pub fn friction(particle: &Particle, k: f64) -> Vector2 {
-    let friction_direction = particle.velocity.to_normalized().to_scaled(-1.0);
+pub fn friction(rigid_body: &RigidBody, k: f64) -> Vector2 {
+    let friction_direction = rigid_body.velocity.to_normalized().to_scaled(-1.0);
 
     let friction_magnitude = k;
 
@@ -37,8 +37,8 @@ pub fn friction(particle: &Particle, k: f64) -> Vector2 {
 
 #[inline]
 pub fn gravitation(
-    a: &Particle,
-    b: &Particle,
+    a: &RigidBody,
+    b: &RigidBody,
     g: f64,
     min_distance: f64,
     max_distance: f64,
@@ -61,8 +61,8 @@ pub fn gravitation(
 }
 
 #[inline]
-pub fn spring(particle: &Particle, anchor: &Particle, rest_length: f64, k: f64) -> Vector2 {
-    let disposition = particle.position.to_subtracted(&anchor.position);
+pub fn spring(rigid_body: &RigidBody, anchor: &RigidBody, rest_length: f64, k: f64) -> Vector2 {
+    let disposition = rigid_body.position.to_subtracted(&anchor.position);
 
     let displacement = disposition.magnitude() - rest_length;
 

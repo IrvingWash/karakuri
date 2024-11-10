@@ -1,5 +1,5 @@
-mod particle;
+mod rigid_body;
 
-pub mod particle_force_generator;
+pub mod force_generator;
 
-pub use particle::Particle;
+pub use rigid_body::RigidBody;

@@ -1,7 +1,7 @@
 use kmath::Vector2;
 
 #[derive(Debug)]
-pub struct Particle {
+pub struct RigidBody {
     pub position: Vector2,
     pub velocity: Vector2,
     pub mass: f64,
@@ -10,7 +10,7 @@ pub struct Particle {
     pub accumulated_forces: Vector2,
 }
 
-impl Default for Particle {
+impl Default for RigidBody {
     fn default() -> Self {
         Self {
             position: Vector2::ZERO,
@@ -23,7 +23,7 @@ impl Default for Particle {
     }
 }
 
-impl Particle {
+impl RigidBody {
     #[inline]
     pub const fn new(position: Vector2, mass: f64, radius: f64) -> Self {
         Self {

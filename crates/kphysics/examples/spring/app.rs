@@ -1,5 +1,5 @@
 use kmath::Vector2;
-use kphysics::{particle_force_generator, Particle};
+use kphysics::{force_generator, RigidBody};
 use raylib::{
     color::Color,
     consts::{KeyboardKey, MouseButton},
@@ -16,7 +16,7 @@ pub struct App {
     thread: RaylibThread,
     running: bool,
 
-    particles: Vec<Particle>,
+    rigid_bodies: Vec<RigidBody>,
 
     push_force: Vector2,
 
@@ -32,7 +32,7 @@ impl App {
             running: false,
             rl: handle,
             thread,
-            particles: Vec::new(),
+            rigid_bodies: Vec::new(),
             mouse_position: RaylibVector2::zero(),
             is_targeting: false,
             push_force: Vector2::ZERO,
@@ -47,12 +47,15 @@ impl App {
         self.rl.set_target_fps(60);
 
         // Anchor
-        self.particles
-            .push(Particle::new(Vector2::new(600.0, 10.0), 0.0, 5.0));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
+            0.0,
+            5.0,
+        ));
 
         // Bobs
         for i in 1..=15 {
-            self.particles.push(Particle::new(
+            self.rigid_bodies.push(RigidBody::new(
                 Vector2::new(600.0, i as f64 * 15.0),
                 2.0,
                 5.0,
@@ -80,17 +83,20 @@ impl App {
             let mouse_position =
                 Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
 
-            let particle = self.particles.last_mut().unwrap();
+            let rigid_body = self.rigid_bodies.last_mut().unwrap();
 
-            let impulse_direction = particle
+            let impulse_direction = rigid_body
                 .position
                 .to_subtracted(&mouse_position)
                 .to_normalized();
 
-            let impulse_magnitude =
-                particle.position.to_subtracted(&mouse_position).magnitude() * 5.0;
+            let impulse_magnitude = rigid_body
+                .position
+                .to_subtracted(&mouse_position)
+                .magnitude()
+                * 5.0;
 
-            particle
+            rigid_body
                 .velocity
                 .set(&impulse_direction.to_scaled(impulse_magnitude));
         }
@@ -108,25 +114,22 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        for i in 1..self.particles.len() {
-            let current = &self.particles[i];
-            let previous = &self.particles[i - 1];
+        for i in 1..self.rigid_bodies.len() {
+            let current = &self.rigid_bodies[i];
+            let previous = &self.rigid_bodies[i - 1];
 
-            let spring_force = particle_force_generator::spring(&current, &previous, 15.0, 300.0);
+            let spring_force = force_generator::spring(&current, &previous, 15.0, 300.0);
 
-            self.particles[i].apply_force(&spring_force);
-            self.particles[i - 1].apply_force(&spring_force.to_scaled(-1.0));
+            self.rigid_bodies[i].apply_force(&spring_force);
+            self.rigid_bodies[i - 1].apply_force(&spring_force.to_scaled(-1.0));
         }
 
-        for particle in &mut self.particles {
-            particle.apply_force(&particle_force_generator::drag(particle, 0.002));
-            particle.apply_force(&particle_force_generator::weight(
-                particle,
-                PIXELS_PER_METER,
-            ));
-            particle.apply_force(&self.push_force);
+        for rigid_body in &mut self.rigid_bodies {
+            rigid_body.apply_force(&force_generator::drag(rigid_body, 0.002));
+            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&self.push_force);
 
-            particle.integrate(delta_time.into());
+            rigid_body.integrate(delta_time.into());
         }
 
         self.keep_in_window();
@@ -141,32 +144,32 @@ impl App {
 
         // Visualize force being applied by mouse
         if self.is_targeting {
-            let particle = self.particles.last_mut().unwrap();
+            let rigid_body = self.rigid_bodies.last_mut().unwrap();
 
             d.draw_line(
                 self.mouse_position.x as i32,
                 self.mouse_position.y as i32,
-                particle.position.x as i32,
-                particle.position.y as i32,
+                rigid_body.position.x as i32,
+                rigid_body.position.y as i32,
                 Color::RED,
             );
         }
 
-        // Draw spring between particles
-        for i in 1..self.particles.len() {
+        // Draw spring between rigid_bodies
+        for i in 1..self.rigid_bodies.len() {
             d.draw_line_ex(
-                vector2_to_raylib(&self.particles[i - 1].position),
-                vector2_to_raylib(&self.particles[i].position),
+                vector2_to_raylib(&self.rigid_bodies[i - 1].position),
+                vector2_to_raylib(&self.rigid_bodies[i].position),
                 15.0,
                 Color::GREEN,
             );
         }
 
-        // Draw the particles
-        for particle in &self.particles {
+        // Draw the rigid_bodies
+        for rigid_body in &self.rigid_bodies {
             d.draw_circle_v(
-                vector2_to_raylib(&particle.position),
-                particle.radius as f32,
+                vector2_to_raylib(&rigid_body.position),
+                rigid_body.radius as f32,
                 Color::WHEAT,
             );
         }
@@ -176,29 +179,29 @@ impl App {
         let width: f64 = self.rl.get_screen_width().into();
         let height: f64 = self.rl.get_screen_height().into();
 
-        for particle in &mut self.particles {
-            if particle.position.x + particle.radius >= width {
-                particle.position.x = width - particle.radius;
-                particle.velocity.x *= -0.9;
+        for rigid_body in &mut self.rigid_bodies {
+            if rigid_body.position.x + rigid_body.radius >= width {
+                rigid_body.position.x = width - rigid_body.radius;
+                rigid_body.velocity.x *= -0.9;
 
                 return;
             }
 
-            if particle.position.x - particle.radius <= 0.0 {
-                particle.position.x = particle.radius;
-                particle.velocity.x *= -0.9;
+            if rigid_body.position.x - rigid_body.radius <= 0.0 {
+                rigid_body.position.x = rigid_body.radius;
+                rigid_body.velocity.x *= -0.9;
 
                 return;
             }
 
-            if particle.position.y + particle.radius >= height {
-                particle.position.y = height - particle.radius;
-                particle.velocity.y *= -0.9;
+            if rigid_body.position.y + rigid_body.radius >= height {
+                rigid_body.position.y = height - rigid_body.radius;
+                rigid_body.velocity.y *= -0.9;
             }
 
-            if particle.position.y - particle.radius <= 0.0 {
-                particle.position.y = particle.radius;
-                particle.velocity.y *= -0.9;
+            if rigid_body.position.y - rigid_body.radius <= 0.0 {
+                rigid_body.position.y = rigid_body.radius;
+                rigid_body.velocity.y *= -0.9;
             }
         }
     }
