@@ -57,7 +57,13 @@ impl RigidBody {
     }
 
     #[inline]
-    pub fn integrate_linear(&mut self, delta_time: f64) {
+    pub fn update(&mut self, delta_time: f64) {
+        self.integrate_linear(delta_time);
+        self.integrate_angular(delta_time);
+        self.update_vertices();
+    }
+
+    fn integrate_linear(&mut self, delta_time: f64) {
         let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
 
         self.velocity.add(&acceleration.to_scaled(delta_time));
@@ -67,8 +73,7 @@ impl RigidBody {
         self.clear_forces();
     }
 
-    #[inline]
-    pub fn integrate_angular(&mut self, delta_time: f64) {
+    fn integrate_angular(&mut self, delta_time: f64) {
         let angular_acceleration = self.accumulated_torque * self.inverse_moment_of_inertia;
 
         self.angular_velocity += angular_acceleration * delta_time;
@@ -78,9 +83,7 @@ impl RigidBody {
         self.clear_torque();
     }
 
-    // TODO: integrates and this one should be combined into single `update`
-    #[inline]
-    pub fn update_vertices(&mut self) {
+    fn update_vertices(&mut self) {
         self.shape.update_vertices(&self.position, self.rotation);
     }
 

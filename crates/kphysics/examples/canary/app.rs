@@ -81,10 +81,9 @@ impl App {
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&force_generator::friction(rigid_body, 100.0));
             rigid_body.apply_force(&self.push_force);
+            rigid_body.apply_torque(200.0);
 
-            rigid_body.integrate_linear(delta_time.into());
-            rigid_body.integrate_angular(delta_time.into());
-            rigid_body.update_vertices();
+            rigid_body.update(delta_time.into());
         }
 
         self.keep_in_window();
