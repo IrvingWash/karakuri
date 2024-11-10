@@ -31,6 +31,7 @@ impl Rectangle {
 
     #[inline]
     pub fn update_vertices(&mut self, position: &Vector2, rotation: f64) {
+        // TODO: DRY!
         for (i, vertex) in self.world_vertices.iter_mut().enumerate() {
             vertex.set(&self.local_vertices[i].to_rotated(rotation));
             vertex.add(position);
