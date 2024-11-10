@@ -1,7 +1,7 @@
 use kmath::Vector2;
 use kphysics::{
-    force_generator,
-    shapes::{Rectangle, Shape},
+    collision_detector, force_generator,
+    shapes::{Circle, Shape},
     RigidBody,
 };
 use raylib::{
@@ -42,13 +42,15 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        let screen_width = self.rl.get_screen_width();
-        let screen_height = self.rl.get_screen_height();
-
         self.rigid_bodies.push(RigidBody::new(
-            Vector2::new((screen_width / 2) as f64, (screen_height / 2) as f64),
+            Vector2::new(100.0, 100.0),
             1.0,
-            Shape::Rectangle(Rectangle::new(100.0, 100.0)),
+            Shape::Circle(Circle::new(100.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(500.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(50.0)),
         ));
 
         self.running = true;
@@ -79,11 +81,26 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         for rigid_body in &mut self.rigid_bodies {
-            rigid_body.apply_force(&force_generator::friction(rigid_body, 100.0));
+            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&Vector2::new(20.0 * PIXELS_PER_METER, 0.0));
             rigid_body.apply_force(&self.push_force);
-            rigid_body.apply_torque(200.0);
+            rigid_body.is_colliding = false;
 
             rigid_body.update(delta_time.into());
+        }
+
+        for i in 0..self.rigid_bodies.len() {
+            for _ in i + 1..self.rigid_bodies.len() {
+                let (f, s) = self.rigid_bodies.split_at_mut(i + 1);
+
+                let body = f.last_mut().unwrap();
+                let other = s.first_mut().unwrap();
+
+                if collision_detector::are_colliding(body, other) {
+                    body.is_colliding = true;
+                    other.is_colliding = true;
+                }
+            }
         }
 
         self.keep_in_window();
@@ -94,7 +111,7 @@ impl App {
     pub fn render(&mut self) {
         let mut d = self.rl.begin_drawing(&self.thread);
 
-        d.clear_background(Color::GRAY);
+        d.clear_background(Color::BLACK);
 
         for rigid_body in &self.rigid_bodies {
             // Draw circular rigid_bodies
@@ -106,13 +123,21 @@ impl App {
                     rigid_body.position.y as i32,
                     (rigid_body.position.x + rigid_body.rotation.cos() * radius) as i32,
                     (rigid_body.position.y + rigid_body.rotation.sin() * radius) as i32,
-                    Color::WHITE,
+                    if rigid_body.is_colliding {
+                        Color::RED
+                    } else {
+                        Color::WHITE
+                    },
                 );
                 d.draw_circle_lines(
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     radius as f32,
-                    Color::WHITE,
+                    if rigid_body.is_colliding {
+                        Color::RED
+                    } else {
+                        Color::WHITE
+                    },
                 );
             }
 
