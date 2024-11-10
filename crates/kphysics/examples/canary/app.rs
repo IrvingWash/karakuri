@@ -13,6 +13,7 @@ use raylib::{
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
+static mut ANGLE: f64 = 0.0;
 
 #[derive(Debug)]
 pub struct App {
@@ -144,11 +145,23 @@ impl App {
             if rigid_body.shape.is_circle() {
                 let radius = rigid_body.shape.circle().unwrap().radius;
 
+                let (angle_cos, angle_sin) = unsafe {
+                    ANGLE += 0.01;
+                    (ANGLE.cos(), ANGLE.sin())
+                };
+
+                d.draw_line(
+                    rigid_body.position.x as i32,
+                    rigid_body.position.y as i32,
+                    (rigid_body.position.x + angle_cos * radius) as i32,
+                    (rigid_body.position.y + angle_sin * radius) as i32,
+                    Color::WHITE,
+                );
                 d.draw_circle_lines(
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     radius as f32,
-                    Color::WHEAT,
+                    Color::WHITE,
                 );
             }
         }
