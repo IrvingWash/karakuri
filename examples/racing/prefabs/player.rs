@@ -6,7 +6,7 @@ use karakuri::components::{
 use karakuri::math::Vector2;
 use karakuri::utils::Color;
 use karakuri::window::KeyboardKey;
-use karakuri::InputProcessorAdapter;
+use karakuri::{InputProcessorAdapter, UpdateContext};
 
 pub fn player_prefab() -> ComponentPayload {
     ComponentPayload {
@@ -66,7 +66,7 @@ impl Player {
 }
 
 impl BehaviorComponent for Player {
-    fn on_update(&mut self, ctx: karakuri::UpdateContext) {
+    fn on_update(&mut self, ctx: UpdateContext) {
         let delta_time = ctx.delta_time;
 
         let transform = ctx
