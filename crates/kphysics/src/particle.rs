@@ -25,7 +25,7 @@ impl Default for Particle {
 
 impl Particle {
     #[inline]
-    pub fn new(position: Vector2, mass: f64, radius: f64) -> Self {
+    pub const fn new(position: Vector2, mass: f64, radius: f64) -> Self {
         Self {
             position,
             velocity: Vector2::ZERO,
@@ -36,10 +36,12 @@ impl Particle {
         }
     }
 
+    #[inline]
     pub fn apply_force(&mut self, force: &Vector2) {
         self.accumulated_forces.add(force);
     }
 
+    #[inline]
     pub fn integrate(&mut self, delta_time: f64) {
         let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
 

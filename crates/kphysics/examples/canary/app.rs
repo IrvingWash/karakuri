@@ -42,6 +42,13 @@ impl App {
 
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
+
+        self.particles
+            .push(Particle::new(Vector2::new(200.0, 200.0), 1.0, 6.0));
+
+        self.particles
+            .push(Particle::new(Vector2::new(500.0, 500.0), 20.0, 20.0));
+
         self.running = true;
     }
 
@@ -75,7 +82,11 @@ impl App {
             let mouse_position =
                 Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
 
-            for particle in &mut self.particles {
+            for (i, particle) in self.particles.iter_mut().enumerate() {
+                if i % 2 != 0 {
+                    continue;
+                }
+
                 let impulse_direction = particle
                     .position
                     .to_subtracted(&mouse_position)
@@ -112,12 +123,23 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         for particle in &mut self.particles {
-            particle.apply_force(&particle_force_generator::friction(&particle, 100.0));
+            particle.apply_force(&particle_force_generator::friction(&particle, 20.0));
 
             particle.apply_force(&self.push_force);
 
             particle.integrate(delta_time.into());
         }
+
+        let gravity = particle_force_generator::gravitation(
+            &self.particles[0],
+            &self.particles[1],
+            1000.0,
+            5.0,
+            100.0,
+        );
+
+        self.particles[0].apply_force(&gravity);
+        self.particles[1].apply_force(&gravity.to_scaled(-1.0));
 
         self.keep_in_window();
 
@@ -130,7 +152,11 @@ impl App {
         d.clear_background(Color::GRAY);
 
         if self.is_targeting {
-            for particle in &self.particles {
+            for (i, particle) in self.particles.iter().enumerate() {
+                if i % 2 != 0 {
+                    continue;
+                }
+
                 d.draw_line(
                     self.mouse_position.x as i32,
                     self.mouse_position.y as i32,
@@ -141,11 +167,15 @@ impl App {
             }
         }
 
-        for particle in &mut self.particles {
+        for (i, particle) in self.particles.iter().enumerate() {
             d.draw_circle_v(
                 vector2_to_raylib(&particle.position),
                 particle.radius as f32,
-                Color::WHITE,
+                if i % 2 == 0 {
+                    Color::BLUE
+                } else {
+                    Color::ORANGE
+                },
             );
         }
     }
