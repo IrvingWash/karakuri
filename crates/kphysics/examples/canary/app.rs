@@ -1,14 +1,11 @@
 use kmath::Vector2;
 use kphysics::{
     force_generator,
-    shapes::{Circle, Shape},
+    shapes::{Rectangle, Shape},
     RigidBody,
 };
 use raylib::{
-    color::Color,
-    consts::{KeyboardKey, MouseButton},
-    math::Vector2 as RaylibVector2,
-    prelude::RaylibDraw,
+    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
 };
 
@@ -23,9 +20,6 @@ pub struct App {
     rigid_bodies: Vec<RigidBody>,
 
     push_force: Vector2,
-
-    mouse_position: RaylibVector2,
-    is_targeting: bool,
 }
 
 impl App {
@@ -37,8 +31,6 @@ impl App {
             rl: handle,
             thread,
             rigid_bodies: Vec::new(),
-            mouse_position: RaylibVector2::zero(),
-            is_targeting: false,
             push_force: Vector2::ZERO,
         }
     }
@@ -50,10 +42,13 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
+        let screen_width = self.rl.get_screen_width();
+        let screen_height = self.rl.get_screen_height();
+
         self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(300.0, 300.0),
-            5.0,
-            Shape::Circle(Circle::new(30.0)),
+            Vector2::new((screen_width / 2) as f64, (screen_height / 2) as f64),
+            1.0,
+            Shape::Rectangle(Rectangle::new(100.0, 100.0)),
         ));
 
         self.running = true;
@@ -61,39 +56,6 @@ impl App {
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
-
-        if self.rl.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
-            self.is_targeting = true;
-
-            self.mouse_position = self.rl.get_mouse_position();
-        }
-
-        if self
-            .rl
-            .is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT)
-        {
-            self.is_targeting = false;
-
-            let mouse_position =
-                Vector2::new(self.mouse_position.x.into(), self.mouse_position.y.into());
-
-            let rigid_body = self.rigid_bodies.last_mut().unwrap();
-
-            let impulse_direction = rigid_body
-                .position
-                .to_subtracted(&mouse_position)
-                .to_normalized();
-
-            let impulse_magnitude = rigid_body
-                .position
-                .to_subtracted(&mouse_position)
-                .magnitude()
-                * 5.0;
-
-            rigid_body
-                .velocity
-                .set(&impulse_direction.to_scaled(impulse_magnitude));
-        }
 
         if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
             self.push_force
@@ -103,6 +65,14 @@ impl App {
             self.push_force
                 .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
         }
+        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
+            self.push_force
+                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
+            self.push_force
+                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
+        }
     }
 
     pub fn update(&mut self) {
@@ -110,10 +80,7 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&force_generator::friction(rigid_body, 100.0));
-            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
             rigid_body.apply_force(&self.push_force);
-
-            rigid_body.apply_torque(60.0);
 
             rigid_body.integrate_linear(delta_time.into());
             rigid_body.integrate_angular(delta_time.into());
@@ -129,21 +96,8 @@ impl App {
 
         d.clear_background(Color::GRAY);
 
-        // Visualize force being applied by mouse
-        if self.is_targeting {
-            let rigid_body = self.rigid_bodies.last_mut().unwrap();
-
-            d.draw_line(
-                self.mouse_position.x as i32,
-                self.mouse_position.y as i32,
-                rigid_body.position.x as i32,
-                rigid_body.position.y as i32,
-                Color::RED,
-            );
-        }
-
-        // Draw the rigid_bodies
         for rigid_body in &self.rigid_bodies {
+            // Draw circular rigid_bodies
             if rigid_body.shape.is_circle() {
                 let radius = rigid_body.shape.circle().unwrap().radius;
 
@@ -158,6 +112,28 @@ impl App {
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     radius as f32,
+                    Color::WHITE,
+                );
+            }
+
+            // Draw rectangular rigid bodies
+            if let Some(rectangle) = rigid_body.shape.rectangle() {
+                for i in 0..rectangle.vertices.len() {
+                    let curr = i;
+                    let next = (i + 1) % rectangle.vertices.len();
+
+                    d.draw_line_ex(
+                        vector2_to_raylib(&rectangle.vertices[curr]),
+                        vector2_to_raylib(&rectangle.vertices[next]),
+                        1.0,
+                        Color::WHITE,
+                    );
+                }
+
+                d.draw_circle(
+                    rigid_body.position.x as i32,
+                    rigid_body.position.y as i32,
+                    1.0,
                     Color::WHITE,
                 );
             }
@@ -197,5 +173,12 @@ impl App {
                 }
             }
         }
+    }
+}
+
+fn vector2_to_raylib(vector2: &Vector2) -> RaylibVector2 {
+    RaylibVector2 {
+        x: vector2.x as f32,
+        y: vector2.y as f32,
     }
 }
