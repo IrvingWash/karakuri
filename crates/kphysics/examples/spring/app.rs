@@ -21,7 +21,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Canary").size(1340, 800).build();
+        let (handle, thread) = raylib::init().title("Spring").size(1340, 800).build();
 
         Self {
             running: false,

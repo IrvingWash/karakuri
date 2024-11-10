@@ -16,5 +16,5 @@ shmup:
 	cargo run --example=shmup
 racing:
 	cargo run --example=racing
-canary:
-	cargo run --package=kphysics --example=canary
+spring:
+	cargo run --package=kphysics --example=spring
