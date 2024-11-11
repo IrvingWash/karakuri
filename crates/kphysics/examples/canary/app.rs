@@ -1,14 +1,11 @@
 use kmath::Vector2;
 use kphysics::{
-    force_generator,
+    collision_detector, force_generator,
     shapes::{Circle, Shape},
     RigidBody,
 };
 use raylib::{
-    color::Color,
-    consts::{KeyboardKey, MouseButton},
-    math::Vector2 as RaylibVector2,
-    prelude::RaylibDraw,
+    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
 };
 
@@ -23,22 +20,17 @@ pub struct App {
     rigid_bodies: Vec<RigidBody>,
 
     push_force: Vector2,
-
-    mouse_position: RaylibVector2,
-    is_targeting: bool,
 }
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Spring").size(1340, 800).build();
+        let (handle, thread) = raylib::init().title("Canary").size(1340, 800).build();
 
         Self {
             running: false,
             rl: handle,
             thread,
             rigid_bodies: Vec::new(),
-            mouse_position: RaylibVector2::zero(),
-            is_targeting: false,
             push_force: Vector2::ZERO,
         }
     }
@@ -50,60 +42,22 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        // Anchor
         self.rigid_bodies.push(RigidBody::new(
-            Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
-            0.0,
-            Shape::Circle(Circle::new(5.0)),
+            Vector2::new(100.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(100.0)),
         ));
-
-        // Bobs
-        for i in 1..=15 {
-            self.rigid_bodies.push(RigidBody::new(
-                Vector2::new(600.0, f64::from(i) * 15.0),
-                2.0,
-                Shape::Circle(Circle::new(5.0)),
-            ))
-        }
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(500.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(50.0)),
+        ));
 
         self.running = true;
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
-
-        if self.rl.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
-            self.is_targeting = true;
-
-            self.mouse_position = self.rl.get_mouse_position();
-        }
-
-        if self
-            .rl
-            .is_mouse_button_released(MouseButton::MOUSE_BUTTON_LEFT)
-        {
-            self.is_targeting = false;
-
-            let mouse_position =
-                Vector2::new(self.mouse_position.x.into(), self.mouse_position.y.into());
-
-            let rigid_body = self.rigid_bodies.last_mut().unwrap();
-
-            let impulse_direction = rigid_body
-                .position
-                .to_subtracted(&mouse_position)
-                .to_normalized();
-
-            let impulse_magnitude = rigid_body
-                .position
-                .to_subtracted(&mouse_position)
-                .magnitude()
-                * 5.0;
-
-            rigid_body
-                .velocity
-                .set(&impulse_direction.to_scaled(impulse_magnitude));
-        }
 
         if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
             self.push_force
@@ -113,27 +67,40 @@ impl App {
             self.push_force
                 .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
         }
+        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
+            self.push_force
+                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
+        }
+        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
+            self.push_force
+                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
+        }
     }
 
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        for i in 1..self.rigid_bodies.len() {
-            let current = &self.rigid_bodies[i];
-            let previous = &self.rigid_bodies[i - 1];
-
-            let spring_force = force_generator::spring(current, previous, 15.0, 300.0);
-
-            self.rigid_bodies[i].apply_force(&spring_force);
-            self.rigid_bodies[i - 1].apply_force(&spring_force.to_scaled(-1.0));
-        }
-
         for rigid_body in &mut self.rigid_bodies {
-            rigid_body.apply_force(&force_generator::drag(rigid_body, 0.002));
             rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&Vector2::new(20.0 * PIXELS_PER_METER, 0.0));
             rigid_body.apply_force(&self.push_force);
+            rigid_body.is_colliding = false;
 
             rigid_body.update(delta_time.into());
+        }
+
+        for i in 0..self.rigid_bodies.len() {
+            for _ in i + 1..self.rigid_bodies.len() {
+                let (f, s) = self.rigid_bodies.split_at_mut(i + 1);
+
+                let body = f.last_mut().unwrap();
+                let other = s.first_mut().unwrap();
+
+                if collision_detector::are_colliding(body, other) {
+                    body.is_colliding = true;
+                    other.is_colliding = true;
+                }
+            }
         }
 
         self.keep_in_window();
@@ -144,40 +111,55 @@ impl App {
     pub fn render(&mut self) {
         let mut d = self.rl.begin_drawing(&self.thread);
 
-        d.clear_background(Color::GRAY);
+        d.clear_background(Color::BLACK);
 
-        // Visualize force being applied by mouse
-        if self.is_targeting {
-            let rigid_body = self.rigid_bodies.last_mut().unwrap();
-
-            d.draw_line(
-                self.mouse_position.x as i32,
-                self.mouse_position.y as i32,
-                rigid_body.position.x as i32,
-                rigid_body.position.y as i32,
-                Color::RED,
-            );
-        }
-
-        // Draw spring between rigid_bodies
-        for i in 1..self.rigid_bodies.len() {
-            d.draw_line_ex(
-                vector2_to_raylib(&self.rigid_bodies[i - 1].position),
-                vector2_to_raylib(&self.rigid_bodies[i].position),
-                15.0,
-                Color::GREEN,
-            );
-        }
-
-        // Draw the rigid_bodies
         for rigid_body in &self.rigid_bodies {
+            // Draw circular rigid_bodies
             if rigid_body.shape.is_circle() {
                 let radius = rigid_body.shape.circle().unwrap().radius;
 
-                d.draw_circle_v(
-                    vector2_to_raylib(&rigid_body.position),
+                d.draw_line(
+                    rigid_body.position.x as i32,
+                    rigid_body.position.y as i32,
+                    (rigid_body.position.x + rigid_body.rotation.cos() * radius) as i32,
+                    (rigid_body.position.y + rigid_body.rotation.sin() * radius) as i32,
+                    if rigid_body.is_colliding {
+                        Color::RED
+                    } else {
+                        Color::WHITE
+                    },
+                );
+                d.draw_circle_lines(
+                    rigid_body.position.x as i32,
+                    rigid_body.position.y as i32,
                     radius as f32,
-                    Color::WHEAT,
+                    if rigid_body.is_colliding {
+                        Color::RED
+                    } else {
+                        Color::WHITE
+                    },
+                );
+            }
+
+            // Draw rectangular rigid bodies
+            if let Some(rectangle) = rigid_body.shape.rectangle() {
+                for i in 0..rectangle.world_vertices.len() {
+                    let curr = i;
+                    let next = (i + 1) % rectangle.world_vertices.len();
+
+                    d.draw_line_ex(
+                        vector2_to_raylib(&rectangle.world_vertices[curr]),
+                        vector2_to_raylib(&rectangle.world_vertices[next]),
+                        1.0,
+                        Color::WHITE,
+                    );
+                }
+
+                d.draw_circle(
+                    rigid_body.position.x as i32,
+                    rigid_body.position.y as i32,
+                    1.0,
+                    Color::WHITE,
                 );
             }
         }

@@ -8,6 +8,7 @@ pub struct TransformComponent {
 }
 
 impl Default for TransformComponent {
+    #[inline]
     fn default() -> Self {
         Self::new(Vector2::ZERO, Vector2::new(1., 1.), 0.)
     }
@@ -44,6 +45,6 @@ mod transform_tests {
 
         assert_eq!(transform.position, Vector2::new(10.25, 5.));
         assert_eq!(transform.scale, Vector2::new(1., 1.));
-        assert_eq!(transform.rotation, 0.);
+        assert_eq!(transform.rotation, 0.0);
     }
 }

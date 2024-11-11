@@ -1,5 +1,7 @@
-mod particle;
+mod rigid_body;
 
-pub mod particle_force_generator;
+pub mod collision_detector;
+pub mod force_generator;
+pub mod shapes;
 
-pub use particle::Particle;
+pub use rigid_body::RigidBody;

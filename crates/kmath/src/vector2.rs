@@ -5,6 +5,7 @@ pub struct Vector2 {
 }
 
 impl Default for Vector2 {
+    #[inline]
     fn default() -> Vector2 {
         Vector2::ZERO
     }

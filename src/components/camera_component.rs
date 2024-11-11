@@ -7,6 +7,7 @@ pub struct CameraComponent {
 }
 
 impl Default for CameraComponent {
+    #[inline]
     fn default() -> Self {
         Self {
             target: None,

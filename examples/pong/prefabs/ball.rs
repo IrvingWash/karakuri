@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
     TagComponent, TransformComponent,
@@ -98,7 +100,7 @@ impl BehaviorComponent for Ball {
         println!("I (ball) am sadly destroyed :(");
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

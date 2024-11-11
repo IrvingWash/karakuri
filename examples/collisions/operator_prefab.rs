@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::{
     components::{BehaviorComponent, CameraComponent, ComponentPayload},
     UpdateContext,
@@ -34,7 +36,7 @@ impl BehaviorComponent for Operator {
         }
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

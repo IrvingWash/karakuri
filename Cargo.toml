@@ -50,6 +50,7 @@ self_named_module_files = "forbid"
 set_contains_or_insert = "forbid"
 type_id_on_box = "forbid"
 unnecessary_self_imports = "forbid"
+missing_inline_in_public_items = "forbid"
 
 [lints]
 workspace = true

@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, RigidBodyComponent, SpriteComponent,
     TagComponent, TransformComponent,
@@ -40,7 +42,7 @@ impl BehaviorComponent for EnemyLaser {
         rigid_body.velocity.y = self.speed;
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

@@ -1,5 +1,9 @@
 use kmath::Vector2;
-use kphysics::{particle_force_generator, Particle};
+use kphysics::{
+    force_generator,
+    shapes::{Circle, Shape},
+    RigidBody,
+};
 use raylib::{
     color::Color,
     consts::{KeyboardKey, MouseButton},
@@ -19,7 +23,7 @@ pub struct App {
     thread: RaylibThread,
     running: bool,
 
-    particles: Vec<Particle>,
+    rigid_bodies: Vec<RigidBody>,
 
     push_force: Vector2,
 
@@ -35,7 +39,7 @@ impl App {
             running: false,
             rl: handle,
             thread,
-            particles: Vec::new(),
+            rigid_bodies: Vec::new(),
             mouse_position: RaylibVector2::zero(),
             is_targeting: false,
             push_force: Vector2::ZERO,
@@ -49,14 +53,26 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        self.particles
-            .push(Particle::new(Vector2::new(100.0, 100.0), 1.0, 6.0));
-        self.particles
-            .push(Particle::new(Vector2::new(300.0, 100.0), 1.0, 6.0));
-        self.particles
-            .push(Particle::new(Vector2::new(300.0, 300.0), 1.0, 6.0));
-        self.particles
-            .push(Particle::new(Vector2::new(100.0, 300.0), 1.0, 6.0));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(100.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(300.0, 100.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(300.0, 300.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
+        self.rigid_bodies.push(RigidBody::new(
+            Vector2::new(100.0, 300.0),
+            1.0,
+            Shape::Circle(Circle::new(6.0)),
+        ));
 
         self.running = true;
     }
@@ -77,19 +93,22 @@ impl App {
             self.is_targeting = false;
 
             let mouse_position =
-                Vector2::new(self.mouse_position.x as f64, self.mouse_position.y as f64);
+                Vector2::new(self.mouse_position.x.into(), self.mouse_position.y.into());
 
-            let particle = self.particles.last_mut().unwrap();
+            let rigid_body = self.rigid_bodies.last_mut().unwrap();
 
-            let impulse_direction = particle
+            let impulse_direction = rigid_body
                 .position
                 .to_subtracted(&mouse_position)
                 .to_normalized();
 
-            let impulse_magnitude =
-                particle.position.to_subtracted(&mouse_position).magnitude() * 5.0;
+            let impulse_magnitude = rigid_body
+                .position
+                .to_subtracted(&mouse_position)
+                .magnitude()
+                * 5.0;
 
-            particle
+            rigid_body
                 .velocity
                 .set(&impulse_direction.to_scaled(impulse_magnitude));
         }
@@ -115,69 +134,66 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        let ab_spring_force = particle_force_generator::spring(
-            &self.particles[0],
-            &self.particles[1],
+        let ab_spring_force = force_generator::spring(
+            &self.rigid_bodies[0],
+            &self.rigid_bodies[1],
             200.,
             STIFFNESS,
         );
-        self.particles[0].apply_force(&ab_spring_force);
-        self.particles[1].apply_force(&ab_spring_force.to_scaled(-1.));
+        self.rigid_bodies[0].apply_force(&ab_spring_force);
+        self.rigid_bodies[1].apply_force(&ab_spring_force.to_scaled(-1.));
 
-        let bc_spring_force = particle_force_generator::spring(
-            &self.particles[1],
-            &self.particles[2],
+        let bc_spring_force = force_generator::spring(
+            &self.rigid_bodies[1],
+            &self.rigid_bodies[2],
             REST_LENGTH,
             STIFFNESS,
         );
-        self.particles[1].apply_force(&bc_spring_force);
-        self.particles[2].apply_force(&bc_spring_force.to_scaled(-1.));
+        self.rigid_bodies[1].apply_force(&bc_spring_force);
+        self.rigid_bodies[2].apply_force(&bc_spring_force.to_scaled(-1.));
 
-        let cd_spring_force = particle_force_generator::spring(
-            &self.particles[2],
-            &self.particles[3],
+        let cd_spring_force = force_generator::spring(
+            &self.rigid_bodies[2],
+            &self.rigid_bodies[3],
             REST_LENGTH,
             STIFFNESS,
         );
-        self.particles[2].apply_force(&cd_spring_force);
-        self.particles[3].apply_force(&cd_spring_force.to_scaled(-1.));
+        self.rigid_bodies[2].apply_force(&cd_spring_force);
+        self.rigid_bodies[3].apply_force(&cd_spring_force.to_scaled(-1.));
 
-        let da_spring_force = particle_force_generator::spring(
-            &self.particles[3],
-            &self.particles[0],
+        let da_spring_force = force_generator::spring(
+            &self.rigid_bodies[3],
+            &self.rigid_bodies[0],
             REST_LENGTH,
             STIFFNESS,
         );
-        self.particles[3].apply_force(&da_spring_force);
-        self.particles[0].apply_force(&da_spring_force.to_scaled(-1.));
+        self.rigid_bodies[3].apply_force(&da_spring_force);
+        self.rigid_bodies[0].apply_force(&da_spring_force.to_scaled(-1.));
 
-        let ac_spring_force = particle_force_generator::spring(
-            &self.particles[0],
-            &self.particles[2],
+        let ac_spring_force = force_generator::spring(
+            &self.rigid_bodies[0],
+            &self.rigid_bodies[2],
             REST_LENGTH,
             STIFFNESS,
         );
-        self.particles[0].apply_force(&ac_spring_force);
-        self.particles[2].apply_force(&ac_spring_force.to_scaled(-1.));
+        self.rigid_bodies[0].apply_force(&ac_spring_force);
+        self.rigid_bodies[2].apply_force(&ac_spring_force.to_scaled(-1.));
 
-        let bd_spring_force = particle_force_generator::spring(
-            &self.particles[1],
-            &self.particles[3],
+        let bd_spring_force = force_generator::spring(
+            &self.rigid_bodies[1],
+            &self.rigid_bodies[3],
             REST_LENGTH,
             STIFFNESS,
         );
-        self.particles[1].apply_force(&bd_spring_force);
-        self.particles[3].apply_force(&bd_spring_force.to_scaled(-1.));
+        self.rigid_bodies[1].apply_force(&bd_spring_force);
+        self.rigid_bodies[3].apply_force(&bd_spring_force.to_scaled(-1.));
 
-        for particle in &mut self.particles {
-            particle.apply_force(&particle_force_generator::drag(particle, 0.002));
-            particle.apply_force(&particle_force_generator::weight(
-                particle,
-                PIXELS_PER_METER,
-            ));
-            particle.apply_force(&self.push_force);
+        for rigid_body in &mut self.rigid_bodies {
+            rigid_body.apply_force(&force_generator::drag(rigid_body, 0.002));
+            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&self.push_force);
 
-            particle.integrate(delta_time.into());
+            rigid_body.update(delta_time.into());
         }
 
         self.keep_in_window();
@@ -192,61 +208,63 @@ impl App {
 
         // Visualize force being applied by mouse
         if self.is_targeting {
-            let particle = self.particles.last_mut().unwrap();
+            let rigid_body = self.rigid_bodies.last_mut().unwrap();
 
             d.draw_line(
                 self.mouse_position.x as i32,
                 self.mouse_position.y as i32,
-                particle.position.x as i32,
-                particle.position.y as i32,
+                rigid_body.position.x as i32,
+                rigid_body.position.y as i32,
                 Color::RED,
             );
         }
 
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[0].position),
-            vector2_to_raylib(&self.particles[1].position),
+            vector2_to_raylib(&self.rigid_bodies[0].position),
+            vector2_to_raylib(&self.rigid_bodies[1].position),
             15.0,
             Color::GREEN,
         );
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[1].position),
-            vector2_to_raylib(&self.particles[2].position),
+            vector2_to_raylib(&self.rigid_bodies[1].position),
+            vector2_to_raylib(&self.rigid_bodies[2].position),
             15.0,
             Color::GREEN,
         );
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[2].position),
-            vector2_to_raylib(&self.particles[3].position),
+            vector2_to_raylib(&self.rigid_bodies[2].position),
+            vector2_to_raylib(&self.rigid_bodies[3].position),
             15.0,
             Color::GREEN,
         );
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[3].position),
-            vector2_to_raylib(&self.particles[0].position),
+            vector2_to_raylib(&self.rigid_bodies[3].position),
+            vector2_to_raylib(&self.rigid_bodies[0].position),
             15.0,
             Color::GREEN,
         );
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[0].position),
-            vector2_to_raylib(&self.particles[2].position),
+            vector2_to_raylib(&self.rigid_bodies[0].position),
+            vector2_to_raylib(&self.rigid_bodies[2].position),
             15.0,
             Color::GREEN,
         );
         d.draw_line_ex(
-            vector2_to_raylib(&self.particles[1].position),
-            vector2_to_raylib(&self.particles[3].position),
+            vector2_to_raylib(&self.rigid_bodies[1].position),
+            vector2_to_raylib(&self.rigid_bodies[3].position),
             15.0,
             Color::GREEN,
         );
 
-        // Draw the particles
-        for particle in &self.particles {
-            d.draw_circle_v(
-                vector2_to_raylib(&particle.position),
-                particle.radius as f32,
-                Color::WHEAT,
-            );
+        // Draw the rigid_bodies
+        for rigid_body in &self.rigid_bodies {
+            if rigid_body.shape.is_circle() {
+                d.draw_circle_v(
+                    vector2_to_raylib(&rigid_body.position),
+                    rigid_body.shape.circle().unwrap().radius as f32,
+                    Color::WHEAT,
+                );
+            }
         }
     }
 
@@ -254,29 +272,33 @@ impl App {
         let width: f64 = self.rl.get_screen_width().into();
         let height: f64 = self.rl.get_screen_height().into();
 
-        for particle in &mut self.particles {
-            if particle.position.x + particle.radius >= width {
-                particle.position.x = width - particle.radius;
-                particle.velocity.x *= -0.9;
+        for rigid_body in &mut self.rigid_bodies {
+            if rigid_body.shape.is_circle() {
+                let radius = rigid_body.shape.circle().unwrap().radius;
 
-                return;
-            }
+                if rigid_body.position.x + radius >= width {
+                    rigid_body.position.x = width - radius;
+                    rigid_body.velocity.x *= -0.9;
 
-            if particle.position.x - particle.radius <= 0.0 {
-                particle.position.x = particle.radius;
-                particle.velocity.x *= -0.9;
+                    return;
+                }
 
-                return;
-            }
+                if rigid_body.position.x - radius <= 0.0 {
+                    rigid_body.position.x = radius;
+                    rigid_body.velocity.x *= -0.9;
 
-            if particle.position.y + particle.radius >= height {
-                particle.position.y = height - particle.radius;
-                particle.velocity.y *= -0.9;
-            }
+                    return;
+                }
 
-            if particle.position.y - particle.radius <= 0.0 {
-                particle.position.y = particle.radius;
-                particle.velocity.y *= -0.9;
+                if rigid_body.position.y + radius >= height {
+                    rigid_body.position.y = height - radius;
+                    rigid_body.velocity.y *= -0.9;
+                }
+
+                if rigid_body.position.y - radius <= 0.0 {
+                    rigid_body.position.y = radius;
+                    rigid_body.velocity.y *= -0.9;
+                }
             }
         }
     }

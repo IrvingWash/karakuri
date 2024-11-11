@@ -401,7 +401,7 @@ mod world_tests {
         assert_eq!(registry.entities.len(), 2);
         assert_eq!(registry.components.len(), 2);
         assert_eq!(registry.free_ids.len(), 1);
-        assert!(registry.free_ids.get(&0).is_some());
+        assert!(registry.free_ids.contains(&0));
 
         assert!(registry.get_component::<Health>(&eggman).is_none());
         assert!(registry.get_component::<Health>(&sonic).is_some());

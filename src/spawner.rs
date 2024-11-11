@@ -9,6 +9,7 @@ pub struct Spawner {
 }
 
 impl Default for Spawner {
+    #[inline]
     fn default() -> Spawner {
         Spawner::new()
     }

@@ -24,3 +24,5 @@ spring:
 	cargo run --package=kphysics --example=spring
 soft_body:
 	cargo run --package=kphysics --example=soft_body
+canary:
+	cargo run --package=kphysics --example=canary

@@ -1,3 +1,5 @@
+use std::any::Any;
+
 use karakuri::components::{
     BehaviorComponent, BoxColliderComponent, ComponentPayload, SpriteComponent, TagComponent,
     TransformComponent,
@@ -54,11 +56,11 @@ impl BehaviorComponent for Paddle {
     fn on_start(&mut self, ctx: UpdateContext) {
         let mut transform = ctx
             .registry
-            .get_component_mut::<TransformComponent>(&ctx.entity)
+            .get_component_mut::<TransformComponent>(ctx.entity)
             .unwrap();
         let sprite = ctx
             .registry
-            .get_component::<SpriteComponent>(&ctx.entity)
+            .get_component::<SpriteComponent>(ctx.entity)
             .unwrap();
 
         let edge_offset = 50.0;
@@ -79,7 +81,7 @@ impl BehaviorComponent for Paddle {
     fn on_update(&mut self, ctx: UpdateContext) {
         let mut transform = ctx
             .registry
-            .get_component_mut::<TransformComponent>(&ctx.entity)
+            .get_component_mut::<TransformComponent>(ctx.entity)
             .unwrap();
 
         if self.side == PaddleSide::Left {
@@ -105,7 +107,7 @@ impl BehaviorComponent for Paddle {
         println!("{} collided with {}", self.side.to_string(), tag.value())
     }
 
-    fn as_any(&self) -> &dyn std::any::Any {
+    fn as_any(&self) -> &dyn Any {
         self
     }
 }

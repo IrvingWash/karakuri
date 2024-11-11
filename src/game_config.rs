@@ -11,6 +11,7 @@ pub struct GameConfig {
 }
 
 impl Default for GameConfig {
+    #[inline]
     fn default() -> Self {
         Self {
             title: "karakuri",
