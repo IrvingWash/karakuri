@@ -1,6 +1,6 @@
 use kmath::Vector2;
 use kphysics::{
-    collision_detector, force_generator,
+    collision_detector,
     shapes::{Circle, Shape},
     RigidBody,
 };
@@ -59,6 +59,10 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
+        let mouse_position = self.rl.get_mouse_position();
+        self.rigid_bodies[0].position.x = mouse_position.x.into();
+        self.rigid_bodies[0].position.y = mouse_position.y.into();
+
         if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
             self.push_force
                 .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
@@ -81,8 +85,6 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         for rigid_body in &mut self.rigid_bodies {
-            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
-            rigid_body.apply_force(&Vector2::new(20.0 * PIXELS_PER_METER, 0.0));
             rigid_body.apply_force(&self.push_force);
             rigid_body.is_colliding = false;
 
@@ -96,7 +98,20 @@ impl App {
                 let body = f.last_mut().unwrap();
                 let other = s.first_mut().unwrap();
 
-                if collision_detector::are_colliding(body, other) {
+                if let Some(contact) = collision_detector::are_colliding(body, other) {
+                    // Draw contact information
+                    let mut d = self.rl.begin_drawing(&self.thread);
+                    d.clear_background(Color::BLACK);
+                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
+                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
+                    d.draw_line(
+                        contact.start.x as i32,
+                        contact.start.y as i32,
+                        (contact.start.x + contact.normal.x * 15.0) as i32,
+                        (contact.start.y + contact.normal.y * 15.0) as i32,
+                        Color::MAGENTA,
+                    );
+
                     body.is_colliding = true;
                     other.is_colliding = true;
                 }
