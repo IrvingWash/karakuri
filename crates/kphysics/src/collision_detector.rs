@@ -3,7 +3,10 @@ use crate::{ContactInformation, RigidBody};
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
 // Ask for contact information separately
-pub fn are_colliding<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<ContactInformation<'a>> {
+pub fn are_colliding<'a>(
+    a: &'a mut RigidBody,
+    b: &'a mut RigidBody,
+) -> Option<ContactInformation<'a>> {
     if a.shape.is_circle() && b.shape.is_circle() {
         return are_colliding_circles(a, b);
     }
@@ -23,7 +26,10 @@ pub fn are_colliding<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<ContactIn
     None
 }
 
-fn are_colliding_circles<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<ContactInformation<'a>> {
+fn are_colliding_circles<'a>(
+    a: &'a mut RigidBody,
+    b: &'a mut RigidBody,
+) -> Option<ContactInformation<'a>> {
     let a_shape = a.shape.circle().unwrap();
     let b_shape = b.shape.circle().unwrap();
 

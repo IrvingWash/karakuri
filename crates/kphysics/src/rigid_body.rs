@@ -68,7 +68,16 @@ impl RigidBody {
         self.update_vertices();
     }
 
+    #[inline]
+    pub fn is_static(&self) -> bool {
+        (self.inverse_mass - 0.0).abs() < f64::EPSILON
+    }
+
     fn integrate_linear(&mut self, delta_time: f64) {
+        if self.is_static() {
+            return;
+        }
+
         let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
 
         self.velocity.add(&acceleration.to_scaled(delta_time));
@@ -79,6 +88,10 @@ impl RigidBody {
     }
 
     fn integrate_angular(&mut self, delta_time: f64) {
+        if self.is_static() {
+            return;
+        }
+
         let angular_acceleration = self.accumulated_torque * self.inverse_moment_of_inertia;
 
         self.angular_velocity += angular_acceleration * delta_time;
@@ -88,6 +101,9 @@ impl RigidBody {
         self.clear_torque();
     }
 
+    // TODO: We should bypass this function for static bodies.
+    // But it needs to be called once anyway to translate local vertices to world.
+    // We can do this either in the constructor or by using a state
     fn update_vertices(&mut self) {
         self.shape.update_vertices(&self.position, self.rotation);
     }

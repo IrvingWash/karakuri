@@ -5,8 +5,8 @@ use kphysics::{
     RigidBody,
 };
 use raylib::{
-    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
-    RaylibHandle, RaylibThread,
+    color::Color, consts::KeyboardKey, consts::MouseButton, math::Vector2 as RaylibVector2,
+    prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -42,15 +42,13 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
+        let width = self.rl.get_screen_width();
+        let height = self.rl.get_screen_height();
+
         self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(100.0, 100.0),
-            1.0,
-            Shape::Circle(Circle::new(100.0)),
-        ));
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(500.0, 100.0),
-            1.0,
-            Shape::Circle(Circle::new(50.0)),
+            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
+            0.0,
+            Shape::Circle(Circle::new(200.0)),
         ));
 
         self.running = true;
@@ -59,9 +57,18 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        let mouse_position = self.rl.get_mouse_position();
-        self.rigid_bodies[0].position.x = mouse_position.x.into();
-        self.rigid_bodies[0].position.y = mouse_position.y.into();
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
+
+            self.rigid_bodies.push(RigidBody::new(
+                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                1.0,
+                Shape::Circle(Circle::new(10.0)),
+            ));
+        }
 
         if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
             self.push_force
@@ -92,25 +99,27 @@ impl App {
         }
 
         for i in 0..self.rigid_bodies.len() {
-            for _ in i + 1..self.rigid_bodies.len() {
+            for j in i + 1..self.rigid_bodies.len() {
                 let (f, s) = self.rigid_bodies.split_at_mut(i + 1);
 
                 let body = f.last_mut().unwrap();
-                let other = s.first_mut().unwrap();
+                let other = &mut s[j - i - 1];
 
-                if let Some(contact) = collision_detector::are_colliding(body, other) {
-                    // Draw contact information
-                    let mut d = self.rl.begin_drawing(&self.thread);
-                    d.clear_background(Color::BLACK);
-                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
-                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
-                    d.draw_line(
-                        contact.start.x as i32,
-                        contact.start.y as i32,
-                        (contact.start.x + contact.normal.x * 15.0) as i32,
-                        (contact.start.y + contact.normal.y * 15.0) as i32,
-                        Color::MAGENTA,
-                    );
+                if let Some(mut contact) = collision_detector::are_colliding(body, other) {
+                    // // Draw contact information
+                    // let mut d = self.rl.begin_drawing(&self.thread);
+                    // d.clear_background(Color::BLACK);
+                    // d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
+                    // d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
+                    // d.draw_line(
+                    //     contact.start.x as i32,
+                    //     contact.start.y as i32,
+                    //     (contact.start.x + contact.normal.x * 15.0) as i32,
+                    //     (contact.start.y + contact.normal.y * 15.0) as i32,
+                    //     Color::MAGENTA,
+                    // );
+
+                    contact.resolve_penetration();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
