@@ -70,6 +70,8 @@ impl RigidBody {
 
     #[inline]
     pub fn is_static(&self) -> bool {
+        // TODO: Not sure epsilon is needed as we are hardcoding 0.0
+        // Maybe just use 1e-8
         (self.inverse_mass - 0.0).abs() < f64::EPSILON
     }
 
