@@ -4,6 +4,7 @@ use kmath::Vector2;
 pub struct Polygon {
     pub world_vertices: Vec<Vector2>,
     local_vertices: Vec<Vector2>,
+    moment_of_inertia: f64,
 }
 
 impl Polygon {
@@ -13,6 +14,7 @@ impl Polygon {
             // TODO: Expecting local vertices as an argument may be a foot gun
             world_vertices: vertices.clone(),
             local_vertices: vertices,
+            moment_of_inertia: 0.0, // TODO
         }
     }
 
@@ -23,18 +25,18 @@ impl Polygon {
         Self {
             world_vertices: local_vertices.clone(),
             local_vertices,
+            moment_of_inertia: 0.0, // TODO
         }
     }
 
-    // TODO: store this value
     #[inline]
     pub fn moment_of_inertia(&self) -> f64 {
-        todo!()
+        self.moment_of_inertia
     }
 
     #[inline]
     pub fn edge_at(&self, vertex_id: usize) -> Vector2 {
-        let next_vertex_id = vertex_id + 1 % self.world_vertices.len();
+        let next_vertex_id = (vertex_id + 1) % self.world_vertices.len();
 
         self.world_vertices[next_vertex_id].to_subtracted(&self.world_vertices[vertex_id])
     }
