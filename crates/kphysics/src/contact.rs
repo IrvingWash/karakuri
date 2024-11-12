@@ -2,7 +2,6 @@ use crate::RigidBody;
 use kmath::Vector2;
 
 #[derive(Debug)]
-#[allow(dead_code)] // TODO: Remove asap
 pub struct Contact<'a> {
     a: &'a mut RigidBody,
     b: &'a mut RigidBody,
