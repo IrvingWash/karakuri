@@ -37,6 +37,19 @@ impl<'a> Contact<'a> {
     }
 
     #[inline]
+    pub fn for_polygons(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
+        Self {
+            a,
+            b,
+            // TODO
+            normal: Vector2::ZERO,
+            depth: 0.0,
+            start: Vector2::ZERO,
+            end: Vector2::ZERO,
+        }
+    }
+
+    #[inline]
     pub fn resolve_collision(&mut self) {
         if self.a.is_static() && self.b.is_static() {
             return;
