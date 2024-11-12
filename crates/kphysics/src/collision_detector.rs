@@ -1,12 +1,9 @@
-use crate::{ContactInformation, RigidBody};
+use crate::{Contact, RigidBody};
 
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
 // Ask for contact information separately
-pub fn are_colliding<'a>(
-    a: &'a mut RigidBody,
-    b: &'a mut RigidBody,
-) -> Option<ContactInformation<'a>> {
+pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
     if a.shape.is_circle() && b.shape.is_circle() {
         return are_colliding_circles(a, b);
     }
@@ -26,10 +23,7 @@ pub fn are_colliding<'a>(
     None
 }
 
-fn are_colliding_circles<'a>(
-    a: &'a mut RigidBody,
-    b: &'a mut RigidBody,
-) -> Option<ContactInformation<'a>> {
+fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
     let a_shape = a.shape.circle().unwrap();
     let b_shape = b.shape.circle().unwrap();
 
@@ -37,17 +31,14 @@ fn are_colliding_circles<'a>(
     let radius_sum = a_shape.radius + b_shape.radius;
 
     if disposition.squared_magnitude() <= radius_sum.powi(2) {
-        return Some(ContactInformation::for_circles(a, b, &disposition));
+        return Some(Contact::for_circles(a, b, &disposition));
     }
 
     None
 }
 
 #[allow(unused_variables)]
-fn are_colliding_polygons<'a>(
-    a: &'a RigidBody,
-    b: &'a RigidBody,
-) -> Option<ContactInformation<'a>> {
+fn are_colliding_polygons<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<Contact<'a>> {
     None
 }
 
@@ -55,6 +46,6 @@ fn are_colliding_polygons<'a>(
 fn are_colliding_circle_and_polygon<'a>(
     circle: &'a RigidBody,
     rigid_body: &'a RigidBody,
-) -> Option<ContactInformation<'a>> {
+) -> Option<Contact<'a>> {
     None
 }

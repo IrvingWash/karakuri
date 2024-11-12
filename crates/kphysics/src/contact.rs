@@ -3,7 +3,7 @@ use kmath::Vector2;
 
 #[derive(Debug)]
 #[allow(dead_code)] // TODO: Remove asap
-pub struct ContactInformation<'a> {
+pub struct Contact<'a> {
     a: &'a mut RigidBody,
     b: &'a mut RigidBody,
 
@@ -14,7 +14,7 @@ pub struct ContactInformation<'a> {
     pub end: Vector2,   // TODO: It's pub for debug
 }
 
-impl<'a> ContactInformation<'a> {
+impl<'a> Contact<'a> {
     #[inline]
     pub fn for_circles(a: &'a mut RigidBody, b: &'a mut RigidBody, disposition: &Vector2) -> Self {
         let normal = disposition.to_normalized();
