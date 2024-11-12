@@ -37,9 +37,6 @@ impl<'a> Contact<'a> {
         }
     }
 
-    // TODO: It's kind of nice that we can resolve penetration from within the contact info,
-    // so it can't be used for different set of bodies.
-    // Although I don't like that much the fact that contact information is responsible for resolution
     #[inline]
     pub fn resolve_penetration(&mut self) {
         if self.a.is_static() && self.b.is_static() {
