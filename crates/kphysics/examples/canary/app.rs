@@ -1,6 +1,6 @@
 use kmath::Vector2;
 use kphysics::{
-    collision_detector,
+    collision_detector, force_generator,
     shapes::{Circle, Shape},
     RigidBody,
 };
@@ -49,6 +49,7 @@ impl App {
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             0.0,
             Shape::Circle(Circle::new(200.0)),
+            None,
         ));
 
         self.running = true;
@@ -66,7 +67,8 @@ impl App {
             self.rigid_bodies.push(RigidBody::new(
                 Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 1.0,
-                Shape::Circle(Circle::new(10.0)),
+                Shape::Circle(Circle::new(40.0)),
+                Some(0.9),
             ));
         }
 
@@ -93,6 +95,8 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&self.push_force);
+            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&Vector2::new(2.0 * PIXELS_PER_METER, 0.0));
             rigid_body.is_colliding = false;
 
             rigid_body.update(delta_time.into());
@@ -119,7 +123,7 @@ impl App {
                     //     Color::MAGENTA,
                     // );
 
-                    contact.resolve_penetration();
+                    contact.resolve_collision();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
@@ -200,23 +204,15 @@ impl App {
                 if rigid_body.position.x + radius >= width {
                     rigid_body.position.x = width - radius;
                     rigid_body.velocity.x *= -0.9;
-
-                    return;
-                }
-
-                if rigid_body.position.x - radius <= 0.0 {
+                } else if rigid_body.position.x - radius <= 0.0 {
                     rigid_body.position.x = radius;
                     rigid_body.velocity.x *= -0.9;
-
-                    return;
                 }
 
                 if rigid_body.position.y + radius >= height {
                     rigid_body.position.y = height - radius;
                     rigid_body.velocity.y *= -0.9;
-                }
-
-                if rigid_body.position.y - radius <= 0.0 {
+                } else if rigid_body.position.y - radius <= 0.0 {
                     rigid_body.position.y = radius;
                     rigid_body.velocity.y *= -0.9;
                 }

@@ -55,6 +55,7 @@ impl App {
             Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
             0.0,
             Shape::Circle(Circle::new(5.0)),
+            None,
         ));
 
         // Bobs
@@ -63,6 +64,7 @@ impl App {
                 Vector2::new(600.0, f64::from(i) * 15.0),
                 2.0,
                 Shape::Circle(Circle::new(5.0)),
+                None,
             ))
         }
 

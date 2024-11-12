@@ -38,11 +38,27 @@ impl<'a> Contact<'a> {
     }
 
     #[inline]
-    pub fn resolve_penetration(&mut self) {
+    pub fn resolve_collision(&mut self) {
         if self.a.is_static() && self.b.is_static() {
             return;
         }
 
+        self.resolve_penetration();
+
+        let elasticity = self.a.restitution.min(self.b.restitution);
+
+        let relative_velocity = self.a.velocity.to_subtracted(&self.b.velocity);
+
+        let impulse_magnitude = -(1.0 + elasticity) * relative_velocity.dot_product(&self.normal)
+            / (self.a.inverse_mass + self.b.inverse_mass);
+
+        let result = self.normal.to_scaled(impulse_magnitude);
+
+        self.a.apply_impulse(&result);
+        self.b.apply_impulse(&result.to_scaled(-1.0));
+    }
+
+    fn resolve_penetration(&mut self) {
         let factor = self.depth / (self.a.inverse_mass + self.b.inverse_mass);
 
         let da = factor * self.a.inverse_mass;

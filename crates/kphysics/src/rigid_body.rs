@@ -20,6 +20,7 @@ pub struct RigidBody {
     pub angular_velocity: f64,
     pub accumulated_torque: f64,
 
+    pub restitution: f64,
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
@@ -28,7 +29,7 @@ pub struct RigidBody {
 
 impl RigidBody {
     #[inline]
-    pub fn new(position: Vector2, mass: f64, shape: Shape) -> Self {
+    pub fn new(position: Vector2, mass: f64, shape: Shape, restitution: Option<f64>) -> Self {
         let moment_of_inertia = shape.moment_of_inertia() * mass;
 
         Self {
@@ -48,6 +49,7 @@ impl RigidBody {
             } else {
                 1.0 / moment_of_inertia
             },
+            restitution: restitution.unwrap_or(1.0),
         }
     }
 
@@ -59,6 +61,11 @@ impl RigidBody {
     #[inline]
     pub fn apply_torque(&mut self, torque: f64) {
         self.accumulated_torque += torque;
+    }
+
+    #[inline]
+    pub fn apply_impulse(&mut self, impulse: &Vector2) {
+        self.velocity.add(&impulse.to_scaled(self.inverse_mass));
     }
 
     #[inline]
