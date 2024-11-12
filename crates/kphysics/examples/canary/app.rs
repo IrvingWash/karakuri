@@ -1,14 +1,14 @@
 use kmath::Vector2;
 use kphysics::{
-    collision_detector, force_generator,
-    shapes::{Circle, Shape},
+    collision_detector,
+    shapes::{Rectangle, Shape},
     RigidBody,
 };
 use raylib::{
-    color::Color, consts::KeyboardKey, consts::MouseButton, math::Vector2 as RaylibVector2,
-    prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
+#[allow(dead_code)]
 const PIXELS_PER_METER: f64 = 50.0;
 
 #[derive(Debug)]
@@ -45,12 +45,24 @@ impl App {
         let width = self.rl.get_screen_width();
         let height = self.rl.get_screen_height();
 
-        self.rigid_bodies.push(RigidBody::new(
+        let mut box_a = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
-            0.0,
-            Shape::Circle(Circle::new(200.0)),
+            1.0,
+            Shape::Rectangle(Rectangle::new(200.0, 200.0)),
             None,
-        ));
+        );
+        let mut box_b = RigidBody::new(
+            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
+            1.0,
+            Shape::Rectangle(Rectangle::new(200.0, 200.0)),
+            None,
+        );
+
+        box_a.angular_velocity = 0.4;
+        box_b.angular_velocity = 0.1;
+
+        self.rigid_bodies.push(box_a);
+        self.rigid_bodies.push(box_b);
 
         self.running = true;
     }
@@ -58,36 +70,10 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        if self
-            .rl
-            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
-        {
-            let mouse_position = self.rl.get_mouse_position();
+        let mouse_position = self.rl.get_mouse_position();
 
-            self.rigid_bodies.push(RigidBody::new(
-                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                1.0,
-                Shape::Circle(Circle::new(40.0)),
-                Some(0.9),
-            ));
-        }
-
-        if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
-            self.push_force
-                .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_RIGHT) {
-            self.push_force
-                .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
-            self.push_force
-                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
-            self.push_force
-                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
-        }
+        self.rigid_bodies[0].position =
+            Vector2::new(mouse_position.x.into(), mouse_position.y.into());
     }
 
     pub fn update(&mut self) {
@@ -95,8 +81,7 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&self.push_force);
-            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
-            rigid_body.apply_force(&Vector2::new(2.0 * PIXELS_PER_METER, 0.0));
+
             rigid_body.is_colliding = false;
 
             rigid_body.update(delta_time.into());
@@ -109,21 +94,20 @@ impl App {
                 let body = f.last_mut().unwrap();
                 let other = &mut s[j - i - 1];
 
+                #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
-                    // // Draw contact information
-                    // let mut d = self.rl.begin_drawing(&self.thread);
-                    // d.clear_background(Color::BLACK);
-                    // d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
-                    // d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
-                    // d.draw_line(
-                    //     contact.start.x as i32,
-                    //     contact.start.y as i32,
-                    //     (contact.start.x + contact.normal.x * 15.0) as i32,
-                    //     (contact.start.y + contact.normal.y * 15.0) as i32,
-                    //     Color::MAGENTA,
-                    // );
-
-                    contact.resolve_collision();
+                    // Draw contact information
+                    let mut d = self.rl.begin_drawing(&self.thread);
+                    d.clear_background(Color::BLACK);
+                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
+                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
+                    d.draw_line(
+                        contact.start.x as i32,
+                        contact.start.y as i32,
+                        (contact.start.x + contact.normal.x * 15.0) as i32,
+                        (contact.start.y + contact.normal.y * 15.0) as i32,
+                        Color::MAGENTA,
+                    );
 
                     body.is_colliding = true;
                     other.is_colliding = true;
