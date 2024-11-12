@@ -1,7 +1,7 @@
 use kmath::Vector2;
 use kphysics::{
     collision_detector,
-    shapes::{Rectangle, Shape},
+    shapes::{Polygon, Shape},
     RigidBody,
 };
 use raylib::{
@@ -48,13 +48,13 @@ impl App {
         let mut box_a = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             1.0,
-            Shape::Rectangle(Rectangle::new(200.0, 200.0)),
+            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             None,
         );
         let mut box_b = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             1.0,
-            Shape::Rectangle(Rectangle::new(200.0, 200.0)),
+            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             None,
         );
 
@@ -154,7 +154,7 @@ impl App {
             }
 
             // Draw rectangular rigid bodies
-            if let Some(rectangle) = rigid_body.shape.rectangle() {
+            if let Some(rectangle) = rigid_body.shape.polygon() {
                 for i in 0..rectangle.world_vertices.len() {
                     let curr = i;
                     let next = (i + 1) % rectangle.world_vertices.len();
@@ -163,7 +163,11 @@ impl App {
                         vector2_to_raylib(&rectangle.world_vertices[curr]),
                         vector2_to_raylib(&rectangle.world_vertices[next]),
                         1.0,
-                        Color::WHITE,
+                        if rigid_body.is_colliding {
+                            Color::MAGENTA
+                        } else {
+                            Color::WHITE
+                        },
                     );
                 }
 
@@ -171,7 +175,11 @@ impl App {
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     1.0,
-                    Color::WHITE,
+                    if rigid_body.is_colliding {
+                        Color::MAGENTA
+                    } else {
+                        Color::WHITE
+                    },
                 );
             }
         }

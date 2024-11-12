@@ -9,6 +9,7 @@ impl Circle {
         Self { radius }
     }
 
+    // TODO: Store this value
     #[inline]
     pub fn moment_of_inertia(&self) -> f64 {
         0.5 * (self.radius.powi(2))
