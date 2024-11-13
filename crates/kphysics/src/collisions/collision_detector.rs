@@ -1,6 +1,13 @@
 use core::f64;
 
-use crate::{shapes::Polygon, Contact, RigidBody};
+use kmath::Vector2;
+
+use crate::{shapes::Polygon, RigidBody};
+
+use super::{
+    errors::{panic_checked_circle_unwrap, panic_checked_polygon_unwrap},
+    Contact, SeparationInfo,
+};
 
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
@@ -26,8 +33,14 @@ pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<C
 }
 
 fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
-    let a_shape = a.shape.circle().unwrap();
-    let b_shape = b.shape.circle().unwrap();
+    let a_shape = a
+        .shape
+        .circle()
+        .unwrap_or_else(|| panic_checked_circle_unwrap());
+    let b_shape = b
+        .shape
+        .circle()
+        .unwrap_or_else(|| panic_checked_circle_unwrap());
 
     let disposition = b.position.to_subtracted(&a.position);
     let radius_sum = a_shape.radius + b_shape.radius;
@@ -43,20 +56,29 @@ fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opt
     let a_polygon = a.shape.polygon();
     let b_polygon = b.shape.polygon();
 
-    let a_polygon = a_polygon.as_ref().unwrap();
-    let b_polygon = b_polygon.as_ref().unwrap();
+    let a_polygon = a_polygon
+        .as_ref()
+        .unwrap_or_else(|| panic_checked_polygon_unwrap());
+    let b_polygon = b_polygon
+        .as_ref()
+        .unwrap_or_else(|| panic_checked_polygon_unwrap());
 
-    let ab = find_minimum_separation(a_polygon, b_polygon);
-    if ab >= 0.0 {
+    let ab_separation_info = find_minimum_separation(a_polygon, b_polygon);
+    if ab_separation_info.separation >= 0.0 {
         return None;
     }
 
-    let ba = find_minimum_separation(b_polygon, a_polygon);
-    if ba >= 0.0 {
+    let ba_separation_info = find_minimum_separation(b_polygon, a_polygon);
+    if ba_separation_info.separation >= 0.0 {
         return None;
     }
 
-    Some(Contact::for_polygons(a, b))
+    Some(Contact::for_polygons(
+        a,
+        b,
+        ab_separation_info,
+        ba_separation_info,
+    ))
 }
 
 #[allow(unused_variables)]
@@ -67,23 +89,38 @@ fn are_colliding_circle_and_polygon<'a>(
     None
 }
 
-fn find_minimum_separation(a: &Polygon, b: &Polygon) -> f64 {
+fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
     let mut separation = f64::MIN;
+    let mut separation_axis = Vector2::ZERO;
+    let mut point = Vector2::ZERO;
 
-    // TODO: Early return if separation was found?
     for (i, va) in a.world_vertices.iter().enumerate() {
-        let normal = a.edge_at(i).create_perpendicular();
+        let edge = a.edge_at(i);
+
+        let normal = edge.create_perpendicular();
 
         let mut min_separation = f64::MAX;
+        let mut min_vertex = Vector2::ZERO;
 
         for vb in &b.world_vertices {
             let projection = vb.to_subtracted(va).dot_product(&normal);
 
-            min_separation = min_separation.min(projection);
+            if projection < min_separation {
+                min_separation = projection;
+                min_vertex.set(vb);
+            };
         }
 
-        separation = separation.max(min_separation);
+        if min_separation > separation {
+            separation = min_separation;
+            separation_axis = edge;
+            point.set(&min_vertex);
+        }
     }
 
-    separation
+    SeparationInfo {
+        point,
+        separation,
+        separation_axis,
+    }
 }

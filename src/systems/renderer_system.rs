@@ -95,7 +95,7 @@ impl RendererSystem {
                 &box_collider
                     .size
                     .as_ref()
-                    .unwrap()
+                    .unwrap_or_else(|| panic_uninitialized_collider("size"))
                     .to_scaled_by_other(&transform.scale)
                     .to_divided(2.0),
             );

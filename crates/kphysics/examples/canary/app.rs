@@ -1,6 +1,6 @@
 use kmath::Vector2;
 use kphysics::{
-    collision_detector,
+    collisions::collision_detector,
     shapes::{Polygon, Shape},
     RigidBody,
 };
@@ -51,15 +51,14 @@ impl App {
             Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             None,
         );
-        let mut box_b = RigidBody::new(
+        let box_b = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             1.0,
             Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             None,
         );
 
-        box_a.angular_velocity = 0.4;
-        box_b.angular_velocity = 0.1;
+        box_a.rotation = 2.3;
 
         self.rigid_bodies.push(box_a);
         self.rigid_bodies.push(box_b);
