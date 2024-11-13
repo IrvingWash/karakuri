@@ -1,12 +1,11 @@
 use kmath::Vector2;
 
-use super::{Circle, Polygon, Rectangle};
+use super::{Circle, Polygon};
 
 #[derive(Debug)]
 pub enum Shape {
     Circle(Circle),
     Polygon(Polygon),
-    Rectangle(Rectangle),
 }
 
 impl Shape {
@@ -15,7 +14,6 @@ impl Shape {
         match self {
             Self::Circle(circle) => circle.moment_of_inertia(),
             Self::Polygon(polygon) => polygon.moment_of_inertia(),
-            Self::Rectangle(rectangle) => rectangle.moment_of_inertia(),
         }
     }
 
@@ -27,11 +25,6 @@ impl Shape {
     #[inline]
     pub fn is_polygon(&self) -> bool {
         matches!(self, Self::Polygon(_))
-    }
-
-    #[inline]
-    pub fn is_rectangle(&self) -> bool {
-        matches!(self, Self::Rectangle(_))
     }
 
     #[inline]
@@ -53,19 +46,9 @@ impl Shape {
     }
 
     #[inline]
-    pub fn rectangle(&self) -> Option<&Rectangle> {
-        if let Self::Rectangle(rectangle) = &self {
-            return Some(rectangle);
-        }
-
-        None
-    }
-
-    #[inline]
     pub fn update_vertices(&mut self, position: &Vector2, rotation: f64) {
         match self {
             Shape::Circle(_) => (),
-            Shape::Rectangle(rectangle) => rectangle.update_vertices(position, rotation),
             Shape::Polygon(polygon) => polygon.update_vertices(position, rotation),
         }
     }

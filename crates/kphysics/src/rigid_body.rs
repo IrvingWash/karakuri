@@ -20,6 +20,7 @@ pub struct RigidBody {
     pub angular_velocity: f64,
     pub accumulated_torque: f64,
 
+    pub restitution: f64,
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
@@ -28,7 +29,7 @@ pub struct RigidBody {
 
 impl RigidBody {
     #[inline]
-    pub fn new(position: Vector2, mass: f64, shape: Shape) -> Self {
+    pub fn new(position: Vector2, mass: f64, shape: Shape, restitution: Option<f64>) -> Self {
         let moment_of_inertia = shape.moment_of_inertia() * mass;
 
         Self {
@@ -48,6 +49,7 @@ impl RigidBody {
             } else {
                 1.0 / moment_of_inertia
             },
+            restitution: restitution.unwrap_or(1.0),
         }
     }
 
@@ -62,13 +64,29 @@ impl RigidBody {
     }
 
     #[inline]
+    pub fn apply_impulse(&mut self, impulse: &Vector2) {
+        self.velocity.add(&impulse.to_scaled(self.inverse_mass));
+    }
+
+    #[inline]
     pub fn update(&mut self, delta_time: f64) {
         self.integrate_linear(delta_time);
         self.integrate_angular(delta_time);
         self.update_vertices();
     }
 
+    #[inline]
+    pub fn is_static(&self) -> bool {
+        // TODO: Not sure epsilon is needed as we are hardcoding 0.0
+        // Maybe just use 1e-8
+        (self.inverse_mass - 0.0).abs() < f64::EPSILON
+    }
+
     fn integrate_linear(&mut self, delta_time: f64) {
+        if self.is_static() {
+            return;
+        }
+
         let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
 
         self.velocity.add(&acceleration.to_scaled(delta_time));
@@ -79,6 +97,10 @@ impl RigidBody {
     }
 
     fn integrate_angular(&mut self, delta_time: f64) {
+        if self.is_static() {
+            return;
+        }
+
         let angular_acceleration = self.accumulated_torque * self.inverse_moment_of_inertia;
 
         self.angular_velocity += angular_acceleration * delta_time;
@@ -88,6 +110,9 @@ impl RigidBody {
         self.clear_torque();
     }
 
+    // TODO: We should bypass this function for static bodies.
+    // But it needs to be called once anyway to translate local vertices to world.
+    // We can do this either in the constructor or by using a state
     fn update_vertices(&mut self) {
         self.shape.update_vertices(&self.position, self.rotation);
     }

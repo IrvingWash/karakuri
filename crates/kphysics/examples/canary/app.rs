@@ -1,14 +1,14 @@
 use kmath::Vector2;
 use kphysics::{
-    collision_detector, force_generator,
-    shapes::{Circle, Shape},
+    collision_detector,
+    shapes::{Polygon, Shape},
     RigidBody,
 };
 use raylib::{
-    color::Color, consts::KeyboardKey, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
-    RaylibHandle, RaylibThread,
+    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
+#[allow(dead_code)]
 const PIXELS_PER_METER: f64 = 50.0;
 
 #[derive(Debug)]
@@ -42,16 +42,27 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(100.0, 100.0),
+        let width = self.rl.get_screen_width();
+        let height = self.rl.get_screen_height();
+
+        let mut box_a = RigidBody::new(
+            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             1.0,
-            Shape::Circle(Circle::new(100.0)),
-        ));
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(500.0, 100.0),
+            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
+            None,
+        );
+        let mut box_b = RigidBody::new(
+            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             1.0,
-            Shape::Circle(Circle::new(50.0)),
-        ));
+            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
+            None,
+        );
+
+        box_a.angular_velocity = 0.4;
+        box_b.angular_velocity = 0.1;
+
+        self.rigid_bodies.push(box_a);
+        self.rigid_bodies.push(box_b);
 
         self.running = true;
     }
@@ -59,44 +70,45 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        if self.rl.is_key_down(KeyboardKey::KEY_LEFT) {
-            self.push_force
-                .add(&Vector2::new(-50.0 * PIXELS_PER_METER, 0.0));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_RIGHT) {
-            self.push_force
-                .add(&Vector2::new(50.0 * PIXELS_PER_METER, 0.0));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_UP) {
-            self.push_force
-                .add(&Vector2::new(0.0, -50.0 * PIXELS_PER_METER));
-        }
-        if self.rl.is_key_down(KeyboardKey::KEY_DOWN) {
-            self.push_force
-                .add(&Vector2::new(0.0, 50.0 * PIXELS_PER_METER));
-        }
+        let mouse_position = self.rl.get_mouse_position();
+
+        self.rigid_bodies[0].position =
+            Vector2::new(mouse_position.x.into(), mouse_position.y.into());
     }
 
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
         for rigid_body in &mut self.rigid_bodies {
-            rigid_body.apply_force(&force_generator::weight(rigid_body, PIXELS_PER_METER));
-            rigid_body.apply_force(&Vector2::new(20.0 * PIXELS_PER_METER, 0.0));
             rigid_body.apply_force(&self.push_force);
+
             rigid_body.is_colliding = false;
 
             rigid_body.update(delta_time.into());
         }
 
         for i in 0..self.rigid_bodies.len() {
-            for _ in i + 1..self.rigid_bodies.len() {
+            for j in i + 1..self.rigid_bodies.len() {
                 let (f, s) = self.rigid_bodies.split_at_mut(i + 1);
 
                 let body = f.last_mut().unwrap();
-                let other = s.first_mut().unwrap();
+                let other = &mut s[j - i - 1];
 
-                if collision_detector::are_colliding(body, other) {
+                #[allow(unused_mut)]
+                if let Some(mut contact) = collision_detector::are_colliding(body, other) {
+                    // Draw contact information
+                    let mut d = self.rl.begin_drawing(&self.thread);
+                    d.clear_background(Color::BLACK);
+                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
+                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
+                    d.draw_line(
+                        contact.start.x as i32,
+                        contact.start.y as i32,
+                        (contact.start.x + contact.normal.x * 15.0) as i32,
+                        (contact.start.y + contact.normal.y * 15.0) as i32,
+                        Color::MAGENTA,
+                    );
+
                     body.is_colliding = true;
                     other.is_colliding = true;
                 }
@@ -142,7 +154,7 @@ impl App {
             }
 
             // Draw rectangular rigid bodies
-            if let Some(rectangle) = rigid_body.shape.rectangle() {
+            if let Some(rectangle) = rigid_body.shape.polygon() {
                 for i in 0..rectangle.world_vertices.len() {
                     let curr = i;
                     let next = (i + 1) % rectangle.world_vertices.len();
@@ -151,7 +163,11 @@ impl App {
                         vector2_to_raylib(&rectangle.world_vertices[curr]),
                         vector2_to_raylib(&rectangle.world_vertices[next]),
                         1.0,
-                        Color::WHITE,
+                        if rigid_body.is_colliding {
+                            Color::MAGENTA
+                        } else {
+                            Color::WHITE
+                        },
                     );
                 }
 
@@ -159,7 +175,11 @@ impl App {
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     1.0,
-                    Color::WHITE,
+                    if rigid_body.is_colliding {
+                        Color::MAGENTA
+                    } else {
+                        Color::WHITE
+                    },
                 );
             }
         }
@@ -176,23 +196,15 @@ impl App {
                 if rigid_body.position.x + radius >= width {
                     rigid_body.position.x = width - radius;
                     rigid_body.velocity.x *= -0.9;
-
-                    return;
-                }
-
-                if rigid_body.position.x - radius <= 0.0 {
+                } else if rigid_body.position.x - radius <= 0.0 {
                     rigid_body.position.x = radius;
                     rigid_body.velocity.x *= -0.9;
-
-                    return;
                 }
 
                 if rigid_body.position.y + radius >= height {
                     rigid_body.position.y = height - radius;
                     rigid_body.velocity.y *= -0.9;
-                }
-
-                if rigid_body.position.y - radius <= 0.0 {
+                } else if rigid_body.position.y - radius <= 0.0 {
                     rigid_body.position.y = radius;
                     rigid_body.velocity.y *= -0.9;
                 }

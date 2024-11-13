@@ -57,21 +57,25 @@ impl App {
             Vector2::new(100.0, 100.0),
             1.0,
             Shape::Circle(Circle::new(6.0)),
+            None,
         ));
         self.rigid_bodies.push(RigidBody::new(
             Vector2::new(300.0, 100.0),
             1.0,
             Shape::Circle(Circle::new(6.0)),
+            None,
         ));
         self.rigid_bodies.push(RigidBody::new(
             Vector2::new(300.0, 300.0),
             1.0,
             Shape::Circle(Circle::new(6.0)),
+            None,
         ));
         self.rigid_bodies.push(RigidBody::new(
             Vector2::new(100.0, 300.0),
             1.0,
             Shape::Circle(Circle::new(6.0)),
+            None,
         ));
 
         self.running = true;
