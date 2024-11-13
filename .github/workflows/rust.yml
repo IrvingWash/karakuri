@@ -43,7 +43,7 @@ jobs:
       - name: Generate coverage
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --coveralls COVERALLS_TOKEN --out html
+        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --coveralls '${COVERALLS_TOKEN}' --out html
 
   fmt:
     name: Format
