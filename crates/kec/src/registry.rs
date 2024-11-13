@@ -289,6 +289,8 @@ mod world_tests {
     struct Health(u32);
     #[derive(Debug)]
     struct Speed(u32);
+    #[derive(Debug, PartialEq)]
+    struct Tag(&'static str);
 
     trait Flyer {
         fn fly(&self);
@@ -414,5 +416,41 @@ mod world_tests {
         assert_eq!(healths.len(), 2);
         assert!(healths[0].is_some());
         assert!(healths[1].is_none());
+    }
+
+    #[test]
+    fn test_is_alive() {
+        let mut registry = Registry::new();
+
+        let entity = registry.create_entity();
+
+        assert!(registry.is_alive(&entity));
+
+        registry.remove_entity(&entity);
+
+        assert!(!registry.is_alive(&entity));
+    }
+
+    #[test]
+    fn test_find_entity() {
+        let mut registry = Registry::new();
+
+        let entity = registry.create_entity();
+        registry.add_component(&entity, Tag("entity"));
+
+        assert!(registry.find_entity(&Tag("entity")).is_some());
+        assert!(registry.find_entity(&Tag("not entity")).is_none());
+    }
+
+    #[test]
+    fn test_has() {
+        let mut registry = Registry::new();
+
+        assert!(!registry.has::<Tag>());
+
+        let entity = registry.create_entity();
+        registry.add_component(&entity, Tag("entity"));
+
+        assert!(registry.has::<Tag>());
     }
 }
