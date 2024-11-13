@@ -72,3 +72,147 @@ pub fn spring(rigid_body: &RigidBody, anchor: &RigidBody, rest_length: f64, k: f
 
     spring_direction.to_scaled(spring_magnitude)
 }
+
+#[cfg(test)]
+mod force_generator_tests {
+    use kmath::Vector2;
+
+    use crate::{
+        force_generator::{drag, friction, gravitation, spring, weight},
+        shapes::{Circle, Shape},
+        RigidBody,
+    };
+
+    #[test]
+    fn test_weight() {
+        let mut rb = RigidBody::new(
+            Vector2::new(0.0, 0.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        assert_eq!(weight(&rb, 50.0), Vector2::ZERO);
+
+        rb.mass = 3.0;
+
+        assert_eq!(weight(&rb, 50.0), Vector2::new(0.0, 1470.0000000000002));
+    }
+
+    #[test]
+    fn test_drag() {
+        let mut rb = RigidBody::new(
+            Vector2::new(0.0, 0.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        rb.velocity = Vector2::new(3.0, 3.0);
+
+        assert_eq!(
+            drag(&rb, 50.0),
+            Vector2 {
+                x: -636.3961030678928,
+                y: -636.3961030678928
+            }
+        );
+
+        rb.mass = 3.0;
+
+        assert_eq!(
+            drag(&rb, 50.0),
+            Vector2 {
+                x: -636.3961030678928,
+                y: -636.3961030678928
+            }
+        );
+    }
+
+    #[test]
+    fn test_friction() {
+        let mut rb = RigidBody::new(
+            Vector2::new(0.0, 0.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        rb.velocity = Vector2::new(3.0, 3.0);
+
+        assert_eq!(
+            friction(&rb, 50.0),
+            Vector2 {
+                x: -35.35533905932738,
+                y: -35.35533905932738
+            }
+        );
+
+        rb.mass = 3.0;
+
+        assert_eq!(
+            friction(&rb, 50.0),
+            Vector2 {
+                x: -35.35533905932738,
+                y: -35.35533905932738
+            }
+        );
+    }
+
+    #[test]
+    fn test_gravitation() {
+        let mut rba = RigidBody::new(
+            Vector2::new(0.0, 0.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        let mut rbb = RigidBody::new(
+            Vector2::new(5.0, 5.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        assert_eq!(gravitation(&rba, &rbb, 50.0, 10.0, 500.0), Vector2::ZERO);
+
+        rba.mass = 3.0;
+        rbb.mass = 0.5;
+
+        let gravitation_force = gravitation(&rba, &rbb, 50.0, 10.0, 500.0);
+
+        assert_eq!(
+            gravitation_force,
+            Vector2 {
+                x: 1.0606601717798212,
+                y: 1.0606601717798212
+            }
+        );
+    }
+
+    #[test]
+    fn test_spring() {
+        let rba = RigidBody::new(
+            Vector2::new(0.0, 0.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        let rbb = RigidBody::new(
+            Vector2::new(5.0, 5.0),
+            0.0,
+            Shape::Circle(Circle::new(10.0)),
+            None,
+        );
+
+        assert_eq!(
+            spring(&rba, &rbb, 300.0, 50.0),
+            Vector2 {
+                x: -10356.601717798212,
+                y: -10356.601717798212
+            }
+        );
+    }
+}
