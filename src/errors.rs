@@ -31,3 +31,37 @@ pub fn panic_uninitialized_collider(name: &str) -> ! {
 pub fn panic_not_loaded_texture(name: &str) -> ! {
     klogger::terminate(&format!("Tried to use not loaded texture {}.", name))
 }
+
+#[cfg(test)]
+mod errors_tests {
+    use kec::Entity;
+
+    use super::{
+        panic_not_loaded_texture, panic_queried, panic_uninitialized_collider,
+        panic_uninitialized_sprite,
+    };
+
+    #[test]
+    #[should_panic]
+    fn test_panic_queried() {
+        panic_queried::<f64>(&Entity::new(1, 1));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_uninitialized_sprite() {
+        panic_uninitialized_sprite("Test");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_uninitialized_collider() {
+        panic_uninitialized_collider("Test");
+    }
+
+    #[test]
+    #[should_panic]
+    pub fn test_panic_not_loaded_texture() {
+        panic_not_loaded_texture("Test");
+    }
+}
