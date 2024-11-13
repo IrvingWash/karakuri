@@ -2,17 +2,10 @@ use kec::Entity;
 
 use crate::components::ComponentPayload;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Spawner {
     pub entities_to_add: Vec<ComponentPayload>,
     pub entities_to_destroy: Vec<Entity>,
-}
-
-impl Default for Spawner {
-    #[inline]
-    fn default() -> Spawner {
-        Spawner::new()
-    }
 }
 
 impl Spawner {
@@ -60,7 +53,7 @@ mod tests {
 
     #[test]
     fn test_remove_entity() {
-        let mut spawner = Spawner::new();
+        let mut spawner = Spawner::default();
 
         spawner.destroy_entity(Entity::new(5, 0));
         spawner.destroy_entity(Entity::new(7, 1));
