@@ -92,3 +92,14 @@ fn test_querying() {
 
     assert_eq!(entities.len(), 0);
 }
+
+#[test]
+fn test_build_with_no_signatures() {
+    let mut registry = Registry::new();
+
+    let entities = registry.query().with_component::<HP>().build();
+    assert!(entities.is_empty());
+
+    let entities = registry.query().build();
+    assert!(entities.is_empty());
+}
