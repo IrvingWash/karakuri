@@ -22,3 +22,16 @@ impl Entity {
         self.unique_id
     }
 }
+
+#[cfg(test)]
+mod entity_tests {
+    use super::*;
+
+    #[test]
+    fn test_ids() {
+        let entity = Entity::new(0, 1);
+
+        assert_eq!(entity.key(), 0);
+        assert_eq!(entity.unique_id(), 1);
+    }
+}
