@@ -1,3 +1,5 @@
+include .env
+
 # ci
 lint:
 	cargo clippy --workspace -- -D warnings
@@ -7,7 +9,7 @@ test:
 	cargo test --workspace
 check: fmt lint test
 coverage:
-	cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out html
+	cargo tarpaulin --verbose --all-features --workspace --timeout 120 --coveralls ${COVERALLS_TOKEN} --out html
 
 # chores
 clean:
