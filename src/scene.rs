@@ -189,3 +189,90 @@ impl Scene {
         sprite
     }
 }
+
+#[cfg(test)]
+mod scene_tests {
+    use kec::Entity;
+    use kmath::Vector2;
+
+    use crate::components::{BoxColliderComponent, ComponentPayload, SpriteComponent};
+
+    use super::Scene;
+
+    #[test]
+    fn test_new() {
+        let scene = Scene::new();
+
+        assert!(scene.entities_to_remove.is_empty());
+    }
+
+    #[test]
+    fn test_create_initial_entities() {
+        let mut scene = Scene::new();
+
+        scene.create_initial_entities(vec![
+            ComponentPayload::default(),
+            ComponentPayload::default(),
+        ]);
+
+        assert_eq!(scene.spawner.entities_to_add.len(), 2);
+    }
+
+    #[test]
+    fn test_set_entities_to_remove() {
+        let mut scene = Scene::new();
+
+        scene.set_entities_to_remove(vec![Entity::new(0, 0), Entity::new(1, 1)]);
+
+        assert_eq!(scene.entities_to_remove.len(), 2);
+    }
+
+    #[test]
+    fn test_prepare_box_collider_component() {
+        let scene = Scene::new();
+        const SIZE: Vector2 = Vector2::new(10.0, 50.0);
+
+        // Neither the size nor a sprite were passed. The size should be zero.
+        {
+            let box_collider_without_size = BoxColliderComponent::default();
+            let prepared_box_collider =
+                scene.prepare_box_collider_component(box_collider_without_size, None);
+
+            assert_eq!(prepared_box_collider.size.unwrap(), Vector2::ZERO);
+        }
+
+        // Size was passed, but sprite wasn't. Should be the passed size.
+        {
+            let box_collider_with_size = BoxColliderComponent::new(Vector2::ZERO, SIZE);
+            let prepared_box_collider =
+                scene.prepare_box_collider_component(box_collider_with_size, None);
+
+            assert_eq!(prepared_box_collider.size.unwrap(), SIZE);
+        }
+
+        // Both size and sprite were passed. Should be size.
+        {
+            let box_collider_with_size = BoxColliderComponent::new(Vector2::ZERO, SIZE);
+            let prepared_box_collider = scene.prepare_box_collider_component(
+                box_collider_with_size,
+                Some(SpriteComponent::default()),
+            );
+
+            assert_eq!(prepared_box_collider.size.unwrap(), SIZE);
+        }
+
+        // Only sprite passed. Should be sprite's size.
+        {
+            let box_collider_without_size = BoxColliderComponent::default();
+            let prepared_box_collider = scene.prepare_box_collider_component(
+                box_collider_without_size,
+                Some(SpriteComponent {
+                    clip_size: Some(SIZE.to_scaled(3.0)),
+                    ..Default::default()
+                }),
+            );
+
+            assert_eq!(prepared_box_collider.size.unwrap(), SIZE.to_scaled(3.0));
+        }
+    }
+}

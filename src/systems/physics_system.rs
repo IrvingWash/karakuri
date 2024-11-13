@@ -107,7 +107,11 @@ impl PhysicsSystem {
         transform: &Ref<TransformComponent>,
         box_collider: &Ref<BoxColliderComponent>,
     ) -> Vector2 {
-        let mut temp_box_collider_size = box_collider.size.as_ref().unwrap().create_copy();
+        let mut temp_box_collider_size = box_collider
+            .size
+            .as_ref()
+            .unwrap_or_else(|| panic_uninitialized_collider("size"))
+            .create_copy();
         temp_box_collider_size.scale_by_other(&transform.scale);
         temp_box_collider_size.divide(2.0);
 

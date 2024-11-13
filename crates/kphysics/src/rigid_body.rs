@@ -65,6 +65,10 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_impulse(&mut self, impulse: &Vector2) {
+        if self.is_static() {
+            return;
+        }
+
         self.velocity.add(&impulse.to_scaled(self.inverse_mass));
     }
 
@@ -123,5 +127,132 @@ impl RigidBody {
 
     fn clear_torque(&mut self) {
         self.accumulated_torque = 0.0;
+    }
+}
+
+#[cfg(test)]
+mod rigid_body_tests {
+    use kmath::Vector2;
+
+    use crate::shapes::{Circle, Polygon, Shape};
+
+    use super::RigidBody;
+
+    #[test]
+    fn test_new() {
+        // No restitution
+        {
+            let mass = 2.0;
+
+            let rigid_body =
+                RigidBody::new(Vector2::ZERO, mass, Shape::Circle(Circle::new(10.0)), None);
+
+            assert_eq!(rigid_body.inverse_mass, 1.0 / mass);
+            assert_eq!(
+                rigid_body.inverse_moment_of_inertia,
+                1.0 / (Circle::new(10.0).moment_of_inertia() * mass)
+            );
+            assert_eq!(rigid_body.restitution, 1.0);
+        }
+
+        // Restitution
+        {
+            let mass = 2.0;
+
+            let rigid_body = RigidBody::new(
+                Vector2::ZERO,
+                mass,
+                Shape::Circle(Circle::new(10.0)),
+                Some(3.0),
+            );
+
+            assert_eq!(rigid_body.restitution, 3.0);
+        }
+
+        // Zero mass
+        {
+            let rigid_body =
+                RigidBody::new(Vector2::ZERO, 0.0, Shape::Circle(Circle::new(10.0)), None);
+
+            assert_eq!(rigid_body.inverse_mass, 0.0);
+            assert_eq!(rigid_body.inverse_moment_of_inertia, 0.0);
+            assert!(rigid_body.is_static());
+        }
+    }
+
+    #[test]
+    fn test_force_application() {
+        let mut rb = RigidBody::new(
+            Vector2::new(10.0, 10.0),
+            1.5,
+            Shape::Polygon(Polygon::new(vec![
+                Vector2::new(10.0, 5.0),
+                Vector2::new(15.0, 15.0),
+                Vector2::new(5.0, 15.0),
+            ])),
+            Some(1.0),
+        );
+
+        assert!(!rb.is_static());
+
+        rb.apply_force(&Vector2::new(3.0, 3.0));
+        rb.apply_force(&Vector2::new(5.0, 5.0));
+        rb.apply_torque(3.0);
+        rb.apply_torque(5.0);
+
+        assert_eq!(rb.accumulated_forces, Vector2::new(8.0, 8.0));
+        assert_eq!(rb.accumulated_torque, 8.0);
+
+        rb.update(2.0);
+
+        assert_eq!(rb.accumulated_forces, Vector2::ZERO);
+        assert_eq!(rb.accumulated_torque, 0.0);
+
+        assert_eq!(
+            rb.position,
+            Vector2::new(31.333333333333332, 31.333333333333332)
+        );
+
+        assert_eq!(
+            rb.velocity,
+            Vector2::new(10.666666666666666, 10.666666666666666)
+        );
+
+        // TODO: This should fail as soon as we have moment of inertia for poly
+        assert_eq!(rb.rotation, 0.0);
+
+        rb.apply_impulse(&Vector2::new(3.0, 5.0));
+
+        assert_eq!(rb.velocity, Vector2::new(12.666666666666666, 14.0));
+    }
+
+    #[test]
+    fn test_force_application_for_static() {
+        let mut rb = RigidBody::new(
+            Vector2::new(10.0, 10.0),
+            0.0,
+            Shape::Polygon(Polygon::new(vec![
+                Vector2::new(10.0, 5.0),
+                Vector2::new(15.0, 15.0),
+                Vector2::new(5.0, 15.0),
+            ])),
+            Some(1.0),
+        );
+
+        assert!(rb.is_static());
+
+        rb.apply_force(&Vector2::new(3.0, 3.0));
+        rb.apply_force(&Vector2::new(5.0, 5.0));
+        rb.apply_torque(3.0);
+        rb.apply_torque(5.0);
+
+        rb.update(2.0);
+
+        assert_eq!(rb.position, Vector2::new(10.0, 10.0));
+        assert_eq!(rb.rotation, 0.0);
+
+        rb.apply_impulse(&Vector2::new(10.0, 10.0));
+
+        assert_eq!(rb.velocity, Vector2::ZERO);
     }
 }

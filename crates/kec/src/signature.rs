@@ -46,3 +46,39 @@ impl Signature {
         self.data.is_empty()
     }
 }
+
+#[cfg(test)]
+mod signature_tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let signature = Signature::new();
+
+        assert!(signature.is_empty());
+    }
+
+    #[test]
+    fn test_supersetting() {
+        let mut signature_a = Signature::new();
+        let mut signature_b = Signature::new();
+
+        signature_a.set(3);
+        signature_a.set(4);
+        signature_b.set(3);
+
+        assert!(signature_a.is_superset(&signature_b));
+        assert!(!signature_b.is_superset(&signature_a));
+    }
+
+    #[test]
+    fn test_reset() {
+        let mut signature_a = Signature::new();
+        signature_a.set(3);
+        signature_a.set(4);
+
+        signature_a.reset();
+
+        assert!(signature_a.data.is_empty());
+    }
+}

@@ -80,3 +80,52 @@ impl Animation {
         }
     }
 }
+
+#[cfg(test)]
+mod animation_controller_component_tests {
+    use super::{Animation, AnimationControllerComponent, AnimationParams};
+
+    #[test]
+    fn test_animation_new() {
+        let animation = Animation::new(AnimationParams {
+            frame_count: 8,
+            frame_rate: 10,
+            name: "Test",
+            texture_name: "Test",
+            looping: false,
+        });
+
+        assert_eq!(animation.current_frame, 0);
+        assert_eq!(animation.start_time, 0.0);
+    }
+
+    #[test]
+    fn test_controller() {
+        let mut controller = AnimationControllerComponent::new(vec![
+            Animation::new(AnimationParams {
+                name: "Test name",
+                texture_name: "Test texture",
+                frame_count: 8,
+                frame_rate: 10,
+                looping: true,
+            }),
+            Animation::new(AnimationParams {
+                frame_count: 10,
+                frame_rate: 8,
+                looping: false,
+                name: "Another test name",
+                texture_name: "Another test texture",
+            }),
+        ]);
+
+        {
+            assert_eq!(controller.current().name, "Test name");
+            assert_eq!(controller.animations.len(), 2);
+        }
+
+        {
+            controller.set_animation("Another test name");
+            assert_eq!(controller.current().name, "Another test name")
+        }
+    }
+}

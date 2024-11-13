@@ -61,3 +61,32 @@ fn make_rectangle_vertices(width: f64, height: f64) -> [Vector2; 4] {
         Vector2::new(-half_width, half_height),
     ]
 }
+
+#[cfg(test)]
+mod polygon_tests {
+    use kmath::Vector2;
+
+    use super::Polygon;
+
+    #[test]
+    fn test_rectangular() {
+        let polygon = Polygon::rectangular(30.0, 31.0);
+
+        assert_eq!(
+            polygon.local_vertices,
+            vec![
+                Vector2 { x: -15.0, y: -15.5 },
+                Vector2 { x: 15.0, y: -15.5 },
+                Vector2 { x: 15.0, y: 15.5 },
+                Vector2 { x: -15.0, y: 15.5 }
+            ]
+        );
+    }
+
+    #[test]
+    fn test_edge_at() {
+        let polygon = Polygon::rectangular(30.0, 31.0);
+
+        assert_eq!(polygon.edge_at(1), Vector2 { x: 0.0, y: 31.0 });
+    }
+}
