@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use crate::RigidBody;
 use kmath::Vector2;
 
-use super::SeparationInfo;
+use super::{errors::panic_checked_circle_unwrap, SeparationInfo};
 
 #[derive(Debug)]
 pub struct Contact<'a> {
@@ -22,13 +22,23 @@ impl<'a> Contact<'a> {
     pub fn for_circles(a: &'a mut RigidBody, b: &'a mut RigidBody, disposition: &Vector2) -> Self {
         let normal = disposition.to_normalized();
 
-        let start = b
-            .position
-            .to_subtracted(&normal.to_scaled(b.shape.circle().unwrap().radius));
+        let start = b.position.to_subtracted(
+            &normal.to_scaled(
+                b.shape
+                    .circle()
+                    .unwrap_or_else(|| panic_checked_circle_unwrap())
+                    .radius,
+            ),
+        );
 
-        let end = a
-            .position
-            .to_added(&normal.to_scaled(a.shape.circle().unwrap().radius));
+        let end = a.position.to_added(
+            &normal.to_scaled(
+                a.shape
+                    .circle()
+                    .unwrap_or_else(|| panic_checked_circle_unwrap())
+                    .radius,
+            ),
+        );
 
         Self {
             a,
