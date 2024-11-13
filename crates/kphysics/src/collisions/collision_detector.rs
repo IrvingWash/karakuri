@@ -2,7 +2,9 @@ use core::f64;
 
 use kmath::Vector2;
 
-use crate::{shapes::Polygon, Contact, RigidBody};
+use crate::{shapes::Polygon, RigidBody};
+
+use super::{Contact, SeparationInfo};
 
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
@@ -48,17 +50,22 @@ fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opt
     let a_polygon = a_polygon.as_ref().unwrap();
     let b_polygon = b_polygon.as_ref().unwrap();
 
-    let ab_info = find_minimum_separation(a_polygon, b_polygon);
-    if ab_info.separation >= 0.0 {
+    let ab_separation_info = find_minimum_separation(a_polygon, b_polygon);
+    if ab_separation_info.separation >= 0.0 {
         return None;
     }
 
-    let ba_info = find_minimum_separation(b_polygon, a_polygon);
-    if ba_info.separation >= 0.0 {
+    let ba_separation_info = find_minimum_separation(b_polygon, a_polygon);
+    if ba_separation_info.separation >= 0.0 {
         return None;
     }
 
-    Some(Contact::for_polygons(a, b))
+    Some(Contact::for_polygons(
+        a,
+        b,
+        ab_separation_info,
+        ba_separation_info,
+    ))
 }
 
 #[allow(unused_variables)]
@@ -67,12 +74,6 @@ fn are_colliding_circle_and_polygon<'a>(
     rigid_body: &'a RigidBody,
 ) -> Option<Contact<'a>> {
     None
-}
-
-struct SeparationInfo {
-    separation: f64,
-    separation_axis: Vector2,
-    point: Vector2,
 }
 
 fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {

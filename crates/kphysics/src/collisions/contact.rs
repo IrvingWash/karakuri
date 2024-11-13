@@ -1,5 +1,9 @@
+use std::cmp::Ordering;
+
 use crate::RigidBody;
 use kmath::Vector2;
+
+use super::SeparationInfo;
 
 #[derive(Debug)]
 pub struct Contact<'a> {
@@ -37,15 +41,47 @@ impl<'a> Contact<'a> {
     }
 
     #[inline]
-    pub fn for_polygons(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
-        Self {
-            a,
-            b,
-            // TODO
-            normal: Vector2::ZERO,
-            depth: 0.0,
-            start: Vector2::ZERO,
-            end: Vector2::ZERO,
+    pub fn for_polygons(
+        a: &'a mut RigidBody,
+        b: &'a mut RigidBody,
+        ab_separation_info: SeparationInfo,
+        ba_separation_info: SeparationInfo,
+    ) -> Self {
+        match ab_separation_info
+            .separation
+            .total_cmp(&ba_separation_info.separation)
+        {
+            Ordering::Greater => {
+                let depth = -ab_separation_info.separation;
+                let normal = ab_separation_info.separation_axis.create_perpendicular();
+                let point = ab_separation_info.point;
+
+                Self {
+                    a,
+                    b,
+                    end: point.to_added(&normal.to_scaled(depth)),
+                    start: point,
+                    depth,
+                    normal,
+                }
+            }
+            Ordering::Equal | Ordering::Less => {
+                let depth = -ba_separation_info.separation;
+                let normal = ba_separation_info
+                    .separation_axis
+                    .create_perpendicular()
+                    .to_scaled(-1.0);
+                let point = ba_separation_info.point;
+
+                Self {
+                    a,
+                    b,
+                    start: point.to_subtracted(&normal.to_scaled(depth)),
+                    end: point,
+                    depth,
+                    normal,
+                }
+            }
         }
     }
 
