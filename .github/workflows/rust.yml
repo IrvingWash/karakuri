@@ -39,7 +39,7 @@ jobs:
       - name: Install raylib
         run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev -y
       - name: Install tarpaulin
-        run: cargo install tarpaulin
+        run: cargo install cargo-tarpaulin
       - name: Generate coverage
         env:
           COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
