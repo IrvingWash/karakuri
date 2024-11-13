@@ -7,7 +7,7 @@ test:
 	cargo test --workspace
 check: fmt lint test
 coverage:
-	cargo tarpaulin --out Html --workspace
+	cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out html
 
 # chores
 clean:

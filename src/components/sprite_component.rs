@@ -34,3 +34,15 @@ impl SpriteComponent {
         }
     }
 }
+
+#[cfg(test)]
+mod sprite_component_tests {
+    use super::SpriteComponent;
+
+    #[test]
+    fn test_from_texture_name() {
+        let sprite = SpriteComponent::from_texture_name("Test");
+
+        assert_eq!(sprite.texture_name, "Test");
+    }
+}

@@ -14,3 +14,17 @@ impl TagComponent {
         &self.value
     }
 }
+
+#[cfg(test)]
+mod tag_component_tests {
+    use super::TagComponent;
+
+    #[test]
+    fn test_value() {
+        const NAME: &str = "Test";
+
+        let tag = TagComponent::new(NAME.to_owned());
+
+        assert_eq!(tag.value(), NAME);
+    }
+}

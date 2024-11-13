@@ -15,3 +15,16 @@ impl Default for CameraComponent {
         }
     }
 }
+
+#[cfg(test)]
+mod camera_component_tests {
+    use super::CameraComponent;
+
+    #[test]
+    fn test_default() {
+        let camera = CameraComponent::default();
+
+        assert_eq!(camera.target, None);
+        assert_eq!(camera.zoom, 1.0);
+    }
+}
