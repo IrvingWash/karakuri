@@ -6,6 +6,8 @@ fmt:
 test:
 	cargo test --workspace
 check: fmt lint test
+coverage:
+	cargo tarpaulin --out Html --workspace
 
 # chores
 clean:

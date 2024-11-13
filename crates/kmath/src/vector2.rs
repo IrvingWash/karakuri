@@ -400,6 +400,14 @@ mod vector2_tests {
 
         assert_eq!(a.x, 11.96815278536125);
         assert_eq!(a.y, -33.6025477771711);
+
+        let mut a = Vector2::new(12.0, 35.2);
+        let b = Vector2::new(12.0, 35.2);
+
+        a.move_towards(&b, 10.0);
+
+        assert_eq!(a.x, b.x);
+        assert_eq!(a.y, b.y);
     }
 
     #[test]

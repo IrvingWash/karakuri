@@ -1,5 +1,3 @@
-static mut LOGS: Vec<String> = Vec::new();
-
 const KARAKURI: &str = "karakuri";
 const ANSI_START: &str = "\x1b[0;";
 const ANSI_END: &str = "\x1b[0m";
@@ -31,8 +29,4 @@ fn print(message: &str, color: &'static str) {
     let value = format!("{KARAKURI} error: {ANSI_START}{color}{message}{ANSI_END}");
 
     println!("{value}");
-
-    unsafe {
-        LOGS.push(value);
-    }
 }
