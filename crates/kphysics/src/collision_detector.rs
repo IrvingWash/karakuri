@@ -1,5 +1,7 @@
 use core::f64;
 
+use kmath::Vector2;
+
 use crate::{shapes::Polygon, Contact, RigidBody};
 
 #[inline]
@@ -46,13 +48,13 @@ fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opt
     let a_polygon = a_polygon.as_ref().unwrap();
     let b_polygon = b_polygon.as_ref().unwrap();
 
-    let ab = find_minimum_separation(a_polygon, b_polygon);
-    if ab >= 0.0 {
+    let ab_info = find_minimum_separation(a_polygon, b_polygon);
+    if ab_info.separation >= 0.0 {
         return None;
     }
 
-    let ba = find_minimum_separation(b_polygon, a_polygon);
-    if ba >= 0.0 {
+    let ba_info = find_minimum_separation(b_polygon, a_polygon);
+    if ba_info.separation >= 0.0 {
         return None;
     }
 
@@ -67,22 +69,44 @@ fn are_colliding_circle_and_polygon<'a>(
     None
 }
 
-fn find_minimum_separation(a: &Polygon, b: &Polygon) -> f64 {
+struct SeparationInfo {
+    separation: f64,
+    separation_axis: Vector2,
+    point: Vector2,
+}
+
+fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
     let mut separation = f64::MIN;
+    let mut separation_axis = Vector2::ZERO;
+    let mut point = Vector2::ZERO;
 
     for (i, va) in a.world_vertices.iter().enumerate() {
-        let normal = a.edge_at(i).create_perpendicular();
+        let edge = a.edge_at(i);
+
+        let normal = edge.create_perpendicular();
 
         let mut min_separation = f64::MAX;
+        let mut min_vertex = Vector2::ZERO;
 
         for vb in &b.world_vertices {
             let projection = vb.to_subtracted(va).dot_product(&normal);
 
-            min_separation = min_separation.min(projection);
+            if projection < min_separation {
+                min_separation = projection;
+                min_vertex.set(vb);
+            };
         }
 
-        separation = separation.max(min_separation);
+        if min_separation > separation {
+            separation = min_separation;
+            separation_axis = edge;
+            point.set(&min_vertex);
+        }
     }
 
-    separation
+    SeparationInfo {
+        point,
+        separation,
+        separation_axis,
+    }
 }
