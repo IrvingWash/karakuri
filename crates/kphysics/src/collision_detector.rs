@@ -70,7 +70,6 @@ fn are_colliding_circle_and_polygon<'a>(
 fn find_minimum_separation(a: &Polygon, b: &Polygon) -> f64 {
     let mut separation = f64::MIN;
 
-    // TODO: Early return if separation was found?
     for (i, va) in a.world_vertices.iter().enumerate() {
         let normal = a.edge_at(i).create_perpendicular();
 
