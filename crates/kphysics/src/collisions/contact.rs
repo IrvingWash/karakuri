@@ -134,6 +134,7 @@ impl<'a> Contact<'a> {
         self.resolve_penetration();
 
         let elasticity = self.a.restitution.min(self.b.restitution);
+        let angular_friction = self.a.angular_friction.min(self.b.angular_friction);
 
         let ra = self.end.to_subtracted(&self.a.position);
         let rb = self.start.to_subtracted(&self.b.position);
@@ -148,12 +149,24 @@ impl<'a> Contact<'a> {
 
         let relative_velocity = va.to_subtracted(&vb);
 
-        let impulse_magnitude = -(1.0 + elasticity) * relative_velocity.dot_product(&self.normal)
+        // Impulse along the normal
+        let impulse_magnitude_along_normal = -(1.0 + elasticity)
+            * relative_velocity.dot_product(&self.normal)
             / ((self.a.inverse_mass + self.b.inverse_mass)
                 + (ra.cross_product(&self.normal).powi(2) * self.a.inverse_moment_of_inertia)
                 + (rb.cross_product(&self.normal).powi(2) * self.b.inverse_moment_of_inertia));
+        let impulse_along_normal = self.normal.to_scaled(impulse_magnitude_along_normal);
 
-        let result = self.normal.to_scaled(impulse_magnitude);
+        // Impulse along the tangent
+        let tangent = self.normal.create_perpendicular();
+        let impulse_magnitude_along_tangent =
+            angular_friction * -(1.0 + elasticity) * relative_velocity.dot_product(&tangent)
+                / ((self.a.inverse_mass + self.b.inverse_mass)
+                    + (ra.cross_product(&tangent).powi(2) * self.a.inverse_moment_of_inertia)
+                    + (rb.cross_product(&tangent).powi(2) * self.b.inverse_moment_of_inertia));
+        let impulse_along_tangent = tangent.to_scaled(impulse_magnitude_along_tangent);
+
+        let result = impulse_along_normal.to_added(&impulse_along_tangent);
 
         self.a.apply_angular_impulse(&result, &ra);
         self.b.apply_angular_impulse(&result.to_scaled(-1.0), &rb);

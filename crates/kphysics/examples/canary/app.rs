@@ -2,7 +2,7 @@ use kmath::Vector2;
 use kphysics::{
     collisions::collision_detector,
     force_generator,
-    shapes::{Polygon, Shape},
+    shapes::{Circle, Polygon, Shape},
     RigidBody,
 };
 use raylib::{
@@ -53,16 +53,29 @@ impl App {
             Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
             Some(0.2),
         );
-        let mut box_b = RigidBody::new(
+        let left_wall = RigidBody::new(
+            Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
+            0.0,
+            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            Some(0.2),
+        );
+        let right_wall = RigidBody::new(
+            Vector2::new(50.0, height as f64 / 2.0 - 25.0),
+            0.0,
+            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            Some(0.2),
+        );
+        let big_ball = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             0.0,
-            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
+            Shape::Circle(Circle::new(200.0)),
             Some(0.5),
         );
-        box_b.rotation = 1.4;
 
         self.rigid_bodies.push(floor);
-        self.rigid_bodies.push(box_b);
+        self.rigid_bodies.push(left_wall);
+        self.rigid_bodies.push(right_wall);
+        self.rigid_bodies.push(big_ball);
 
         self.running = true;
     }
@@ -76,16 +89,16 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            let mut cube = RigidBody::new(
+            let mut ball = RigidBody::new(
                 Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 1.0,
-                Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
+                Shape::Circle(Circle::new(50.0)),
                 None,
             );
 
-            cube.can_be_rotated = true;
+            ball.can_be_rotated = true;
 
-            self.rigid_bodies.push(cube);
+            self.rigid_bodies.push(ball);
         }
     }
 
@@ -95,6 +108,7 @@ impl App {
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&self.push_force);
             rigid_body.apply_force(&force_generator::weight(&rigid_body, PIXELS_PER_METER));
+            rigid_body.apply_force(&force_generator::friction(&rigid_body, 25.0));
 
             rigid_body.is_colliding = false;
 
