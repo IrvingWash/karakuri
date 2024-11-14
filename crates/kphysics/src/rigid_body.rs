@@ -21,7 +21,7 @@ pub struct RigidBody {
     pub angular_velocity: f64,
     pub accumulated_torque: f64,
 
-    pub restitution: f64,
+    pub restitution: f64, // bounciness
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
@@ -42,7 +42,7 @@ impl RigidBody {
             velocity: Vector2::ZERO,
             accumulated_forces: Vector2::ZERO,
             rotation: 0.0,
-            angular_friction: 1.0,
+            angular_friction: 0.1,
             angular_velocity: 0.0,
             accumulated_torque: 0.0,
             mass,

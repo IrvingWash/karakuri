@@ -2,7 +2,7 @@ use kmath::Vector2;
 use kphysics::{
     collisions::collision_detector,
     force_generator,
-    shapes::{Circle, Polygon, Shape},
+    shapes::{Polygon, Shape},
     RigidBody,
 };
 use raylib::{
@@ -65,17 +65,19 @@ impl App {
             Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
             Some(0.2),
         );
-        let big_ball = RigidBody::new(
+        let mut big_box = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             0.0,
-            Shape::Circle(Circle::new(200.0)),
+            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             Some(0.5),
         );
+
+        big_box.rotation = 1.4;
 
         self.rigid_bodies.push(floor);
         self.rigid_bodies.push(left_wall);
         self.rigid_bodies.push(right_wall);
-        self.rigid_bodies.push(big_ball);
+        self.rigid_bodies.push(big_box);
 
         self.running = true;
     }
@@ -89,16 +91,16 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            let mut ball = RigidBody::new(
+            let mut cube = RigidBody::new(
                 Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 1.0,
-                Shape::Circle(Circle::new(50.0)),
+                Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
                 None,
             );
 
-            ball.can_be_rotated = true;
+            cube.can_be_rotated = true;
 
-            self.rigid_bodies.push(ball);
+            self.rigid_bodies.push(cube);
         }
     }
 
@@ -108,7 +110,6 @@ impl App {
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&self.push_force);
             rigid_body.apply_force(&force_generator::weight(&rigid_body, PIXELS_PER_METER));
-            rigid_body.apply_force(&force_generator::friction(&rigid_body, 25.0));
 
             rigid_body.is_colliding = false;
 
@@ -131,8 +132,6 @@ impl App {
                 }
             }
         }
-
-        self.keep_in_window();
 
         self.push_force.reset();
     }
@@ -198,33 +197,6 @@ impl App {
                         Color::WHITE
                     },
                 );
-            }
-        }
-    }
-
-    fn keep_in_window(&mut self) {
-        let width: f64 = self.rl.get_screen_width().into();
-        let height: f64 = self.rl.get_screen_height().into();
-
-        for rigid_body in &mut self.rigid_bodies {
-            if rigid_body.shape.is_circle() {
-                let radius = rigid_body.shape.circle().unwrap().radius;
-
-                if rigid_body.position.x + radius >= width {
-                    rigid_body.position.x = width - radius;
-                    rigid_body.velocity.x *= -0.9;
-                } else if rigid_body.position.x - radius <= 0.0 {
-                    rigid_body.position.x = radius;
-                    rigid_body.velocity.x *= -0.9;
-                }
-
-                if rigid_body.position.y + radius >= height {
-                    rigid_body.position.y = height - radius;
-                    rigid_body.velocity.y *= -0.9;
-                } else if rigid_body.position.y - radius <= 0.0 {
-                    rigid_body.position.y = radius;
-                    rigid_body.velocity.y *= -0.9;
-                }
             }
         }
     }
