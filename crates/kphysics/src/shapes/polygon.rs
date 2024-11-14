@@ -1,5 +1,7 @@
 use kmath::Vector2;
 
+const RECTANGLE_MOI_K: f64 = 1.0 / 12.0;
+
 #[derive(Debug)]
 pub struct Polygon {
     pub world_vertices: Vec<Vector2>,
@@ -25,7 +27,7 @@ impl Polygon {
         Self {
             world_vertices: local_vertices.clone(),
             local_vertices,
-            moment_of_inertia: 0.0, // TODO
+            moment_of_inertia: RECTANGLE_MOI_K * (width.powi(2) + height.powi(2)),
         }
     }
 

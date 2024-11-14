@@ -76,12 +76,16 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            self.rigid_bodies.push(RigidBody::new(
+            let mut cube = RigidBody::new(
                 Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 1.0,
                 Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
                 None,
-            ));
+            );
+
+            cube.can_be_rotated = true;
+
+            self.rigid_bodies.push(cube);
         }
     }
 
@@ -106,18 +110,7 @@ impl App {
 
                 #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
-                    // Draw contact information
-                    let mut d = self.rl.begin_drawing(&self.thread);
-                    d.clear_background(Color::BLACK);
-                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
-                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
-                    d.draw_line(
-                        contact.start.x as i32,
-                        contact.start.y as i32,
-                        (contact.start.x + contact.normal.x * 15.0) as i32,
-                        (contact.start.y + contact.normal.y * 15.0) as i32,
-                        Color::MAGENTA,
-                    );
+                    contact.resolve_collision();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
