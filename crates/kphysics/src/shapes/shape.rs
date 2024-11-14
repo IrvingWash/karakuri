@@ -48,7 +48,7 @@ impl Shape {
     #[inline]
     pub fn update_vertices(&mut self, position: &Vector2, rotation: f64) {
         match self {
-            Shape::Circle(_) => klogger::terminate("Trying to update vertices on a `Circle`."),
+            Shape::Circle(_) => {}
             Shape::Polygon(polygon) => polygon.update_vertices(position, rotation),
         }
     }
