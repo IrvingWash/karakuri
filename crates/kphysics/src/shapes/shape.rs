@@ -111,11 +111,12 @@ mod shape_tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_circle_update_world_vertices() {
         let mut shape = Shape::Circle(Circle::new(1.0));
 
         shape.update_vertices(&Vector2::new(10.0, 10.0), 3.0);
+
+        assert_eq!(shape.circle().unwrap().radius, 1.0);
     }
 
     #[test]
