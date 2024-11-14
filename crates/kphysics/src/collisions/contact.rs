@@ -97,6 +97,16 @@ impl<'a> Contact<'a> {
 
     #[inline]
     pub fn resolve_collision(&mut self) {
+        if self.a.can_be_rotated || self.b.can_be_rotated {
+            self.resolve_collision_with_rotation();
+
+            return;
+        }
+
+        self.resolve_collision_without_rotation();
+    }
+
+    fn resolve_collision_without_rotation(&mut self) {
         if self.a.is_static() && self.b.is_static() {
             return;
         }
@@ -114,6 +124,52 @@ impl<'a> Contact<'a> {
 
         self.a.apply_impulse(&result);
         self.b.apply_impulse(&result.to_scaled(-1.0));
+    }
+
+    fn resolve_collision_with_rotation(&mut self) {
+        if self.a.is_static() && self.b.is_static() {
+            return;
+        }
+
+        self.resolve_penetration();
+
+        let elasticity = self.a.restitution.min(self.b.restitution);
+        let angular_friction = self.a.angular_friction.min(self.b.angular_friction);
+
+        let ra = self.end.to_subtracted(&self.a.position);
+        let rb = self.start.to_subtracted(&self.b.position);
+        let va = self.a.velocity.to_added(&Vector2::new(
+            -self.a.angular_velocity * ra.y,
+            self.a.angular_velocity * ra.x,
+        ));
+        let vb = self.b.velocity.to_added(&Vector2::new(
+            -self.b.angular_velocity * rb.y,
+            self.b.angular_velocity * rb.x,
+        ));
+
+        let relative_velocity = va.to_subtracted(&vb);
+
+        // Impulse along the normal
+        let impulse_magnitude_along_normal = -(1.0 + elasticity)
+            * relative_velocity.dot_product(&self.normal)
+            / ((self.a.inverse_mass + self.b.inverse_mass)
+                + (ra.cross_product(&self.normal).powi(2) * self.a.inverse_moment_of_inertia)
+                + (rb.cross_product(&self.normal).powi(2) * self.b.inverse_moment_of_inertia));
+        let impulse_along_normal = self.normal.to_scaled(impulse_magnitude_along_normal);
+
+        // Impulse along the tangent
+        let tangent = self.normal.create_perpendicular();
+        let impulse_magnitude_along_tangent =
+            angular_friction * -(1.0 + elasticity) * relative_velocity.dot_product(&tangent)
+                / ((self.a.inverse_mass + self.b.inverse_mass)
+                    + (ra.cross_product(&tangent).powi(2) * self.a.inverse_moment_of_inertia)
+                    + (rb.cross_product(&tangent).powi(2) * self.b.inverse_moment_of_inertia));
+        let impulse_along_tangent = tangent.to_scaled(impulse_magnitude_along_tangent);
+
+        let result = impulse_along_normal.to_added(&impulse_along_tangent);
+
+        self.a.apply_angular_impulse(&result, &ra);
+        self.b.apply_angular_impulse(&result.to_scaled(-1.0), &rb);
     }
 
     fn resolve_penetration(&mut self) {

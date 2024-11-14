@@ -17,14 +17,17 @@ pub struct RigidBody {
 
     // Angular motion
     pub rotation: f64,
+    pub angular_friction: f64,
     pub angular_velocity: f64,
     pub accumulated_torque: f64,
 
-    pub restitution: f64,
+    pub restitution: f64, // bounciness
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
     pub inverse_moment_of_inertia: f64,
+
+    pub can_be_rotated: bool,
 }
 
 impl RigidBody {
@@ -39,6 +42,7 @@ impl RigidBody {
             velocity: Vector2::ZERO,
             accumulated_forces: Vector2::ZERO,
             rotation: 0.0,
+            angular_friction: 0.1,
             angular_velocity: 0.0,
             accumulated_torque: 0.0,
             mass,
@@ -50,6 +54,7 @@ impl RigidBody {
                 1.0 / moment_of_inertia
             },
             restitution: restitution.unwrap_or(1.0),
+            can_be_rotated: false, // TODO: Parametrize this
         }
     }
 
@@ -70,6 +75,16 @@ impl RigidBody {
         }
 
         self.velocity.add(&impulse.to_scaled(self.inverse_mass));
+    }
+
+    #[inline]
+    pub fn apply_angular_impulse(&mut self, impulse: &Vector2, r: &Vector2) {
+        if self.is_static() {
+            return;
+        }
+
+        self.velocity.add(&impulse.to_scaled(self.inverse_mass));
+        self.angular_velocity += r.cross_product(impulse) * self.inverse_moment_of_inertia;
     }
 
     #[inline]

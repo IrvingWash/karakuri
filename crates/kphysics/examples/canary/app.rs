@@ -1,11 +1,13 @@
 use kmath::Vector2;
 use kphysics::{
     collisions::collision_detector,
+    force_generator,
     shapes::{Polygon, Shape},
     RigidBody,
 };
 use raylib::{
-    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    RaylibHandle, RaylibThread,
 };
 
 #[allow(dead_code)]
@@ -45,23 +47,37 @@ impl App {
         let width = self.rl.get_screen_width();
         let height = self.rl.get_screen_height();
 
-        let mut box_a = RigidBody::new(
-            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
-            1.0,
-            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
-            None,
+        let floor = RigidBody::new(
+            Vector2::new(width as f64 / 2.0, height as f64 - 50.0),
+            0.0,
+            Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
+            Some(0.2),
         );
-        let box_b = RigidBody::new(
+        let left_wall = RigidBody::new(
+            Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
+            0.0,
+            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            Some(0.2),
+        );
+        let right_wall = RigidBody::new(
+            Vector2::new(50.0, height as f64 / 2.0 - 25.0),
+            0.0,
+            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            Some(0.2),
+        );
+        let mut big_box = RigidBody::new(
             Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
-            1.0,
+            0.0,
             Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
-            None,
+            Some(0.5),
         );
 
-        box_a.rotation = 2.3;
+        big_box.rotation = 1.4;
 
-        self.rigid_bodies.push(box_a);
-        self.rigid_bodies.push(box_b);
+        self.rigid_bodies.push(floor);
+        self.rigid_bodies.push(left_wall);
+        self.rigid_bodies.push(right_wall);
+        self.rigid_bodies.push(big_box);
 
         self.running = true;
     }
@@ -69,10 +85,23 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        let mouse_position = self.rl.get_mouse_position();
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
 
-        self.rigid_bodies[0].position =
-            Vector2::new(mouse_position.x.into(), mouse_position.y.into());
+            let mut cube = RigidBody::new(
+                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                1.0,
+                Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
+                None,
+            );
+
+            cube.can_be_rotated = true;
+
+            self.rigid_bodies.push(cube);
+        }
     }
 
     pub fn update(&mut self) {
@@ -80,6 +109,7 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             rigid_body.apply_force(&self.push_force);
+            rigid_body.apply_force(&force_generator::weight(&rigid_body, PIXELS_PER_METER));
 
             rigid_body.is_colliding = false;
 
@@ -95,26 +125,13 @@ impl App {
 
                 #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
-                    // Draw contact information
-                    let mut d = self.rl.begin_drawing(&self.thread);
-                    d.clear_background(Color::BLACK);
-                    d.draw_circle_v(vector2_to_raylib(&contact.start), 3.0, Color::MAGENTA);
-                    d.draw_circle_v(vector2_to_raylib(&contact.end), 3.0, Color::MAGENTA);
-                    d.draw_line(
-                        contact.start.x as i32,
-                        contact.start.y as i32,
-                        (contact.start.x + contact.normal.x * 15.0) as i32,
-                        (contact.start.y + contact.normal.y * 15.0) as i32,
-                        Color::MAGENTA,
-                    );
+                    contact.resolve_collision();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
                 }
             }
         }
-
-        self.keep_in_window();
 
         self.push_force.reset();
     }
@@ -180,33 +197,6 @@ impl App {
                         Color::WHITE
                     },
                 );
-            }
-        }
-    }
-
-    fn keep_in_window(&mut self) {
-        let width: f64 = self.rl.get_screen_width().into();
-        let height: f64 = self.rl.get_screen_height().into();
-
-        for rigid_body in &mut self.rigid_bodies {
-            if rigid_body.shape.is_circle() {
-                let radius = rigid_body.shape.circle().unwrap().radius;
-
-                if rigid_body.position.x + radius >= width {
-                    rigid_body.position.x = width - radius;
-                    rigid_body.velocity.x *= -0.9;
-                } else if rigid_body.position.x - radius <= 0.0 {
-                    rigid_body.position.x = radius;
-                    rigid_body.velocity.x *= -0.9;
-                }
-
-                if rigid_body.position.y + radius >= height {
-                    rigid_body.position.y = height - radius;
-                    rigid_body.velocity.y *= -0.9;
-                } else if rigid_body.position.y - radius <= 0.0 {
-                    rigid_body.position.y = radius;
-                    rigid_body.velocity.y *= -0.9;
-                }
             }
         }
     }
