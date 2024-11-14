@@ -124,3 +124,66 @@ fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
         separation_axis,
     }
 }
+
+#[cfg(test)]
+mod collision_detector_tests {
+    use kmath::Vector2;
+
+    use crate::{
+        shapes::{Circle, Polygon, Shape},
+        RigidBody, RigidBodyParams,
+    };
+
+    use super::are_colliding;
+
+    #[test]
+    fn test_circles() {
+        let mut a = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(0.0, 0.0),
+            shape: Shape::Circle(Circle::new(1.0)),
+            ..Default::default()
+        });
+        let mut b = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            shape: Shape::Circle(Circle::new(1.0)),
+            ..Default::default()
+        });
+
+        assert!(are_colliding(&mut a, &mut b).is_none());
+
+        a.position = Vector2::new(10.0, 10.0);
+
+        let contact = are_colliding(&mut a, &mut b).unwrap();
+
+        assert_eq!(contact.end, Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contact.normal, Vector2::ZERO);
+        assert_eq!(contact.start, Vector2 { x: 10.0, y: 10.0 });
+    }
+
+    #[test]
+    fn test_polygons() {
+        let mut a = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(0.0, 0.0),
+            shape: Shape::Polygon(Polygon::rectangular(5.0, 5.0)),
+            ..Default::default()
+        });
+        let mut b = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            shape: Shape::Polygon(Polygon::rectangular(10.0, 10.0)),
+            ..Default::default()
+        });
+
+        assert!(are_colliding(&mut a, &mut b).is_none());
+
+        a.position = Vector2::new(9.0, 9.0);
+
+        a.update(1.0);
+        b.update(1.0);
+
+        let contact = are_colliding(&mut a, &mut b).unwrap();
+
+        assert_eq!(contact.end, Vector2 { x: 11.5, y: 11.5 });
+        assert_eq!(contact.normal, Vector2 { x: -0.0, y: 1.0 });
+        assert_eq!(contact.start, Vector2 { x: 11.5, y: 5.0 });
+    }
+}
