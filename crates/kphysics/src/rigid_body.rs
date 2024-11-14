@@ -53,7 +53,7 @@ pub struct RigidBody {
 
     pub can_be_rotated: bool,
 
-    is_static: bool,
+    pub is_static: bool,
 }
 
 impl RigidBody {
@@ -110,7 +110,7 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_impulse(&mut self, impulse: &Vector2) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -119,7 +119,7 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_angular_impulse(&mut self, impulse: &Vector2, r: &Vector2) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -134,13 +134,8 @@ impl RigidBody {
         self.update_vertices();
     }
 
-    #[inline]
-    pub fn is_static(&self) -> bool {
-        self.is_static
-    }
-
     fn integrate_linear(&mut self, delta_time: f64) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -154,7 +149,7 @@ impl RigidBody {
     }
 
     fn integrate_angular(&mut self, delta_time: f64) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -239,7 +234,7 @@ mod rigid_body_tests {
 
             assert_eq!(rigid_body.inverse_mass, 0.0);
             assert_eq!(rigid_body.inverse_moment_of_inertia, 0.0);
-            assert!(rigid_body.is_static());
+            assert!(rigid_body.is_static);
         }
     }
 
@@ -257,7 +252,7 @@ mod rigid_body_tests {
             ..Default::default()
         });
 
-        assert!(!rb.is_static());
+        assert!(!rb.is_static);
 
         rb.apply_force(&Vector2::new(3.0, 3.0));
         rb.apply_force(&Vector2::new(5.0, 5.0));
@@ -303,7 +298,7 @@ mod rigid_body_tests {
             ..Default::default()
         });
 
-        assert!(rb.is_static());
+        assert!(rb.is_static);
 
         rb.apply_force(&Vector2::new(3.0, 3.0));
         rb.apply_force(&Vector2::new(5.0, 5.0));
