@@ -82,7 +82,7 @@ impl RigidBody {
         }
 
         self.velocity.add(&impulse.to_scaled(self.inverse_mass));
-        self.angular_velocity += r.cross_product(&impulse) * self.inverse_moment_of_inertia;
+        self.angular_velocity += r.cross_product(impulse) * self.inverse_moment_of_inertia;
     }
 
     #[inline]
