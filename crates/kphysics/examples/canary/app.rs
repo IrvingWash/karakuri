@@ -3,7 +3,7 @@ use kphysics::{
     collisions::collision_detector,
     force_generator,
     shapes::{Polygon, Shape},
-    RigidBody,
+    RigidBody, RigidBodyParams,
 };
 use raylib::{
     color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
@@ -47,30 +47,35 @@ impl App {
         let width = self.rl.get_screen_width();
         let height = self.rl.get_screen_height();
 
-        let floor = RigidBody::new(
-            Vector2::new(width as f64 / 2.0, height as f64 - 50.0),
-            0.0,
-            Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
-            Some(0.2),
-        );
-        let left_wall = RigidBody::new(
-            Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
-            0.0,
-            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
-            Some(0.2),
-        );
-        let right_wall = RigidBody::new(
-            Vector2::new(50.0, height as f64 / 2.0 - 25.0),
-            0.0,
-            Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
-            Some(0.2),
-        );
-        let mut big_box = RigidBody::new(
-            Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
-            0.0,
-            Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
-            Some(0.5),
-        );
+        let floor = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(width as f64 / 2.0, height as f64 - 50.0),
+            shape: Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+        let left_wall = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
+            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+        let right_wall = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(50.0, height as f64 / 2.0 - 25.0),
+            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+        let mut big_box = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
+            shape: Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
+            bounciness: 0.5,
+            mass: 0.0,
+            rotation: 1.4,
+            ..Default::default()
+        });
 
         big_box.rotation = 1.4;
 
@@ -91,12 +96,12 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            let mut cube = RigidBody::new(
-                Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                1.0,
-                Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
-                None,
-            );
+            let mut cube = RigidBody::new(RigidBodyParams {
+                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                mass: 1.0,
+                shape: Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
+                ..Default::default()
+            });
 
             cube.can_be_rotated = true;
 

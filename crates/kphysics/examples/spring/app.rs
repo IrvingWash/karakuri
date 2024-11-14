@@ -2,7 +2,7 @@ use kmath::Vector2;
 use kphysics::{
     force_generator,
     shapes::{Circle, Shape},
-    RigidBody,
+    RigidBody, RigidBodyParams,
 };
 use raylib::{
     color::Color,
@@ -51,21 +51,20 @@ impl App {
         self.rl.set_target_fps(60);
 
         // Anchor
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
-            0.0,
-            Shape::Circle(Circle::new(5.0)),
-            None,
-        ));
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+            position: Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
+            shape: Shape::Circle(Circle::new(5.0)),
+            ..Default::default()
+        }));
 
         // Bobs
         for i in 1..=15 {
-            self.rigid_bodies.push(RigidBody::new(
-                Vector2::new(600.0, f64::from(i) * 15.0),
-                2.0,
-                Shape::Circle(Circle::new(5.0)),
-                None,
-            ))
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+                position: Vector2::new(600.0, f64::from(i) * 15.0),
+                mass: 2.0,
+                shape: Shape::Circle(Circle::new(5.0)),
+                ..Default::default()
+            }))
         }
 
         self.running = true;

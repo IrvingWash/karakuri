@@ -113,7 +113,7 @@ impl<'a> Contact<'a> {
 
         self.resolve_penetration();
 
-        let elasticity = self.a.restitution.min(self.b.restitution);
+        let elasticity = self.a.bounciness.min(self.b.bounciness);
 
         let relative_velocity = self.a.velocity.to_subtracted(&self.b.velocity);
 
@@ -133,7 +133,7 @@ impl<'a> Contact<'a> {
 
         self.resolve_penetration();
 
-        let elasticity = self.a.restitution.min(self.b.restitution);
+        let elasticity = self.a.bounciness.min(self.b.bounciness);
         let angular_friction = self.a.angular_friction.min(self.b.angular_friction);
 
         let ra = self.end.to_subtracted(&self.a.position);

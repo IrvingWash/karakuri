@@ -2,7 +2,7 @@ use kmath::Vector2;
 use kphysics::{
     force_generator,
     shapes::{Circle, Shape},
-    RigidBody,
+    RigidBody, RigidBodyParams,
 };
 use raylib::{
     color::Color,
@@ -53,30 +53,30 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(100.0, 100.0),
-            1.0,
-            Shape::Circle(Circle::new(6.0)),
-            None,
-        ));
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(300.0, 100.0),
-            1.0,
-            Shape::Circle(Circle::new(6.0)),
-            None,
-        ));
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(300.0, 300.0),
-            1.0,
-            Shape::Circle(Circle::new(6.0)),
-            None,
-        ));
-        self.rigid_bodies.push(RigidBody::new(
-            Vector2::new(100.0, 300.0),
-            1.0,
-            Shape::Circle(Circle::new(6.0)),
-            None,
-        ));
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+            position: Vector2::new(100.0, 100.0),
+            mass: 1.0,
+            shape: Shape::Circle(Circle::new(6.0)),
+            ..Default::default()
+        }));
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+            position: Vector2::new(300.0, 100.0),
+            mass: 1.0,
+            shape: Shape::Circle(Circle::new(6.0)),
+            ..Default::default()
+        }));
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+            position: Vector2::new(300.0, 300.0),
+            mass: 1.0,
+            shape: Shape::Circle(Circle::new(6.0)),
+            ..Default::default()
+        }));
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+            position: Vector2::new(100.0, 300.0),
+            mass: 1.0,
+            shape: Shape::Circle(Circle::new(6.0)),
+            ..Default::default()
+        }));
 
         self.running = true;
     }
