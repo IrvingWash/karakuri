@@ -2,12 +2,11 @@ use kmath::Vector2;
 use kphysics::{
     collisions::collision_detector,
     force_generator,
-    shapes::{Polygon, Shape},
+    shapes::{Circle, Polygon, Shape},
     RigidBody, RigidBodyParams,
 };
 use raylib::{
-    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
-    RaylibHandle, RaylibThread,
+    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
 #[allow(dead_code)]
@@ -68,7 +67,7 @@ impl App {
             mass: 0.0,
             ..Default::default()
         });
-        let mut big_box = RigidBody::new(RigidBodyParams {
+        let big_box = RigidBody::new(RigidBodyParams {
             position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             shape: Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
             bounciness: 0.5,
@@ -77,12 +76,19 @@ impl App {
             ..Default::default()
         });
 
-        big_box.rotation = 1.4;
+        let ball = RigidBody::new(RigidBodyParams {
+            shape: Shape::Circle(Circle::new(50.0)),
+            position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
+            bounciness: 0.1,
+            mass: 0.0,
+            ..Default::default()
+        });
 
         self.rigid_bodies.push(floor);
         self.rigid_bodies.push(left_wall);
         self.rigid_bodies.push(right_wall);
         self.rigid_bodies.push(big_box);
+        self.rigid_bodies.push(ball);
 
         self.running = true;
     }
@@ -90,23 +96,10 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        if self
-            .rl
-            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
-        {
-            let mouse_position = self.rl.get_mouse_position();
+        let mouse_position = self.rl.get_mouse_position();
 
-            let mut cube = RigidBody::new(RigidBodyParams {
-                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                mass: 1.0,
-                shape: Shape::Polygon(Polygon::rectangular(50.0, 50.0)),
-                ..Default::default()
-            });
-
-            cube.can_be_rotated = true;
-
-            self.rigid_bodies.push(cube);
-        }
+        self.rigid_bodies[4].position =
+            Vector2::new(mouse_position.x as f64, mouse_position.y as f64);
     }
 
     pub fn update(&mut self) {
@@ -177,11 +170,11 @@ impl App {
             // Draw rectangular rigid bodies
             if let Some(rectangle) = rigid_body.shape.polygon() {
                 for i in 0..rectangle.world_vertices.len() {
-                    let curr = i;
+                    let current = i;
                     let next = (i + 1) % rectangle.world_vertices.len();
 
                     d.draw_line_ex(
-                        vector2_to_raylib(&rectangle.world_vertices[curr]),
+                        vector2_to_raylib(&rectangle.world_vertices[current]),
                         vector2_to_raylib(&rectangle.world_vertices[next]),
                         1.0,
                         if rigid_body.is_colliding {
