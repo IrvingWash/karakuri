@@ -13,10 +13,9 @@ impl Polygon {
     #[inline]
     pub fn new(vertices: Vec<Vector2>) -> Self {
         Self {
-            // TODO: Expecting local vertices as an argument may be a foot gun
             world_vertices: vertices.clone(),
             local_vertices: vertices,
-            moment_of_inertia: 0.0, // TODO
+            moment_of_inertia: 5000.0, // TODO
         }
     }
 

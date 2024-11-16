@@ -276,7 +276,7 @@ mod rigid_body_tests {
             Vector2::new(10.666666666666666, 10.666666666666666)
         );
 
-        assert_eq!(rb.rotation, 0.0);
+        assert_eq!(rb.rotation, 0.004266666666666667);
 
         rb.apply_impulse(&Vector2::new(3.0, 5.0));
 

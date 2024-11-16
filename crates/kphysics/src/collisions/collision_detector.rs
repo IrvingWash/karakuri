@@ -115,12 +115,12 @@ fn are_colliding_circle_and_polygon<'a>(
             is_outside = true;
 
             break;
-        } else {
-            if projection > distance_circle_edge {
-                distance_circle_edge = projection;
-                min_current_vertex = current_vertex;
-                min_next_vertex = next_vertex;
-            }
+        }
+
+        if projection > distance_circle_edge {
+            distance_circle_edge = projection;
+            min_current_vertex = current_vertex;
+            min_next_vertex = next_vertex;
         }
     }
 
@@ -141,40 +141,40 @@ fn are_colliding_circle_and_polygon<'a>(
                 v1_magnitude,
                 false,
             ));
-        } else {
-            let v1 = circular.position.to_subtracted(min_next_vertex);
-            let v2 = min_current_vertex.to_subtracted(min_next_vertex);
-
-            let v1_magnitude = v1.magnitude();
-
-            if v1.dot_product(&v2) < 0.0 {
-                if v1_magnitude > circle.radius {
-                    return None;
-                }
-
-                return Some(Contact::for_circle_and_polygon(
-                    circular,
-                    polygonal,
-                    &v1,
-                    v1_magnitude,
-                    false,
-                ));
-            } else {
-                if distance_circle_edge > circle.radius {
-                    return None;
-                }
-
-                return Some(Contact::for_circle_and_polygon(
-                    circular,
-                    polygonal,
-                    &min_next_vertex
-                        .to_subtracted(&min_current_vertex)
-                        .create_perpendicular(),
-                    distance_circle_edge,
-                    true,
-                ));
-            }
         }
+
+        let v1 = circular.position.to_subtracted(min_next_vertex);
+        let v2 = min_current_vertex.to_subtracted(min_next_vertex);
+
+        let v1_magnitude = v1.magnitude();
+
+        if v1.dot_product(&v2) < 0.0 {
+            if v1_magnitude > circle.radius {
+                return None;
+            }
+
+            return Some(Contact::for_circle_and_polygon(
+                circular,
+                polygonal,
+                &v1,
+                v1_magnitude,
+                false,
+            ));
+        }
+
+        if distance_circle_edge > circle.radius {
+            return None;
+        }
+
+        return Some(Contact::for_circle_and_polygon(
+            circular,
+            polygonal,
+            &min_next_vertex
+                .to_subtracted(min_current_vertex)
+                .create_perpendicular(),
+            distance_circle_edge,
+            true,
+        ));
     }
 
     Some(Contact::for_circle_and_polygon(
