@@ -8,6 +8,7 @@ pub struct RigidBodyParams {
     pub mass: f64,
     pub shape: Shape,
     pub bounciness: f64,
+    pub angular_friction: f64,
     pub rotation: f64,
     pub can_be_rotated: bool,
 }
@@ -20,6 +21,7 @@ impl Default for RigidBodyParams {
             mass: 1.0,
             shape: Shape::Polygon(Polygon::rectangular(10.0, 10.0)),
             bounciness: 0.0,
+            angular_friction: 0.1,
             rotation: 0.0,
             can_be_rotated: false,
         }
@@ -64,6 +66,7 @@ impl RigidBody {
             mass,
             shape,
             bounciness: restitution,
+            angular_friction,
             rotation,
             can_be_rotated,
         } = params;
@@ -77,7 +80,7 @@ impl RigidBody {
             velocity: Vector2::ZERO,
             accumulated_forces: Vector2::ZERO,
             rotation,
-            angular_friction: 0.1,
+            angular_friction,
             angular_velocity: 0.0,
             accumulated_torque: 0.0,
             mass,

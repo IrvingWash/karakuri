@@ -6,7 +6,8 @@ use kphysics::{
     RigidBody, RigidBodyParams,
 };
 use raylib::{
-    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    RaylibHandle, RaylibThread,
 };
 
 #[allow(dead_code)]
@@ -46,6 +47,28 @@ impl App {
         let width = self.rl.get_screen_width();
         let height = self.rl.get_screen_height();
 
+        let floor = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(width as f64 / 2.0, height as f64 - 50.0),
+            shape: Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+        let left_wall = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
+            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+        let right_wall = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(50.0, height as f64 / 2.0 - 25.0),
+            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
+            bounciness: 0.2,
+            mass: 0.0,
+            ..Default::default()
+        });
+
         let big_box = RigidBody::new(RigidBodyParams {
             position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             shape: Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
@@ -55,16 +78,10 @@ impl App {
             ..Default::default()
         });
 
-        let ball = RigidBody::new(RigidBodyParams {
-            shape: Shape::Circle(Circle::new(50.0)),
-            position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
-            bounciness: 0.1,
-            mass: 0.0,
-            ..Default::default()
-        });
-
+        self.rigid_bodies.push(floor);
+        self.rigid_bodies.push(left_wall);
+        self.rigid_bodies.push(right_wall);
         self.rigid_bodies.push(big_box);
-        self.rigid_bodies.push(ball);
 
         self.running = true;
     }
@@ -72,10 +89,22 @@ impl App {
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
 
-        let mouse_position = self.rl.get_mouse_position();
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
 
-        self.rigid_bodies[1].position =
-            Vector2::new(mouse_position.x as f64, mouse_position.y as f64);
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+                shape: Shape::Circle(Circle::new(50.0)),
+                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                bounciness: 0.3,
+                angular_friction: 0.4,
+                mass: 1.0,
+                can_be_rotated: true,
+                ..Default::default()
+            }));
+        }
     }
 
     pub fn update(&mut self) {
@@ -99,7 +128,7 @@ impl App {
 
                 #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
-                    // contact.resolve_collision();
+                    contact.resolve_collision();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
