@@ -1,13 +1,36 @@
 use kmath::Vector2;
 
-use crate::shapes::Shape;
+use crate::shapes::{Polygon, Shape};
+
+#[derive(Debug)]
+pub struct RigidBodyParams {
+    pub position: Vector2,
+    pub mass: f64,
+    pub shape: Shape,
+    pub bounciness: f64,
+    pub angular_friction: f64,
+    pub rotation: f64,
+    pub can_be_rotated: bool,
+}
+
+impl Default for RigidBodyParams {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            position: Vector2::ZERO,
+            mass: 1.0,
+            shape: Shape::Polygon(Polygon::rectangular(10.0, 10.0)),
+            bounciness: 0.0,
+            angular_friction: 0.1,
+            rotation: 0.0,
+            can_be_rotated: false,
+        }
+    }
+}
 
 // TODO: Maybe we should have three types of rigid bodies based on the shape?
 #[derive(Debug)]
 pub struct RigidBody {
-    // TODO: Remove it. Added for debug
-    pub is_colliding: bool,
-
     pub shape: Shape,
 
     // Linear motion
@@ -21,28 +44,39 @@ pub struct RigidBody {
     pub angular_velocity: f64,
     pub accumulated_torque: f64,
 
-    pub restitution: f64, // bounciness
+    pub bounciness: f64,
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
     pub inverse_moment_of_inertia: f64,
 
     pub can_be_rotated: bool,
+
+    pub is_static: bool,
 }
 
 impl RigidBody {
     #[inline]
-    pub fn new(position: Vector2, mass: f64, shape: Shape, restitution: Option<f64>) -> Self {
+    pub fn new(params: RigidBodyParams) -> Self {
+        let RigidBodyParams {
+            position,
+            mass,
+            shape,
+            bounciness: restitution,
+            angular_friction,
+            rotation,
+            can_be_rotated,
+        } = params;
+
         let moment_of_inertia = shape.moment_of_inertia() * mass;
 
-        Self {
-            is_colliding: false,
+        let mut s = Self {
             shape,
             position,
             velocity: Vector2::ZERO,
             accumulated_forces: Vector2::ZERO,
-            rotation: 0.0,
-            angular_friction: 0.1,
+            rotation,
+            angular_friction,
             angular_velocity: 0.0,
             accumulated_torque: 0.0,
             mass,
@@ -53,9 +87,14 @@ impl RigidBody {
             } else {
                 1.0 / moment_of_inertia
             },
-            restitution: restitution.unwrap_or(1.0),
-            can_be_rotated: false, // TODO: Parametrize this
-        }
+            bounciness: restitution,
+            can_be_rotated,
+            is_static: mass == 0.0,
+        };
+
+        s.shape.update_vertices(&s.position, s.rotation);
+
+        s
     }
 
     #[inline]
@@ -70,7 +109,7 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_impulse(&mut self, impulse: &Vector2) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -79,7 +118,7 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_angular_impulse(&mut self, impulse: &Vector2, r: &Vector2) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -94,15 +133,8 @@ impl RigidBody {
         self.update_vertices();
     }
 
-    #[inline]
-    pub fn is_static(&self) -> bool {
-        // TODO: Not sure epsilon is needed as we are hardcoding 0.0
-        // Maybe just use 1e-8
-        (self.inverse_mass - 0.0).abs() < f64::EPSILON
-    }
-
     fn integrate_linear(&mut self, delta_time: f64) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -116,7 +148,7 @@ impl RigidBody {
     }
 
     fn integrate_angular(&mut self, delta_time: f64) {
-        if self.is_static() {
+        if self.is_static {
             return;
         }
 
@@ -129,10 +161,11 @@ impl RigidBody {
         self.clear_torque();
     }
 
-    // TODO: We should bypass this function for static bodies.
-    // But it needs to be called once anyway to translate local vertices to world.
-    // We can do this either in the constructor or by using a state
     fn update_vertices(&mut self) {
+        if self.is_static {
+            return;
+        }
+
         self.shape.update_vertices(&self.position, self.rotation);
     }
 
@@ -149,7 +182,10 @@ impl RigidBody {
 mod rigid_body_tests {
     use kmath::Vector2;
 
-    use crate::shapes::{Circle, Polygon, Shape};
+    use crate::{
+        rigid_body::RigidBodyParams,
+        shapes::{Circle, Polygon, Shape},
+    };
 
     use super::RigidBody;
 
@@ -159,56 +195,63 @@ mod rigid_body_tests {
         {
             let mass = 2.0;
 
-            let rigid_body =
-                RigidBody::new(Vector2::ZERO, mass, Shape::Circle(Circle::new(10.0)), None);
+            let rigid_body = RigidBody::new(RigidBodyParams {
+                mass,
+                shape: Shape::Circle(Circle::new(10.0)),
+                bounciness: 1.0,
+                ..Default::default()
+            });
 
             assert_eq!(rigid_body.inverse_mass, 1.0 / mass);
             assert_eq!(
                 rigid_body.inverse_moment_of_inertia,
                 1.0 / (Circle::new(10.0).moment_of_inertia() * mass)
             );
-            assert_eq!(rigid_body.restitution, 1.0);
+            assert_eq!(rigid_body.bounciness, 1.0);
         }
 
         // Restitution
         {
             let mass = 2.0;
 
-            let rigid_body = RigidBody::new(
-                Vector2::ZERO,
+            let rigid_body = RigidBody::new(RigidBodyParams {
                 mass,
-                Shape::Circle(Circle::new(10.0)),
-                Some(3.0),
-            );
+                bounciness: 3.0,
+                shape: Shape::Circle(Circle::new(10.0)),
+                ..Default::default()
+            });
 
-            assert_eq!(rigid_body.restitution, 3.0);
+            assert_eq!(rigid_body.bounciness, 3.0);
         }
 
         // Zero mass
         {
-            let rigid_body =
-                RigidBody::new(Vector2::ZERO, 0.0, Shape::Circle(Circle::new(10.0)), None);
+            let rigid_body = RigidBody::new(RigidBodyParams {
+                mass: 0.0,
+                ..Default::default()
+            });
 
             assert_eq!(rigid_body.inverse_mass, 0.0);
             assert_eq!(rigid_body.inverse_moment_of_inertia, 0.0);
-            assert!(rigid_body.is_static());
+            assert!(rigid_body.is_static);
         }
     }
 
     #[test]
     fn test_force_application() {
-        let mut rb = RigidBody::new(
-            Vector2::new(10.0, 10.0),
-            1.5,
-            Shape::Polygon(Polygon::new(vec![
+        let mut rb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            mass: 1.5,
+            shape: Shape::Polygon(Polygon::new(vec![
                 Vector2::new(10.0, 5.0),
                 Vector2::new(15.0, 15.0),
                 Vector2::new(5.0, 15.0),
             ])),
-            Some(1.0),
-        );
+            bounciness: 1.0,
+            ..Default::default()
+        });
 
-        assert!(!rb.is_static());
+        assert!(!rb.is_static);
 
         rb.apply_force(&Vector2::new(3.0, 3.0));
         rb.apply_force(&Vector2::new(5.0, 5.0));
@@ -233,8 +276,7 @@ mod rigid_body_tests {
             Vector2::new(10.666666666666666, 10.666666666666666)
         );
 
-        // TODO: This should fail as soon as we have moment of inertia for poly
-        assert_eq!(rb.rotation, 0.0);
+        assert_eq!(rb.rotation, 0.004266666666666667);
 
         rb.apply_impulse(&Vector2::new(3.0, 5.0));
 
@@ -243,18 +285,19 @@ mod rigid_body_tests {
 
     #[test]
     fn test_force_application_for_static() {
-        let mut rb = RigidBody::new(
-            Vector2::new(10.0, 10.0),
-            0.0,
-            Shape::Polygon(Polygon::new(vec![
+        let mut rb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            shape: Shape::Polygon(Polygon::new(vec![
                 Vector2::new(10.0, 5.0),
                 Vector2::new(15.0, 15.0),
                 Vector2::new(5.0, 15.0),
             ])),
-            Some(1.0),
-        );
+            bounciness: 1.0,
+            mass: 0.0,
+            ..Default::default()
+        });
 
-        assert!(rb.is_static());
+        assert!(rb.is_static);
 
         rb.apply_force(&Vector2::new(3.0, 3.0));
         rb.apply_force(&Vector2::new(5.0, 5.0));

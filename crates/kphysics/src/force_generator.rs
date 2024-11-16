@@ -79,18 +79,16 @@ mod force_generator_tests {
 
     use crate::{
         force_generator::{drag, friction, gravitation, spring, weight},
-        shapes::{Circle, Shape},
+        rigid_body::RigidBodyParams,
         RigidBody,
     };
 
     #[test]
     fn test_weight() {
-        let mut rb = RigidBody::new(
-            Vector2::new(0.0, 0.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let mut rb = RigidBody::new(RigidBodyParams {
+            mass: 0.0,
+            ..Default::default()
+        });
 
         assert_eq!(weight(&rb, 50.0), Vector2::ZERO);
 
@@ -101,12 +99,10 @@ mod force_generator_tests {
 
     #[test]
     fn test_drag() {
-        let mut rb = RigidBody::new(
-            Vector2::new(0.0, 0.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let mut rb = RigidBody::new(RigidBodyParams {
+            mass: 0.0,
+            ..Default::default()
+        });
 
         rb.velocity = Vector2::new(3.0, 3.0);
 
@@ -131,12 +127,10 @@ mod force_generator_tests {
 
     #[test]
     fn test_friction() {
-        let mut rb = RigidBody::new(
-            Vector2::new(0.0, 0.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let mut rb = RigidBody::new(RigidBodyParams {
+            mass: 0.0,
+            ..Default::default()
+        });
 
         rb.velocity = Vector2::new(3.0, 3.0);
 
@@ -161,19 +155,16 @@ mod force_generator_tests {
 
     #[test]
     fn test_gravitation() {
-        let mut rba = RigidBody::new(
-            Vector2::new(0.0, 0.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let mut rba = RigidBody::new(RigidBodyParams {
+            mass: 0.0,
+            ..Default::default()
+        });
 
-        let mut rbb = RigidBody::new(
-            Vector2::new(5.0, 5.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let mut rbb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(5.0, 5.0),
+            mass: 0.0,
+            ..Default::default()
+        });
 
         assert_eq!(gravitation(&rba, &rbb, 50.0, 10.0, 500.0), Vector2::ZERO);
 
@@ -193,19 +184,16 @@ mod force_generator_tests {
 
     #[test]
     fn test_spring() {
-        let rba = RigidBody::new(
-            Vector2::new(0.0, 0.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let rba = RigidBody::new(RigidBodyParams {
+            mass: 0.0,
+            ..Default::default()
+        });
 
-        let rbb = RigidBody::new(
-            Vector2::new(5.0, 5.0),
-            0.0,
-            Shape::Circle(Circle::new(10.0)),
-            None,
-        );
+        let rbb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(5.0, 5.0),
+            mass: 0.0,
+            ..Default::default()
+        });
 
         assert_eq!(
             spring(&rba, &rbb, 300.0, 50.0),

@@ -32,7 +32,6 @@ jobs:
 
   coverage:
     name: Coverage
-    environment: CI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,9 +40,7 @@ jobs:
       - name: Install tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage
-        env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --coveralls '${COVERALLS_TOKEN}' --out html
+        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --coveralls ${{ secrets.COVERALLS_TOKEN }} --out html
 
   fmt:
     name: Format

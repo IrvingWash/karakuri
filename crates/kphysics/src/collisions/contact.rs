@@ -96,7 +96,45 @@ impl<'a> Contact<'a> {
     }
 
     #[inline]
-    pub fn resolve_collision(&mut self) {
+    pub fn for_circle_and_polygon(
+        circular: &'a mut RigidBody,
+        polygonal: &'a mut RigidBody,
+        v1: &Vector2,
+        v1_magnitude: f64,
+        flip: bool,
+    ) -> Self {
+        let normal = v1.to_normalized();
+
+        let circle_radius = circular
+            .shape
+            .circle()
+            .unwrap_or_else(|| panic_checked_circle_unwrap())
+            .radius;
+
+        let start = if !flip {
+            circular
+                .position
+                .to_added(&normal.to_scaled(-circle_radius))
+        } else {
+            circular
+                .position
+                .to_subtracted(&normal.to_scaled(circle_radius))
+        };
+
+        let depth = circle_radius - v1_magnitude;
+
+        Self {
+            a: polygonal,
+            b: circular,
+            end: start.to_added(&normal.to_scaled(depth)),
+            depth,
+            start,
+            normal,
+        }
+    }
+
+    #[inline]
+    pub fn resolve_collision(mut self) {
         if self.a.can_be_rotated || self.b.can_be_rotated {
             self.resolve_collision_with_rotation();
 
@@ -107,13 +145,13 @@ impl<'a> Contact<'a> {
     }
 
     fn resolve_collision_without_rotation(&mut self) {
-        if self.a.is_static() && self.b.is_static() {
+        if self.a.is_static && self.b.is_static {
             return;
         }
 
         self.resolve_penetration();
 
-        let elasticity = self.a.restitution.min(self.b.restitution);
+        let elasticity = self.a.bounciness.min(self.b.bounciness);
 
         let relative_velocity = self.a.velocity.to_subtracted(&self.b.velocity);
 
@@ -127,13 +165,13 @@ impl<'a> Contact<'a> {
     }
 
     fn resolve_collision_with_rotation(&mut self) {
-        if self.a.is_static() && self.b.is_static() {
+        if self.a.is_static && self.b.is_static {
             return;
         }
 
         self.resolve_penetration();
 
-        let elasticity = self.a.restitution.min(self.b.restitution);
+        let elasticity = self.a.bounciness.min(self.b.bounciness);
         let angular_friction = self.a.angular_friction.min(self.b.angular_friction);
 
         let ra = self.end.to_subtracted(&self.a.position);
