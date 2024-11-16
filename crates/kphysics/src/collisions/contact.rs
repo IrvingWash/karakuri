@@ -118,7 +118,7 @@ impl<'a> Contact<'a> {
         } else {
             circular
                 .position
-                .to_subtracted(&normal.to_scaled(-circle_radius))
+                .to_subtracted(&normal.to_scaled(circle_radius))
         };
 
         let depth = circle_radius - v1_magnitude;
