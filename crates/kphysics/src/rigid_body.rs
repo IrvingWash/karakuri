@@ -31,9 +31,6 @@ impl Default for RigidBodyParams {
 // TODO: Maybe we should have three types of rigid bodies based on the shape?
 #[derive(Debug)]
 pub struct RigidBody {
-    // TODO: Remove it. Added for debug
-    pub is_colliding: bool,
-
     pub shape: Shape,
 
     // Linear motion
@@ -74,7 +71,6 @@ impl RigidBody {
         let moment_of_inertia = shape.moment_of_inertia() * mass;
 
         let mut s = Self {
-            is_colliding: false,
             shape,
             position,
             velocity: Vector2::ZERO,

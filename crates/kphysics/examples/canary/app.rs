@@ -114,8 +114,6 @@ impl App {
             rigid_body.apply_force(&self.push_force);
             rigid_body.apply_force(&force_generator::weight(&rigid_body, PIXELS_PER_METER));
 
-            rigid_body.is_colliding = false;
-
             rigid_body.update(delta_time.into());
         }
 
@@ -129,9 +127,6 @@ impl App {
                 #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
                     contact.resolve_collision();
-
-                    body.is_colliding = true;
-                    other.is_colliding = true;
                 }
             }
         }
@@ -154,39 +149,27 @@ impl App {
                     rigid_body.position.y as i32,
                     (rigid_body.position.x + rigid_body.rotation.cos() * radius) as i32,
                     (rigid_body.position.y + rigid_body.rotation.sin() * radius) as i32,
-                    if rigid_body.is_colliding {
-                        Color::RED
-                    } else {
-                        Color::WHITE
-                    },
+                    Color::WHITE,
                 );
                 d.draw_circle_lines(
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     radius as f32,
-                    if rigid_body.is_colliding {
-                        Color::RED
-                    } else {
-                        Color::WHITE
-                    },
+                    Color::WHITE,
                 );
             }
 
-            // Draw rectangular rigid bodies
-            if let Some(rectangle) = rigid_body.shape.polygon() {
-                for i in 0..rectangle.world_vertices.len() {
+            // Draw polygonal rigid bodies
+            if let Some(polygon) = rigid_body.shape.polygon() {
+                for i in 0..polygon.world_vertices.len() {
                     let current = i;
-                    let next = (i + 1) % rectangle.world_vertices.len();
+                    let next = (i + 1) % polygon.world_vertices.len();
 
                     d.draw_line_ex(
-                        vector2_to_raylib(&rectangle.world_vertices[current]),
-                        vector2_to_raylib(&rectangle.world_vertices[next]),
+                        vector2_to_raylib(&polygon.world_vertices[current]),
+                        vector2_to_raylib(&polygon.world_vertices[next]),
                         1.0,
-                        if rigid_body.is_colliding {
-                            Color::MAGENTA
-                        } else {
-                            Color::WHITE
-                        },
+                        Color::WHITE,
                     );
                 }
 
@@ -194,11 +177,7 @@ impl App {
                     rigid_body.position.x as i32,
                     rigid_body.position.y as i32,
                     1.0,
-                    if rigid_body.is_colliding {
-                        Color::MAGENTA
-                    } else {
-                        Color::WHITE
-                    },
+                    Color::WHITE,
                 );
             }
         }
