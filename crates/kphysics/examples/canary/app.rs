@@ -96,11 +96,17 @@ impl App {
             let mouse_position = self.rl.get_mouse_position();
 
             self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-                shape: Shape::Circle(Circle::new(50.0)),
+                shape: Shape::Polygon(Polygon::new(vec![
+                    Vector2::new(20.0, 60.0),
+                    Vector2::new(-40.0, 20.0),
+                    Vector2::new(-20.0, -60.0),
+                    Vector2::new(20.0, -60.0),
+                    Vector2::new(40.0, 20.0),
+                ])),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                bounciness: 0.3,
-                angular_friction: 0.4,
-                mass: 1.0,
+                bounciness: 0.1,
+                angular_friction: 0.7,
+                mass: 2.0,
                 can_be_rotated: true,
                 ..Default::default()
             }));
