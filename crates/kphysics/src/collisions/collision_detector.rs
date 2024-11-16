@@ -53,14 +53,13 @@ fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opti
 }
 
 fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
-    let a_polygon = a.shape.polygon();
-    let b_polygon = b.shape.polygon();
-
-    let a_polygon = a_polygon
-        .as_ref()
+    let a_polygon = a
+        .shape
+        .polygon()
         .unwrap_or_else(|| panic_checked_polygon_unwrap());
-    let b_polygon = b_polygon
-        .as_ref()
+    let b_polygon = b
+        .shape
+        .polygon()
         .unwrap_or_else(|| panic_checked_polygon_unwrap());
 
     let ab_separation_info = find_minimum_separation(a_polygon, b_polygon);
@@ -81,12 +80,112 @@ fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opt
     ))
 }
 
-#[allow(unused_variables)]
 fn are_colliding_circle_and_polygon<'a>(
-    circle: &'a RigidBody,
-    rigid_body: &'a RigidBody,
+    circular: &'a mut RigidBody,
+    polygonal: &'a mut RigidBody,
 ) -> Option<Contact<'a>> {
-    None
+    let circle = circular
+        .shape
+        .circle()
+        .unwrap_or_else(|| panic_checked_circle_unwrap());
+    let polygon = polygonal
+        .shape
+        .polygon()
+        .unwrap_or_else(|| panic_checked_polygon_unwrap());
+
+    let mut is_outside = false;
+    let mut min_current_vertex = &Vector2::ZERO;
+    let mut min_next_vertex = &Vector2::ZERO;
+    let mut distance_circle_edge = f64::MIN;
+
+    for (i, current_vertex) in polygon.world_vertices.iter().enumerate() {
+        let next_vertex = &polygon.world_vertices[(i + 1) % polygon.world_vertices.len()];
+
+        let edge = polygon.edge_at(i);
+        let normal = edge.create_perpendicular();
+
+        let vertex_to_circle_center = circular.position.to_subtracted(current_vertex);
+
+        let projection = vertex_to_circle_center.dot_product(&normal);
+
+        if projection > 0.0 {
+            distance_circle_edge = projection;
+            min_current_vertex = current_vertex;
+            min_next_vertex = next_vertex;
+            is_outside = true;
+
+            break;
+        } else {
+            if projection > distance_circle_edge {
+                distance_circle_edge = projection;
+                min_current_vertex = current_vertex;
+                min_next_vertex = next_vertex;
+            }
+        }
+    }
+
+    if is_outside {
+        let v1 = circular.position.to_subtracted(min_current_vertex);
+        let v2 = min_next_vertex.to_subtracted(min_current_vertex);
+
+        if v1.dot_product(&v2) < 0.0 {
+            let v1_magnitude = v1.magnitude();
+            if v1_magnitude > circle.radius {
+                return None;
+            }
+
+            return Some(Contact::for_circle_and_polygon(
+                circular,
+                polygonal,
+                &v1,
+                v1_magnitude,
+                false,
+            ));
+        } else {
+            let v1 = circular.position.to_subtracted(min_next_vertex);
+            let v2 = min_current_vertex.to_subtracted(min_next_vertex);
+
+            let v1_magnitude = v1.magnitude();
+
+            if v1.dot_product(&v2) < 0.0 {
+                if v1_magnitude > circle.radius {
+                    return None;
+                }
+
+                return Some(Contact::for_circle_and_polygon(
+                    circular,
+                    polygonal,
+                    &v1,
+                    v1_magnitude,
+                    false,
+                ));
+            } else {
+                if distance_circle_edge > circle.radius {
+                    return None;
+                }
+
+                return Some(Contact::for_circle_and_polygon(
+                    circular,
+                    polygonal,
+                    &min_next_vertex
+                        .to_subtracted(&min_current_vertex)
+                        .create_perpendicular(),
+                    distance_circle_edge,
+                    true,
+                ));
+            }
+        }
+    }
+
+    Some(Contact::for_circle_and_polygon(
+        circular,
+        polygonal,
+        &min_next_vertex
+            .to_subtracted(min_current_vertex)
+            .create_perpendicular(),
+        distance_circle_edge,
+        true,
+    ))
 }
 
 fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
