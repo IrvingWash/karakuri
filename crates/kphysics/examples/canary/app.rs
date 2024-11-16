@@ -111,6 +111,23 @@ impl App {
                 ..Default::default()
             }));
         }
+
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_RIGHT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
+
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+                shape: Shape::Circle(Circle::new(50.0)),
+                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                bounciness: 0.1,
+                angular_friction: 0.7,
+                mass: 2.0,
+                can_be_rotated: true,
+                ..Default::default()
+            }));
+        }
     }
 
     pub fn update(&mut self) {
