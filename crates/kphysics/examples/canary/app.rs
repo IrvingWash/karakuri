@@ -46,27 +46,6 @@ impl App {
         let width = self.rl.get_screen_width();
         let height = self.rl.get_screen_height();
 
-        let floor = RigidBody::new(RigidBodyParams {
-            position: Vector2::new(width as f64 / 2.0, height as f64 - 50.0),
-            shape: Shape::Polygon(Polygon::rectangular(width as f64 - 50.0, 50.0)),
-            bounciness: 0.2,
-            mass: 0.0,
-            ..Default::default()
-        });
-        let left_wall = RigidBody::new(RigidBodyParams {
-            position: Vector2::new(width as f64 - 50.0, height as f64 / 2.0 - 25.0),
-            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
-            bounciness: 0.2,
-            mass: 0.0,
-            ..Default::default()
-        });
-        let right_wall = RigidBody::new(RigidBodyParams {
-            position: Vector2::new(50.0, height as f64 / 2.0 - 25.0),
-            shape: Shape::Polygon(Polygon::rectangular(50.0, height as f64 - 100.0)),
-            bounciness: 0.2,
-            mass: 0.0,
-            ..Default::default()
-        });
         let big_box = RigidBody::new(RigidBodyParams {
             position: Vector2::new(width as f64 / 2.0, height as f64 / 2.0),
             shape: Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
@@ -84,9 +63,6 @@ impl App {
             ..Default::default()
         });
 
-        self.rigid_bodies.push(floor);
-        self.rigid_bodies.push(left_wall);
-        self.rigid_bodies.push(right_wall);
         self.rigid_bodies.push(big_box);
         self.rigid_bodies.push(ball);
 
@@ -98,7 +74,7 @@ impl App {
 
         let mouse_position = self.rl.get_mouse_position();
 
-        self.rigid_bodies[4].position =
+        self.rigid_bodies[1].position =
             Vector2::new(mouse_position.x as f64, mouse_position.y as f64);
     }
 
@@ -123,7 +99,7 @@ impl App {
 
                 #[allow(unused_mut)]
                 if let Some(mut contact) = collision_detector::are_colliding(body, other) {
-                    contact.resolve_collision();
+                    // contact.resolve_collision();
 
                     body.is_colliding = true;
                     other.is_colliding = true;
