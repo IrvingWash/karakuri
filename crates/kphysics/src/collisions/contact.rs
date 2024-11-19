@@ -218,5 +218,12 @@ impl<'a> Contact<'a> {
 
         self.a.position.subtract(&self.normal.to_scaled(da));
         self.b.position.add(&self.normal.to_scaled(db));
+
+        self.a
+            .shape
+            .update_vertices(&self.a.position, self.a.rotation);
+        self.b
+            .shape
+            .update_vertices(&self.b.position, self.b.rotation);
     }
 }
