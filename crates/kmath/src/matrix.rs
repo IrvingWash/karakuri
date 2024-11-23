@@ -78,13 +78,19 @@ impl Matrix {
     }
 
     #[inline]
-    pub fn to_multiplied_by_vector(&self, vector: &VectorN) -> Matrix {
+    pub fn to_multiplied_by_vector(&self, vector: &VectorN) -> VectorN {
         assert!(
             self.column_length == vector.len(),
             "Attempt to multiply a matrix with an incompatible vector."
         );
 
-        todo!()
+        let mut result = VectorN::new(self.row_length);
+
+        for i in 0..self.row_length {
+            result[i] = vector.dot_product(&self.data[i]);
+        }
+
+        result
     }
 
     #[inline]
@@ -192,7 +198,7 @@ mod matrix_tests {
     }
 
     #[test]
-    fn test_to_multiplies() {
+    fn test_to_multiplied_by_matrix() {
         let first = Matrix::from_data(&vec![
             VectorN::from_vec(&vec![1.0, 4.0]),
             VectorN::from_vec(&vec![2.0, 5.0]),
@@ -208,5 +214,18 @@ mod matrix_tests {
 
         assert_eq!(*result.data[0].data(), vec![58.0, 139.0]);
         assert_eq!(*result.data[1].data(), vec![64.0, 154.0]);
+    }
+
+    #[test]
+    fn test_to_multiplied_by_vector() {
+        let first = Matrix::from_data(&vec![
+            VectorN::from_vec(&vec![1.0, 4.0]),
+            VectorN::from_vec(&vec![2.0, 5.0]),
+            VectorN::from_vec(&vec![3.0, 6.0]),
+        ]);
+
+        let result = first.to_multiplied_by_vector(&VectorN::from_vec(&vec![2.0, 3.0]));
+
+        assert_eq!(*result.data(), vec![14.0, 19.0, 24.0]);
     }
 }
