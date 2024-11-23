@@ -79,8 +79,9 @@ impl Matrix {
 
     #[inline]
     pub fn to_multiplied_by_vector(&self, vector: &VectorN) -> VectorN {
-        assert!(
-            self.column_length == vector.len(),
+        assert_eq!(
+            self.column_length,
+            vector.len(),
             "Attempt to multiply a matrix with an incompatible vector."
         );
 
@@ -199,11 +200,7 @@ mod matrix_tests {
 
     #[test]
     fn test_to_multiplied_by_matrix() {
-        let first = Matrix::from_data(&vec![
-            VectorN::from_vec(&vec![1.0, 4.0]),
-            VectorN::from_vec(&vec![2.0, 5.0]),
-            VectorN::from_vec(&vec![3.0, 6.0]),
-        ]);
+        let first = generate_matrix();
 
         let second = Matrix::from_data(&vec![
             VectorN::from_vec(&vec![7.0, 9.0, 11.0]),
@@ -218,14 +215,18 @@ mod matrix_tests {
 
     #[test]
     fn test_to_multiplied_by_vector() {
-        let first = Matrix::from_data(&vec![
-            VectorN::from_vec(&vec![1.0, 4.0]),
-            VectorN::from_vec(&vec![2.0, 5.0]),
-            VectorN::from_vec(&vec![3.0, 6.0]),
-        ]);
+        let first = generate_matrix();
 
         let result = first.to_multiplied_by_vector(&VectorN::from_vec(&vec![2.0, 3.0]));
 
         assert_eq!(*result.data(), vec![14.0, 19.0, 24.0]);
+    }
+
+    fn generate_matrix() -> Matrix {
+        Matrix::from_data(&vec![
+            VectorN::from_vec(&vec![1.0, 4.0]),
+            VectorN::from_vec(&vec![2.0, 5.0]),
+            VectorN::from_vec(&vec![3.0, 6.0]),
+        ])
     }
 }

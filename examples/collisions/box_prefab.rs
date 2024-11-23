@@ -47,10 +47,6 @@ struct MyBox {
 }
 
 impl BehaviorComponent for MyBox {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
     fn on_start(&mut self, ctx: UpdateContext) {
         self.controlled = ctx
             .registry
@@ -86,6 +82,10 @@ impl BehaviorComponent for MyBox {
             .unwrap();
 
         sprite.tint = Color::YELLOW;
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

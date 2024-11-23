@@ -131,8 +131,8 @@ impl VectorN {
     }
 
     fn panic_varying_size(&self, other: &VectorN) {
-        assert!(
-            self.n == other.n,
+        assert_eq!(
+            self.n, other.n,
             "Attempt to operate on `VectorN`s of different sizes"
         );
     }
