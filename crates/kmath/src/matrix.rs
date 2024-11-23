@@ -22,6 +22,8 @@ impl Matrix {
 
     #[inline]
     pub fn from_data(data: &[VectorN]) -> Self {
+        Self::panic_deformed(data);
+
         let n = match data.first() {
             Some(column) => column.len(),
             None => 0,
@@ -45,23 +47,24 @@ impl Matrix {
 
     #[inline]
     pub fn set(&mut self, other: &Matrix) {
+        Self::panic_deformed_pair(&self.data, &other.data);
+
         self.row_length = other.row_length;
         self.column_length = other.column_length;
         self.data = other.data.clone();
     }
 
     #[inline]
-    pub fn transpose(&mut self) {
-        todo!()
-    }
-
-    #[inline]
     pub fn to_transposed(&self) -> Matrix {
-        let mut temp = self.create_copy();
+        let mut result = Matrix::new(self.column_length, self.row_length);
 
-        temp.transpose();
+        for i in 0..self.row_length {
+            for j in 0..self.column_length {
+                result.data[j][i] = self.data[i][j];
+            }
+        }
 
-        temp
+        result
     }
 
     #[inline]
@@ -92,6 +95,22 @@ impl Matrix {
         temp.multiply_by_matrix(other);
 
         temp
+    }
+
+    fn panic_deformed(data: &[VectorN]) {
+        if let Some(first_column) = data.first() {
+            let gauge = first_column.len();
+
+            assert!(data.iter().all(|column| column.len() == gauge));
+        }
+    }
+
+    fn panic_deformed_pair(a: &[VectorN], b: &[VectorN]) {
+        if let Some(first_column) = a.first() {
+            let gauge = first_column.len();
+
+            assert!([a, b].concat().iter().all(|column| column.len() == gauge));
+        }
     }
 }
 
@@ -155,5 +174,26 @@ mod matrix_tests {
                 assert_eq!(*v, second.data[i].data()[j]);
             }
         }
+    }
+
+    #[test]
+    fn test_to_transposed() {
+        let data = vec![
+            VectorN::from_vec(&vec![1.0, 2.0, 3.0]),
+            VectorN::from_vec(&vec![4.0, 5.0, 6.0]),
+        ];
+
+        let first = Matrix::from_data(&data);
+
+        let transposed = first.to_transposed();
+
+        assert_eq!(transposed.row_length, 3);
+        assert_eq!(transposed.column_length, 2);
+
+        assert_eq!(transposed.data.len(), 3);
+
+        assert_eq!(*transposed.data[0].data(), vec![1.0, 4.0]);
+        assert_eq!(*transposed.data[1].data(), vec![2.0, 5.0]);
+        assert_eq!(*transposed.data[2].data(), vec![3.0, 6.0]);
     }
 }
