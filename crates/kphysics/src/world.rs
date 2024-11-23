@@ -83,7 +83,9 @@ impl World {
             for j in i + 1..self.rigid_bodies.len() {
                 let (first_half, second_half) = self.rigid_bodies.split_at_mut(i + 1);
 
-                let body = first_half.last_mut().unwrap();
+                let body = first_half
+                    .last_mut()
+                    .expect("Should have been able to split vector in two pieces.");
                 let other = &mut second_half[j - i - 1];
 
                 if let Some(contact) = collision_detector::are_colliding(body, other) {
