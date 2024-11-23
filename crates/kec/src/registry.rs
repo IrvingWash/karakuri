@@ -2,12 +2,11 @@ use std::{
     any::{type_name, Any, TypeId},
     cell::{Ref, RefCell, RefMut},
     collections::{HashMap, HashSet},
-    rc::Rc,
 };
 
 use crate::{errors::panic_registered_without_id, Entity, Query, Signature};
 
-type Orra = Option<Rc<RefCell<dyn Any>>>;
+type Obra = Option<Box<RefCell<dyn Any>>>;
 
 const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 
@@ -15,7 +14,7 @@ const NO_SIGNATURE_MESSAGE: &str = "Signature should have been already created";
 pub struct Registry {
     next_unique_id: usize,
     entities: Vec<Option<Entity>>,
-    components: HashMap<TypeId, Vec<Orra>>,
+    components: HashMap<TypeId, Vec<Obra>>,
     free_ids: HashSet<usize>,
     component_ids: HashMap<TypeId, usize>,
     entity_signatures: HashMap<Entity, Signature>,
@@ -120,7 +119,7 @@ impl Registry {
         let component_id = self.component_ids.len();
         self.component_ids.insert(component_type, component_id);
 
-        let new_component_vec: Vec<Orra> = vec![None; self.entities.len()];
+        let new_component_vec: Vec<Obra> = (0..self.entities.len()).map(|_| None).collect();
         self.components.insert(component_type, new_component_vec);
     }
 
@@ -129,7 +128,7 @@ impl Registry {
         self.register_component::<T>();
 
         let id = entity.key();
-        let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
+        let wrapped_component: Obra = Some(Box::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
         let component_id = self
@@ -155,7 +154,7 @@ impl Registry {
         self.register_component::<T>();
 
         let entity_key = entity.key();
-        let wrapped_component: Orra = Some(Rc::new(RefCell::new(component)));
+        let wrapped_component: Obra = Some(Box::new(RefCell::new(component)));
         let component_type = TypeId::of::<T>();
 
         let component_id = self
@@ -327,7 +326,7 @@ impl Registry {
         false
     }
 
-    fn borrow_downcast<T: Any>(cell: &Rc<RefCell<dyn Any>>) -> Option<Ref<T>> {
+    fn borrow_downcast<T: Any>(cell: &RefCell<dyn Any>) -> Option<Ref<T>> {
         let r = cell.borrow();
         if (*r).type_id() == TypeId::of::<T>() {
             Some(Ref::map(r, |x| {
