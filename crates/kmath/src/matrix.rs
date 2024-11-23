@@ -2,52 +2,58 @@ use crate::VectorN;
 
 #[derive(Debug)]
 pub struct Matrix {
-    m: usize,
-    n: usize,
+    row_length: usize,
+    column_length: usize,
 
-    rows: Vec<VectorN>,
+    data: Vec<VectorN>,
 }
 
 impl Matrix {
     #[inline]
-    pub fn new(m: usize, n: usize) -> Self {
-        let rows = vec![VectorN::new(m); n];
+    pub fn new(row_length: usize, column_length: usize) -> Self {
+        let data = vec![VectorN::new(column_length); row_length];
 
-        Self { m, n, rows }
+        Self {
+            row_length,
+            column_length,
+            data,
+        }
     }
 
     #[inline]
-    pub fn from_rows(rows: Vec<VectorN>) -> Self {
-        let m = match rows.first() {
-            Some(row) => row.len(),
+    pub fn from_data(data: &[VectorN]) -> Self {
+        let n = match data.first() {
+            Some(column) => column.len(),
             None => 0,
         };
 
         Self {
-            m,
-            n: rows.len(),
-            rows,
+            row_length: data.len(),
+            column_length: n,
+            data: data.to_vec(),
         }
     }
 
     #[inline]
     pub fn create_copy(&self) -> Self {
         Self {
-            m: self.m,
-            n: self.n,
-            rows: self.rows.clone(),
+            row_length: self.row_length,
+            column_length: self.column_length,
+            data: self.data.clone(),
         }
     }
 
     #[inline]
     pub fn set(&mut self, other: &Matrix) {
-        self.m = other.m;
-        self.n = other.n;
-        self.rows = other.rows.clone();
+        self.row_length = other.row_length;
+        self.column_length = other.column_length;
+        self.data = other.data.clone();
     }
 
     #[inline]
-    pub fn transpose(&mut self) {}
+    pub fn transpose(&mut self) {
+        todo!()
+    }
 
     #[inline]
     pub fn to_transposed(&self) -> Matrix {
@@ -75,7 +81,9 @@ impl Matrix {
 
     #[inline]
     #[allow(unused_variables)]
-    pub fn multiply_by_matrix(&mut self, other: &Matrix) {}
+    pub fn multiply_by_matrix(&mut self, other: &Matrix) {
+        todo!()
+    }
 
     #[inline]
     pub fn to_multiplied_by_matrix(&self, other: &Matrix) -> Matrix {
@@ -84,5 +92,68 @@ impl Matrix {
         temp.multiply_by_matrix(other);
 
         temp
+    }
+}
+
+#[cfg(test)]
+mod matrix_tests {
+    use crate::VectorN;
+
+    use super::Matrix;
+
+    #[test]
+    fn test_new() {
+        let matrix = Matrix::new(3, 2);
+
+        assert_eq!(matrix.row_length, 3);
+        assert_eq!(matrix.column_length, 2);
+
+        assert_eq!(matrix.data.len(), 3);
+
+        for column in matrix.data {
+            assert_eq!(column.len(), 2);
+            assert_eq!(column[0], 0.0);
+            assert_eq!(column[1], 0.0);
+            assert!(column.get(2).is_none());
+        }
+    }
+
+    #[test]
+    fn test_from_data() {
+        let data = vec![
+            VectorN::from_vec(&vec![1.0, 2.0, 3.0]),
+            VectorN::from_vec(&vec![4.0, 5.0, 6.0]),
+        ];
+
+        let matrix = Matrix::from_data(&data);
+
+        assert_eq!(matrix.row_length, 2);
+        assert_eq!(matrix.column_length, 3);
+
+        assert_eq!(matrix.data.len(), 2);
+
+        for column in matrix.data {
+            assert_eq!(column.len(), 3);
+        }
+    }
+
+    #[test]
+    fn test_set() {
+        let mut first = Matrix::new(2, 3);
+
+        let data = vec![
+            VectorN::from_vec(&vec![1.0, 2.0, 3.0]),
+            VectorN::from_vec(&vec![4.0, 5.0, 6.0]),
+        ];
+
+        let second = Matrix::from_data(&data);
+
+        first.set(&second);
+
+        for (i, column) in first.data.iter().enumerate() {
+            for (j, v) in column.data().iter().enumerate() {
+                assert_eq!(*v, second.data[i].data()[j]);
+            }
+        }
     }
 }

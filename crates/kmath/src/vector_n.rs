@@ -34,6 +34,11 @@ impl VectorN {
     }
 
     #[inline]
+    pub fn data(&self) -> &Vec<f64> {
+        &self.data
+    }
+
+    #[inline]
     pub fn add(&mut self, other: &VectorN) {
         self.panic_varying_size(other);
 
@@ -373,5 +378,14 @@ mod vector_n_tests {
         let second = VectorN::new(0);
 
         assert!(second.is_empty());
+    }
+
+    #[test]
+    fn test_data() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        assert_eq!(*first.data(), vec);
     }
 }
