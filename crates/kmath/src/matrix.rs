@@ -22,7 +22,14 @@ impl Matrix {
 
     #[inline]
     pub fn from_data(data: &[VectorN]) -> Self {
-        Self::panic_deformed(data);
+        if let Some(first_column) = data.first() {
+            let gauge = first_column.len();
+
+            assert!(
+                data.iter().all(|column| column.len() == gauge),
+                "Deformed columns passed while creating a Matrix"
+            );
+        }
 
         let n = match data.first() {
             Some(column) => column.len(),
@@ -47,7 +54,10 @@ impl Matrix {
 
     #[inline]
     pub fn set(&mut self, other: &Matrix) {
-        Self::panic_deformed_pair(&self.data, &other.data);
+        assert!(
+            self.row_length == other.row_length && self.column_length == other.column_length,
+            "Attempt to set matrices of different sizes"
+        );
 
         self.row_length = other.row_length;
         self.column_length = other.column_length;
@@ -68,49 +78,33 @@ impl Matrix {
     }
 
     #[inline]
-    #[allow(unused_variables)]
-    pub fn multiply_by_vector(&mut self, vector: &VectorN) {
-        todo!()
-    }
-
-    #[inline]
     pub fn to_multiplied_by_vector(&self, vector: &VectorN) -> Matrix {
-        let mut temp = self.create_copy();
+        assert!(
+            self.column_length == vector.len(),
+            "Attempt to multiply a matrix with an incompatible vector."
+        );
 
-        temp.multiply_by_vector(vector);
-
-        temp
-    }
-
-    #[inline]
-    #[allow(unused_variables)]
-    pub fn multiply_by_matrix(&mut self, other: &Matrix) {
         todo!()
     }
 
     #[inline]
     pub fn to_multiplied_by_matrix(&self, other: &Matrix) -> Matrix {
-        let mut temp = self.create_copy();
+        assert!(
+            self.column_length == other.row_length && self.row_length == other.column_length,
+            "Attempt to multiply incompatible matrices."
+        );
 
-        temp.multiply_by_matrix(other);
+        let transposed = other.to_transposed();
 
-        temp
-    }
+        let mut result = Matrix::new(self.row_length, other.column_length);
 
-    fn panic_deformed(data: &[VectorN]) {
-        if let Some(first_column) = data.first() {
-            let gauge = first_column.len();
-
-            assert!(data.iter().all(|column| column.len() == gauge));
+        for i in 0..self.row_length {
+            for j in 0..other.column_length {
+                result.data[i][j] = self.data[i].dot_product(&transposed.data[j]);
+            }
         }
-    }
 
-    fn panic_deformed_pair(a: &[VectorN], b: &[VectorN]) {
-        if let Some(first_column) = a.first() {
-            let gauge = first_column.len();
-
-            assert!([a, b].concat().iter().all(|column| column.len() == gauge));
-        }
+        result
     }
 }
 
@@ -195,5 +189,24 @@ mod matrix_tests {
         assert_eq!(*transposed.data[0].data(), vec![1.0, 4.0]);
         assert_eq!(*transposed.data[1].data(), vec![2.0, 5.0]);
         assert_eq!(*transposed.data[2].data(), vec![3.0, 6.0]);
+    }
+
+    #[test]
+    fn test_to_multiplies() {
+        let first = Matrix::from_data(&vec![
+            VectorN::from_vec(&vec![1.0, 4.0]),
+            VectorN::from_vec(&vec![2.0, 5.0]),
+            VectorN::from_vec(&vec![3.0, 6.0]),
+        ]);
+
+        let second = Matrix::from_data(&vec![
+            VectorN::from_vec(&vec![7.0, 9.0, 11.0]),
+            VectorN::from_vec(&vec![8.0, 10.0, 12.0]),
+        ]);
+
+        let result = second.to_multiplied_by_matrix(&first);
+
+        assert_eq!(*result.data[0].data(), vec![58.0, 139.0]);
+        assert_eq!(*result.data[1].data(), vec![64.0, 154.0]);
     }
 }

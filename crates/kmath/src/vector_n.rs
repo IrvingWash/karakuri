@@ -97,7 +97,7 @@ impl VectorN {
         let mut result = 0.0;
 
         for (i, v) in self.data.iter().enumerate() {
-            result += v * other.data.get(i).unwrap_or(&1.0);
+            result += v * other.data[i];
         }
 
         result
@@ -132,7 +132,7 @@ impl VectorN {
 
     fn panic_varying_size(&self, other: &VectorN) {
         assert!(
-            self.data.len() == other.data.len(),
+            self.n == other.n,
             "Attempt to operate on `VectorN`s of different sizes"
         );
     }
