@@ -352,4 +352,26 @@ mod vector_n_tests {
 
         first.set(&second);
     }
+
+    #[test]
+    fn test_len() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        assert_eq!(first.len(), 5)
+    }
+
+    #[test]
+    fn test_is_empty() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        assert!(!first.is_empty());
+
+        let second = VectorN::new(0);
+
+        assert!(second.is_empty());
+    }
 }
