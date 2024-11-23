@@ -18,7 +18,7 @@ impl Matrix {
 
     #[inline]
     pub fn from_rows(rows: Vec<VectorN>) -> Self {
-        let m = match rows.get(0) {
+        let m = match rows.first() {
             Some(row) => row.len(),
             None => 0,
         };

@@ -23,8 +23,14 @@ impl VectorN {
         }
     }
 
+    #[inline]
     pub fn len(&self) -> usize {
         self.n
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.n == 0
     }
 
     #[inline]
