@@ -205,4 +205,141 @@ mod vector_n_tests {
             assert_eq!(*v, vec[i] * 3.0);
         }
     }
+
+    #[test]
+    fn test_to_added() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+        let second = VectorN::from_vec(&vec);
+
+        let result = first.to_added(&second);
+
+        for (i, v) in result.data.iter().enumerate() {
+            assert_eq!(*v, vec[i] + vec[i]);
+        }
+    }
+
+    #[test]
+    fn test_to_subtracted() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+        let second = VectorN::from_vec(&vec);
+
+        let result = first.to_subtracted(&second);
+
+        for (i, v) in result.data.iter().enumerate() {
+            assert_eq!(*v, vec[i] - vec[i]);
+        }
+    }
+
+    #[test]
+    fn test_to_scaled() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        let result = first.to_scaled(3.0);
+
+        for (i, v) in result.data.iter().enumerate() {
+            assert_eq!(*v, vec[i] * 3.0);
+        }
+    }
+
+    #[test]
+    fn test_dot_product() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+        let second = VectorN::from_vec(&vec);
+
+        let result = first.dot_product(&second);
+
+        assert_eq!(result, 55.0);
+    }
+
+    #[test]
+    fn test_get() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        assert!(first.get(4).is_some());
+        assert!(first.get(5).is_none());
+
+        assert_eq!(*first.get(2).unwrap(), 3.0);
+    }
+
+    #[test]
+    fn test_get_mut() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let mut first = VectorN::from_vec(&vec);
+
+        assert!(first.get_mut(4).is_some());
+        assert!(first.get_mut(5).is_none());
+
+        assert_eq!(*first.get_mut(2).unwrap(), 3.0);
+
+        *first.get_mut(1).unwrap() = 7.0;
+
+        assert_eq!(*first.data.get(1).unwrap(), 7.0);
+    }
+
+    #[test]
+    fn test_index() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        assert_eq!(first[3], 4.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_index_panic() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let first = VectorN::from_vec(&vec);
+
+        first[7];
+    }
+
+    #[test]
+    fn test_index_mut() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+
+        let mut first = VectorN::from_vec(&vec);
+
+        first[0] = 9.0;
+
+        assert_eq!(first[0], 9.0);
+    }
+
+    #[test]
+    fn test_set() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let second_vec = vec.iter().copied().map(|e| e * 2.0).collect::<Vec<f64>>();
+
+        let mut first = VectorN::from_vec(&vec);
+        let second = VectorN::from_vec(&second_vec);
+
+        first.set(&second);
+
+        assert_eq!(first[4], 10.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_varying_size_panic() {
+        let vec = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut second_vec = vec.clone();
+        second_vec.push(6.0);
+
+        let mut first = VectorN::from_vec(&vec);
+        let second = VectorN::from_vec(&second_vec);
+
+        first.set(&second);
+    }
 }
