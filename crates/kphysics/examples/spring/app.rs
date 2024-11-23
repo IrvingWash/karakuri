@@ -1,9 +1,5 @@
 use kmath::Vector2;
-use kphysics::{
-    force_generator,
-    shapes::{Circle, Shape},
-    RigidBody, RigidBodyParams,
-};
+use kphysics::{force_generator, shapes::Shape, RigidBody, RigidBodyParams};
 use raylib::{
     color::Color,
     consts::{KeyboardKey, MouseButton},
@@ -53,7 +49,7 @@ impl App {
         // Anchor
         self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
             position: Vector2::new((self.rl.get_screen_width() / 2).into(), 10.0),
-            shape: Shape::Circle(Circle::new(5.0)),
+            shape: Shape::new_circle(5.0),
             ..Default::default()
         }));
 
@@ -62,7 +58,7 @@ impl App {
             self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
                 position: Vector2::new(600.0, f64::from(i) * 15.0),
                 mass: 2.0,
-                shape: Shape::Circle(Circle::new(5.0)),
+                shape: Shape::new_circle(5.0),
                 ..Default::default()
             }))
         }

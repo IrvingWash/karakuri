@@ -1,6 +1,6 @@
 use kmath::Vector2;
 
-use crate::shapes::{Polygon, Shape};
+use crate::shapes::Shape;
 
 #[derive(Debug)]
 pub struct RigidBodyParams {
@@ -19,7 +19,7 @@ impl Default for RigidBodyParams {
         Self {
             position: Vector2::ZERO,
             mass: 1.0,
-            shape: Shape::Polygon(Polygon::rectangular(10.0, 10.0)),
+            shape: Shape::new_rectangle(10.0, 10.0),
             bounciness: 0.0,
             angular_friction: 0.1,
             rotation: 0.0,
@@ -184,7 +184,7 @@ mod rigid_body_tests {
 
     use crate::{
         rigid_body::RigidBodyParams,
-        shapes::{Circle, Polygon, Shape},
+        shapes::{Circle, Shape},
     };
 
     use super::RigidBody;
@@ -197,7 +197,7 @@ mod rigid_body_tests {
 
             let rigid_body = RigidBody::new(RigidBodyParams {
                 mass,
-                shape: Shape::Circle(Circle::new(10.0)),
+                shape: Shape::new_circle(10.0),
                 bounciness: 1.0,
                 ..Default::default()
             });
@@ -217,7 +217,7 @@ mod rigid_body_tests {
             let rigid_body = RigidBody::new(RigidBodyParams {
                 mass,
                 bounciness: 3.0,
-                shape: Shape::Circle(Circle::new(10.0)),
+                shape: Shape::new_circle(10.0),
                 ..Default::default()
             });
 
@@ -242,11 +242,11 @@ mod rigid_body_tests {
         let mut rb = RigidBody::new(RigidBodyParams {
             position: Vector2::new(10.0, 10.0),
             mass: 1.5,
-            shape: Shape::Polygon(Polygon::new(vec![
+            shape: Shape::new_polygon(vec![
                 Vector2::new(10.0, 5.0),
                 Vector2::new(15.0, 15.0),
                 Vector2::new(5.0, 15.0),
-            ])),
+            ]),
             bounciness: 1.0,
             ..Default::default()
         });
@@ -287,11 +287,11 @@ mod rigid_body_tests {
     fn test_force_application_for_static() {
         let mut rb = RigidBody::new(RigidBodyParams {
             position: Vector2::new(10.0, 10.0),
-            shape: Shape::Polygon(Polygon::new(vec![
+            shape: Shape::new_polygon(vec![
                 Vector2::new(10.0, 5.0),
                 Vector2::new(15.0, 15.0),
                 Vector2::new(5.0, 15.0),
-            ])),
+            ]),
             bounciness: 1.0,
             mass: 0.0,
             ..Default::default()

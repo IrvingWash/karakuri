@@ -10,6 +10,21 @@ pub enum Shape {
 
 impl Shape {
     #[inline]
+    pub fn new_circle(radius: f64) -> Self {
+        Self::Circle(Circle::new(radius))
+    }
+
+    #[inline]
+    pub fn new_polygon(vertices: Vec<Vector2>) -> Self {
+        Self::Polygon(Polygon::new(vertices))
+    }
+
+    #[inline]
+    pub fn new_rectangle(width: f64, height: f64) -> Self {
+        Self::Polygon(Polygon::rectangular(width, height))
+    }
+
+    #[inline]
     pub fn moment_of_inertia(&self) -> f64 {
         match self {
             Self::Circle(circle) => circle.moment_of_inertia(),
@@ -72,22 +87,16 @@ impl From<Polygon> for Shape {
 mod shape_tests {
     use kmath::Vector2;
 
-    use crate::shapes::{Circle, Polygon};
-
     use super::Shape;
 
     #[test]
     fn test_is_shape() {
-        let shape = Shape::Circle(Circle::new(1.0));
+        let shape = Shape::new_circle(1.0);
 
         assert!(shape.is_circle());
         assert!(!shape.is_polygon());
 
-        let shape = Shape::Polygon(Polygon::new(vec![
-            Vector2::ZERO,
-            Vector2::ZERO,
-            Vector2::ZERO,
-        ]));
+        let shape = Shape::new_polygon(vec![Vector2::ZERO, Vector2::ZERO, Vector2::ZERO]);
 
         assert!(shape.is_polygon());
         assert!(!shape.is_circle());
@@ -95,16 +104,12 @@ mod shape_tests {
 
     #[test]
     fn test_accessors() {
-        let shape = Shape::Circle(Circle::new(1.0));
+        let shape = Shape::new_circle(1.0);
 
         assert!(shape.circle().is_some());
         assert!(shape.polygon().is_none());
 
-        let shape = Shape::Polygon(Polygon::new(vec![
-            Vector2::ZERO,
-            Vector2::ZERO,
-            Vector2::ZERO,
-        ]));
+        let shape = Shape::new_polygon(vec![Vector2::ZERO, Vector2::ZERO, Vector2::ZERO]);
 
         assert!(shape.polygon().is_some());
         assert!(shape.circle().is_none());
@@ -112,7 +117,7 @@ mod shape_tests {
 
     #[test]
     fn test_circle_update_world_vertices() {
-        let mut shape = Shape::Circle(Circle::new(1.0));
+        let mut shape = Shape::new_circle(1.0);
 
         shape.update_vertices(&Vector2::new(10.0, 10.0), 3.0);
 
@@ -121,11 +126,11 @@ mod shape_tests {
 
     #[test]
     fn test_polygon_update_world_vertices() {
-        let mut shape = Shape::Polygon(Polygon::new(vec![
+        let mut shape = Shape::new_polygon(vec![
             Vector2::new(5.0, 0.0),
             Vector2::new(10.0, 10.0),
             Vector2::new(0.0, 10.0),
-        ]));
+        ]);
 
         shape.update_vertices(&Vector2::new(10.0, 10.0), 3.0);
 

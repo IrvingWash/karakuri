@@ -1,8 +1,5 @@
 use kmath::Vector2;
-use kphysics::{
-    shapes::{Circle, Polygon, Shape},
-    RigidBody, RigidBodyParams, World, WorldParams,
-};
+use kphysics::{shapes::Shape, RigidBody, RigidBodyParams, World, WorldParams};
 use raylib::{
     color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
@@ -44,7 +41,7 @@ impl App {
 
         // Floor
         self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-            shape: Shape::Polygon(Polygon::rectangular(width - 50.0, 50.0)),
+            shape: Shape::new_rectangle(width - 50.0, 50.0),
             position: Vector2::new(width / 2.0, height - 50.0),
             mass: 0.0,
             bounciness: 0.5,
@@ -52,7 +49,7 @@ impl App {
         }));
         // Left wall
         self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-            shape: Shape::Polygon(Polygon::rectangular(50.0, height - 100.0)),
+            shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(50.0, height / 2.0 - 25.0),
             mass: 0.0,
             bounciness: 0.2,
@@ -60,7 +57,7 @@ impl App {
         }));
         // Right wall
         self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-            shape: Shape::Polygon(Polygon::rectangular(50.0, height - 100.0)),
+            shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(width - 50.0, height / 2.0 - 25.0),
             mass: 0.0,
             bounciness: 0.2,
@@ -68,7 +65,7 @@ impl App {
         }));
         // Big box
         self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-            shape: Shape::Polygon(Polygon::rectangular(200.0, 200.0)),
+            shape: Shape::new_rectangle(200.0, 200.0),
             position: Vector2::new(width / 2.0, height / 2.0),
             mass: 0.0,
             bounciness: 0.7,
@@ -93,13 +90,13 @@ impl App {
             let mouse_position = self.rl.get_mouse_position();
 
             self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-                shape: Shape::Polygon(Polygon::new(vec![
+                shape: Shape::new_polygon(vec![
                     Vector2::new(20.0, 60.0),
                     Vector2::new(-40.0, 20.0),
                     Vector2::new(-20.0, -60.0),
                     Vector2::new(20.0, -60.0),
                     Vector2::new(40.0, 20.0),
-                ])),
+                ]),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 bounciness: 0.1,
                 angular_friction: 0.7,
@@ -116,7 +113,7 @@ impl App {
             let mouse_position = self.rl.get_mouse_position();
 
             self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
-                shape: Shape::Circle(Circle::new(50.0)),
+                shape: Shape::new_circle(50.0),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 bounciness: 0.1,
                 angular_friction: 0.7,

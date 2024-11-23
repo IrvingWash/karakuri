@@ -228,10 +228,7 @@ fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
 mod collision_detector_tests {
     use kmath::Vector2;
 
-    use crate::{
-        shapes::{Circle, Polygon, Shape},
-        RigidBody, RigidBodyParams,
-    };
+    use crate::{shapes::Shape, RigidBody, RigidBodyParams};
 
     use super::are_colliding;
 
@@ -239,12 +236,12 @@ mod collision_detector_tests {
     fn test_circles() {
         let mut a = RigidBody::new(RigidBodyParams {
             position: Vector2::new(0.0, 0.0),
-            shape: Shape::Circle(Circle::new(1.0)),
+            shape: Shape::new_circle(1.0),
             ..Default::default()
         });
         let mut b = RigidBody::new(RigidBodyParams {
             position: Vector2::new(10.0, 10.0),
-            shape: Shape::Circle(Circle::new(1.0)),
+            shape: Shape::new_circle(1.0),
             ..Default::default()
         });
 
@@ -263,12 +260,12 @@ mod collision_detector_tests {
     fn test_polygons() {
         let mut a = RigidBody::new(RigidBodyParams {
             position: Vector2::new(0.0, 0.0),
-            shape: Shape::Polygon(Polygon::rectangular(5.0, 5.0)),
+            shape: Shape::new_rectangle(5.0, 5.0),
             ..Default::default()
         });
         let mut b = RigidBody::new(RigidBodyParams {
             position: Vector2::new(10.0, 10.0),
-            shape: Shape::Polygon(Polygon::rectangular(10.0, 10.0)),
+            shape: Shape::new_rectangle(10.0, 10.0),
             ..Default::default()
         });
 
