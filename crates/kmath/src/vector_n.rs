@@ -1,6 +1,6 @@
 use std::ops;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VectorN {
     n: usize,
     data: Vec<f64>,
@@ -21,6 +21,10 @@ impl VectorN {
             n: vec.len(),
             data: vec.to_vec(),
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.n
     }
 
     #[inline]
