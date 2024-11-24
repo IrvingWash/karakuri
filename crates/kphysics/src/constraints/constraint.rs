@@ -1,17 +1,17 @@
-use super::{DistanceConstraint, PenetrationConstraint};
+use super::{JointConstraint, PenetrationConstraint};
 use crate::RigidBody;
 
 #[allow(dead_code)]
 pub enum Constraint<'a> {
-    Distance(DistanceConstraint<'a>),
+    Joint(JointConstraint<'a>),
     Penetration(PenetrationConstraint<'a>),
 }
 
 #[allow(dead_code)]
 impl<'a> Constraint<'a> {
     #[inline]
-    pub fn new_distance(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
-        Self::Distance(DistanceConstraint::new(a, b))
+    pub fn new_joint(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
+        Self::Joint(JointConstraint::new(a, b))
     }
 
     #[inline]
@@ -22,7 +22,7 @@ impl<'a> Constraint<'a> {
     #[inline]
     pub fn solve(&self) {
         match self {
-            Constraint::Distance(distance_constraint) => distance_constraint.constraint().solve(),
+            Constraint::Joint(joint_constraint) => joint_constraint.constraint().solve(),
             Constraint::Penetration(penetration_constraint) => {
                 penetration_constraint.constraint().solve()
             }

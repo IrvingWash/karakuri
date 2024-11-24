@@ -3,15 +3,15 @@ use crate::RigidBody;
 use kmath::Matrix;
 
 #[allow(dead_code)]
-pub struct DistanceConstraint<'a> {
+pub struct JointConstraint<'a> {
     constraint: ConstraintBase<'a>,
     jacobian: Matrix,
 }
 
 #[allow(dead_code)]
-impl<'a> DistanceConstraint<'a> {
+impl<'a> JointConstraint<'a> {
     #[inline]
-    pub fn new(a: &'a mut RigidBody, b: &'a mut RigidBody) -> DistanceConstraint<'a> {
+    pub fn new(a: &'a mut RigidBody, b: &'a mut RigidBody) -> JointConstraint<'a> {
         Self {
             constraint: ConstraintBase::new(a, b),
             jacobian: Matrix::new(0, 0),
