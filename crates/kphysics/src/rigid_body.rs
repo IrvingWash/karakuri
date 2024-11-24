@@ -11,6 +11,7 @@ pub struct RigidBodyParams {
     pub angular_friction: f64,
     pub rotation: f64,
     pub can_be_rotated: bool,
+    pub velocity: Vector2,
 }
 
 impl Default for RigidBodyParams {
@@ -24,6 +25,7 @@ impl Default for RigidBodyParams {
             angular_friction: 0.1,
             rotation: 0.0,
             can_be_rotated: false,
+            velocity: Vector2::ZERO,
         }
     }
 }
@@ -45,9 +47,10 @@ pub struct RigidBody {
     pub accumulated_torque: f64,
 
     pub bounciness: f64,
-    pub mass: f64,
-    pub inverse_mass: f64,
-    pub moment_of_inertia: f64,
+    mass: f64,
+    inverse_mass: f64,
+    #[allow(dead_code)]
+    moment_of_inertia: f64,
     inverse_moment_of_inertia: f64,
 
     can_be_rotated: bool,
@@ -66,6 +69,7 @@ impl RigidBody {
             angular_friction,
             rotation,
             can_be_rotated,
+            velocity,
         } = params;
 
         let moment_of_inertia = shape.moment_of_inertia() * mass;
@@ -73,7 +77,7 @@ impl RigidBody {
         let mut s = Self {
             shape,
             position,
-            velocity: Vector2::ZERO,
+            velocity,
             accumulated_forces: Vector2::ZERO,
             rotation,
             angular_friction,
@@ -110,6 +114,16 @@ impl RigidBody {
     #[inline]
     pub fn inverse_moment_of_inertia(&self) -> f64 {
         self.inverse_moment_of_inertia
+    }
+
+    #[inline]
+    pub fn inverse_mass(&self) -> f64 {
+        self.inverse_mass
+    }
+
+    #[inline]
+    pub fn mass(&self) -> f64 {
+        self.mass
     }
 
     #[inline]

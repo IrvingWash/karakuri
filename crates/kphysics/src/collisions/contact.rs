@@ -156,7 +156,7 @@ impl<'a> Contact<'a> {
         let relative_velocity = self.a.velocity.to_subtracted(&self.b.velocity);
 
         let impulse_magnitude = -(1.0 + elasticity) * relative_velocity.dot_product(&self.normal)
-            / (self.a.inverse_mass + self.b.inverse_mass);
+            / (self.a.inverse_mass() + self.b.inverse_mass());
 
         let result = self.normal.to_scaled(impulse_magnitude);
 
@@ -190,7 +190,7 @@ impl<'a> Contact<'a> {
         // Impulse along the normal
         let impulse_magnitude_along_normal = -(1.0 + elasticity)
             * relative_velocity.dot_product(&self.normal)
-            / ((self.a.inverse_mass + self.b.inverse_mass)
+            / ((self.a.inverse_mass() + self.b.inverse_mass())
                 + (ra.cross_product(&self.normal).powi(2) * self.a.inverse_moment_of_inertia())
                 + (rb.cross_product(&self.normal).powi(2) * self.b.inverse_moment_of_inertia()));
         let impulse_along_normal = self.normal.to_scaled(impulse_magnitude_along_normal);
@@ -199,7 +199,7 @@ impl<'a> Contact<'a> {
         let tangent = self.normal.create_perpendicular();
         let impulse_magnitude_along_tangent =
             angular_friction * -(1.0 + elasticity) * relative_velocity.dot_product(&tangent)
-                / ((self.a.inverse_mass + self.b.inverse_mass)
+                / ((self.a.inverse_mass() + self.b.inverse_mass())
                     + (ra.cross_product(&tangent).powi(2) * self.a.inverse_moment_of_inertia())
                     + (rb.cross_product(&tangent).powi(2) * self.b.inverse_moment_of_inertia()));
         let impulse_along_tangent = tangent.to_scaled(impulse_magnitude_along_tangent);
@@ -211,10 +211,10 @@ impl<'a> Contact<'a> {
     }
 
     fn resolve_penetration(&mut self) {
-        let factor = self.depth / (self.a.inverse_mass + self.b.inverse_mass);
+        let factor = self.depth / (self.a.inverse_mass() + self.b.inverse_mass());
 
-        let da = factor * self.a.inverse_mass;
-        let db = factor * self.b.inverse_mass;
+        let da = factor * self.a.inverse_mass();
+        let db = factor * self.b.inverse_mass();
 
         self.a.position.subtract(&self.normal.to_scaled(da));
         self.b.position.add(&self.normal.to_scaled(db));

@@ -3,12 +3,12 @@ use kmath::Vector2;
 use crate::RigidBody;
 
 #[inline]
-pub const fn weight(rigid_body: &RigidBody, k: f64) -> Vector2 {
-    if rigid_body.mass == 0.0 {
+pub fn weight(rigid_body: &RigidBody, k: f64) -> Vector2 {
+    if rigid_body.mass() == 0.0 {
         return Vector2::ZERO;
     }
 
-    Vector2::new(0.0, 9.8 * k * rigid_body.mass)
+    Vector2::new(0.0, 9.8 * k * rigid_body.mass())
 }
 
 #[inline]
@@ -43,7 +43,7 @@ pub fn gravitation(
     min_distance: f64,
     max_distance: f64,
 ) -> Vector2 {
-    if a.mass == 0.0 && b.mass == 0.0 {
+    if a.mass() == 0.0 && b.mass() == 0.0 {
         return Vector2::ZERO;
     }
 
@@ -55,7 +55,7 @@ pub fn gravitation(
 
     let attraction_direction = disposition.to_normalized();
 
-    let attraction_magnitude = g * (a.mass * b.mass) / squared_distance;
+    let attraction_magnitude = g * (a.mass() * b.mass()) / squared_distance;
 
     attraction_direction.to_scaled(attraction_magnitude)
 }
@@ -85,26 +85,28 @@ mod force_generator_tests {
 
     #[test]
     fn test_weight() {
-        let mut rb = RigidBody::new(RigidBodyParams {
+        let rb = RigidBody::new(RigidBodyParams {
             mass: 0.0,
             ..Default::default()
         });
 
         assert_eq!(weight(&rb, 50.0), Vector2::ZERO);
 
-        rb.mass = 3.0;
+        let rb = RigidBody::new(RigidBodyParams {
+            mass: 3.0,
+            ..Default::default()
+        });
 
         assert_eq!(weight(&rb, 50.0), Vector2::new(0.0, 1470.0000000000002));
     }
 
     #[test]
     fn test_drag() {
-        let mut rb = RigidBody::new(RigidBodyParams {
+        let rb = RigidBody::new(RigidBodyParams {
             mass: 0.0,
+            velocity: Vector2::new(3.0, 3.0),
             ..Default::default()
         });
-
-        rb.velocity = Vector2::new(3.0, 3.0);
 
         assert_eq!(
             drag(&rb, 50.0),
@@ -114,7 +116,11 @@ mod force_generator_tests {
             }
         );
 
-        rb.mass = 3.0;
+        let rb = RigidBody::new(RigidBodyParams {
+            mass: 3.0,
+            velocity: Vector2::new(3.0, 3.0),
+            ..Default::default()
+        });
 
         assert_eq!(
             drag(&rb, 50.0),
@@ -127,12 +133,11 @@ mod force_generator_tests {
 
     #[test]
     fn test_friction() {
-        let mut rb = RigidBody::new(RigidBodyParams {
+        let rb = RigidBody::new(RigidBodyParams {
             mass: 0.0,
+            velocity: Vector2::new(3.0, 3.0),
             ..Default::default()
         });
-
-        rb.velocity = Vector2::new(3.0, 3.0);
 
         assert_eq!(
             friction(&rb, 50.0),
@@ -142,7 +147,11 @@ mod force_generator_tests {
             }
         );
 
-        rb.mass = 3.0;
+        let rb = RigidBody::new(RigidBodyParams {
+            mass: 3.0,
+            velocity: Vector2::new(3.0, 3.0),
+            ..Default::default()
+        });
 
         assert_eq!(
             friction(&rb, 50.0),
@@ -155,12 +164,12 @@ mod force_generator_tests {
 
     #[test]
     fn test_gravitation() {
-        let mut rba = RigidBody::new(RigidBodyParams {
+        let rba = RigidBody::new(RigidBodyParams {
             mass: 0.0,
             ..Default::default()
         });
 
-        let mut rbb = RigidBody::new(RigidBodyParams {
+        let rbb = RigidBody::new(RigidBodyParams {
             position: Vector2::new(5.0, 5.0),
             mass: 0.0,
             ..Default::default()
@@ -168,8 +177,16 @@ mod force_generator_tests {
 
         assert_eq!(gravitation(&rba, &rbb, 50.0, 10.0, 500.0), Vector2::ZERO);
 
-        rba.mass = 3.0;
-        rbb.mass = 0.5;
+        let rba = RigidBody::new(RigidBodyParams {
+            mass: 3.0,
+            ..Default::default()
+        });
+
+        let rbb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(5.0, 5.0),
+            mass: 0.5,
+            ..Default::default()
+        });
 
         let gravitation_force = gravitation(&rba, &rbb, 50.0, 10.0, 500.0);
 

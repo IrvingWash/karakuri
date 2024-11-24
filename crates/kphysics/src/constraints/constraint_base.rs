@@ -17,11 +17,11 @@ impl<'a> ConstraintBase<'a> {
     pub fn new(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
         Self {
             inverse_mass_matrix: Matrix::from_data(&[
-                VectorN::from_vec(&[a.inverse_mass, 0.0, 0.0, 0.0, 0.0, 0.0]),
-                VectorN::from_vec(&[0.0, a.inverse_mass, 0.0, 0.0, 0.0, 0.0]),
+                VectorN::from_vec(&[a.inverse_mass(), 0.0, 0.0, 0.0, 0.0, 0.0]),
+                VectorN::from_vec(&[0.0, a.inverse_mass(), 0.0, 0.0, 0.0, 0.0]),
                 VectorN::from_vec(&[0.0, 0.0, a.inverse_moment_of_inertia(), 0.0, 0.0, 0.0]),
-                VectorN::from_vec(&[0.0, 0.0, 0.0, b.inverse_mass, 0.0, 0.0]),
-                VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, b.inverse_mass, 0.0]),
+                VectorN::from_vec(&[0.0, 0.0, 0.0, b.inverse_mass(), 0.0, 0.0]),
+                VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, b.inverse_mass(), 0.0]),
                 VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, 0.0, b.inverse_moment_of_inertia()]),
             ]),
             velocities: VectorN::from_vec(&[
