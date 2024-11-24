@@ -1,4 +1,6 @@
 mod constraint;
-mod constraint_resolvers;
+mod joint_constraint;
+
+use joint_constraint::JointConstraint;
 
 pub use constraint::Constraint;

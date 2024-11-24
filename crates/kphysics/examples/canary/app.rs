@@ -86,33 +86,7 @@ impl App {
 
         d.clear_background(Color::BLACK);
 
-        for constraint in self.simulator.constraints() {
-            match constraint {
-                Constraint::Joint(joint) => {
-                    let a = self
-                        .rigid_bodies
-                        .iter()
-                        .find(|rb| rb.id() == joint.a_id)
-                        .unwrap();
-                    let b = self
-                        .rigid_bodies
-                        .iter()
-                        .find(|rb| rb.id() == joint.b_id)
-                        .unwrap();
-
-                    let pa = a.local_to_world(&joint.a_point);
-                    let pb = b.local_to_world(&joint.a_point);
-
-                    d.draw_line(
-                        pa.x as i32,
-                        pa.y as i32,
-                        pb.x as i32,
-                        pb.y as i32,
-                        Color::WHITE,
-                    );
-                }
-            }
-        }
+        d.draw_fps(700, 500);
 
         for body in &self.rigid_bodies {
             if body.shape().is_circle() {

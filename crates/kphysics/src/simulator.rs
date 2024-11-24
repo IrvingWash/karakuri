@@ -76,8 +76,18 @@ impl Simulator {
             body.integrate_forces(delta_time);
         }
 
-        for constraint in &self.constraints {
-            constraint.solve(rigid_bodies);
+        for constraint in &mut self.constraints {
+            constraint.pre_solve(rigid_bodies);
+        }
+
+        for _ in 0..5 {
+            for constraint in &mut self.constraints {
+                constraint.solve(rigid_bodies);
+            }
+        }
+
+        for constraints in &self.constraints {
+            constraints.post_solve();
         }
 
         for body in &mut *rigid_bodies {
