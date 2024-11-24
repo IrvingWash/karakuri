@@ -32,7 +32,7 @@ impl Default for RigidBodyParams {
 
 #[derive(Debug)]
 pub struct RigidBody {
-    pub shape: Shape,
+    shape: Shape,
 
     // Linear motion
     position: Vector2,
@@ -159,6 +159,11 @@ impl RigidBody {
     #[inline]
     pub fn position_mut(&mut self) -> &mut Vector2 {
         &mut self.position
+    }
+
+    #[inline]
+    pub fn shape(&self) -> &Shape {
+        &self.shape
     }
 
     #[inline]

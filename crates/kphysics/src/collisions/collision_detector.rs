@@ -13,19 +13,19 @@ use super::{
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
 // Ask for contact information separately
 pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
-    if a.shape.is_circle() && b.shape.is_circle() {
+    if a.shape().is_circle() && b.shape().is_circle() {
         return are_colliding_circles(a, b);
     }
 
-    if a.shape.is_polygon() && b.shape.is_polygon() {
+    if a.shape().is_polygon() && b.shape().is_polygon() {
         return are_colliding_polygons(a, b);
     }
 
-    if a.shape.is_circle() && b.shape.is_polygon() {
+    if a.shape().is_circle() && b.shape().is_polygon() {
         return are_colliding_circle_and_polygon(a, b);
     }
 
-    if a.shape.is_polygon() && b.shape.is_circle() {
+    if a.shape().is_polygon() && b.shape().is_circle() {
         return are_colliding_circle_and_polygon(b, a);
     }
 
@@ -34,11 +34,11 @@ pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<C
 
 fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
     let a_shape = a
-        .shape
+        .shape()
         .circle()
         .unwrap_or_else(|| panic_checked_circle_unwrap());
     let b_shape = b
-        .shape
+        .shape()
         .circle()
         .unwrap_or_else(|| panic_checked_circle_unwrap());
 
@@ -54,11 +54,11 @@ fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opti
 
 fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
     let a_polygon = a
-        .shape
+        .shape()
         .polygon()
         .unwrap_or_else(|| panic_checked_polygon_unwrap());
     let b_polygon = b
-        .shape
+        .shape()
         .polygon()
         .unwrap_or_else(|| panic_checked_polygon_unwrap());
 
@@ -85,11 +85,11 @@ fn are_colliding_circle_and_polygon<'a>(
     polygonal: &'a mut RigidBody,
 ) -> Option<Contact<'a>> {
     let circle = circular
-        .shape
+        .shape()
         .circle()
         .unwrap_or_else(|| panic_checked_circle_unwrap());
     let polygon = polygonal
-        .shape
+        .shape()
         .polygon()
         .unwrap_or_else(|| panic_checked_polygon_unwrap());
 

@@ -24,7 +24,7 @@ impl<'a> Contact<'a> {
 
         let start = b.position().to_subtracted(
             &normal.to_scaled(
-                b.shape
+                b.shape()
                     .circle()
                     .unwrap_or_else(|| panic_checked_circle_unwrap())
                     .radius(),
@@ -33,7 +33,7 @@ impl<'a> Contact<'a> {
 
         let end = a.position().to_added(
             &normal.to_scaled(
-                a.shape
+                a.shape()
                     .circle()
                     .unwrap_or_else(|| panic_checked_circle_unwrap())
                     .radius(),
@@ -106,7 +106,7 @@ impl<'a> Contact<'a> {
         let normal = v1.to_normalized();
 
         let circle_radius = circular
-            .shape
+            .shape()
             .circle()
             .unwrap_or_else(|| panic_checked_circle_unwrap())
             .radius();
