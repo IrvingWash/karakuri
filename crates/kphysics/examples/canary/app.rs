@@ -56,7 +56,7 @@ impl App {
             ..Default::default()
         });
 
-        let joint_ab = Constraint::new_joint(&body_a, &body_b, body_a.position().clone());
+        let joint_ab = Constraint::new_joint(&body_a, &body_b, body_a.position());
 
         self.rigid_bodies.push(body_a);
         self.rigid_bodies.push(body_b);

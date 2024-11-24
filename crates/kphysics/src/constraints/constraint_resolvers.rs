@@ -9,8 +9,8 @@ pub fn resolve_joint_constraint(
     a_point: &Vector2,
     b_point: &Vector2,
 ) {
-    let pa = a.local_to_world(&a_point);
-    let pb = b.local_to_world(&b_point);
+    let pa = a.local_to_world(a_point);
+    let pb = b.local_to_world(b_point);
 
     let ra = pa.to_subtracted(a.position());
     let rb = pb.to_subtracted(b.position());

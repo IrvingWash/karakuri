@@ -13,12 +13,12 @@ pub enum Constraint {
 
 impl Constraint {
     #[inline]
-    pub fn new_joint(a: &RigidBody, b: &RigidBody, anchor_point: Vector2) -> Self {
+    pub fn new_joint(a: &RigidBody, b: &RigidBody, anchor_point: &Vector2) -> Self {
         Self::Joint(JointConstraintDescriptor {
             a_id: a.id(),
             b_id: b.id(),
-            a_point: a.world_to_local(&anchor_point),
-            b_point: b.world_to_local(&anchor_point),
+            a_point: a.world_to_local(anchor_point),
+            b_point: b.world_to_local(anchor_point),
         })
     }
 
