@@ -3,7 +3,8 @@ use kphysics::{
     constraints::Constraint, shapes::Shape, RigidBody, RigidBodyParams, Simulator, SimulatorParams,
 };
 use raylib::{
-    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
+    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
+    RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -72,6 +73,46 @@ impl App {
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
+
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
+
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+                shape: Shape::new_polygon(vec![
+                    Vector2::new(20.0, 60.0),
+                    Vector2::new(-40.0, 20.0),
+                    Vector2::new(-20.0, -60.0),
+                    Vector2::new(20.0, -60.0),
+                    Vector2::new(40.0, 20.0),
+                ]),
+                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                bounciness: 0.1,
+                angular_friction: 0.7,
+                mass: 2.0,
+                can_be_rotated: true,
+                ..Default::default()
+            }));
+        }
+
+        if self
+            .rl
+            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_RIGHT)
+        {
+            let mouse_position = self.rl.get_mouse_position();
+
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
+                shape: Shape::new_circle(50.0),
+                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
+                bounciness: 0.1,
+                angular_friction: 0.7,
+                mass: 2.0,
+                can_be_rotated: true,
+                ..Default::default()
+            }));
+        }
     }
 
     pub fn update(&mut self) {
@@ -87,6 +128,32 @@ impl App {
         d.clear_background(Color::BLACK);
 
         d.draw_fps(700, 500);
+
+        for constraint in self.simulator.constraints() {
+            match constraint {
+                Constraint::Joint(joint) => {
+                    let a = self
+                        .rigid_bodies
+                        .iter()
+                        .find(|rb| rb.id() == joint.a_id)
+                        .unwrap();
+
+                    let b = self
+                        .rigid_bodies
+                        .iter()
+                        .find(|rb| rb.id() == joint.b_id)
+                        .unwrap();
+
+                    d.draw_line(
+                        a.position().x as i32,
+                        a.position().y as i32,
+                        b.position().x as i32,
+                        b.position().y as i32,
+                        Color::WHITE,
+                    );
+                }
+            }
+        }
 
         for body in &self.rigid_bodies {
             if body.shape().is_circle() {
