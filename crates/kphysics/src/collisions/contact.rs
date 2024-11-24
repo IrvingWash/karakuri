@@ -144,24 +144,6 @@ impl<'a> Contact<'a> {
         self.resolve_collision_without_rotation();
     }
 
-    #[allow(dead_code)]
-    #[inline]
-    pub fn normal(&self) -> &Vector2 {
-        &self.normal
-    }
-
-    #[allow(dead_code)]
-    #[inline]
-    pub fn start(&self) -> &Vector2 {
-        &self.start
-    }
-
-    #[allow(dead_code)]
-    #[inline]
-    pub fn end(&self) -> &Vector2 {
-        &self.end
-    }
-
     fn resolve_collision_without_rotation(&mut self) {
         if self.a.is_static && self.b.is_static {
             return;
@@ -243,5 +225,65 @@ impl<'a> Contact<'a> {
         self.b
             .shape
             .update_vertices(&self.b.position, self.b.rotation);
+    }
+}
+
+#[cfg(test)]
+mod collision_detector_tests {
+    use kmath::Vector2;
+
+    use crate::{
+        collisions::collision_detector::are_colliding, shapes::Shape, RigidBody, RigidBodyParams,
+    };
+
+    #[test]
+    fn test_circles() {
+        let mut a = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(0.0, 0.0),
+            shape: Shape::new_circle(1.0),
+            ..Default::default()
+        });
+        let mut b = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            shape: Shape::new_circle(1.0),
+            ..Default::default()
+        });
+
+        assert!(are_colliding(&mut a, &mut b).is_none());
+
+        a.position = Vector2::new(10.0, 10.0);
+
+        let contact = are_colliding(&mut a, &mut b).unwrap();
+
+        assert_eq!(contact.end, Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contact.normal, Vector2::ZERO);
+        assert_eq!(contact.start, Vector2 { x: 10.0, y: 10.0 });
+    }
+
+    #[test]
+    fn test_polygons() {
+        let mut a = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(0.0, 0.0),
+            shape: Shape::new_rectangle(5.0, 5.0),
+            ..Default::default()
+        });
+        let mut b = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(10.0, 10.0),
+            shape: Shape::new_rectangle(10.0, 10.0),
+            ..Default::default()
+        });
+
+        assert!(are_colliding(&mut a, &mut b).is_none());
+
+        a.position = Vector2::new(9.0, 9.0);
+
+        a.update(1.0);
+        b.update(1.0);
+
+        let contact = are_colliding(&mut a, &mut b).unwrap();
+
+        assert_eq!(contact.end, Vector2 { x: 11.5, y: 11.5 });
+        assert_eq!(contact.normal, Vector2 { x: -0.0, y: 1.0 });
+        assert_eq!(contact.start, Vector2 { x: 11.5, y: 5.0 });
     }
 }
