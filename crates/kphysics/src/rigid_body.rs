@@ -52,7 +52,7 @@ pub struct RigidBody {
 
     pub can_be_rotated: bool,
 
-    pub is_static: bool,
+    is_static: bool,
 }
 
 impl RigidBody {
@@ -95,6 +95,11 @@ impl RigidBody {
         s.shape.update_vertices(&s.position, s.rotation);
 
         s
+    }
+
+    #[inline]
+    pub fn is_static(&self) -> bool {
+        self.is_static
     }
 
     #[inline]

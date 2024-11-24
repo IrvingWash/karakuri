@@ -145,7 +145,7 @@ impl<'a> Contact<'a> {
     }
 
     fn resolve_collision_without_rotation(&mut self) {
-        if self.a.is_static && self.b.is_static {
+        if self.a.is_static() && self.b.is_static() {
             return;
         }
 
@@ -165,7 +165,7 @@ impl<'a> Contact<'a> {
     }
 
     fn resolve_collision_with_rotation(&mut self) {
-        if self.a.is_static && self.b.is_static {
+        if self.a.is_static() && self.b.is_static() {
             return;
         }
 
