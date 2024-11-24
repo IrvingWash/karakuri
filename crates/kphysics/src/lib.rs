@@ -1,8 +1,8 @@
 mod collisions;
-mod constraints;
 mod rigid_body;
 mod simulator;
 
+pub mod constraints;
 pub mod force_generator;
 pub mod shapes;
 

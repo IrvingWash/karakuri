@@ -211,6 +211,24 @@ impl RigidBody {
         self.shape.update_vertices(&self.position, self.rotation);
     }
 
+    #[inline]
+    pub fn world_to_local(&self, point: &Vector2) -> Vector2 {
+        let mut result = point.to_subtracted(&self.position);
+
+        result.rotate(-self.rotation);
+
+        result
+    }
+
+    #[inline]
+    pub fn local_to_world(&self, point: &Vector2) -> Vector2 {
+        let mut result = point.to_rotated(self.rotation);
+
+        result.add(&self.position);
+
+        result
+    }
+
     fn integrate_linear(&mut self, delta_time: f64) {
         if self.is_static {
             return;
@@ -250,6 +268,8 @@ impl RigidBody {
 
 #[cfg(test)]
 mod rigid_body_tests {
+    use std::f64;
+
     use kmath::Vector2;
 
     use crate::{
@@ -382,5 +402,61 @@ mod rigid_body_tests {
         rb.apply_impulse(&Vector2::new(10.0, 10.0));
 
         assert_eq!(rb.velocity, Vector2::ZERO);
+    }
+
+    #[test]
+    fn test_local_to_world() {
+        let rb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(500.0, 300.0),
+            shape: Shape::new_polygon(vec![
+                Vector2::new(10.0, 5.0),
+                Vector2::new(15.0, 15.0),
+                Vector2::new(5.0, 15.0),
+            ]),
+            bounciness: 1.0,
+            mass: 0.0,
+            rotation: f64::consts::FRAC_2_PI,
+            ..Default::default()
+        });
+
+        let point = Vector2::new(10.0, 10.0);
+
+        let result = rb.local_to_world(&point);
+
+        assert_eq!(
+            result,
+            Vector2 {
+                x: 502.0962905970397,
+                y: 313.98590596753616
+            }
+        );
+    }
+
+    #[test]
+    fn test_world_to_local() {
+        let rb = RigidBody::new(RigidBodyParams {
+            position: Vector2::new(500.0, 300.0),
+            shape: Shape::new_polygon(vec![
+                Vector2::new(10.0, 5.0),
+                Vector2::new(15.0, 15.0),
+                Vector2::new(5.0, 15.0),
+            ]),
+            bounciness: 1.0,
+            mass: 0.0,
+            rotation: f64::consts::FRAC_2_PI,
+            ..Default::default()
+        });
+
+        let point = Vector2::new(10.0, 10.0);
+
+        let result = rb.world_to_local(&point);
+
+        assert_eq!(
+            result,
+            Vector2 {
+                x: -566.4132387043063,
+                y: 58.10372639081322
+            }
+        );
     }
 }

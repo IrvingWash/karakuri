@@ -130,7 +130,7 @@ impl App {
         let delta_time = self.rl.get_frame_time();
 
         self.simulator
-            .update(&mut self.rigid_bodies, delta_time.into());
+            .update(&mut self.rigid_bodies, &Vec::new(), delta_time.into());
     }
 
     pub fn render(&mut self) {

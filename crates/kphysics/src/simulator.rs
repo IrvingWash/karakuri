@@ -1,6 +1,6 @@
 use kmath::Vector2;
 
-use crate::{collisions::collision_detector, force_generator, RigidBody};
+use crate::{collisions::collision_detector, constraints::Constraint, force_generator, RigidBody};
 
 #[derive(Debug)]
 pub struct SimulatorParams {
@@ -46,7 +46,12 @@ impl Simulator {
     }
 
     #[inline]
-    pub fn update(&mut self, rigid_bodies: &mut Vec<RigidBody>, delta_time: f64) {
+    pub fn update(
+        &mut self,
+        rigid_bodies: &mut [RigidBody],
+        constraints: &Vec<Constraint>,
+        delta_time: f64,
+    ) {
         for body in &mut *rigid_bodies {
             let weight_force = force_generator::weight(body, self.gravity_k);
             body.apply_force(&weight_force);
