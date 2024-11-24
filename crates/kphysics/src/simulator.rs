@@ -17,6 +17,7 @@ impl Default for SimulatorParams {
 #[derive(Debug)]
 pub struct Simulator {
     gravity_k: f64,
+    constraints: Vec<Constraint>,
     // TODO: Just store sums
     forces: Vec<Vector2>,
     torques: Vec<f64>,
@@ -30,6 +31,7 @@ impl Simulator {
 
         Self {
             gravity_k,
+            constraints: Vec::new(),
             forces: Vec::new(),
             torques: Vec::new(),
         }
@@ -46,12 +48,12 @@ impl Simulator {
     }
 
     #[inline]
-    pub fn update(
-        &mut self,
-        rigid_bodies: &mut [RigidBody],
-        constraints: &Vec<Constraint>,
-        delta_time: f64,
-    ) {
+    pub fn add_constraint(&mut self, constraint: Constraint) {
+        self.constraints.push(constraint);
+    }
+
+    #[inline]
+    pub fn update(&mut self, rigid_bodies: &mut [RigidBody], delta_time: f64) {
         for body in &mut *rigid_bodies {
             let weight_force = force_generator::weight(body, self.gravity_k);
             body.apply_force(&weight_force);

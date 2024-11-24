@@ -1,8 +1,9 @@
 use kmath::Vector2;
-use kphysics::{shapes::Shape, RigidBody, RigidBodyParams, Simulator, SimulatorParams};
+use kphysics::{
+    constraints::Constraint, shapes::Shape, RigidBody, RigidBodyParams, Simulator, SimulatorParams,
+};
 use raylib::{
-    color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
-    RaylibHandle, RaylibThread,
+    color::Color, math::Vector2 as RaylibVector2, prelude::RaylibDraw, RaylibHandle, RaylibThread,
 };
 
 const PIXELS_PER_METER: f64 = 50.0;
@@ -38,99 +39,42 @@ impl App {
     pub fn setup(&mut self) {
         self.rl.set_target_fps(60);
 
-        let height = self.rl.get_screen_height() as f64;
         let width = self.rl.get_screen_width() as f64;
+        let height = self.rl.get_screen_height() as f64;
 
-        // Floor
-        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-            shape: Shape::new_rectangle(width - 50.0, 50.0),
-            position: Vector2::new(width / 2.0, height - 50.0),
-            mass: 0.0,
-            bounciness: 0.5,
-            ..Default::default()
-        }));
-        // Left wall
-        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-            shape: Shape::new_rectangle(50.0, height - 100.0),
-            position: Vector2::new(50.0, height / 2.0 - 25.0),
-            mass: 0.0,
-            bounciness: 0.2,
-            ..Default::default()
-        }));
-        // Right wall
-        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-            shape: Shape::new_rectangle(50.0, height - 100.0),
-            position: Vector2::new(width - 50.0, height / 2.0 - 25.0),
-            mass: 0.0,
-            bounciness: 0.2,
-            ..Default::default()
-        }));
-        // Big box
-        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-            shape: Shape::new_rectangle(200.0, 200.0),
+        let body_a = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_circle(30.0),
             position: Vector2::new(width / 2.0, height / 2.0),
             mass: 0.0,
-            bounciness: 0.7,
-            rotation: 1.4,
             ..Default::default()
-        }));
+        });
 
-        // Wind force
-        self.simulator
-            .add_force(Vector2::new(0.5 * PIXELS_PER_METER, 0.0));
+        let body_b = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_circle(20.0),
+            position: Vector2::new(body_a.position().x - 100.0, body_a.position().y),
+            mass: 1.0,
+            ..Default::default()
+        });
+
+        let joint_ab = Constraint::new_joint(body_a.id(), body_b.id(), body_a.position().clone());
+
+        self.rigid_bodies.push(body_a);
+        self.rigid_bodies.push(body_b);
+
+        self.simulator.add_constraint(joint_ab);
 
         self.running = true;
     }
 
     pub fn input(&mut self) {
         self.running = !self.rl.window_should_close();
-
-        if self
-            .rl
-            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_LEFT)
-        {
-            let mouse_position = self.rl.get_mouse_position();
-
-            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-                shape: Shape::new_polygon(vec![
-                    Vector2::new(20.0, 60.0),
-                    Vector2::new(-40.0, 20.0),
-                    Vector2::new(-20.0, -60.0),
-                    Vector2::new(20.0, -60.0),
-                    Vector2::new(40.0, 20.0),
-                ]),
-                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                bounciness: 0.1,
-                angular_friction: 0.7,
-                mass: 2.0,
-                can_be_rotated: true,
-                ..Default::default()
-            }));
-        }
-
-        if self
-            .rl
-            .is_mouse_button_pressed(MouseButton::MOUSE_BUTTON_RIGHT)
-        {
-            let mouse_position = self.rl.get_mouse_position();
-
-            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
-                shape: Shape::new_circle(50.0),
-                position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                bounciness: 0.1,
-                angular_friction: 0.7,
-                mass: 2.0,
-                can_be_rotated: true,
-                ..Default::default()
-            }));
-        }
     }
 
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
         self.simulator
-            .update(&mut self.rigid_bodies, &Vec::new(), delta_time.into());
+            .update(&mut self.rigid_bodies, delta_time.into());
     }
 
     pub fn render(&mut self) {

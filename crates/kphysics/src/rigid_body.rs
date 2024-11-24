@@ -2,6 +2,8 @@ use kmath::Vector2;
 
 use crate::shapes::Shape;
 
+static mut NEXT_ID: usize = 0;
+
 #[derive(Debug)]
 pub struct RigidBodyParams {
     pub position: Vector2,
@@ -32,6 +34,8 @@ impl Default for RigidBodyParams {
 
 #[derive(Debug)]
 pub struct RigidBody {
+    id: usize,
+
     shape: Shape,
 
     // Linear motion
@@ -73,7 +77,14 @@ impl RigidBody {
 
         let moment_of_inertia = shape.moment_of_inertia() * mass;
 
+        let id = unsafe { NEXT_ID };
+
+        unsafe {
+            NEXT_ID += 1;
+        }
+
         let mut s = Self {
+            id,
             shape,
             position,
             velocity,
@@ -99,6 +110,11 @@ impl RigidBody {
         s.shape.update_vertices(&s.position, s.rotation);
 
         s
+    }
+
+    #[inline]
+    pub fn id(&self) -> usize {
+        self.id
     }
 
     #[inline]
