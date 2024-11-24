@@ -18,7 +18,7 @@ impl Constraint {
     }
 
     #[inline]
-    pub fn pre_solve(&mut self, rigid_bodies: &mut [RigidBody]) {
+    pub fn pre_solve(&mut self, rigid_bodies: &mut [RigidBody], delta_time: f64) {
         match self {
             Self::Joint(joint_constraint) => {
                 let mut a_index: Option<usize> = None;
@@ -54,7 +54,7 @@ impl Constraint {
                         b = &mut first[b_index];
                     }
 
-                    joint_constraint.pre_solve(a, b);
+                    joint_constraint.pre_solve(a, b, delta_time);
                 }
             }
         }

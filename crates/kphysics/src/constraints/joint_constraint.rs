@@ -6,15 +6,17 @@ use crate::RigidBody;
 pub struct JointConstraint {
     pub a_id: usize,
     pub b_id: usize,
+
     a_point: Vector2,
     b_point: Vector2,
+    bias: f64,
 
     // Cache
     jacobian: Matrix,
     jacobian_transposed: Matrix,
     inverse_mass_matrix: Matrix,
     lhs: Matrix,
-    cached_lambda: Option<VectorN>,
+    cached_lambda: VectorN,
 }
 
 impl JointConstraint {
@@ -22,18 +24,21 @@ impl JointConstraint {
         Self {
             a_id: a.id(),
             b_id: b.id(),
+
             a_point: a.world_to_local(anchor_point),
             b_point: b.world_to_local(anchor_point),
+            bias: 0.0,
+
             jacobian: Matrix::new(1, 6),
             jacobian_transposed: Matrix::new(6, 1),
             inverse_mass_matrix: inverse_mass_matrix(a, b),
             lhs: Matrix::new(1, 1),
-            cached_lambda: None,
+            cached_lambda: VectorN::new(1),
         }
     }
 
     #[inline]
-    pub fn pre_solve(&mut self, a: &mut RigidBody, b: &mut RigidBody) {
+    pub fn pre_solve(&mut self, a: &mut RigidBody, b: &mut RigidBody, delta_time: f64) {
         let pa = a.local_to_world(&self.a_point);
         let pb = b.local_to_world(&self.b_point);
 
@@ -63,35 +68,32 @@ impl JointConstraint {
             .to_multiplied_by_matrix(&self.inverse_mass_matrix)
             .to_multiplied_by_matrix(&self.jacobian_transposed);
 
-        match &self.cached_lambda {
-            None => {}
-            Some(cached_lambda) => {
-                let impulses = self
-                    .jacobian_transposed
-                    .to_multiplied_by_vector(cached_lambda);
+        let impulses = self
+            .jacobian_transposed
+            .to_multiplied_by_vector(&self.cached_lambda);
 
-                a.apply_linear_impulse(&Vector2::new(impulses[0], impulses[1]));
-                a.apply_angular_impulse(impulses[2]);
-                b.apply_linear_impulse(&Vector2::new(impulses[3], impulses[4]));
-                b.apply_angular_impulse(impulses[5]);
-            }
-        }
+        a.apply_linear_impulse(&Vector2::new(impulses[0], impulses[1]));
+        a.apply_angular_impulse(impulses[2]);
+        b.apply_linear_impulse(&Vector2::new(impulses[3], impulses[4]));
+        b.apply_angular_impulse(impulses[5]);
+
+        let beta = 0.1;
+        self.bias = beta / delta_time * pb_pa_diff.dot_product(&pb_pa_diff);
     }
 
     #[inline]
     pub fn resolve(&mut self, a: &mut RigidBody, b: &mut RigidBody) {
         let velocities = velocities(a, b);
 
-        let rhs = self
+        let mut rhs = self
             .jacobian
             .to_multiplied_by_vector(&velocities.to_scaled(-1.0));
 
+        rhs[0] -= self.bias;
+
         let lambda = solve_gauss_seidel(&self.lhs, &rhs);
 
-        match &mut self.cached_lambda {
-            None => self.cached_lambda = Some(lambda.clone()),
-            Some(cached_lambda) => cached_lambda.add(&lambda),
-        }
+        self.cached_lambda.add(&lambda);
 
         let impulses = self.jacobian_transposed.to_multiplied_by_vector(&lambda);
 
@@ -184,7 +186,7 @@ mod constraint_resolvers_tests {
 
         match &mut constraint {
             Constraint::Joint(joint) => {
-                joint.pre_solve(&mut a, &mut b);
+                joint.pre_solve(&mut a, &mut b, 2.0);
                 joint.resolve(&mut a, &mut b);
                 joint.post_solve();
             }
@@ -198,7 +200,7 @@ mod constraint_resolvers_tests {
 
         match constraint {
             Constraint::Joint(mut joint) => {
-                joint.pre_solve(&mut a, &mut b);
+                joint.pre_solve(&mut a, &mut b, 2.0);
                 joint.resolve(&mut a, &mut b);
                 joint.post_solve();
             }
