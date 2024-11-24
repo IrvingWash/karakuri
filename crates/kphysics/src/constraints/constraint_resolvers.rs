@@ -96,3 +96,65 @@ fn solve_gauss_seidel(lhs: &Matrix, rhs: &VectorN) -> VectorN {
 
     x
 }
+
+#[cfg(test)]
+mod constraint_resolvers_tests {
+    use kmath::Vector2;
+
+    use crate::{constraints::Constraint, shapes::Shape, RigidBody, RigidBodyParams};
+
+    use super::resolve_joint_constraint;
+
+    #[test]
+    fn test_joint_resolver() {
+        let mut a = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_rectangle(30.0, 30.0),
+            position: Vector2::new(250.0, 100.0),
+            mass: 0.0,
+            can_be_rotated: true,
+            ..Default::default()
+        });
+
+        let mut b = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_rectangle(30.0, 30.0),
+            position: Vector2::new(210.0, 100.0),
+            mass: 1.0,
+            can_be_rotated: true,
+            ..Default::default()
+        });
+
+        let constraint = Constraint::new_joint(&a, &b, a.position());
+
+        a.apply_force(&Vector2::new(0.0, 9.8));
+        b.apply_force(&Vector2::new(0.0, 9.8));
+
+        let delta_time = 2.0;
+
+        a.integrate_forces(delta_time);
+        b.integrate_forces(delta_time);
+
+        match constraint {
+            Constraint::Joint(ref joint) => {
+                resolve_joint_constraint(&mut a, &mut b, &joint.a_point, &joint.b_point);
+            }
+        };
+
+        a.integrate_velocities(delta_time);
+        b.integrate_velocities(delta_time);
+
+        a.integrate_forces(delta_time);
+        b.integrate_forces(delta_time);
+
+        match constraint {
+            Constraint::Joint(joint) => {
+                resolve_joint_constraint(&mut a, &mut b, &joint.a_point, &joint.b_point);
+            }
+        };
+
+        a.integrate_velocities(delta_time);
+        b.integrate_velocities(delta_time);
+
+        assert_eq!(a.position(), &Vector2::new(250.0, 100.0));
+        assert_eq!(b.position(), &Vector2::new(210.0, 175.04));
+    }
+}
