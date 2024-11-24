@@ -52,14 +52,18 @@ pub fn resolve_joint_constraint(
 }
 
 fn inverse_mass_matrix(a: &RigidBody, b: &RigidBody) -> Matrix {
-    Matrix::from_data(&[
-        VectorN::from_vec(&[a.inverse_mass(), 0.0, 0.0, 0.0, 0.0, 0.0]),
-        VectorN::from_vec(&[0.0, a.inverse_mass(), 0.0, 0.0, 0.0, 0.0]),
-        VectorN::from_vec(&[0.0, 0.0, a.inverse_moment_of_inertia(), 0.0, 0.0, 0.0]),
-        VectorN::from_vec(&[0.0, 0.0, 0.0, b.inverse_mass(), 0.0, 0.0]),
-        VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, b.inverse_mass(), 0.0]),
-        VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, 0.0, b.inverse_moment_of_inertia()]),
-    ])
+    let mut matrix = Matrix::new(6, 6);
+
+    let data = matrix.data_mut();
+
+    data[0][0] = a.inverse_mass();
+    data[1][1] = a.inverse_mass();
+    data[2][2] = a.inverse_moment_of_inertia();
+    data[3][3] = b.inverse_mass();
+    data[4][4] = b.inverse_mass();
+    data[5][5] = b.inverse_moment_of_inertia();
+
+    matrix
 }
 
 fn velocities(a: &RigidBody, b: &RigidBody) -> VectorN {

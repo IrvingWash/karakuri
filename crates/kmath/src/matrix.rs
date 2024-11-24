@@ -106,10 +106,10 @@ impl Matrix {
 
     #[inline]
     pub fn to_multiplied_by_matrix(&self, other: &Matrix) -> Matrix {
-        // assert!(
-        //     self.column_length == other.row_length && self.row_length == other.column_length,
-        //     "Attempt to multiply incompatible matrices."
-        // );
+        assert!(
+            self.column_length == other.row_length || self.row_length == other.column_length,
+            "Attempt to multiply incompatible matrices."
+        );
 
         let transposed = other.to_transposed();
 
