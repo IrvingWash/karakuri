@@ -10,11 +10,11 @@ pub struct Contact<'a> {
     a: &'a mut RigidBody,
     b: &'a mut RigidBody,
 
-    pub normal: Vector2, // TODO: It's pub for debug
+    normal: Vector2,
     depth: f64,
 
-    pub start: Vector2, // TODO: It's pub for debug
-    pub end: Vector2,   // TODO: It's pub for debug
+    start: Vector2,
+    end: Vector2,
 }
 
 impl<'a> Contact<'a> {
@@ -27,7 +27,7 @@ impl<'a> Contact<'a> {
                 b.shape
                     .circle()
                     .unwrap_or_else(|| panic_checked_circle_unwrap())
-                    .radius,
+                    .radius(),
             ),
         );
 
@@ -36,7 +36,7 @@ impl<'a> Contact<'a> {
                 a.shape
                     .circle()
                     .unwrap_or_else(|| panic_checked_circle_unwrap())
-                    .radius,
+                    .radius(),
             ),
         );
 
@@ -109,7 +109,7 @@ impl<'a> Contact<'a> {
             .shape
             .circle()
             .unwrap_or_else(|| panic_checked_circle_unwrap())
-            .radius;
+            .radius();
 
         let start = if !flip {
             circular
@@ -142,6 +142,24 @@ impl<'a> Contact<'a> {
         }
 
         self.resolve_collision_without_rotation();
+    }
+
+    #[allow(dead_code)]
+    #[inline]
+    pub fn normal(&self) -> &Vector2 {
+        &self.normal
+    }
+
+    #[allow(dead_code)]
+    #[inline]
+    pub fn start(&self) -> &Vector2 {
+        &self.start
+    }
+
+    #[allow(dead_code)]
+    #[inline]
+    pub fn end(&self) -> &Vector2 {
+        &self.end
     }
 
     fn resolve_collision_without_rotation(&mut self) {

@@ -169,7 +169,7 @@ impl App {
         // Draw the rigid_bodies
         for rigid_body in &self.rigid_bodies {
             if rigid_body.shape.is_circle() {
-                let radius = rigid_body.shape.circle().unwrap().radius;
+                let radius = rigid_body.shape.circle().unwrap().radius();
 
                 d.draw_circle_v(
                     vector2_to_raylib(&rigid_body.position),
@@ -186,7 +186,7 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             if rigid_body.shape.is_circle() {
-                let radius = rigid_body.shape.circle().unwrap().radius;
+                let radius = rigid_body.shape.circle().unwrap().radius();
 
                 if rigid_body.position.x + radius >= width {
                     rigid_body.position.x = width - radius;

@@ -137,7 +137,7 @@ impl App {
 
         for body in self.world.rigid_bodies() {
             if body.shape.is_circle() {
-                let radius = body.shape.circle().unwrap().radius;
+                let radius = body.shape.circle().unwrap().radius();
 
                 d.draw_line(
                     body.position.x as i32,
@@ -155,13 +155,13 @@ impl App {
             }
 
             if let Some(polygon) = body.shape.polygon() {
-                for i in 0..polygon.world_vertices.len() {
+                for i in 0..polygon.world_vertices().len() {
                     let current = i;
-                    let next = (i + 1) % polygon.world_vertices.len();
+                    let next = (i + 1) % polygon.world_vertices().len();
 
                     d.draw_line_ex(
-                        vector2_to_raylib(&polygon.world_vertices[current]),
-                        vector2_to_raylib(&polygon.world_vertices[next]),
+                        vector2_to_raylib(&polygon.world_vertices()[current]),
+                        vector2_to_raylib(&polygon.world_vertices()[next]),
                         1.0,
                         Color::WHITE,
                     );

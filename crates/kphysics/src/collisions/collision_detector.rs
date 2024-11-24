@@ -43,7 +43,7 @@ fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opti
         .unwrap_or_else(|| panic_checked_circle_unwrap());
 
     let disposition = b.position.to_subtracted(&a.position);
-    let radius_sum = a_shape.radius + b_shape.radius;
+    let radius_sum = a_shape.radius() + b_shape.radius();
 
     if disposition.squared_magnitude() <= radius_sum.powi(2) {
         return Some(Contact::for_circles(a, b, &disposition));
@@ -98,8 +98,8 @@ fn are_colliding_circle_and_polygon<'a>(
     let mut min_next_vertex = &Vector2::ZERO;
     let mut distance_circle_edge = f64::MIN;
 
-    for (i, current_vertex) in polygon.world_vertices.iter().enumerate() {
-        let next_vertex = &polygon.world_vertices[(i + 1) % polygon.world_vertices.len()];
+    for (i, current_vertex) in polygon.world_vertices().iter().enumerate() {
+        let next_vertex = &polygon.world_vertices()[(i + 1) % polygon.world_vertices().len()];
 
         let edge = polygon.edge_at(i);
         let normal = edge.create_perpendicular();
@@ -130,7 +130,7 @@ fn are_colliding_circle_and_polygon<'a>(
 
         if v1.dot_product(&v2) < 0.0 {
             let v1_magnitude = v1.magnitude();
-            if v1_magnitude > circle.radius {
+            if v1_magnitude > circle.radius() {
                 return None;
             }
 
@@ -149,7 +149,7 @@ fn are_colliding_circle_and_polygon<'a>(
         let v1_magnitude = v1.magnitude();
 
         if v1.dot_product(&v2) < 0.0 {
-            if v1_magnitude > circle.radius {
+            if v1_magnitude > circle.radius() {
                 return None;
             }
 
@@ -162,7 +162,7 @@ fn are_colliding_circle_and_polygon<'a>(
             ));
         }
 
-        if distance_circle_edge > circle.radius {
+        if distance_circle_edge > circle.radius() {
             return None;
         }
 
@@ -193,7 +193,7 @@ fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
     let mut separation_axis = Vector2::ZERO;
     let mut point = Vector2::ZERO;
 
-    for (i, va) in a.world_vertices.iter().enumerate() {
+    for (i, va) in a.world_vertices().iter().enumerate() {
         let edge = a.edge_at(i);
 
         let normal = edge.create_perpendicular();
@@ -201,7 +201,7 @@ fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
         let mut min_separation = f64::MAX;
         let mut min_vertex = Vector2::ZERO;
 
-        for vb in &b.world_vertices {
+        for vb in b.world_vertices() {
             let projection = vb.to_subtracted(va).dot_product(&normal);
 
             if projection < min_separation {
@@ -251,9 +251,9 @@ mod collision_detector_tests {
 
         let contact = are_colliding(&mut a, &mut b).unwrap();
 
-        assert_eq!(contact.end, Vector2 { x: 10.0, y: 10.0 });
-        assert_eq!(contact.normal, Vector2::ZERO);
-        assert_eq!(contact.start, Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contact.end(), &Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contact.normal(), &Vector2::ZERO);
+        assert_eq!(contact.start(), &Vector2 { x: 10.0, y: 10.0 });
     }
 
     #[test]
@@ -278,8 +278,8 @@ mod collision_detector_tests {
 
         let contact = are_colliding(&mut a, &mut b).unwrap();
 
-        assert_eq!(contact.end, Vector2 { x: 11.5, y: 11.5 });
-        assert_eq!(contact.normal, Vector2 { x: -0.0, y: 1.0 });
-        assert_eq!(contact.start, Vector2 { x: 11.5, y: 5.0 });
+        assert_eq!(contact.end(), &Vector2 { x: 11.5, y: 11.5 });
+        assert_eq!(contact.normal(), &Vector2 { x: -0.0, y: 1.0 });
+        assert_eq!(contact.start(), &Vector2 { x: 11.5, y: 5.0 });
     }
 }

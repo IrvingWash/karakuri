@@ -4,7 +4,7 @@ const RECTANGLE_MOI_K: f64 = 1.0 / 12.0;
 
 #[derive(Debug)]
 pub struct Polygon {
-    pub world_vertices: Vec<Vector2>,
+    world_vertices: Vec<Vector2>,
     local_vertices: Vec<Vector2>,
     moment_of_inertia: f64,
 }
@@ -48,6 +48,11 @@ impl Polygon {
             vertex.set(&self.local_vertices[i].to_rotated(rotation));
             vertex.add(position);
         }
+    }
+
+    #[inline]
+    pub fn world_vertices(&self) -> &Vec<Vector2> {
+        &self.world_vertices
     }
 }
 

@@ -261,7 +261,7 @@ impl App {
             if rigid_body.shape.is_circle() {
                 d.draw_circle_v(
                     vector2_to_raylib(&rigid_body.position),
-                    rigid_body.shape.circle().unwrap().radius as f32,
+                    rigid_body.shape.circle().unwrap().radius() as f32,
                     Color::WHEAT,
                 );
             }
@@ -274,7 +274,7 @@ impl App {
 
         for rigid_body in &mut self.rigid_bodies {
             if rigid_body.shape.is_circle() {
-                let radius = rigid_body.shape.circle().unwrap().radius;
+                let radius = rigid_body.shape.circle().unwrap().radius();
 
                 if rigid_body.position.x + radius >= width {
                     rigid_body.position.x = width - radius;

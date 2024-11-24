@@ -121,7 +121,7 @@ mod shape_tests {
 
         shape.update_vertices(&Vector2::new(10.0, 10.0), 3.0);
 
-        assert_eq!(shape.circle().unwrap().radius, 1.0);
+        assert_eq!(shape.circle().unwrap().radius(), 1.0);
     }
 
     #[test]
@@ -135,8 +135,8 @@ mod shape_tests {
         shape.update_vertices(&Vector2::new(10.0, 10.0), 3.0);
 
         assert_eq!(
-            shape.polygon().unwrap().world_vertices,
-            vec![
+            shape.polygon().unwrap().world_vertices(),
+            &vec![
                 Vector2 {
                     x: 5.050037516997773,
                     y: 10.705600040299336
