@@ -70,6 +70,6 @@ impl Constraint {
 pub struct JointConstraintDescriptor {
     pub a_id: usize,
     pub b_id: usize,
-    a_point: Vector2,
-    b_point: Vector2,
+    pub a_point: Vector2,
+    pub b_point: Vector2,
 }

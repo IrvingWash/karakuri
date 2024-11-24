@@ -19,7 +19,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Canary").size(1340, 800).build();
+        let (handle, thread) = raylib::init().title("Caeary").size(1340, 800).build();
 
         Self {
             running: false,
@@ -40,29 +40,32 @@ impl App {
         self.rl.set_target_fps(60);
 
         let width = self.rl.get_screen_width() as f64;
-        let height = self.rl.get_screen_height() as f64;
+        let _height = self.rl.get_screen_height() as f64;
 
-        let body_a = RigidBody::new(RigidBodyParams {
-            shape: Shape::new_circle(30.0),
-            position: Vector2::new(width / 2.0, height / 2.0 - 200.0),
-            mass: 0.0,
-            ..Default::default()
-        });
+        const BODY_COUNT: usize = 8;
 
-        let body_b = RigidBody::new(RigidBodyParams {
-            shape: Shape::new_circle(20.0),
-            position: Vector2::new(body_a.position().x - 100.0, body_a.position().y),
-            mass: 1.0,
-            can_be_rotated: true,
-            ..Default::default()
-        });
+        for i in 0..BODY_COUNT {
+            let mass = if i == 0 { 0.0 } else { 1.0 };
 
-        let joint_ab = Constraint::new_joint(&body_a, &body_b, body_a.position());
+            let body = RigidBody::new(RigidBodyParams {
+                shape: Shape::new_rectangle(30.0, 30.0),
+                position: Vector2::new(width / 2.0 - i as f64 * 40.0, 100.0),
+                mass,
+                can_be_rotated: true,
+                ..Default::default()
+            });
 
-        self.rigid_bodies.push(body_a);
-        self.rigid_bodies.push(body_b);
+            self.rigid_bodies.push(body);
+        }
 
-        self.simulator.add_constraint(joint_ab);
+        for i in 0..BODY_COUNT - 1 {
+            let a = &self.rigid_bodies[i];
+            let b = &self.rigid_bodies[i + 1];
+
+            let joint = Constraint::new_joint(a, b, a.position());
+
+            self.simulator.add_constraint(joint);
+        }
 
         self.running = true;
     }
@@ -82,6 +85,34 @@ impl App {
         let mut d = self.rl.begin_drawing(&self.thread);
 
         d.clear_background(Color::BLACK);
+
+        for constraint in self.simulator.constraints() {
+            match constraint {
+                Constraint::Joint(joint) => {
+                    let a = self
+                        .rigid_bodies
+                        .iter()
+                        .find(|rb| rb.id() == joint.a_id)
+                        .unwrap();
+                    let b = self
+                        .rigid_bodies
+                        .iter()
+                        .find(|rb| rb.id() == joint.b_id)
+                        .unwrap();
+
+                    let pa = a.local_to_world(&joint.a_point);
+                    let pb = b.local_to_world(&joint.a_point);
+
+                    d.draw_line(
+                        pa.x as i32,
+                        pa.y as i32,
+                        pb.x as i32,
+                        pb.y as i32,
+                        Color::WHITE,
+                    );
+                }
+            }
+        }
 
         for body in &self.rigid_bodies {
             if body.shape().is_circle() {

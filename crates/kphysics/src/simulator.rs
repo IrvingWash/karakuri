@@ -53,6 +53,11 @@ impl Simulator {
     }
 
     #[inline]
+    pub fn constraints(&self) -> &Vec<Constraint> {
+        &self.constraints
+    }
+
+    #[inline]
     pub fn update(&mut self, rigid_bodies: &mut [RigidBody], delta_time: f64) {
         for body in &mut *rigid_bodies {
             let weight_force = force_generator::weight(body, self.gravity_k);
