@@ -1,7 +1,6 @@
 use crate::RigidBody;
 use kmath::{Matrix, VectorN};
 
-#[allow(dead_code)]
 pub struct ConstraintBase<'a> {
     a: &'a mut RigidBody,
     b: &'a mut RigidBody,
@@ -12,7 +11,6 @@ pub struct ConstraintBase<'a> {
 }
 
 impl<'a> ConstraintBase<'a> {
-    #[allow(dead_code)]
     #[inline]
     pub fn new(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
         Self {
@@ -38,18 +36,15 @@ impl<'a> ConstraintBase<'a> {
         }
     }
 
-    #[allow(dead_code)]
     #[inline]
     pub fn solve(&self) {
         todo!()
     }
 
-    #[allow(dead_code)]
     fn inverse_mass_matrix(&self) -> &Matrix {
         &self.inverse_mass_matrix
     }
 
-    #[allow(dead_code)]
     fn velocities(&self) -> &VectorN {
         &self.velocities
     }

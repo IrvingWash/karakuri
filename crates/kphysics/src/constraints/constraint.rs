@@ -1,13 +1,11 @@
 use super::{JointConstraint, PenetrationConstraint};
 use crate::RigidBody;
 
-#[allow(dead_code)]
 pub enum Constraint<'a> {
     Joint(JointConstraint<'a>),
     Penetration(PenetrationConstraint<'a>),
 }
 
-#[allow(dead_code)]
 impl<'a> Constraint<'a> {
     #[inline]
     pub fn new_joint(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Self {
