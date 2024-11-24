@@ -1,4 +1,5 @@
 mod collisions;
+mod constraints;
 mod rigid_body;
 mod world;
 
