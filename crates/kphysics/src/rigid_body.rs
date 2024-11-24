@@ -48,7 +48,7 @@ pub struct RigidBody {
     pub mass: f64,
     pub inverse_mass: f64,
     pub moment_of_inertia: f64,
-    pub inverse_moment_of_inertia: f64,
+    inverse_moment_of_inertia: f64,
 
     can_be_rotated: bool,
 
@@ -105,6 +105,11 @@ impl RigidBody {
     #[inline]
     pub fn can_be_rotated(&self) -> bool {
         self.can_be_rotated
+    }
+
+    #[inline]
+    pub fn inverse_moment_of_inertia(&self) -> f64 {
+        self.inverse_moment_of_inertia
     }
 
     #[inline]

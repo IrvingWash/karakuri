@@ -191,8 +191,8 @@ impl<'a> Contact<'a> {
         let impulse_magnitude_along_normal = -(1.0 + elasticity)
             * relative_velocity.dot_product(&self.normal)
             / ((self.a.inverse_mass + self.b.inverse_mass)
-                + (ra.cross_product(&self.normal).powi(2) * self.a.inverse_moment_of_inertia)
-                + (rb.cross_product(&self.normal).powi(2) * self.b.inverse_moment_of_inertia));
+                + (ra.cross_product(&self.normal).powi(2) * self.a.inverse_moment_of_inertia())
+                + (rb.cross_product(&self.normal).powi(2) * self.b.inverse_moment_of_inertia()));
         let impulse_along_normal = self.normal.to_scaled(impulse_magnitude_along_normal);
 
         // Impulse along the tangent
@@ -200,8 +200,8 @@ impl<'a> Contact<'a> {
         let impulse_magnitude_along_tangent =
             angular_friction * -(1.0 + elasticity) * relative_velocity.dot_product(&tangent)
                 / ((self.a.inverse_mass + self.b.inverse_mass)
-                    + (ra.cross_product(&tangent).powi(2) * self.a.inverse_moment_of_inertia)
-                    + (rb.cross_product(&tangent).powi(2) * self.b.inverse_moment_of_inertia));
+                    + (ra.cross_product(&tangent).powi(2) * self.a.inverse_moment_of_inertia())
+                    + (rb.cross_product(&tangent).powi(2) * self.b.inverse_moment_of_inertia()));
         let impulse_along_tangent = tangent.to_scaled(impulse_magnitude_along_tangent);
 
         let result = impulse_along_normal.to_added(&impulse_along_tangent);
