@@ -50,7 +50,7 @@ pub struct RigidBody {
     pub moment_of_inertia: f64,
     pub inverse_moment_of_inertia: f64,
 
-    pub can_be_rotated: bool,
+    can_be_rotated: bool,
 
     is_static: bool,
 }
@@ -100,6 +100,11 @@ impl RigidBody {
     #[inline]
     pub fn is_static(&self) -> bool {
         self.is_static
+    }
+
+    #[inline]
+    pub fn can_be_rotated(&self) -> bool {
+        self.can_be_rotated
     }
 
     #[inline]

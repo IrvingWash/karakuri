@@ -135,7 +135,7 @@ impl<'a> Contact<'a> {
 
     #[inline]
     pub fn resolve_collision(mut self) {
-        if self.a.can_be_rotated || self.b.can_be_rotated {
+        if self.a.can_be_rotated() || self.b.can_be_rotated() {
             self.resolve_collision_with_rotation();
 
             return;
