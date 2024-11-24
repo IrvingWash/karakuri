@@ -22,7 +22,7 @@ impl<'a> Contact<'a> {
     pub fn for_circles(a: &'a mut RigidBody, b: &'a mut RigidBody, disposition: &Vector2) -> Self {
         let normal = disposition.to_normalized();
 
-        let start = b.position.to_subtracted(
+        let start = b.position().to_subtracted(
             &normal.to_scaled(
                 b.shape
                     .circle()
@@ -31,7 +31,7 @@ impl<'a> Contact<'a> {
             ),
         );
 
-        let end = a.position.to_added(
+        let end = a.position().to_added(
             &normal.to_scaled(
                 a.shape
                     .circle()
@@ -113,11 +113,11 @@ impl<'a> Contact<'a> {
 
         let start = if !flip {
             circular
-                .position
+                .position()
                 .to_added(&normal.to_scaled(-circle_radius))
         } else {
             circular
-                .position
+                .position()
                 .to_subtracted(&normal.to_scaled(circle_radius))
         };
 
@@ -174,8 +174,8 @@ impl<'a> Contact<'a> {
         let elasticity = self.a.bounciness().min(self.b.bounciness());
         let angular_friction = self.a.angular_friction().min(self.b.angular_friction());
 
-        let ra = self.end.to_subtracted(&self.a.position);
-        let rb = self.start.to_subtracted(&self.b.position);
+        let ra = self.end.to_subtracted(self.a.position());
+        let rb = self.start.to_subtracted(self.b.position());
         let va = self.a.velocity().to_added(&Vector2::new(
             -self.a.angular_velocity() * ra.y,
             self.a.angular_velocity() * ra.x,
@@ -216,15 +216,11 @@ impl<'a> Contact<'a> {
         let da = factor * self.a.inverse_mass();
         let db = factor * self.b.inverse_mass();
 
-        self.a.position.subtract(&self.normal.to_scaled(da));
-        self.b.position.add(&self.normal.to_scaled(db));
+        self.a.position_mut().subtract(&self.normal.to_scaled(da));
+        self.b.position_mut().add(&self.normal.to_scaled(db));
 
-        self.a
-            .shape
-            .update_vertices(&self.a.position, self.a.rotation());
-        self.b
-            .shape
-            .update_vertices(&self.b.position, self.b.rotation());
+        self.a.update_shape_vertices();
+        self.b.update_shape_vertices();
     }
 }
 
@@ -251,7 +247,7 @@ mod collision_detector_tests {
 
         assert!(are_colliding(&mut a, &mut b).is_none());
 
-        a.position = Vector2::new(10.0, 10.0);
+        *a.position_mut() = Vector2::new(10.0, 10.0);
 
         let contact = are_colliding(&mut a, &mut b).unwrap();
 
@@ -275,7 +271,7 @@ mod collision_detector_tests {
 
         assert!(are_colliding(&mut a, &mut b).is_none());
 
-        a.position = Vector2::new(9.0, 9.0);
+        *a.position_mut() = Vector2::new(9.0, 9.0);
 
         a.update(1.0);
         b.update(1.0);

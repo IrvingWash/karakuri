@@ -140,15 +140,15 @@ impl App {
                 let radius = body.shape.circle().unwrap().radius();
 
                 d.draw_line(
-                    body.position.x as i32,
-                    body.position.y as i32,
-                    (body.position.x + body.rotation().cos() * radius) as i32,
-                    (body.position.y + body.rotation().sin() * radius) as i32,
+                    body.position().x as i32,
+                    body.position().y as i32,
+                    (body.position().x + body.rotation().cos() * radius) as i32,
+                    (body.position().y + body.rotation().sin() * radius) as i32,
                     Color::WHITE,
                 );
                 d.draw_circle_lines(
-                    body.position.x as i32,
-                    body.position.y as i32,
+                    body.position().x as i32,
+                    body.position().y as i32,
                     radius as f32,
                     Color::WHITE,
                 );
@@ -168,8 +168,8 @@ impl App {
                 }
 
                 d.draw_circle(
-                    body.position.x as i32,
-                    body.position.y as i32,
+                    body.position().x as i32,
+                    body.position().y as i32,
                     1.0,
                     Color::WHITE,
                 );

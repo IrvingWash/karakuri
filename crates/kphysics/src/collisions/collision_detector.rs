@@ -42,7 +42,7 @@ fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opti
         .circle()
         .unwrap_or_else(|| panic_checked_circle_unwrap());
 
-    let disposition = b.position.to_subtracted(&a.position);
+    let disposition = b.position().to_subtracted(a.position());
     let radius_sum = a_shape.radius() + b_shape.radius();
 
     if disposition.squared_magnitude() <= radius_sum.powi(2) {
@@ -104,7 +104,7 @@ fn are_colliding_circle_and_polygon<'a>(
         let edge = polygon.edge_at(i);
         let normal = edge.create_perpendicular();
 
-        let vertex_to_circle_center = circular.position.to_subtracted(current_vertex);
+        let vertex_to_circle_center = circular.position().to_subtracted(current_vertex);
 
         let projection = vertex_to_circle_center.dot_product(&normal);
 
@@ -125,7 +125,7 @@ fn are_colliding_circle_and_polygon<'a>(
     }
 
     if is_outside {
-        let v1 = circular.position.to_subtracted(min_current_vertex);
+        let v1 = circular.position().to_subtracted(min_current_vertex);
         let v2 = min_next_vertex.to_subtracted(min_current_vertex);
 
         if v1.dot_product(&v2) < 0.0 {
@@ -143,7 +143,7 @@ fn are_colliding_circle_and_polygon<'a>(
             ));
         }
 
-        let v1 = circular.position.to_subtracted(min_next_vertex);
+        let v1 = circular.position().to_subtracted(min_next_vertex);
         let v2 = min_current_vertex.to_subtracted(min_next_vertex);
 
         let v1_magnitude = v1.magnitude();

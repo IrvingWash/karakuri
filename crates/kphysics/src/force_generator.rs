@@ -47,7 +47,7 @@ pub fn gravitation(
         return Vector2::ZERO;
     }
 
-    let disposition = b.position.to_subtracted(&a.position);
+    let disposition = b.position().to_subtracted(a.position());
 
     let squared_distance = disposition
         .squared_magnitude()
@@ -62,7 +62,7 @@ pub fn gravitation(
 
 #[inline]
 pub fn spring(rigid_body: &RigidBody, anchor: &RigidBody, rest_length: f64, k: f64) -> Vector2 {
-    let disposition = rigid_body.position.to_subtracted(&anchor.position);
+    let disposition = rigid_body.position().to_subtracted(anchor.position());
 
     let displacement = disposition.magnitude() - rest_length;
 

@@ -30,13 +30,12 @@ impl Default for RigidBodyParams {
     }
 }
 
-// TODO: Maybe we should have three types of rigid bodies based on the shape?
 #[derive(Debug)]
 pub struct RigidBody {
     pub shape: Shape,
 
     // Linear motion
-    pub position: Vector2,
+    position: Vector2,
     velocity: Vector2,
     accumulated_forces: Vector2,
 
@@ -96,6 +95,7 @@ impl RigidBody {
             is_static: mass == 0.0,
         };
 
+        // Using direct access to shape because self.update_vertices has early return for static bodies.
         s.shape.update_vertices(&s.position, s.rotation);
 
         s
@@ -152,6 +152,16 @@ impl RigidBody {
     }
 
     #[inline]
+    pub fn position(&self) -> &Vector2 {
+        &self.position
+    }
+
+    #[inline]
+    pub fn position_mut(&mut self) -> &mut Vector2 {
+        &mut self.position
+    }
+
+    #[inline]
     pub fn apply_force(&mut self, force: &Vector2) {
         self.accumulated_forces.add(force);
     }
@@ -184,7 +194,16 @@ impl RigidBody {
     pub fn update(&mut self, delta_time: f64) {
         self.integrate_linear(delta_time);
         self.integrate_angular(delta_time);
-        self.update_vertices();
+        self.update_shape_vertices();
+    }
+
+    #[inline]
+    pub fn update_shape_vertices(&mut self) {
+        if self.is_static {
+            return;
+        }
+
+        self.shape.update_vertices(&self.position, self.rotation);
     }
 
     fn integrate_linear(&mut self, delta_time: f64) {
@@ -213,14 +232,6 @@ impl RigidBody {
         self.rotation += self.angular_velocity * delta_time;
 
         self.clear_torque();
-    }
-
-    fn update_vertices(&mut self) {
-        if self.is_static {
-            return;
-        }
-
-        self.shape.update_vertices(&self.position, self.rotation);
     }
 
     fn clear_forces(&mut self) {
