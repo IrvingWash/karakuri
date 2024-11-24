@@ -44,7 +44,7 @@ impl App {
 
         let body_a = RigidBody::new(RigidBodyParams {
             shape: Shape::new_circle(30.0),
-            position: Vector2::new(width / 2.0, height / 2.0),
+            position: Vector2::new(width / 2.0, height / 2.0 - 200.0),
             mass: 0.0,
             ..Default::default()
         });
@@ -56,7 +56,7 @@ impl App {
             ..Default::default()
         });
 
-        let joint_ab = Constraint::new_joint(body_a.id(), body_b.id(), body_a.position().clone());
+        let joint_ab = Constraint::new_joint(&body_a, &body_b, body_a.position().clone());
 
         self.rigid_bodies.push(body_a);
         self.rigid_bodies.push(body_b);

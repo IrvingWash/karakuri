@@ -44,6 +44,16 @@ impl Matrix {
     }
 
     #[inline]
+    pub fn data(&self) -> &Vec<VectorN> {
+        &self.data
+    }
+
+    #[inline]
+    pub fn data_mut(&mut self) -> &mut Vec<VectorN> {
+        &mut self.data
+    }
+
+    #[inline]
     pub fn create_copy(&self) -> Self {
         Self {
             row_length: self.row_length,
@@ -96,10 +106,10 @@ impl Matrix {
 
     #[inline]
     pub fn to_multiplied_by_matrix(&self, other: &Matrix) -> Matrix {
-        assert!(
-            self.column_length == other.row_length && self.row_length == other.column_length,
-            "Attempt to multiply incompatible matrices."
-        );
+        // assert!(
+        //     self.column_length == other.row_length && self.row_length == other.column_length,
+        //     "Attempt to multiply incompatible matrices."
+        // );
 
         let transposed = other.to_transposed();
 

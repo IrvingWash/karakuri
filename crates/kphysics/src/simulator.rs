@@ -65,8 +65,18 @@ impl Simulator {
             for torque in &self.torques {
                 body.apply_torque(*torque);
             }
+        }
 
-            body.update(delta_time);
+        for body in &mut *rigid_bodies {
+            body.integrate_forces(delta_time);
+        }
+
+        for constraint in &self.constraints {
+            constraint.solve(rigid_bodies);
+        }
+
+        for body in &mut *rigid_bodies {
+            body.integrate_velocities(delta_time);
         }
 
         self.check_collisions(rigid_bodies);

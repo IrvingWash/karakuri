@@ -184,16 +184,24 @@ impl RigidBody {
 
     #[inline]
     pub fn apply_force(&mut self, force: &Vector2) {
+        if self.is_static {
+            return;
+        }
+
         self.accumulated_forces.add(force);
     }
 
     #[inline]
     pub fn apply_torque(&mut self, torque: f64) {
+        if self.is_static || !self.can_be_rotated {
+            return;
+        }
+
         self.accumulated_torque += torque;
     }
 
     #[inline]
-    pub fn apply_impulse(&mut self, impulse: &Vector2) {
+    pub fn apply_linear_impulse(&mut self, impulse: &Vector2) {
         if self.is_static {
             return;
         }
@@ -202,8 +210,17 @@ impl RigidBody {
     }
 
     #[inline]
-    pub fn apply_angular_impulse(&mut self, impulse: &Vector2, r: &Vector2) {
-        if self.is_static {
+    pub fn apply_angular_impulse(&mut self, impulse: f64) {
+        if self.is_static || !self.can_be_rotated {
+            return;
+        }
+
+        self.angular_velocity += impulse * self.inverse_moment_of_inertia;
+    }
+
+    #[inline]
+    pub fn apply_impulse_at_point(&mut self, impulse: &Vector2, r: &Vector2) {
+        if self.is_static || !self.can_be_rotated {
             return;
         }
 
@@ -212,9 +229,34 @@ impl RigidBody {
     }
 
     #[inline]
-    pub fn update(&mut self, delta_time: f64) {
-        self.integrate_linear(delta_time);
-        self.integrate_angular(delta_time);
+    pub fn integrate_forces(&mut self, delta_time: f64) {
+        if self.is_static {
+            return;
+        }
+
+        let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
+        self.velocity.add(&acceleration.to_scaled(delta_time));
+        self.clear_forces();
+
+        if self.can_be_rotated {
+            let angular_acceleration = self.accumulated_torque * self.inverse_moment_of_inertia;
+            self.angular_velocity += angular_acceleration * delta_time;
+            self.clear_torque();
+        }
+    }
+
+    #[inline]
+    pub fn integrate_velocities(&mut self, delta_time: f64) {
+        if self.is_static {
+            return;
+        }
+
+        self.position.add(&self.velocity.to_scaled(delta_time));
+
+        if self.can_be_rotated {
+            self.rotation += self.angular_velocity * delta_time;
+        }
+
         self.update_shape_vertices();
     }
 
@@ -243,34 +285,6 @@ impl RigidBody {
         result.add(&self.position);
 
         result
-    }
-
-    fn integrate_linear(&mut self, delta_time: f64) {
-        if self.is_static {
-            return;
-        }
-
-        let acceleration = self.accumulated_forces.to_scaled(self.inverse_mass);
-
-        self.velocity.add(&acceleration.to_scaled(delta_time));
-
-        self.position.add(&self.velocity.to_scaled(delta_time));
-
-        self.clear_forces();
-    }
-
-    fn integrate_angular(&mut self, delta_time: f64) {
-        if self.is_static {
-            return;
-        }
-
-        let angular_acceleration = self.accumulated_torque * self.inverse_moment_of_inertia;
-
-        self.angular_velocity += angular_acceleration * delta_time;
-
-        self.rotation += self.angular_velocity * delta_time;
-
-        self.clear_torque();
     }
 
     fn clear_forces(&mut self) {
@@ -354,6 +368,7 @@ mod rigid_body_tests {
                 Vector2::new(5.0, 15.0),
             ]),
             bounciness: 1.0,
+            can_be_rotated: true,
             ..Default::default()
         });
 
@@ -367,7 +382,8 @@ mod rigid_body_tests {
         assert_eq!(rb.accumulated_forces, Vector2::new(8.0, 8.0));
         assert_eq!(rb.accumulated_torque, 8.0);
 
-        rb.update(2.0);
+        rb.integrate_forces(2.0);
+        rb.integrate_velocities(2.0);
 
         assert_eq!(rb.accumulated_forces, Vector2::ZERO);
         assert_eq!(rb.accumulated_torque, 0.0);
@@ -384,7 +400,7 @@ mod rigid_body_tests {
 
         assert_eq!(rb.rotation, 0.004266666666666667);
 
-        rb.apply_impulse(&Vector2::new(3.0, 5.0));
+        rb.apply_linear_impulse(&Vector2::new(3.0, 5.0));
 
         assert_eq!(rb.velocity, Vector2::new(12.666666666666666, 14.0));
     }
@@ -410,12 +426,13 @@ mod rigid_body_tests {
         rb.apply_torque(3.0);
         rb.apply_torque(5.0);
 
-        rb.update(2.0);
+        rb.integrate_forces(2.0);
+        rb.integrate_velocities(2.0);
 
         assert_eq!(rb.position, Vector2::new(10.0, 10.0));
         assert_eq!(rb.rotation, 0.0);
 
-        rb.apply_impulse(&Vector2::new(10.0, 10.0));
+        rb.apply_linear_impulse(&Vector2::new(10.0, 10.0));
 
         assert_eq!(rb.velocity, Vector2::ZERO);
     }

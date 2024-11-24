@@ -160,8 +160,8 @@ impl<'a> Contact<'a> {
 
         let result = self.normal.to_scaled(impulse_magnitude);
 
-        self.a.apply_impulse(&result);
-        self.b.apply_impulse(&result.to_scaled(-1.0));
+        self.a.apply_linear_impulse(&result);
+        self.b.apply_linear_impulse(&result.to_scaled(-1.0));
     }
 
     fn resolve_collision_with_rotation(&mut self) {
@@ -206,8 +206,8 @@ impl<'a> Contact<'a> {
 
         let result = impulse_along_normal.to_added(&impulse_along_tangent);
 
-        self.a.apply_angular_impulse(&result, &ra);
-        self.b.apply_angular_impulse(&result.to_scaled(-1.0), &rb);
+        self.a.apply_impulse_at_point(&result, &ra);
+        self.b.apply_impulse_at_point(&result.to_scaled(-1.0), &rb);
     }
 
     fn resolve_penetration(&mut self) {
@@ -273,8 +273,10 @@ mod collision_detector_tests {
 
         *a.position_mut() = Vector2::new(9.0, 9.0);
 
-        a.update(1.0);
-        b.update(1.0);
+        a.integrate_forces(1.0);
+        a.integrate_velocities(1.0);
+        b.integrate_forces(1.0);
+        b.integrate_velocities(1.0);
 
         let contact = are_colliding(&mut a, &mut b).unwrap();
 
