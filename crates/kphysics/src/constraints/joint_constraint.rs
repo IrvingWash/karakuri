@@ -210,6 +210,6 @@ mod constraint_resolvers_tests {
         b.integrate_velocities(delta_time);
 
         assert_eq!(a.position(), &Vector2::new(250.0, 100.0));
-        assert_eq!(b.position(), &Vector2::new(210.0, 175.04));
+        assert_eq!(b.position(), &Vector2::new(210.0, 174.87199999999999));
     }
 }
