@@ -17,10 +17,13 @@ pub fn resolve_joint_constraint(
 
     let mut jacobian = Matrix::new(1, 6);
 
-    let j1 = pa.to_subtracted(&pb).to_scaled(2.0);
-    let j2 = ra.cross_product(&pa.to_subtracted(&pb)) * 2.0;
-    let j3 = pb.to_subtracted(&pa).to_scaled(2.0);
-    let j4 = rb.cross_product(&pb.to_subtracted(&pa)) * 2.0;
+    let pa_pb_diff = pa.to_subtracted(&pb);
+    let pb_pa_diff = pb.to_subtracted(&pa);
+
+    let j1 = pa_pb_diff.to_scaled(2.0);
+    let j2 = ra.cross_product(&pa_pb_diff) * 2.0;
+    let j3 = pb_pa_diff.to_scaled(2.0);
+    let j4 = rb.cross_product(&pb_pa_diff) * 2.0;
 
     let matrix_data = jacobian.data_mut();
     matrix_data[0][0] = j1.x;
