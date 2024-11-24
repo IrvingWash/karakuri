@@ -1,5 +1,5 @@
 use kmath::Vector2;
-use kphysics::{shapes::Shape, RigidBody, RigidBodyParams, World, WorldParams};
+use kphysics::{shapes::Shape, RigidBody, RigidBodyParams, Simulator, SimulatorParams};
 use raylib::{
     color::Color, consts::MouseButton, math::Vector2 as RaylibVector2, prelude::RaylibDraw,
     RaylibHandle, RaylibThread,
@@ -12,7 +12,8 @@ pub struct App {
     rl: RaylibHandle,
     thread: RaylibThread,
     running: bool,
-    world: World,
+    rigid_bodies: Vec<RigidBody>,
+    simulator: Simulator,
 }
 
 impl App {
@@ -23,7 +24,8 @@ impl App {
             running: false,
             rl: handle,
             thread,
-            world: World::new(WorldParams {
+            rigid_bodies: Vec::new(),
+            simulator: Simulator::new(SimulatorParams {
                 gravity_k: PIXELS_PER_METER,
             }),
         }
@@ -40,7 +42,7 @@ impl App {
         let width = self.rl.get_screen_width() as f64;
 
         // Floor
-        self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
             shape: Shape::new_rectangle(width - 50.0, 50.0),
             position: Vector2::new(width / 2.0, height - 50.0),
             mass: 0.0,
@@ -48,7 +50,7 @@ impl App {
             ..Default::default()
         }));
         // Left wall
-        self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
             shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(50.0, height / 2.0 - 25.0),
             mass: 0.0,
@@ -56,7 +58,7 @@ impl App {
             ..Default::default()
         }));
         // Right wall
-        self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
             shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(width - 50.0, height / 2.0 - 25.0),
             mass: 0.0,
@@ -64,7 +66,7 @@ impl App {
             ..Default::default()
         }));
         // Big box
-        self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+        self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
             shape: Shape::new_rectangle(200.0, 200.0),
             position: Vector2::new(width / 2.0, height / 2.0),
             mass: 0.0,
@@ -74,7 +76,7 @@ impl App {
         }));
 
         // Wind force
-        self.world
+        self.simulator
             .add_force(Vector2::new(0.5 * PIXELS_PER_METER, 0.0));
 
         self.running = true;
@@ -89,7 +91,7 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
                 shape: Shape::new_polygon(vec![
                     Vector2::new(20.0, 60.0),
                     Vector2::new(-40.0, 20.0),
@@ -112,7 +114,7 @@ impl App {
         {
             let mouse_position = self.rl.get_mouse_position();
 
-            self.world.add_rigid_body(RigidBody::new(RigidBodyParams {
+            self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
                 shape: Shape::new_circle(50.0),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
                 bounciness: 0.1,
@@ -127,7 +129,8 @@ impl App {
     pub fn update(&mut self) {
         let delta_time = self.rl.get_frame_time();
 
-        self.world.update(delta_time.into());
+        self.simulator
+            .update(&mut self.rigid_bodies, delta_time.into());
     }
 
     pub fn render(&mut self) {
@@ -135,7 +138,7 @@ impl App {
 
         d.clear_background(Color::BLACK);
 
-        for body in self.world.rigid_bodies() {
+        for body in &self.rigid_bodies {
             if body.shape().is_circle() {
                 let radius = body.shape().circle().unwrap().radius();
 
