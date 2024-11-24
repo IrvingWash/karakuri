@@ -25,12 +25,12 @@ impl<'a> ConstraintBase<'a> {
                 VectorN::from_vec(&[0.0, 0.0, 0.0, 0.0, 0.0, b.inverse_moment_of_inertia()]),
             ]),
             velocities: VectorN::from_vec(&[
-                a.velocity.x,
-                a.velocity.y,
-                a.angular_velocity,
-                b.velocity.x,
-                b.velocity.y,
-                b.angular_velocity,
+                a.velocity().x,
+                a.velocity().y,
+                a.angular_velocity(),
+                b.velocity().x,
+                b.velocity().y,
+                b.angular_velocity(),
             ]),
 
             a,

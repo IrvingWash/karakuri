@@ -13,13 +13,13 @@ pub fn weight(rigid_body: &RigidBody, k: f64) -> Vector2 {
 
 #[inline]
 pub fn drag(rigid_body: &RigidBody, k: f64) -> Vector2 {
-    let velocity_squared_magnitude = rigid_body.velocity.squared_magnitude();
+    let velocity_squared_magnitude = rigid_body.velocity().squared_magnitude();
 
     if velocity_squared_magnitude <= 0.0 {
         return Vector2::ZERO;
     }
 
-    let drag_direction = rigid_body.velocity.to_normalized().to_scaled(-1.0);
+    let drag_direction = rigid_body.velocity().to_normalized().to_scaled(-1.0);
 
     let drag_magnitude = k * velocity_squared_magnitude;
 
@@ -28,7 +28,7 @@ pub fn drag(rigid_body: &RigidBody, k: f64) -> Vector2 {
 
 #[inline]
 pub fn friction(rigid_body: &RigidBody, k: f64) -> Vector2 {
-    let friction_direction = rigid_body.velocity.to_normalized().to_scaled(-1.0);
+    let friction_direction = rigid_body.velocity().to_normalized().to_scaled(-1.0);
 
     let friction_magnitude = k;
 

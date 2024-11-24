@@ -151,9 +151,9 @@ impl<'a> Contact<'a> {
 
         self.resolve_penetration();
 
-        let elasticity = self.a.bounciness.min(self.b.bounciness);
+        let elasticity = self.a.bounciness().min(self.b.bounciness());
 
-        let relative_velocity = self.a.velocity.to_subtracted(&self.b.velocity);
+        let relative_velocity = self.a.velocity().to_subtracted(self.b.velocity());
 
         let impulse_magnitude = -(1.0 + elasticity) * relative_velocity.dot_product(&self.normal)
             / (self.a.inverse_mass() + self.b.inverse_mass());
@@ -171,18 +171,18 @@ impl<'a> Contact<'a> {
 
         self.resolve_penetration();
 
-        let elasticity = self.a.bounciness.min(self.b.bounciness);
-        let angular_friction = self.a.angular_friction.min(self.b.angular_friction);
+        let elasticity = self.a.bounciness().min(self.b.bounciness());
+        let angular_friction = self.a.angular_friction().min(self.b.angular_friction());
 
         let ra = self.end.to_subtracted(&self.a.position);
         let rb = self.start.to_subtracted(&self.b.position);
-        let va = self.a.velocity.to_added(&Vector2::new(
-            -self.a.angular_velocity * ra.y,
-            self.a.angular_velocity * ra.x,
+        let va = self.a.velocity().to_added(&Vector2::new(
+            -self.a.angular_velocity() * ra.y,
+            self.a.angular_velocity() * ra.x,
         ));
-        let vb = self.b.velocity.to_added(&Vector2::new(
-            -self.b.angular_velocity * rb.y,
-            self.b.angular_velocity * rb.x,
+        let vb = self.b.velocity().to_added(&Vector2::new(
+            -self.b.angular_velocity() * rb.y,
+            self.b.angular_velocity() * rb.x,
         ));
 
         let relative_velocity = va.to_subtracted(&vb);
@@ -221,10 +221,10 @@ impl<'a> Contact<'a> {
 
         self.a
             .shape
-            .update_vertices(&self.a.position, self.a.rotation);
+            .update_vertices(&self.a.position, self.a.rotation());
         self.b
             .shape
-            .update_vertices(&self.b.position, self.b.rotation);
+            .update_vertices(&self.b.position, self.b.rotation());
     }
 }
 

@@ -37,16 +37,16 @@ pub struct RigidBody {
 
     // Linear motion
     pub position: Vector2,
-    pub velocity: Vector2,
-    pub accumulated_forces: Vector2,
+    velocity: Vector2,
+    accumulated_forces: Vector2,
 
     // Angular motion
-    pub rotation: f64,
-    pub angular_friction: f64,
-    pub angular_velocity: f64,
-    pub accumulated_torque: f64,
+    rotation: f64,
+    angular_friction: f64,
+    angular_velocity: f64,
+    accumulated_torque: f64,
 
-    pub bounciness: f64,
+    bounciness: f64,
     mass: f64,
     inverse_mass: f64,
     #[allow(dead_code)]
@@ -124,6 +124,31 @@ impl RigidBody {
     #[inline]
     pub fn mass(&self) -> f64 {
         self.mass
+    }
+
+    #[inline]
+    pub fn bounciness(&self) -> f64 {
+        self.bounciness
+    }
+
+    #[inline]
+    pub fn rotation(&self) -> f64 {
+        self.rotation
+    }
+
+    #[inline]
+    pub fn angular_velocity(&self) -> f64 {
+        self.angular_velocity
+    }
+
+    #[inline]
+    pub fn angular_friction(&self) -> f64 {
+        self.angular_friction
+    }
+
+    #[inline]
+    pub fn velocity(&self) -> &Vector2 {
+        &self.velocity
     }
 
     #[inline]

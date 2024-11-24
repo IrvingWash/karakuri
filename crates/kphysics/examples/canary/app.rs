@@ -142,8 +142,8 @@ impl App {
                 d.draw_line(
                     body.position.x as i32,
                     body.position.y as i32,
-                    (body.position.x + body.rotation.cos() * radius) as i32,
-                    (body.position.y + body.rotation.sin() * radius) as i32,
+                    (body.position.x + body.rotation().cos() * radius) as i32,
+                    (body.position.y + body.rotation().sin() * radius) as i32,
                     Color::WHITE,
                 );
                 d.draw_circle_lines(
