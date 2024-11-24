@@ -53,6 +53,7 @@ impl App {
             shape: Shape::new_circle(20.0),
             position: Vector2::new(body_a.position().x - 100.0, body_a.position().y),
             mass: 1.0,
+            can_be_rotated: true,
             ..Default::default()
         });
 
