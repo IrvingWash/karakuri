@@ -20,7 +20,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let (handle, thread) = raylib::init().title("Caeary").size(1340, 800).build();
+        let (handle, thread) = raylib::init().title("Canary").size(1340, 800).build();
 
         Self {
             running: false,
@@ -41,32 +41,41 @@ impl App {
         self.rl.set_target_fps(60);
 
         let width = self.rl.get_screen_width() as f64;
-        let _height = self.rl.get_screen_height() as f64;
+        let height = self.rl.get_screen_height() as f64;
 
-        const BODY_COUNT: usize = 8;
+        let big_ball = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_circle(64.0),
+            position: Vector2::new(width / 2.0, height / 2.0),
+            mass: 0.0,
+            can_be_rotated: true,
+            ..Default::default()
+        });
 
-        for i in 0..BODY_COUNT {
-            let mass = if i == 0 { 0.0 } else { 1.0 };
+        let floor = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_rectangle(width - 50.0, 50.0),
+            position: Vector2::new(width / 2.0, height - 50.0),
+            mass: 0.0,
+            ..Default::default()
+        });
 
-            let body = RigidBody::new(RigidBodyParams {
-                shape: Shape::new_rectangle(30.0, 30.0),
-                position: Vector2::new(width / 2.0 - i as f64 * 40.0, 100.0),
-                mass,
-                can_be_rotated: true,
-                ..Default::default()
-            });
+        let left_wall = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_rectangle(50.0, height - 100.0),
+            position: Vector2::new(50.0, height / 2.0 - 25.0),
+            mass: 0.0,
+            ..Default::default()
+        });
 
-            self.rigid_bodies.push(body);
-        }
+        let right_wall = RigidBody::new(RigidBodyParams {
+            shape: Shape::new_rectangle(50.0, height - 100.0),
+            position: Vector2::new(width - 50.0, height / 2.0 - 25.0),
+            mass: 0.0,
+            ..Default::default()
+        });
 
-        for i in 0..BODY_COUNT - 1 {
-            let a = &self.rigid_bodies[i];
-            let b = &self.rigid_bodies[i + 1];
-
-            let joint = Constraint::new_joint(a, b, a.position());
-
-            self.simulator.add_constraint(joint);
-        }
+        self.rigid_bodies.push(big_ball);
+        self.rigid_bodies.push(floor);
+        self.rigid_bodies.push(left_wall);
+        self.rigid_bodies.push(right_wall);
 
         self.running = true;
     }
@@ -152,6 +161,7 @@ impl App {
                         Color::WHITE,
                     );
                 }
+                _ => {}
             }
         }
 

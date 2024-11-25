@@ -2,6 +2,8 @@ use kmath::{Matrix, Vector2, VectorN};
 
 use crate::RigidBody;
 
+use super::utils;
+
 #[derive(Debug)]
 pub struct JointConstraint {
     pub a_id: usize,
@@ -31,7 +33,7 @@ impl JointConstraint {
 
             jacobian: Matrix::new(1, 6),
             jacobian_transposed: Matrix::new(6, 1),
-            inverse_mass_matrix: inverse_mass_matrix(a, b),
+            inverse_mass_matrix: utils::inverse_mass_matrix(a, b),
             lhs: Matrix::new(1, 1),
             cached_lambda: VectorN::new(1),
         }
@@ -83,7 +85,7 @@ impl JointConstraint {
 
     #[inline]
     pub fn resolve(&mut self, a: &mut RigidBody, b: &mut RigidBody) {
-        let velocities = velocities(a, b);
+        let velocities = utils::velocities(a, b);
 
         let mut rhs = self
             .jacobian
@@ -91,7 +93,7 @@ impl JointConstraint {
 
         rhs[0] -= self.bias;
 
-        let lambda = solve_gauss_seidel(&self.lhs, &rhs);
+        let lambda = utils::solve_gauss_seidel(&self.lhs, &rhs);
 
         self.cached_lambda.add(&lambda);
 
@@ -105,49 +107,6 @@ impl JointConstraint {
 
     #[inline]
     pub fn post_solve(&self) {}
-}
-
-fn inverse_mass_matrix(a: &RigidBody, b: &RigidBody) -> Matrix {
-    let mut matrix = Matrix::new(6, 6);
-
-    let data = matrix.data_mut();
-
-    data[0][0] = a.inverse_mass();
-    data[1][1] = a.inverse_mass();
-    data[2][2] = a.inverse_moment_of_inertia();
-    data[3][3] = b.inverse_mass();
-    data[4][4] = b.inverse_mass();
-    data[5][5] = b.inverse_moment_of_inertia();
-
-    matrix
-}
-
-fn velocities(a: &RigidBody, b: &RigidBody) -> VectorN {
-    VectorN::from_vec(&[
-        a.velocity().x,
-        a.velocity().y,
-        a.angular_velocity(),
-        b.velocity().x,
-        b.velocity().y,
-        b.angular_velocity(),
-    ])
-}
-
-fn solve_gauss_seidel(lhs: &Matrix, rhs: &VectorN) -> VectorN {
-    let n = rhs.len();
-
-    let mut x = VectorN::new(n);
-
-    for _ in 0..n {
-        for i in 0..n {
-            if lhs.data()[i][i] != 0.0 {
-                x[i] += (rhs[i] / lhs.data()[i][i])
-                    - (lhs.data()[i].dot_product(&x) / lhs.data()[i][i]);
-            }
-        }
-    }
-
-    x
 }
 
 #[cfg(test)]
@@ -190,6 +149,7 @@ mod constraint_resolvers_tests {
                 joint.resolve(&mut a, &mut b);
                 joint.post_solve();
             }
+            _ => {}
         };
 
         a.integrate_velocities(delta_time);
@@ -204,6 +164,7 @@ mod constraint_resolvers_tests {
                 joint.resolve(&mut a, &mut b);
                 joint.post_solve();
             }
+            _ => {}
         };
 
         a.integrate_velocities(delta_time);

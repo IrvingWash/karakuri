@@ -76,28 +76,8 @@ impl Simulator {
             body.integrate_forces(delta_time);
         }
 
-        for constraint in &mut self.constraints {
-            constraint.pre_solve(rigid_bodies, delta_time);
-        }
+        let mut penetration_constraints = Vec::new();
 
-        for _ in 0..2 {
-            for constraint in &mut self.constraints {
-                constraint.solve(rigid_bodies);
-            }
-        }
-
-        for constraints in &self.constraints {
-            constraints.post_solve();
-        }
-
-        for body in &mut *rigid_bodies {
-            body.integrate_velocities(delta_time);
-        }
-
-        self.check_collisions(rigid_bodies);
-    }
-
-    fn check_collisions(&self, rigid_bodies: &mut [RigidBody]) {
         for i in 0..rigid_bodies.len() {
             for j in i + 1..rigid_bodies.len() {
                 let (first_half, second_half) = rigid_bodies.split_at_mut(i + 1);
@@ -108,9 +88,53 @@ impl Simulator {
                 let other = &mut second_half[j - i - 1];
 
                 if let Some(contact) = collision_detector::are_colliding(body, other) {
-                    contact.resolve_collision();
+                    let penetration_constraint = Constraint::new_penetration(
+                        contact.a,
+                        contact.b,
+                        &contact.start,
+                        &contact.end,
+                        &contact.normal,
+                    );
+
+                    penetration_constraints.push(penetration_constraint);
                 }
             }
+        }
+
+        // TODO: Having constraints in an enum sucks.
+        // Penetration constraints are not customizable.
+        // The code is barely shared.
+        // Not sure if we need joint constraints.
+        // Need to remove the constraint enum.
+        // Maybe should delete the joint constraint.
+        for constraint in &mut self.constraints {
+            constraint.pre_solve(rigid_bodies, delta_time);
+        }
+
+        for constraint in &mut penetration_constraints {
+            constraint.pre_solve(rigid_bodies, delta_time);
+        }
+
+        for _ in 0..2 {
+            for constraint in &mut self.constraints {
+                constraint.solve(rigid_bodies);
+            }
+
+            for constraint in &mut penetration_constraints {
+                constraint.solve(rigid_bodies);
+            }
+        }
+
+        for constraints in &self.constraints {
+            constraints.post_solve();
+        }
+
+        for constraints in &penetration_constraints {
+            constraints.post_solve();
+        }
+
+        for body in &mut *rigid_bodies {
+            body.integrate_velocities(delta_time);
         }
     }
 }
