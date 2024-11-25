@@ -87,16 +87,18 @@ impl Simulator {
                     .expect("Should have been able to split vector in two pieces.");
                 let other = &mut second_half[j - i - 1];
 
-                if let Some(contact) = collision_detector::are_colliding(body, other) {
-                    let penetration_constraint = Constraint::new_penetration(
-                        contact.a,
-                        contact.b,
-                        &contact.start,
-                        &contact.end,
-                        &contact.normal,
-                    );
+                if let Some(contacts) = collision_detector::are_colliding(body, other) {
+                    for contact in contacts {
+                        let penetration_constraint = Constraint::new_penetration(
+                            contact.a,
+                            contact.b,
+                            &contact.start,
+                            &contact.end,
+                            &contact.normal,
+                        );
 
-                    penetration_constraints.push(penetration_constraint);
+                        penetration_constraints.push(penetration_constraint);
+                    }
                 }
             }
         }

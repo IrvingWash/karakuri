@@ -155,11 +155,11 @@ mod collision_detector_tests {
 
         *a.position_mut() = Vector2::new(10.0, 10.0);
 
-        let contact = are_colliding(&mut a, &mut b).unwrap();
+        let contacts = are_colliding(&mut a, &mut b).unwrap();
 
-        assert_eq!(contact.end, Vector2 { x: 10.0, y: 10.0 });
-        assert_eq!(contact.normal, Vector2::ZERO);
-        assert_eq!(contact.start, Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contacts[0].end, Vector2 { x: 10.0, y: 10.0 });
+        assert_eq!(contacts[0].normal, Vector2::ZERO);
+        assert_eq!(contacts[0].start, Vector2 { x: 10.0, y: 10.0 });
     }
 
     #[test]
@@ -184,10 +184,10 @@ mod collision_detector_tests {
         b.integrate_forces(1.0);
         b.integrate_velocities(1.0);
 
-        let contact = are_colliding(&mut a, &mut b).unwrap();
+        let contacts = are_colliding(&mut a, &mut b).unwrap();
 
-        assert_eq!(contact.end, Vector2 { x: 11.5, y: 11.5 });
-        assert_eq!(contact.normal, Vector2 { x: -0.0, y: 1.0 });
-        assert_eq!(contact.start, Vector2 { x: 11.5, y: 5.0 });
+        assert_eq!(contacts[0].end, Vector2 { x: 11.5, y: 11.5 });
+        assert_eq!(contacts[0].normal, Vector2 { x: -0.0, y: 1.0 });
+        assert_eq!(contacts[0].start, Vector2 { x: 11.5, y: 5.0 });
     }
 }

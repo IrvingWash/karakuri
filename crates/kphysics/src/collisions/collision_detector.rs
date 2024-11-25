@@ -12,7 +12,7 @@ use super::{
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
 // Ask for contact information separately
-pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
+pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Vec<Contact<'a>>> {
     if a.shape().is_circle() && b.shape().is_circle() {
         return are_colliding_circles(a, b);
     }
@@ -32,7 +32,10 @@ pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<C
     None
 }
 
-fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
+fn are_colliding_circles<'a>(
+    a: &'a mut RigidBody,
+    b: &'a mut RigidBody,
+) -> Option<Vec<Contact<'a>>> {
     let a_shape = a
         .shape()
         .circle()
@@ -46,13 +49,16 @@ fn are_colliding_circles<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opti
     let radius_sum = a_shape.radius() + b_shape.radius();
 
     if disposition.squared_magnitude() <= radius_sum.powi(2) {
-        return Some(Contact::for_circles(a, b, &disposition));
+        return Some(vec![Contact::for_circles(a, b, &disposition)]);
     }
 
     None
 }
 
-fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Contact<'a>> {
+fn are_colliding_polygons<'a>(
+    a: &'a mut RigidBody,
+    b: &'a mut RigidBody,
+) -> Option<Vec<Contact<'a>>> {
     let a_polygon = a
         .shape()
         .polygon()
@@ -72,18 +78,18 @@ fn are_colliding_polygons<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Opt
         return None;
     }
 
-    Some(Contact::for_polygons(
+    Some(vec![Contact::for_polygons(
         a,
         b,
         ab_separation_info,
         ba_separation_info,
-    ))
+    )])
 }
 
 fn are_colliding_circle_and_polygon<'a>(
     circular: &'a mut RigidBody,
     polygonal: &'a mut RigidBody,
-) -> Option<Contact<'a>> {
+) -> Option<Vec<Contact<'a>>> {
     let circle = circular
         .shape()
         .circle()
@@ -134,13 +140,13 @@ fn are_colliding_circle_and_polygon<'a>(
                 return None;
             }
 
-            return Some(Contact::for_circle_and_polygon(
+            return Some(vec![Contact::for_circle_and_polygon(
                 circular,
                 polygonal,
                 &v1,
                 v1_magnitude,
                 false,
-            ));
+            )]);
         }
 
         let v1 = circular.position().to_subtracted(min_next_vertex);
@@ -153,20 +159,20 @@ fn are_colliding_circle_and_polygon<'a>(
                 return None;
             }
 
-            return Some(Contact::for_circle_and_polygon(
+            return Some(vec![Contact::for_circle_and_polygon(
                 circular,
                 polygonal,
                 &v1,
                 v1_magnitude,
                 false,
-            ));
+            )]);
         }
 
         if distance_circle_edge > circle.radius() {
             return None;
         }
 
-        return Some(Contact::for_circle_and_polygon(
+        return Some(vec![Contact::for_circle_and_polygon(
             circular,
             polygonal,
             &min_next_vertex
@@ -174,10 +180,10 @@ fn are_colliding_circle_and_polygon<'a>(
                 .create_perpendicular(),
             distance_circle_edge,
             true,
-        ));
+        )]);
     }
 
-    Some(Contact::for_circle_and_polygon(
+    Some(vec![Contact::for_circle_and_polygon(
         circular,
         polygonal,
         &min_next_vertex
@@ -185,7 +191,7 @@ fn are_colliding_circle_and_polygon<'a>(
             .create_perpendicular(),
         distance_circle_edge,
         true,
-    ))
+    )])
 }
 
 fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
