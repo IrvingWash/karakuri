@@ -12,7 +12,7 @@ pub struct PenetrationConstraint {
     a_point: Vector2,
     b_point: Vector2,
     normal: Vector2,
-    friction: f64,
+    angular_friction: f64,
     bias: f64,
 
     // Cache
@@ -39,7 +39,7 @@ impl PenetrationConstraint {
             a_point: a.world_to_local(a_collision_point),
             b_point: b.world_to_local(b_collision_point),
             normal: a.world_to_local(normal),
-            friction: 0.0,
+            angular_friction: 0.0,
             bias: 0.0,
 
             jacobian: Matrix::new(2, 6),
@@ -71,8 +71,8 @@ impl PenetrationConstraint {
         matrix_data[0][4] = j3.y;
         matrix_data[0][5] = j4;
 
-        self.friction = a.angular_friction().max(b.angular_friction());
-        if self.friction > 0.0 {
+        self.angular_friction = a.angular_friction().max(b.angular_friction());
+        if self.angular_friction > 0.0 {
             let t = n.create_perpendicular();
 
             matrix_data[1][0] = -t.x;
