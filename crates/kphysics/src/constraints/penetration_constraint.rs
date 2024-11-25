@@ -123,6 +123,11 @@ impl PenetrationConstraint {
             self.cached_lambda[0]
         };
 
+        if self.angular_friction > 0.0 {
+            let max_friction = self.cached_lambda[0] * self.angular_friction;
+            self.cached_lambda[1] = self.cached_lambda[1].clamp(-max_friction, max_friction);
+        }
+
         let resulting_lambda = self.cached_lambda.to_subtracted(&previous_cached_lambda);
 
         let impulses = self
