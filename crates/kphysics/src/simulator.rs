@@ -80,12 +80,8 @@ impl Simulator {
 
         for i in 0..rigid_bodies.len() {
             for j in i + 1..rigid_bodies.len() {
-                let (first_half, second_half) = rigid_bodies.split_at_mut(i + 1);
-
-                let body = first_half
-                    .last_mut()
-                    .expect("Should have been able to split vector in two pieces.");
-                let other = &mut second_half[j - i - 1];
+                let body = &rigid_bodies[i];
+                let other = &rigid_bodies[j];
 
                 if let Some(contacts) = collision_detector::are_colliding(body, other) {
                     for contact in contacts {

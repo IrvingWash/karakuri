@@ -12,7 +12,7 @@ use super::{
 #[inline]
 // TODO: Probably we shouldn't return ContactInformation here to optimize the process.
 // Ask for contact information separately
-pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<Vec<Contact<'a>>> {
+pub fn are_colliding<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<Vec<Contact<'a>>> {
     if a.shape().is_circle() && b.shape().is_circle() {
         return are_colliding_circles(a, b);
     }
@@ -32,10 +32,7 @@ pub fn are_colliding<'a>(a: &'a mut RigidBody, b: &'a mut RigidBody) -> Option<V
     None
 }
 
-fn are_colliding_circles<'a>(
-    a: &'a mut RigidBody,
-    b: &'a mut RigidBody,
-) -> Option<Vec<Contact<'a>>> {
+fn are_colliding_circles<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<Vec<Contact<'a>>> {
     let a_shape = a
         .shape()
         .circle()
@@ -55,10 +52,7 @@ fn are_colliding_circles<'a>(
     None
 }
 
-fn are_colliding_polygons<'a>(
-    a: &'a mut RigidBody,
-    b: &'a mut RigidBody,
-) -> Option<Vec<Contact<'a>>> {
+fn are_colliding_polygons<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<Vec<Contact<'a>>> {
     let a_polygon = a
         .shape()
         .polygon()
@@ -87,8 +81,8 @@ fn are_colliding_polygons<'a>(
 }
 
 fn are_colliding_circle_and_polygon<'a>(
-    circular: &'a mut RigidBody,
-    polygonal: &'a mut RigidBody,
+    circular: &'a RigidBody,
+    polygonal: &'a RigidBody,
 ) -> Option<Vec<Contact<'a>>> {
     let circle = circular
         .shape()

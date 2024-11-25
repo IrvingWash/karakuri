@@ -8,8 +8,8 @@ use super::{errors::panic_checked_circle_unwrap, SeparationInfo};
 #[derive(Debug)]
 pub struct Contact<'a> {
     // TODO: Add getters instead of pub
-    pub a: &'a mut RigidBody,
-    pub b: &'a mut RigidBody,
+    pub a: &'a RigidBody,
+    pub b: &'a RigidBody,
 
     pub normal: Vector2,
 
@@ -19,7 +19,7 @@ pub struct Contact<'a> {
 
 impl<'a> Contact<'a> {
     #[inline]
-    pub fn for_circles(a: &'a mut RigidBody, b: &'a mut RigidBody, disposition: &Vector2) -> Self {
+    pub fn for_circles(a: &'a RigidBody, b: &'a RigidBody, disposition: &Vector2) -> Self {
         let normal = disposition.to_normalized();
 
         let start = b.position().to_subtracted(
@@ -51,8 +51,8 @@ impl<'a> Contact<'a> {
 
     #[inline]
     pub fn for_polygons(
-        a: &'a mut RigidBody,
-        b: &'a mut RigidBody,
+        a: &'a RigidBody,
+        b: &'a RigidBody,
         ab_separation_info: SeparationInfo,
         ba_separation_info: SeparationInfo,
     ) -> Self {
@@ -94,8 +94,8 @@ impl<'a> Contact<'a> {
 
     #[inline]
     pub fn for_circle_and_polygon(
-        circular: &'a mut RigidBody,
-        polygonal: &'a mut RigidBody,
+        circular: &'a RigidBody,
+        polygonal: &'a RigidBody,
         v1: &Vector2,
         v1_magnitude: f64,
         flip: bool,
