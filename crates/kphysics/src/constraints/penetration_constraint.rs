@@ -100,7 +100,8 @@ impl PenetrationConstraint {
         b.apply_angular_impulse(impulses[5]);
 
         let beta = 0.2;
-        let c = pb.to_subtracted(&pa).dot_product(&n.to_scaled(-1.0));
+        let mut c = pb.to_subtracted(&pa).dot_product(&n.to_scaled(-1.0));
+        c = 0.0f64.min(c + 0.01);
 
         let va = a.velocity().to_added(&Vector2::new(
             -a.angular_velocity() * ra.y,
