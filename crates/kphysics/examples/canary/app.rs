@@ -48,6 +48,7 @@ impl App {
             position: Vector2::new(width / 2.0, height / 2.0),
             mass: 0.0,
             can_be_rotated: true,
+            bounciness: 0.9,
             ..Default::default()
         });
 
@@ -55,6 +56,7 @@ impl App {
             shape: Shape::new_rectangle(width - 50.0, 50.0),
             position: Vector2::new(width / 2.0, height - 50.0),
             mass: 0.0,
+            bounciness: 0.9,
             ..Default::default()
         });
 
@@ -62,6 +64,7 @@ impl App {
             shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(50.0, height / 2.0 - 25.0),
             mass: 0.0,
+            bounciness: 0.9,
             ..Default::default()
         });
 
@@ -69,6 +72,7 @@ impl App {
             shape: Shape::new_rectangle(50.0, height - 100.0),
             position: Vector2::new(width - 50.0, height / 2.0 - 25.0),
             mass: 0.0,
+            bounciness: 0.9,
             ..Default::default()
         });
 
@@ -98,7 +102,7 @@ impl App {
                     Vector2::new(40.0, 20.0),
                 ]),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                bounciness: 0.1,
+                bounciness: 0.9,
                 angular_friction: 0.7,
                 mass: 2.0,
                 can_be_rotated: true,
@@ -115,7 +119,7 @@ impl App {
             self.rigid_bodies.push(RigidBody::new(RigidBodyParams {
                 shape: Shape::new_circle(50.0),
                 position: Vector2::new(mouse_position.x.into(), mouse_position.y.into()),
-                bounciness: 0.1,
+                bounciness: 0.9,
                 angular_friction: 0.7,
                 mass: 2.0,
                 can_be_rotated: true,

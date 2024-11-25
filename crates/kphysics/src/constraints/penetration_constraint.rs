@@ -101,7 +101,19 @@ impl PenetrationConstraint {
 
         let beta = 0.2;
         let c = pb.to_subtracted(&pa).dot_product(&n.to_scaled(-1.0));
-        self.bias = beta / delta_time * c;
+
+        let va = a.velocity().to_added(&Vector2::new(
+            -a.angular_velocity() * ra.y,
+            a.angular_velocity() * ra.x,
+        ));
+        let vb = b.velocity().to_added(&Vector2::new(
+            -b.angular_velocity() * rb.y,
+            b.angular_velocity() * rb.x,
+        ));
+        let v_rel_dot_normal = (va.to_subtracted(&vb)).dot_product(&n);
+        let e = a.bounciness().min(b.bounciness());
+
+        self.bias = beta / delta_time * c + (e * v_rel_dot_normal);
     }
 
     pub fn resolve(&mut self, a: &mut RigidBody, b: &mut RigidBody) {
