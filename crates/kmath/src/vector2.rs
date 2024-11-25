@@ -32,9 +32,9 @@ impl Vector2 {
     }
 
     #[inline]
-    pub fn scale(&mut self, scaler: f64) {
-        self.x *= scaler;
-        self.y *= scaler;
+    pub fn scale(&mut self, scalar: f64) {
+        self.x *= scalar;
+        self.y *= scalar;
     }
 
     #[inline]
@@ -173,10 +173,10 @@ impl Vector2 {
     }
 
     #[inline]
-    pub fn to_scaled(&self, scaler: f64) -> Vector2 {
+    pub fn to_scaled(&self, scalar: f64) -> Vector2 {
         let mut copy = self.create_copy();
 
-        copy.scale(scaler);
+        copy.scale(scalar);
 
         copy
     }
@@ -248,9 +248,11 @@ impl Vector2 {
 
 #[cfg(test)]
 mod vector2_tests {
+    use std::f32::consts::FRAC_PI_2;
+
     use super::Vector2;
 
-    const NINETY_DEGREES_IN_RADIANS: f64 = 1.5708;
+    const NINETY_DEGREES_IN_RADIANS: f64 = FRAC_PI_2 as f64;
 
     const X1: f64 = 2.;
     const Y1: f64 = -34.4;
@@ -532,8 +534,8 @@ mod vector2_tests {
 
         v.rotate(NINETY_DEGREES_IN_RADIANS);
 
-        assert_eq!(v.x, 26.99987385093499);
-        assert_eq!(v.y, 34.343099176306104);
+        assert_eq!(v.x, 26.999998498819703);
+        assert_eq!(v.y, 34.3430011802075);
     }
 
     #[test]
@@ -542,8 +544,8 @@ mod vector2_tests {
 
         let result = v.to_rotated(NINETY_DEGREES_IN_RADIANS);
 
-        assert_eq!(result.x, 26.99987385093499);
-        assert_eq!(result.y, 34.343099176306104);
+        assert_eq!(result.x, 26.999998498819703);
+        assert_eq!(result.y, 34.3430011802075);
     }
 
     #[test]
@@ -553,8 +555,8 @@ mod vector2_tests {
 
         v.rotate_at(&pivot, NINETY_DEGREES_IN_RADIANS);
 
-        assert_eq!(v.x, 30.49993755542217);
-        assert_eq!(v.y, 3.5000495881542086);
+        assert_eq!(v.x, 30.499999256906356);
+        assert_eq!(v.y, 3.500000590103749);
     }
 
     #[test]
@@ -564,8 +566,8 @@ mod vector2_tests {
 
         let result = v.to_rotated_at(&pivot, NINETY_DEGREES_IN_RADIANS);
 
-        assert_eq!(result.x, 30.49993755542217);
-        assert_eq!(result.y, 3.5000495881542086);
+        assert_eq!(result.x, 30.499999256906356);
+        assert_eq!(result.y, 3.500000590103749);
     }
 
     #[test]

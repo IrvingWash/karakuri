@@ -216,7 +216,7 @@ impl RendererSystem {
             .first()
             .cloned();
 
-        return match operator {
+        match operator {
             Some(operator) => {
                 let position = registry
                     .get_component::<TransformComponent>(&operator)
@@ -232,7 +232,7 @@ impl RendererSystem {
                 (position, zoom)
             }
             None => (resolution.to_divided(2.0), CameraComponent::default().zoom),
-        };
+        }
     }
 }
 

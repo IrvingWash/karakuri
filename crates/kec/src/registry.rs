@@ -190,10 +190,10 @@ impl Registry {
     #[inline]
     pub fn get_component<T: Any>(&self, entity: &Entity) -> Option<Ref<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.key()] {
-                None => return None,
-                Some(component) => return Self::borrow_downcast::<T>(component),
-            }
+            return match &component_vec[entity.key()] {
+                None => None,
+                Some(component) => Self::borrow_downcast::<T>(component),
+            };
         }
 
         None
@@ -217,10 +217,10 @@ impl Registry {
     #[inline]
     pub fn get_component_mut<T: Any>(&self, entity: &Entity) -> Option<RefMut<T>> {
         if let Some(component_vec) = self.components.get(&TypeId::of::<T>()) {
-            match &component_vec[entity.key()] {
-                None => return None,
-                Some(component) => return Self::borrow_downcast_mut::<T>(component),
-            }
+            return match &component_vec[entity.key()] {
+                None => None,
+                Some(component) => Self::borrow_downcast_mut::<T>(component),
+            };
         }
 
         None
@@ -297,16 +297,14 @@ impl Registry {
                     .eq(component_to_find),
             });
 
-            match key {
-                None => return None,
-                Some(id) => {
-                    return self
-                        .entity_signatures()
-                        .keys()
-                        .find(|entity| entity.key() == id)
-                        .cloned()
-                }
-            }
+            return match key {
+                None => None,
+                Some(id) => self
+                    .entity_signatures()
+                    .keys()
+                    .find(|entity| entity.key() == id)
+                    .cloned(),
+            };
         }
 
         None

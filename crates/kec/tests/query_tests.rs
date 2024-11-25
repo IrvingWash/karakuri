@@ -71,7 +71,7 @@ fn test_querying() {
 
     let entities_with_hp = registry.query().with_component::<HP>().build();
     assert_eq!(entities_with_hp.len(), 2);
-    assert!(entities_with_hp[0] != entities_with_hp[1]);
+    assert_ne!(entities_with_hp[0], entities_with_hp[1]);
 
     registry.add_component(&blanka, Power(9));
 
@@ -81,7 +81,7 @@ fn test_querying() {
         .with_component::<Power>()
         .build();
     assert_eq!(entities_with_hp.len(), 2);
-    assert!(entities_with_hp_and_power[0] != entities_with_hp_and_power[1]);
+    assert_ne!(entities_with_hp_and_power[0], entities_with_hp_and_power[1]);
 
     let entities = registry
         .query()

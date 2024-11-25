@@ -1,4 +1,3 @@
-mod constraint;
 mod contact;
 mod errors;
 mod separation_info;
