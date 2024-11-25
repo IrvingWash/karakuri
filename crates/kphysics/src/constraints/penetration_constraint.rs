@@ -12,6 +12,7 @@ pub struct PenetrationConstraint {
     a_point: Vector2,
     b_point: Vector2,
     normal: Vector2,
+    friction: f64,
     bias: f64,
 
     // Cache
@@ -38,13 +39,14 @@ impl PenetrationConstraint {
             a_point: a.world_to_local(a_collision_point),
             b_point: b.world_to_local(b_collision_point),
             normal: a.world_to_local(normal),
+            friction: 0.0,
             bias: 0.0,
 
-            jacobian: Matrix::new(1, 6),
-            jacobian_transposed: Matrix::new(6, 1),
+            jacobian: Matrix::new(2, 6),
+            jacobian_transposed: Matrix::new(6, 2),
             inverse_mass_matrix: utils::inverse_mass_matrix(a, b),
             lhs: Matrix::new(1, 1),
-            cached_lambda: VectorN::new(1),
+            cached_lambda: VectorN::new(2),
         }
     }
 
@@ -68,6 +70,18 @@ impl PenetrationConstraint {
         matrix_data[0][3] = j3.x;
         matrix_data[0][4] = j3.y;
         matrix_data[0][5] = j4;
+
+        self.friction = a.angular_friction().max(b.angular_friction());
+        if self.friction > 0.0 {
+            let t = n.create_perpendicular();
+
+            matrix_data[1][0] = -t.x;
+            matrix_data[1][1] = -t.y;
+            matrix_data[1][2] = ra.to_scaled(-1.0).cross_product(&t);
+            matrix_data[1][3] = t.x;
+            matrix_data[1][4] = t.y;
+            matrix_data[1][5] = rb.cross_product(&t);
+        }
 
         self.jacobian_transposed = self.jacobian.to_transposed();
 
