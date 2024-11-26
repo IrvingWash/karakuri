@@ -113,7 +113,7 @@ impl Simulator {
             constraint.pre_solve(rigid_bodies, delta_time);
         }
 
-        for _ in 0..2 {
+        for _ in 0..5 {
             for constraint in &mut self.constraints {
                 constraint.solve(rigid_bodies);
             }
