@@ -54,6 +54,67 @@ impl Polygon {
     pub fn world_vertices(&self) -> &Vec<Vector2> {
         &self.world_vertices
     }
+
+    // TODO: Don't like this method in Polygon struct.
+    // Maybe should move to Contact/Collision detector
+    #[inline]
+    pub fn find_incident_edge_index(&self, reference_normal: &Vector2) -> usize {
+        let mut incident_edge_index = 0;
+        let mut min_projection = f64::MAX;
+
+        for i in 0..self.world_vertices.len() {
+            let edge_normal = self.edge_at(i).create_perpendicular();
+
+            let projection = edge_normal.dot_product(reference_normal);
+
+            if projection < min_projection {
+                min_projection = projection;
+                incident_edge_index = i;
+            }
+        }
+
+        incident_edge_index
+    }
+
+    // TODO: Remove out parameter (sucks)
+    #[inline]
+    pub fn clip_segment_to_line(
+        &self,
+        contacts_in: &[Vector2],
+        contacts_out: &mut [Vector2],
+        c0: &Vector2,
+        c1: &Vector2,
+    ) -> usize {
+        let mut out_count = 0;
+
+        let normal = c1.to_subtracted(c0).to_normalized();
+        let dist0 = contacts_in[0].to_subtracted(c0).cross_product(&normal);
+        let dist1 = contacts_in[1].to_subtracted(c0).cross_product(&normal);
+
+        if dist0 <= 0.0 {
+            contacts_out[out_count] = contacts_in[0].clone();
+            out_count += 1;
+        }
+        if dist1 <= 0.0 {
+            contacts_out[out_count] = contacts_in[1].clone();
+            out_count += 1;
+        }
+
+        if dist0 * dist1 < 0.0 {
+            let total_dist = dist0 - dist1;
+
+            let t = dist0 / total_dist;
+
+            let contact = contacts_in[0]
+                .to_added(&contacts_in[1].to_subtracted(&contacts_in[0]).to_scaled(t));
+
+            contacts_out[out_count] = contact;
+
+            out_count += 1;
+        }
+
+        out_count
+    }
 }
 
 fn make_rectangle_vertices(width: f64, height: f64) -> [Vector2; 4] {

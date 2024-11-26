@@ -72,12 +72,85 @@ fn are_colliding_polygons<'a>(a: &'a RigidBody, b: &'a RigidBody) -> Option<Vec<
         return None;
     }
 
-    Some(vec![Contact::for_polygons(
-        a,
-        b,
-        ab_separation_info,
-        ba_separation_info,
-    )])
+    let (reference_shape, incident_shape, reference_edge_index) =
+        if ab_separation_info.separation > ba_separation_info.separation {
+            (
+                a.shape()
+                    .polygon()
+                    .unwrap_or_else(|| panic_checked_polygon_unwrap()),
+                b.shape()
+                    .polygon()
+                    .unwrap_or_else(|| panic_checked_polygon_unwrap()),
+                ab_separation_info.reference_edge_index,
+            )
+        } else {
+            (
+                b.shape()
+                    .polygon()
+                    .unwrap_or_else(|| panic_checked_polygon_unwrap()),
+                a.shape()
+                    .polygon()
+                    .unwrap_or_else(|| panic_checked_polygon_unwrap()),
+                ba_separation_info.reference_edge_index,
+            )
+        };
+
+    let reference_edge = reference_shape.edge_at(reference_edge_index);
+
+    let reference_edge_perpendicular = reference_edge.create_perpendicular();
+
+    let incident_edge_index =
+        incident_shape.find_incident_edge_index(&reference_edge_perpendicular);
+    let incident_edge_next_index =
+        (incident_edge_index + 1) % incident_shape.world_vertices().len();
+
+    let v0 = incident_shape.world_vertices()[incident_edge_index].clone();
+    let v1 = incident_shape.world_vertices()[incident_edge_next_index].clone();
+
+    let mut contact_points = vec![v0, v1];
+    let mut clipped_points = contact_points.clone();
+
+    for i in 0..reference_shape.world_vertices().len() {
+        if i == reference_edge_index {
+            continue;
+        }
+
+        let c0 = &reference_shape.world_vertices()[i];
+        let c1 =
+            &reference_shape.world_vertices()[(i + 1) % reference_shape.world_vertices().len()];
+
+        let clipped_count =
+            reference_shape.clip_segment_to_line(&contact_points, &mut clipped_points, c0, c1);
+
+        if clipped_count < 2 {
+            break;
+        }
+
+        contact_points = clipped_points.clone();
+    }
+
+    let v_ref = &reference_shape.world_vertices()[reference_edge_index];
+
+    let mut result = Vec::new();
+    for v_clip in clipped_points {
+        let separation = v_clip
+            .to_subtracted(v_ref)
+            .dot_product(&reference_edge_perpendicular);
+
+        if separation <= 0.0 {
+            result.push(Contact::for_polygons(
+                a,
+                b,
+                &ab_separation_info,
+                &ba_separation_info,
+                &reference_edge_perpendicular,
+                &v_clip,
+                separation,
+            ));
+        }
+    }
+
+    Some(result)
 }
 
 fn are_colliding_circle_and_polygon<'a>(
@@ -188,10 +261,10 @@ fn are_colliding_circle_and_polygon<'a>(
     )])
 }
 
+// TODO: Make this SeparationInfo member/constructor
 fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
     let mut separation = f64::MIN;
-    let mut separation_axis = Vector2::ZERO;
-    let mut point = Vector2::ZERO;
+    let mut reference_edge_index = 0;
 
     for (i, va) in a.world_vertices().iter().enumerate() {
         let edge = a.edge_at(i);
@@ -199,27 +272,23 @@ fn find_minimum_separation(a: &Polygon, b: &Polygon) -> SeparationInfo {
         let normal = edge.create_perpendicular();
 
         let mut min_separation = f64::MAX;
-        let mut min_vertex = Vector2::ZERO;
 
         for vb in b.world_vertices() {
             let projection = vb.to_subtracted(va).dot_product(&normal);
 
             if projection < min_separation {
                 min_separation = projection;
-                min_vertex.set(vb);
             };
         }
 
         if min_separation > separation {
             separation = min_separation;
-            separation_axis = edge;
-            point.set(&min_vertex);
+            reference_edge_index = i;
         }
     }
 
     SeparationInfo {
-        point,
         separation,
-        separation_axis,
+        reference_edge_index,
     }
 }

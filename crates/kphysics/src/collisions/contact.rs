@@ -1,5 +1,3 @@
-use std::cmp::Ordering;
-
 use crate::RigidBody;
 use kmath::Vector2;
 
@@ -53,41 +51,40 @@ impl<'a> Contact<'a> {
     pub fn for_polygons(
         a: &'a RigidBody,
         b: &'a RigidBody,
-        ab_separation_info: SeparationInfo,
-        ba_separation_info: SeparationInfo,
+        ab_separation_info: &SeparationInfo,
+        ba_separation_info: &SeparationInfo,
+        reference_edge_perpendicular: &Vector2,
+        v_clip: &Vector2,
+        separation: f64,
     ) -> Self {
-        match ab_separation_info
-            .separation
-            .total_cmp(&ba_separation_info.separation)
-        {
-            Ordering::Greater => {
-                let depth = -ab_separation_info.separation;
-                let normal = ab_separation_info.separation_axis.create_perpendicular();
-                let point = ab_separation_info.point;
+        let ba_greater_ab = ba_separation_info.separation >= ab_separation_info.separation;
 
-                Self {
-                    a,
-                    b,
-                    end: point.to_added(&normal.to_scaled(depth)),
-                    start: point,
-                    normal,
-                }
+        let start = v_clip.clone();
+        let end = v_clip.to_added(&reference_edge_perpendicular.to_scaled(-separation));
+
+        if ba_greater_ab {
+            Contact {
+                a,
+                b,
+                normal: if ba_greater_ab {
+                    reference_edge_perpendicular.to_scaled(-1.0)
+                } else {
+                    reference_edge_perpendicular.clone()
+                },
+                start: end,
+                end: start,
             }
-            Ordering::Equal | Ordering::Less => {
-                let depth = -ba_separation_info.separation;
-                let normal = ba_separation_info
-                    .separation_axis
-                    .create_perpendicular()
-                    .to_scaled(-1.0);
-                let point = ba_separation_info.point;
-
-                Self {
-                    a,
-                    b,
-                    start: point.to_subtracted(&normal.to_scaled(depth)),
-                    end: point,
-                    normal,
-                }
+        } else {
+            Contact {
+                a,
+                b,
+                normal: if ba_greater_ab {
+                    reference_edge_perpendicular.to_scaled(-1.0)
+                } else {
+                    reference_edge_perpendicular.clone()
+                },
+                start,
+                end,
             }
         }
     }
