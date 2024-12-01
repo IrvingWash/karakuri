@@ -19,8 +19,8 @@ pub struct Simulator {
     gravity_k: f64,
     constraints: Vec<Constraint>,
     // TODO: Just store sums
-    forces: Vec<Vector2>,
-    torques: Vec<f64>,
+    forces: Vector2,
+    torques: f64,
 }
 
 impl Simulator {
@@ -32,19 +32,19 @@ impl Simulator {
         Self {
             gravity_k,
             constraints: Vec::new(),
-            forces: Vec::new(),
-            torques: Vec::new(),
+            forces: Vector2::ZERO,
+            torques: 0.0,
         }
     }
 
     #[inline]
-    pub fn add_force(&mut self, force: Vector2) {
-        self.forces.push(force);
+    pub fn add_force(&mut self, force: &Vector2) {
+        self.forces.add(force);
     }
 
     #[inline]
     pub fn add_torque(&mut self, torque: f64) {
-        self.torques.push(torque);
+        self.torques += torque;
     }
 
     #[inline]
@@ -63,13 +63,9 @@ impl Simulator {
             let weight_force = force_generator::weight(body, self.gravity_k);
             body.apply_force(&weight_force);
 
-            for force in &self.forces {
-                body.apply_force(force);
-            }
+            body.apply_force(&self.forces);
 
-            for torque in &self.torques {
-                body.apply_torque(*torque);
-            }
+            body.apply_torque(self.torques);
         }
 
         for body in &mut *rigid_bodies {
