@@ -231,6 +231,7 @@ dependencies = [
  "kec",
  "klogger",
  "kmath",
+ "kphysics",
  "kutils",
  "kwindow",
  "rand",
