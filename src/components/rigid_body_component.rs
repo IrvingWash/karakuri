@@ -29,7 +29,7 @@ pub struct RigidBodyComponent {
 impl RigidBodyComponent {
     #[inline]
     pub fn new(
-        params: RigidBodyComponentParams,
+        params: &RigidBodyComponentParams,
         position: &Vector2,
         rotation: f64,
         size: &Vector2,
@@ -43,10 +43,10 @@ impl RigidBodyComponent {
 
         Self {
             rigid_body: RigidBody::new(RigidBodyParams {
-                angular_friction,
-                mass,
-                bounciness,
-                can_be_rotated,
+                angular_friction: *angular_friction,
+                mass: *mass,
+                bounciness: *bounciness,
+                can_be_rotated: *can_be_rotated,
                 position: position.create_copy(),
                 rotation,
                 velocity: Vector2::ZERO,

@@ -36,6 +36,7 @@ pub struct SpriteComponent {
 }
 
 impl SpriteComponent {
+    #[inline]
     pub fn new(
         params: SpriteComponentParams,
         secondary_clip_size: Vector2,

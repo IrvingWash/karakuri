@@ -10,7 +10,7 @@ pub struct TagComponent {
 
 impl TagComponent {
     #[inline]
-    pub fn new(params: TagComponentParams) -> Self {
+    pub fn new(params: &TagComponentParams) -> Self {
         Self {
             tag: params.tag.to_string(),
         }

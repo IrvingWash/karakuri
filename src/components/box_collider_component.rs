@@ -32,7 +32,7 @@ impl BoxColliderComponent {
 
         Self {
             position_offset,
-            size: size.unwrap_or(secondary_size.create_copy()),
+            size: size.unwrap_or_else(|| secondary_size.create_copy()),
         }
     }
 }
