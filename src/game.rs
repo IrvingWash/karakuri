@@ -105,7 +105,7 @@ impl Game {
     fn start_entities(&mut self, entities_to_start: &[Entity], delta_time: f64) {
         for entity in entities_to_start {
             self.registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity))
                 .start(UpdateContext {
                     entity,
@@ -123,7 +123,7 @@ impl Game {
         for entity in &entities_to_destroy {
             if let Some(mut behavior) = self
                 .registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
             {
                 behavior.destroy(UpdateContext {
                     delta_time,
@@ -146,7 +146,7 @@ impl Game {
         let updateable_entities = self
             .registry
             .query()
-            .with_component::<Box<dyn BehaviorComponent>>()
+            .with_component::<dyn BehaviorComponent>()
             .build();
 
         self.event_buss
@@ -156,7 +156,7 @@ impl Game {
         for entity in &updateable_entities {
             let mut behavior = self
                 .registry
-                .get_component_mut::<Box<dyn BehaviorComponent>>(entity)
+                .get_dyn_component_mut::<dyn BehaviorComponent>(entity)
                 .unwrap_or_else(|| panic_queried::<dyn BehaviorComponent>(entity));
 
             behavior.update(UpdateContext {

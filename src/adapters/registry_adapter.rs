@@ -20,12 +20,23 @@ impl<'a> RegistryAdapter<'a> {
 
     #[inline]
     pub fn get_component<T: 'static>(&self, entity: &Entity) -> Option<Ref<'_, T>> {
-        self.registry.get_component::<T>(entity)
+        self.registry.get_component(entity)
+    }
+
+    pub fn get_dyn_component<T: 'static + ?Sized>(&self, entity: &Entity) -> Option<Ref<Box<T>>> {
+        self.registry.get_dyn_component(entity)
     }
 
     #[inline]
     pub fn get_component_mut<T: 'static>(&self, entity: &Entity) -> Option<RefMut<'_, T>> {
-        self.registry.get_component_mut::<T>(entity)
+        self.registry.get_component_mut(entity)
+    }
+
+    pub fn get_dyn_component_mut<T: 'static + ?Sized>(
+        &self,
+        entity: &Entity,
+    ) -> Option<RefMut<Box<T>>> {
+        self.registry.get_dyn_component_mut(entity)
     }
 
     #[inline]

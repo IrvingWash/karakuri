@@ -126,7 +126,7 @@ impl PhysicsSystem {
     fn notify_collided_entity(&self, entity: &Entity, other: &Entity, params: &mut AffectParams) {
         if let Some(mut behavior) = params
             .registry
-            .get_component_mut::<Box<dyn BehaviorComponent>>(other)
+            .get_dyn_component_mut::<dyn BehaviorComponent>(other)
         {
             behavior.collide(
                 entity,

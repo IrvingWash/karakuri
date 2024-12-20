@@ -25,7 +25,7 @@ pub fn ball_prefab(resolution: &Vector2) -> ComponentPayload {
             ..Default::default()
         }),
         behavior: Some(Box::new(Ball {
-            speed: 40.0,
+            speed: 30.0,
             resolution: resolution.clone(),
         })),
         rigid_body: Some(RigidBodyComponent::default()),
