@@ -14,8 +14,8 @@ add :: proc {
 subtract :: proc {
 	subtract_in_place,
 	to_subtracted,
-    subtract_in_place_with_other,
-    to_subtracted_with_other,
+	subtract_in_place_with_other,
+	to_subtracted_with_other,
 }
 
 scale :: proc {
@@ -77,10 +77,10 @@ subtract_in_place :: proc(lhs: ^Vector2, rhs: f32) {
 @(private = "file")
 @require_results
 to_subtracted :: proc(lhs: Vector2, rhs: f32) -> Vector2 {
-    return Vector2 {
-        x = lhs.x / rhs,
-        y = lhs.y / rhs,
-    }
+	return Vector2 {
+		x = lhs.x / rhs,
+		y = lhs.y / rhs,
+	}
 }
 
 @(private = "file")
