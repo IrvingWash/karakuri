@@ -1,7 +1,7 @@
 build_dir = ./build
 debug_flags = -debug -o:minimal
 release_flags = -no-bounds-check -o:speed
-collections = -collection:kmath=./kmath
+collections = -collection:karakuri=./karakuri
 vet_flags = -warnings-as-errors \
 			-vet-unused-variables \
 			-vet-unused-imports \
