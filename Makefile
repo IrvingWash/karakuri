@@ -23,6 +23,10 @@ build_debug:
 clean:
 	@rm -rf ${build_dir}/*
 
+test:
+	@mkdir -p ${build_dir}/tests
+	@odin test ./tests -all-packages ${vet_flags} -out:${build_dir}/tests/tests
+
 # ==============================
 # Examples
 # ==============================

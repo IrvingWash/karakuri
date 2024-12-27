@@ -6,6 +6,16 @@ Vector2 :: struct {
 	x, y: f64,
 }
 
+ZERO :: Vector2 {
+	x = 0,
+	y = 0,
+}
+
+UNIT :: Vector2 {
+	x = 1,
+	y = 1,
+}
+
 add :: proc {
 	add_in_place,
 	to_added,
@@ -109,8 +119,8 @@ to_added :: proc(lhs: Vector2, rhs: f64) -> Vector2 {
 
 @(private = "file")
 add_in_place_with_other :: proc(lhs: ^Vector2, rhs: Vector2) {
-	lhs.x += rhs.y
-	lhs.x += rhs.y
+	lhs.x += rhs.x
+	lhs.y += rhs.y
 }
 
 @(private = "file")
