@@ -4,5 +4,7 @@ import "core:fmt"
 import v2 "karakuri:kmath/vector2"
 
 main :: proc() {
-	fmt.println(v2.Vector2{10, 10})
+	position := v2.Vector2{10, 10}
+
+	fmt.println(position)
 }
