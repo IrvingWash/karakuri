@@ -1,0 +1,3 @@
+package karakuri
+
+Game :: struct {}

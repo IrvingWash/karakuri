@@ -13,6 +13,13 @@ vet_flags = -warnings-as-errors \
 # ==============================
 # General
 # ==============================
+karakuri_src = ./karakuri
+karakuri_build_dir = ${build_dir}/karakuri
+
+build_debug:
+	@mkdir -p ${karakuri_build_dir}/debug
+
+	odin build ${karakuri_src} ${vet_flags} ${debug_flags} -out:${karakuri_build_dir}/debug/karakuri -build-mode:obj
 clean:
 	rm -rf ${build_dir}/*
 
