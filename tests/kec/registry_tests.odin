@@ -76,6 +76,9 @@ test_get_component :: proc(t: ^testing.T) {
 	sonic_inventory := get_component(r, sonic, Inventory)
 	expect(t, sonic_inventory.rings == 3)
 
+	tails_hp := get_component(r, tails, HP)
+	expect(t, tails_hp == nil)
+
 	tails_inventory := get_component(r, tails, Inventory)
 	expect(t, tails_inventory.rings == 50)
 }

@@ -54,9 +54,12 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 
 	component_pool := &r.component_pools[C]
 
-	return(
-		cast(^C)&component_pool.component_array[component_pool.etcsm[entity]] \
-	)
+	slot, ok := component_pool.etcsm[entity]
+	if !ok {
+		return nil
+	}
+
+	return cast(^C)&component_pool.component_array[slot]
 }
 
 @(private)
