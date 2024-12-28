@@ -101,7 +101,7 @@ test_remove_entity :: proc(t: ^testing.T) {
 	add_component(&r, knuckles, HP{700})
 	add_component(&r, tails, Inventory{70})
 
-	remove_entity(&r, tails)
+	destroy_entity(&r, tails)
 
 	expect(t, len(r.component_pools[HP].free_slots.data) == 1)
 

@@ -7,10 +7,12 @@ import fm "../../kwindow/fps_manager"
 import im "../../kwindow/input_manager"
 import ren "../../kwindow/renderer"
 import c "../components"
+import s "../scene"
 
 Game :: struct {
 	registry: kec.Registry,
 	renderer: ren.Renderer,
+	scene:    s.Scene,
 }
 
 new_game :: proc(
@@ -34,12 +36,15 @@ new_game :: proc(
 
 start :: proc(game: ^Game) {
 	for !im.is_quit_requested() {
+		s.sync(&game.scene, &game.registry)
 		update(game)
 		render(game)
 	}
 }
 
-destroy_game :: proc() {
+destroy_game :: proc(game: Game) {
+	s.destroy_scene(game.scene)
+	kec.destroy_registry(game.registry)
 	kw.destroy_window()
 }
 

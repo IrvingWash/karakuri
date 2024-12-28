@@ -42,7 +42,7 @@ create_entity :: proc(r: ^Registry) -> Entity {
 	return r.next_entity
 }
 
-remove_entity :: proc(r: ^Registry, entity: Entity) {
+destroy_entity :: proc(r: ^Registry, entity: Entity) {
 	for _, &component_pool in r.component_pools {
 		slot, ok := component_pool.etcsm[entity]
 		if ok {
