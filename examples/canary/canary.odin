@@ -13,7 +13,7 @@ main :: proc() {
 		clear_color = ku.ColorWhite,
 		fullscreen = false,
 	)
-	defer game.destroy_game()
+	defer game.destroy_game(my_game)
 
 	// Create the player and add components
 	player := kec.create_entity(&my_game.registry)
