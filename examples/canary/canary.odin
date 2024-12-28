@@ -6,7 +6,7 @@ import "karakuri:kec"
 import ku "karakuri:kutils"
 
 main :: proc() {
-	my_game := game.new_game("Sonic")
+	my_game := game.new_game("Sonic", clear_color = ku.ColorWhite)
 	defer game.destroy_game()
 
 	player := kec.create_entity(&my_game.registry)
@@ -18,7 +18,7 @@ main :: proc() {
 	kec.add_component(
 		&my_game.registry,
 		player,
-		c.Shape_Component{10, 20, ku.ColorRed},
+		c.Shape_Component{10, 20, ku.ColorBlue},
 	)
 
 	game.start(&my_game)
