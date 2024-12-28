@@ -2,6 +2,7 @@ package kec
 
 @(private = "file")
 Queried_Components :: [dynamic]typeid
+Queried_Entities :: [dynamic]Entity
 
 Query :: struct {
 	queried_components: Queried_Components,
@@ -19,9 +20,27 @@ query_with :: proc($C: typeid, q: ^Query, r: Registry) {
 	append(&q.queried_components, C)
 }
 
-// TODO
-submit_query :: proc(q: Query) -> [dynamic]Entity {
+submit_query :: proc(q: Query, r: Registry) -> Queried_Entities {
 	defer delete(q.queried_components)
 
-	return make([dynamic]Entity)
+	reference_signature: Signature = {}
+
+	for component in q.queried_components {
+		reference_signature += {r.component_ids[component]}
+	}
+
+	if reference_signature == nil {
+		return make(Queried_Entities)
+	}
+
+	// TODO: This leaks
+	entities := make(Queried_Entities)
+
+	for entity, signature in r.entity_signatures {
+		if signature >= reference_signature {
+			append(&entities, entity)
+		}
+	}
+
+	return entities
 }

@@ -2,6 +2,4 @@
 
 package kec
 
-Signature :: struct {
-	data: int,
-}
+Signature :: distinct bit_set[0 ..= 127;u128]

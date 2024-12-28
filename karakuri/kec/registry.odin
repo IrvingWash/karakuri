@@ -9,8 +9,11 @@ Component_Array :: [dynamic]rawptr
 Entity_To_Component_Slot_Map :: map[Entity]int
 
 Registry :: struct {
-	component_pools: map[typeid]Component_Pool,
-	next_entity:     Entity,
+	component_pools:   map[typeid]Component_Pool,
+	next_entity:       Entity,
+	component_ids:     map[typeid]int,
+	next_component_id: int,
+	entity_signatures: map[Entity]Signature,
 }
 
 Component_Pool :: struct {
@@ -29,6 +32,8 @@ destroy_registry :: proc(r: Registry) {
 	}
 
 	delete(r.component_pools)
+	delete(r.component_ids)
+	delete(r.entity_signatures)
 }
 
 create_entity :: proc(r: ^Registry) -> Entity {
@@ -66,6 +71,13 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 
 	etcsm := &component_pool.etcsm
 	etcsm[entity] = slot
+
+	entity_sig, entity_sig_ok := &r.entity_signatures[entity]
+	if entity_sig_ok {
+		entity_sig^ += {r.component_ids[C]}
+	} else {
+		r.entity_signatures[entity] = {r.component_ids[C]}
+	}
 }
 
 get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
@@ -105,5 +117,9 @@ destroy_component_pool :: proc(cp: Component_Pool) {
 
 @(private)
 register_component :: proc(r: ^Registry, $C: typeid) {
+	defer r.next_component_id += 1
+
+	r.component_ids[C] = r.next_component_id
+
 	r.component_pools[C] = new_component_pool()
 }
