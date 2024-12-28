@@ -7,6 +7,7 @@ import ku "karakuri:kutils"
 import im "karakuri:kwindow/input_manager"
 
 main :: proc() {
+	// Init the game
 	my_game := game.new_game(
 		"Sonic",
 		clear_color = ku.ColorWhite,
@@ -14,6 +15,7 @@ main :: proc() {
 	)
 	defer game.destroy_game()
 
+	// Create the player and add components
 	player := kec.create_entity(&my_game.registry)
 	kec.add_component(
 		&my_game.registry,
@@ -31,6 +33,7 @@ main :: proc() {
 		c.Behavior_Component{on_update = on_player_update},
 	)
 
+	// Start the game
 	game.start(&my_game)
 }
 
