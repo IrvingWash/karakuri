@@ -6,7 +6,7 @@ import q "core:container/queue"
 Component_Array :: [dynamic]rawptr
 
 @(private = "file")
-EntityToComponentSlotMap :: map[Entity]int
+Entity_To_Component_Slot_Map :: map[Entity]int
 
 Registry :: struct {
 	component_pools: map[typeid]Component_Pool,
@@ -15,7 +15,7 @@ Registry :: struct {
 
 Component_Pool :: struct {
 	component_array: ^Component_Array,
-	etcsm:           EntityToComponentSlotMap,
+	etcsm:           Entity_To_Component_Slot_Map,
 	free_slots:      q.Queue(int),
 }
 
@@ -90,7 +90,7 @@ new_component_pool :: proc() -> Component_Pool {
 
 	return Component_Pool {
 		component_array = component_array,
-		etcsm = make(EntityToComponentSlotMap),
+		etcsm = make(Entity_To_Component_Slot_Map),
 		free_slots = q.Queue(int){},
 	}
 }
