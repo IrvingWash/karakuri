@@ -1,5 +1,7 @@
 package kec
 
+import q "core:container/queue"
+
 @(private = "file")
 Component_Array :: [dynamic]rawptr
 
@@ -14,6 +16,7 @@ Registry :: struct {
 Component_Pool :: struct {
 	component_array: ^Component_Array,
 	etcsm:           EntityToComponentSlotMap,
+	free_slots:      q.Queue(int),
 }
 
 new_registry :: proc() -> Registry {
@@ -43,8 +46,13 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 
 	append(cast(^[dynamic]C)component_pool.component_array, component)
 
+	slot, slot_ok := q.pop_back_safe(&component_pool.free_slots)
+	if !slot_ok {
+		slot = len(r.component_pools[C].component_array) - 1
+	}
+
 	etcsm := &component_pool.etcsm
-	etcsm[entity] = len(r.component_pools[C].component_array) - 1
+	etcsm[entity] = slot
 }
 
 get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
@@ -70,6 +78,7 @@ new_component_pool :: proc() -> Component_Pool {
 	return Component_Pool {
 		component_array = component_array,
 		etcsm = make(EntityToComponentSlotMap),
+		free_slots = q.Queue(int){},
 	}
 }
 
