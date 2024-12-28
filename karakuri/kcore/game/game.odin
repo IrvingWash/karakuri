@@ -45,6 +45,44 @@ destroy_game :: proc() {
 
 @(private = "file")
 update :: proc(game: ^Game) {
+	dt := fm.get_delta_time()
+
+	updatable_entities_query := kec.start_query()
+	kec.query_with(
+		c.Behavior_Component,
+		&updatable_entities_query,
+		game.registry,
+	)
+	updatable_entities := kec.submit_query(
+		updatable_entities_query,
+		game.registry,
+	)
+	defer delete(updatable_entities)
+
+	for entity in updatable_entities {
+		behavior := kec.get_component(
+			game.registry,
+			entity,
+			c.Behavior_Component,
+		)
+
+		on_update, ok := behavior.on_update.?
+		if !ok {
+			continue
+		}
+
+		on_update(
+			{
+				entity = entity,
+				registry = game.registry,
+				dt = dt,
+				is_key_pressed = im.is_key_pressed,
+				is_key_down = im.is_key_down,
+				is_key_up = im.is_key_up,
+				is_key_released = im.is_key_released,
+			},
+		)
+	}
 }
 
 @(private = "file")
