@@ -139,7 +139,7 @@ subtract_in_place :: proc(lhs: ^Vector2, rhs: f64) {
 @(private = "file")
 @(require_results)
 to_subtracted :: proc(lhs: Vector2, rhs: f64) -> Vector2 {
-	return Vector2{x = lhs.x / rhs, y = lhs.y / rhs}
+	return Vector2{x = lhs.x - rhs, y = lhs.y - rhs}
 }
 
 @(private = "file")
@@ -151,7 +151,7 @@ subtract_in_place_with_other :: proc(lhs: ^Vector2, rhs: Vector2) {
 @(private = "file")
 @(require_results)
 to_subtracted_with_other :: proc(lhs: Vector2, rhs: Vector2) -> Vector2 {
-	return Vector2{x = lhs.x + rhs.x, y = lhs.y + rhs.y}
+	return Vector2{x = lhs.x - rhs.x, y = lhs.y - rhs.y}
 }
 
 // Multiplication
