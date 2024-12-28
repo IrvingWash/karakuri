@@ -3,16 +3,16 @@ package renderer
 import rl "vendor:raylib"
 
 import v2 "../../kmath/vector2"
-import u "../../kutils"
+import ku "../../kutils"
 
 Renderer :: struct {
-	clear_color:   u.Color,
+	clear_color:   ku.Color,
 	window_width:  uint,
 	window_height: uint,
 	origin:        v2.Vector2,
 }
 
-new :: proc(clear_color := u.ColorBlue) -> Renderer {
+new_renderer :: proc(clear_color := ku.ColorBlue) -> Renderer {
 	window_width := rl.GetScreenWidth()
 	window_height := rl.GetScreenHeight()
 
@@ -45,7 +45,7 @@ draw_rectangle :: proc(
 	height: f64,
 	scale: v2.Vector2,
 	rotation: f64,
-	color: u.Color,
+	color: ku.Color,
 ) {
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
@@ -80,7 +80,7 @@ update_window_size :: proc(r: ^Renderer) {
 }
 
 @(private = "file")
-color_to_rl :: proc(color: u.Color) -> rl.Color {
+color_to_rl :: proc(color: ku.Color) -> rl.Color {
 	using color
 
 	return rl.Color{r, g, b, a}
