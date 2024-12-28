@@ -1,4 +1,4 @@
-package registry_tests
+package kec_tests
 
 import "../../karakuri/kec"
 import "core:testing"
@@ -119,4 +119,32 @@ test_remove_entity :: proc(t: ^testing.T) {
 	expect(t, get_component(r, amy, HP).value == 900)
 	expect(t, get_component(r, amy, Inventory).rings == 90)
 	expect(t, len(r.component_pools[HP].free_slots.data) == 0)
+}
+
+@(test)
+test_query :: proc(t: ^testing.T) {
+	using testing
+	using kec
+
+	r := new_registry()
+	defer destroy_registry(r)
+
+	sonic := create_entity(&r)
+	tails := create_entity(&r)
+	knuckles := create_entity(&r)
+
+	add_component(&r, sonic, HP{300})
+	add_component(&r, sonic, Inventory{30})
+	add_component(&r, tails, HP{500})
+	add_component(&r, tails, Inventory{50})
+	add_component(&r, knuckles, HP{700})
+	add_component(&r, tails, Inventory{70})
+
+	query := start_query()
+	query_with(HP, &query, r)
+	query_with(Inventory, &query, r)
+	with_hp_and_inventory := submit_query(query)
+
+	// TODO
+	expect(t, len(with_hp_and_inventory) == 0)
 }

@@ -51,7 +51,7 @@ remove_entity :: proc(r: ^Registry, entity: Entity) {
 }
 
 add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
-	if !(C in r.component_pools) {
+	if C not_in r.component_pools {
 		register_component(r, C)
 	}
 
@@ -69,7 +69,7 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 }
 
 get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
-	if !(C in r.component_pools) {
+	if C not_in r.component_pools {
 		return nil
 	}
 
