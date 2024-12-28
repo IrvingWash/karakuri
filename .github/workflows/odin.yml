@@ -11,11 +11,8 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
+      - uses: laytan/setup-odin@v2
       - uses: actions/checkout@v4
-      - name: install clang
-        run: sudo apt-get install clang
-      - name: install odin
-        run: sudo apt install odin
       - name: Install raylib
         run: sudo add-apt-repository ppa:texus/raylib -y && sudo apt install libraylib5-dev libglfw3-dev libxinerama-dev libxcursor-dev libxi-dev -y
       - name: Run tests
