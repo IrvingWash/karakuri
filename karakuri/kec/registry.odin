@@ -39,7 +39,12 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 		register_component(r, C)
 	}
 
-	append(cast(^[dynamic]C)r.component_pools[C].component_array, component)
+	component_pool := &r.component_pools[C]
+
+	append(cast(^[dynamic]C)component_pool.component_array, component)
+
+	etcsm := &component_pool.etcsm
+	etcsm[entity] = len(r.component_pools[C].component_array) - 1
 }
 
 get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
@@ -47,7 +52,11 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 		return nil
 	}
 
-	return cast(^C)&r.component_pools[C].component_array[entity]
+	component_pool := &r.component_pools[C]
+
+	return(
+		cast(^C)&component_pool.component_array[component_pool.etcsm[entity]] \
+	)
 }
 
 @(private)
