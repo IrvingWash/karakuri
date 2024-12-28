@@ -37,6 +37,19 @@ create_entity :: proc(r: ^Registry) -> Entity {
 	return r.next_entity
 }
 
+remove_entity :: proc(r: ^Registry, entity: Entity) {
+	for _, &component_pool in r.component_pools {
+		slot, ok := component_pool.etcsm[entity]
+		if ok {
+			delete_key(&component_pool.etcsm, entity)
+
+			q.push_back(&component_pool.free_slots, slot)
+
+			component_pool.component_array[entity] = nil
+		}
+	}
+}
+
 add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 	if !(C in r.component_pools) {
 		register_component(r, C)
