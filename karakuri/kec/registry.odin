@@ -3,6 +3,9 @@ package kec
 @(private = "file")
 Component_Array :: [dynamic]rawptr
 
+@(private = "file")
+EntityToComponentSlotMap :: map[Entity]int
+
 Registry :: struct {
 	component_pools: map[typeid]Component_Pool,
 	next_entity:     Entity,
@@ -10,6 +13,7 @@ Registry :: struct {
 
 Component_Pool :: struct {
 	component_array: ^Component_Array,
+	etcsm:           EntityToComponentSlotMap,
 }
 
 new_registry :: proc() -> Registry {
@@ -51,13 +55,18 @@ new_component_pool :: proc() -> Component_Pool {
 	component_array := new(Component_Array)
 	component_array^ = make(Component_Array)
 
-	return Component_Pool{component_array = component_array}
+	return Component_Pool {
+		component_array = component_array,
+		etcsm = make(EntityToComponentSlotMap),
+	}
 }
 
 @(private)
 destroy_component_pool :: proc(cp: Component_Pool) {
 	delete(cp.component_array^)
 	free(cp.component_array)
+
+	delete(cp.etcsm)
 }
 
 @(private)
