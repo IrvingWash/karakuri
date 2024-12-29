@@ -1,7 +1,7 @@
 build_dir = ./build
 debug_flags = -debug -o:minimal
 release_flags = -no-bounds-check -o:speed
-collections = -collection:karakuri=./karakuri
+collections = -collection:karakuri=./src
 vet_flags = -warnings-as-errors \
 			-vet-unused-variables \
 			-vet-unused-imports \
@@ -13,7 +13,7 @@ vet_flags = -warnings-as-errors \
 # ==============================
 # Library
 # ==============================
-karakuri_src = ./karakuri
+karakuri_src = ./src
 karakuri_build_dir = ${build_dir}/karakuri
 
 build_debug:

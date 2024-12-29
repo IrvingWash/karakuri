@@ -1,6 +1,6 @@
 package kec_tests
 
-import "../../karakuri/kec"
+import "../../src/kec"
 import "core:testing"
 
 HP :: struct {

@@ -1,6 +1,6 @@
 package vector2_tests
 
-import v2 "../../../karakuri/kmath/vector2"
+import v2 "../../../src/kmath/vector2"
 import u "../../utils"
 import "core:math"
 import "core:testing"
