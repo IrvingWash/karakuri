@@ -33,7 +33,7 @@ submit_query :: proc(q: Query, r: Registry) -> Queried_Entities {
 		return make(Queried_Entities)
 	}
 
-	// TODO: This leaks
+	// TODO: This should be cleared at the caller's scope. Sucks
 	entities := make(Queried_Entities)
 
 	for entity, signature in r.entity_signatures {

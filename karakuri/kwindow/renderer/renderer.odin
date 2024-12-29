@@ -5,18 +5,18 @@ import rl "vendor:raylib"
 import v2 "../../kmath/vector2"
 import ku "../../kutils"
 
-Renderer :: struct {
+Renderer_Info :: struct {
 	clear_color:   ku.Color,
 	window_width:  uint,
 	window_height: uint,
 	origin:        v2.Vector2,
 }
 
-new_renderer :: proc(clear_color := ku.ColorBlue) -> Renderer {
+new_renderer :: proc(clear_color := ku.ColorBlue) -> Renderer_Info {
 	window_width := rl.GetScreenWidth()
 	window_height := rl.GetScreenHeight()
 
-	return Renderer {
+	return Renderer_Info {
 		clear_color = clear_color,
 		window_width = uint(window_width),
 		window_height = uint(window_height),
@@ -27,11 +27,11 @@ new_renderer :: proc(clear_color := ku.ColorBlue) -> Renderer {
 	}
 }
 
-start_drawing :: proc(r: ^Renderer) {
-	update_window_size(r)
+start_drawing :: proc(ri: ^Renderer_Info) {
+	update_window_size(ri)
 
 	rl.BeginDrawing()
-	rl.ClearBackground(color_to_rl(r.clear_color))
+	rl.ClearBackground(color_to_rl(ri.clear_color))
 }
 
 finish_drawing :: proc() {
@@ -39,7 +39,7 @@ finish_drawing :: proc() {
 }
 
 draw_rectangle :: proc(
-	r: Renderer,
+	ri: Renderer_Info,
 	position: v2.Vector2,
 	width: f64,
 	height: f64,
@@ -49,8 +49,8 @@ draw_rectangle :: proc(
 ) {
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
-			x = f32(position.x + r.origin.x),
-			y = f32(position.y + r.origin.y),
+			x = f32(position.x + ri.origin.x),
+			y = f32(position.y + ri.origin.y),
 			width = f32(width * scale.x),
 			height = f32(height * scale.y),
 		},
@@ -64,19 +64,19 @@ draw_rectangle :: proc(
 }
 
 @(private = "file")
-update_window_size :: proc(r: ^Renderer) {
+update_window_size :: proc(ri: ^Renderer_Info) {
 	width := uint(rl.GetScreenWidth())
 	height := uint(rl.GetScreenHeight())
 
-	if r.window_width == width && r.window_height == height {
+	if ri.window_width == width && ri.window_height == height {
 		return
 	}
 
-	r.window_width = width
-	r.window_height = height
+	ri.window_width = width
+	ri.window_height = height
 
-	r.origin.x = f64(width) / 2
-	r.origin.y = f64(height) / 2
+	ri.origin.x = f64(width) / 2
+	ri.origin.y = f64(height) / 2
 }
 
 @(private = "file")
