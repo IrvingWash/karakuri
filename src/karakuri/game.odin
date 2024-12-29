@@ -40,8 +40,13 @@ destroy_game :: proc(game: Game) {
 
 start_game :: proc(game: ^Game) {
 	for !im.is_quit_requested() {
+		update(game^)
 		render(game)
 	}
+}
+
+@(private = "file")
+update :: proc(game: Game) {
 }
 
 @(private = "file")
