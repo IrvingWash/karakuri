@@ -12,7 +12,7 @@ Renderer_Info :: struct {
 	origin:        v2.Vector2,
 }
 
-new_renderer :: proc(clear_color := ku.ColorBlue) -> Renderer_Info {
+new_renderer :: proc(clear_color: ku.Color) -> Renderer_Info {
 	window_width := rl.GetScreenWidth()
 	window_height := rl.GetScreenHeight()
 
