@@ -2,17 +2,18 @@ package karakuri
 
 import "../kec"
 import ren "../kwindow/renderer"
+import fm "../kwindow/fps_manager"
 import c "./components"
 
 Scene :: struct {
-	registry:           kec.Registry,
-	entities_to_add:    [dynamic]c.Component_Bundle,
+	registry:			kec.Registry,
+	entities_to_add:	[dynamic]c.Component_Bundle,
 	entities_to_remove: [dynamic]kec.Entity,
 }
 
 new_scene :: proc(initial_entities: [dynamic]c.Component_Bundle) -> Scene {
 	scene := Scene {
-		registry           = kec.new_registry(),
+		registry		   = kec.new_registry(),
 		entities_to_add    = make([dynamic]c.Component_Bundle),
 		entities_to_remove = make([dynamic]kec.Entity),
 	}
@@ -94,11 +95,17 @@ update_entities :: proc(s: ^Scene) {
 	updatable_entities := kec.submit_query(updatable, s.registry)
 	defer delete(updatable_entities)
 
+	behavior_context := c.Behavior_Context{
+		dt = fm.get_delta_time(),
+	}
+
 	for entity in updatable_entities {
 		behavior := kec.get_component(s.registry, entity, c.Behavior_Component)
 
 		if on_update, ok := behavior.on_update.?; ok {
-			on_update()
+			behavior_context.entity = entity
+
+			on_update(behavior_context)
 		}
 	}
 }
