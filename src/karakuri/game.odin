@@ -1,13 +1,11 @@
 package karakuri
 
-import "../kec"
 import ku "../kutils"
 import kw "../kwindow"
 import im "../kwindow/input_manager"
 import ren "../kwindow/renderer"
 
 Game :: struct {
-	registry:      kec.Registry,
 	renderer_info: ren.Renderer_Info,
 }
 
@@ -28,13 +26,11 @@ new_game :: proc(
 	)
 
 	return Game {
-		registry = kec.new_registry(),
 		renderer_info = ren.new_renderer(clear_color),
 	}
 }
 
 destroy_game :: proc(game: Game) {
-	kec.destroy_registry(game.registry)
 	kw.destroy_window()
 }
 
