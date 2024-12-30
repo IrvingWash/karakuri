@@ -25,28 +25,15 @@ new_game :: proc(
 		vsync = vsync,
 	)
 
-	return Game {
-		renderer_info = ren.new_renderer(clear_color),
-	}
+	return Game{renderer_info = ren.new_renderer(clear_color)}
 }
 
 destroy_game :: proc(game: Game) {
 	kw.destroy_window()
 }
 
-start_game :: proc(game: ^Game) {
+start_scene :: proc(game: ^Game, scene: ^Scene) {
 	for !im.is_quit_requested() {
-		update(game^)
-		render(game)
+		update_scene(scene, &game.renderer_info)
 	}
-}
-
-@(private = "file")
-update :: proc(game: Game) {
-}
-
-@(private = "file")
-render :: proc(game: ^Game) {
-	ren.start_drawing(&game.renderer_info)
-	ren.finish_drawing()
 }
