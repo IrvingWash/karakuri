@@ -88,7 +88,20 @@ sync_remove_entity :: proc(entity: kec.Entity, r: ^kec.Registry) {
 }
 
 @(private = "file")
-update_entities :: proc(s: ^Scene) {}
+update_entities :: proc(s: ^Scene) {
+	updatable := kec.start_query()
+	kec.query_with(c.Behavior_Component, &updatable, s.registry)
+	updatable_entities := kec.submit_query(updatable, s.registry)
+	defer delete(updatable_entities)
+
+	for entity in updatable_entities {
+		behavior := kec.get_component(s.registry, entity, c.Behavior_Component)
+
+		if on_update, ok := behavior.on_update.?; ok {
+			on_update()
+		}
+	}
+}
 
 @(private = "file")
 render_entities :: proc(s: ^Scene, ri: ^ren.Renderer_Info) {

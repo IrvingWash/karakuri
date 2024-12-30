@@ -38,4 +38,5 @@ main :: proc() {
 	karakuri.destroy_game(game)
 }
 
-on_player_update: c.On_Update_Fn : proc() {}
+on_player_update: c.On_Update_Fn : proc() {
+}
