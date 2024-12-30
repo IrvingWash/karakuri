@@ -52,5 +52,5 @@ update :: proc(game: Game) {
 @(private = "file")
 render :: proc(game: ^Game) {
 	ren.start_drawing(&game.renderer_info)
-	defer ren.finish_drawing()
+	ren.finish_drawing()
 }
