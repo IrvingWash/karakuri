@@ -160,4 +160,13 @@ test_query :: proc(t: ^testing.T) {
 	defer delete(with_inventory)
 
 	expect(t, len(with_inventory) == 2)
+
+	destroy_entity(&r, tails)
+
+	query_4 := query_start()
+	query_with(HP, &query_4, r)
+	with_hp_after_destroying := query_submit(query_4, r)
+	defer delete(with_hp_after_destroying)
+
+	expect(t, len(with_hp_after_destroying) == 2)
 }
