@@ -1,5 +1,6 @@
 package canary
 
+import "core:fmt"
 import "karakuri:karakuri"
 import c "karakuri:karakuri/components"
 import v2 "karakuri:kmath/vector2"
@@ -27,7 +28,10 @@ main :: proc() {
 					height = 100,
 					color = ku.ColorBlue,
 				},
-				behavior = c.Behavior_Component{on_update = on_player_update},
+				behavior = c.Behavior_Component{
+					on_start = on_player_start,
+					on_update = on_player_update,
+				},
 			},
 		},
 	)
@@ -36,6 +40,10 @@ main :: proc() {
 
 	karakuri.destroy_scene(level_1)
 	karakuri.destroy_game(game)
+}
+
+on_player_start: c.On_Start_Fn : proc(ctx: c.Behavior_Context) {
+	fmt.println("Player started with dt ", ctx.dt)
 }
 
 on_player_update: c.On_Update_Fn : proc(ctx: c.Behavior_Context) {
