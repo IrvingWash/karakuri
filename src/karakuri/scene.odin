@@ -2,6 +2,7 @@ package karakuri
 
 import "../kec"
 import fps "../kwindow/fps_manager"
+import input "../kwindow/input_manager"
 import renderer "../kwindow/renderer"
 import comp "./components"
 
@@ -186,5 +187,13 @@ render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 
 @(private = "file")
 make_behavior_context :: proc(dt: f64) -> comp.Behavior_Context {
-	return comp.Behavior_Context{dt = dt}
+	return comp.Behavior_Context {
+		dt = dt,
+		input = {
+			is_key_down = input.is_key_down,
+			is_key_up = input.is_key_up,
+			is_key_pressed = input.is_key_pressed,
+			is_key_released = input.is_key_released,
+		},
+	}
 }

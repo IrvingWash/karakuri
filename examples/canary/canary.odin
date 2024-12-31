@@ -48,7 +48,9 @@ on_player_start: comp.On_Start_Proc : proc(ctx: comp.Behavior_Context) {
 }
 
 on_player_update: comp.On_Update_Proc : proc(ctx: comp.Behavior_Context) {
-	fmt.println("Player updated wth dt ", ctx.dt)
+	if ctx.input.is_key_pressed(ku.Key.SPACE) {
+		fmt.println("Player updated with dt ", ctx.dt)
+	}
 }
 
 on_player_destroy: comp.On_Destroy_Proc : proc(ctx: comp.Behavior_Context) {
