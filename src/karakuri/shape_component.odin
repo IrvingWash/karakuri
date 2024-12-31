@@ -1,6 +1,6 @@
-package components
+package karakuri
 
-import ku "../../kutils"
+import ku "../kutils"
 
 Shape_Component :: struct {
 	width:  f64,

@@ -1,57 +1,40 @@
+#+private
+
 package karakuri
 
 import "../kec"
 import fps "../kwindow/fps_manager"
 import input "../kwindow/input_manager"
 import renderer "../kwindow/renderer"
-import comp "./components"
 
 Scene :: struct {
-	registry:            kec.Registry,
-	entities_to_add:     [dynamic]comp.Component_Bundle,
-	entities_to_remove:  [dynamic]kec.Entity,
-	entities_to_start:   [dynamic]kec.Entity,
-	entities_to_destroy: [dynamic]kec.Entity,
+	spawner:  Spawner,
+	registry: kec.Registry,
 }
 
-scene_new :: proc(initial_entities: [dynamic]comp.Component_Bundle) -> Scene {
+new_scene :: proc(initial_entities: [dynamic]Component_Bundle) -> Scene {
 	scene := Scene {
-		registry            = kec.new_registry(),
-		entities_to_add     = make([dynamic]comp.Component_Bundle),
-		entities_to_remove  = make([dynamic]kec.Entity),
-		entities_to_start   = make([dynamic]kec.Entity),
-		entities_to_destroy = make([dynamic]kec.Entity),
+		spawner  = new_spawner(),
+		registry = kec.new_registry(),
 	}
 
 	sync_add_entities(
 		initial_entities[:],
 		&scene.registry,
+		&scene.spawner,
 		fps.get_delta_time(),
 	)
-	delete(initial_entities)
 
 	return scene
 }
 
-scene_destroy :: proc(s: Scene) {
+destroy_scene :: proc(s: Scene) {
+	destroy_spawner(s.spawner)
+
 	kec.destroy_registry(s.registry)
-
-	delete(s.entities_to_add)
-	delete(s.entities_to_remove)
-	delete(s.entities_to_start)
-	delete(s.entities_to_destroy)
 }
 
-scene_add_entity :: proc(bundle: comp.Component_Bundle, scene: ^Scene) {
-	append(&scene.entities_to_add, bundle)
-}
-
-scene_remove_entity :: proc(entity: kec.Entity, scene: ^Scene) {
-	append(&scene.entities_to_remove, entity)
-}
-
-@(private)
-scene_update :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
+update_scene :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 	delta_time := fps.get_delta_time()
 
 	sync_with_registry(s, delta_time)
@@ -62,23 +45,30 @@ scene_update :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 @(private = "file")
 sync_with_registry :: proc(scene: ^Scene, delta_time: f64) {
 	sync_remove_entities(
-		scene.entities_to_remove[:],
+		scene.spawner.entities_to_remove[:],
 		&scene.registry,
+		&scene.spawner,
 		delta_time,
 	)
-	clear(&scene.entities_to_remove)
+	clear(&scene.spawner.entities_to_remove)
 
-	sync_add_entities(scene.entities_to_add[:], &scene.registry, delta_time)
-	clear(&scene.entities_to_add)
+	sync_add_entities(
+		scene.spawner.entities_to_add[:],
+		&scene.registry,
+		&scene.spawner,
+		delta_time,
+	)
+	clear(&scene.spawner.entities_to_add)
 }
 
 @(private = "file")
 sync_add_entities :: proc(
-	entities_to_add: []comp.Component_Bundle,
+	entities_to_add: []Component_Bundle,
 	registry: ^kec.Registry,
+	spawner: ^Spawner,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time)
+	behavior_ctx := make_behavior_context(delta_time, spawner)
 
 	for bundle in entities_to_add {
 		entity := kec.create_entity(registry)
@@ -86,7 +76,7 @@ sync_add_entities :: proc(
 		if transform, ok := bundle.transform.?; ok {
 			kec.add_component(registry, entity, transform)
 		} else {
-			kec.add_component(registry, entity, comp.new_transform_component())
+			kec.add_component(registry, entity, new_transform_component())
 		}
 
 		if shape, ok := bundle.shape.?; ok {
@@ -109,16 +99,13 @@ sync_add_entities :: proc(
 sync_remove_entities :: proc(
 	entities_to_remove: []kec.Entity,
 	registry: ^kec.Registry,
+	spawner: ^Spawner,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time)
+	behavior_ctx := make_behavior_context(delta_time, spawner)
 
 	for entity in entities_to_remove {
-		behavior := kec.get_component(
-			registry^,
-			entity,
-			comp.Behavior_Component,
-		)
+		behavior := kec.get_component(registry^, entity, Behavior_Component)
 		if behavior != nil {
 			if on_destroy, ok := behavior.on_destroy.?; ok {
 				on_destroy(behavior_ctx)
@@ -132,17 +119,17 @@ sync_remove_entities :: proc(
 @(private = "file")
 update_entities :: proc(scene: ^Scene, delta_time: f64) {
 	updatable_query := kec.query_start()
-	kec.query_with(comp.Behavior_Component, &updatable_query, scene.registry)
+	kec.query_with(Behavior_Component, &updatable_query, scene.registry)
 	updatable_entities := kec.query_submit(updatable_query, scene.registry)
 	defer delete(updatable_entities)
 
-	ctx := make_behavior_context(delta_time)
+	ctx := make_behavior_context(delta_time, &scene.spawner)
 
 	for entity in updatable_entities {
 		behavior := kec.get_component(
 			scene.registry,
 			entity,
-			comp.Behavior_Component,
+			Behavior_Component,
 		)
 
 		if on_update, ok := behavior.on_update.?; ok {
@@ -156,20 +143,16 @@ update_entities :: proc(scene: ^Scene, delta_time: f64) {
 @(private = "file")
 render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 	renderable := kec.query_start()
-	kec.query_with(comp.Transform_Component, &renderable, s.registry)
-	kec.query_with(comp.Shape_Component, &renderable, s.registry)
+	kec.query_with(Transform_Component, &renderable, s.registry)
+	kec.query_with(Shape_Component, &renderable, s.registry)
 	renderable_entities := kec.query_submit(renderable, s.registry)
 	defer delete(renderable_entities)
 
 	renderer.start_drawing(renderer_info)
 
 	for entity in renderable_entities {
-		transform := kec.get_component(
-			s.registry,
-			entity,
-			comp.Transform_Component,
-		)
-		shape := kec.get_component(s.registry, entity, comp.Shape_Component)
+		transform := kec.get_component(s.registry, entity, Transform_Component)
+		shape := kec.get_component(s.registry, entity, Shape_Component)
 
 		renderer.draw_rectangle(
 			renderer_info = renderer_info^,
@@ -186,9 +169,10 @@ render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 }
 
 @(private = "file")
-make_behavior_context :: proc(dt: f64) -> comp.Behavior_Context {
-	return comp.Behavior_Context {
+make_behavior_context :: proc(dt: f64, spawner: ^Spawner) -> Behavior_Context {
+	return Behavior_Context {
 		dt = dt,
+		spawner = spawner,
 		input = {
 			is_key_down = input.is_key_down,
 			is_key_up = input.is_key_up,

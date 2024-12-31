@@ -39,11 +39,19 @@ destroy_game :: proc(game_info: Game_Info) {
 	kw.destroy_window()
 }
 
+create_scene :: proc(entities: [dynamic]Component_Bundle) -> Scene {
+	defer delete(entities)
+
+	return new_scene(entities)
+}
+
 // Starts playing the passed scene.
 // TODO: Disallow running several scene at once
 // TODO: Maybe the previous scene should be destroyed here
 start_scene :: proc(game_info: ^Game_Info, scene: ^Scene) {
 	for !input.is_quit_requested() {
-		scene_update(scene, &game_info.renderer_info)
+		update_scene(scene, &game_info.renderer_info)
 	}
+
+	destroy_scene(scene^)
 }

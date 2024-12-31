@@ -1,4 +1,4 @@
-package components
+package karakuri
 
 Component_Bundle :: struct {
 	transform: Maybe(Transform_Component),
