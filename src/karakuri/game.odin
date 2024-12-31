@@ -25,7 +25,7 @@ new_game :: proc(
 		vsync = vsync,
 	)
 
-	return Game{renderer_info = ren.new_renderer(clear_color)}
+	return Game{renderer_info = ren.new_renderer_info(clear_color)}
 }
 
 destroy_game :: proc(game: Game) {
