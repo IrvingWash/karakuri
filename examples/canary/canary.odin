@@ -28,7 +28,7 @@ main :: proc() {
 					height = 100,
 					color = ku.ColorBlue,
 				},
-				behavior = c.Behavior_Component{
+				behavior = c.Behavior_Component {
 					on_start = on_player_start,
 					on_update = on_player_update,
 				},
@@ -42,9 +42,9 @@ main :: proc() {
 	karakuri.destroy_game(game)
 }
 
-on_player_start: c.On_Start_Fn : proc(ctx: c.Behavior_Context) {
+on_player_start: c.On_Start_Proc : proc(ctx: c.Behavior_Context) {
 	fmt.println("Player started with dt ", ctx.dt)
 }
 
-on_player_update: c.On_Update_Fn : proc(ctx: c.Behavior_Context) {
+on_player_update: c.On_Update_Proc : proc(ctx: c.Behavior_Context) {
 }
