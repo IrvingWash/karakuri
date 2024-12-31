@@ -39,7 +39,7 @@ finish_drawing :: proc() {
 }
 
 draw_rectangle :: proc(
-	ri: Renderer_Info,
+	renderer_info: Renderer_Info,
 	position: v2.Vector2,
 	width: f64,
 	height: f64,
@@ -49,8 +49,8 @@ draw_rectangle :: proc(
 ) {
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
-			x = f32(position.x + ri.origin.x),
-			y = f32(position.y + ri.origin.y),
+			x = f32(position.x + renderer_info.origin.x),
+			y = f32(position.y + renderer_info.origin.y),
 			width = f32(width * scale.x),
 			height = f32(height * scale.y),
 		},
