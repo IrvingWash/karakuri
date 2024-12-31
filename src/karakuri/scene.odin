@@ -13,11 +13,13 @@ Scene :: struct {
 	entities_to_destroy: [dynamic]kec.Entity,
 }
 
-new_scene :: proc(initial_entities: [dynamic]comp.Component_Bundle) -> Scene {
+scene_new :: proc(initial_entities: [dynamic]comp.Component_Bundle) -> Scene {
 	scene := Scene {
-		registry           = kec.new_registry(),
-		entities_to_add    = make([dynamic]comp.Component_Bundle),
-		entities_to_remove = make([dynamic]kec.Entity),
+		registry            = kec.new_registry(),
+		entities_to_add     = make([dynamic]comp.Component_Bundle),
+		entities_to_remove  = make([dynamic]kec.Entity),
+		entities_to_start   = make([dynamic]kec.Entity),
+		entities_to_destroy = make([dynamic]kec.Entity),
 	}
 
 	sync_add_entities(initial_entities[:], &scene.registry)
@@ -26,26 +28,30 @@ new_scene :: proc(initial_entities: [dynamic]comp.Component_Bundle) -> Scene {
 	return scene
 }
 
-destroy_scene :: proc(s: Scene) {
+scene_destroy :: proc(s: Scene) {
 	kec.destroy_registry(s.registry)
+
 	delete(s.entities_to_add)
 	delete(s.entities_to_remove)
+	delete(s.entities_to_start)
+	delete(s.entities_to_destroy)
 }
 
-update_scene :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
+scene_add_entity :: proc(bundle: comp.Component_Bundle, scene: ^Scene) {
+	append(&scene.entities_to_add, bundle)
+}
+
+scene_remove_entity :: proc(entity: kec.Entity, scene: ^Scene) {
+	append(&scene.entities_to_remove, entity)
+}
+
+@(private)
+scene_update :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 	delta_time := fps.get_delta_time()
 
 	sync_with_registry(s, delta_time)
 	update_entities(s, delta_time)
 	render_entities(s, renderer_info)
-}
-
-add_entity :: proc(bundle: comp.Component_Bundle, scene: ^Scene) {
-	append(&scene.entities_to_add, bundle)
-}
-
-remove_entity :: proc(entity: kec.Entity, scene: ^Scene) {
-	append(&scene.entities_to_remove, entity)
 }
 
 @(private = "file")

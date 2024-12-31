@@ -16,7 +16,7 @@ main :: proc() {
 		vsync = true,
 	)
 
-	level_1 := karakuri.new_scene(
+	level_1 := karakuri.scene_new(
 		{
 			// Player
 			c.Component_Bundle {
@@ -38,7 +38,7 @@ main :: proc() {
 
 	karakuri.start_scene(&game, &level_1)
 
-	karakuri.destroy_scene(level_1)
+	karakuri.scene_destroy(level_1)
 	karakuri.destroy_game(game)
 }
 
