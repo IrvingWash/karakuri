@@ -22,7 +22,11 @@ scene_new :: proc(initial_entities: [dynamic]comp.Component_Bundle) -> Scene {
 		entities_to_destroy = make([dynamic]kec.Entity),
 	}
 
-	sync_add_entities(initial_entities[:], &scene.registry)
+	sync_add_entities(
+		initial_entities[:],
+		&scene.registry,
+		fps.get_delta_time(),
+	)
 	delete(initial_entities)
 
 	return scene
@@ -56,10 +60,14 @@ scene_update :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 
 @(private = "file")
 sync_with_registry :: proc(scene: ^Scene, delta_time: f64) {
-	sync_remove_entities(scene.entities_to_remove[:], &scene.registry)
+	sync_remove_entities(
+		scene.entities_to_remove[:],
+		&scene.registry,
+		delta_time,
+	)
 	clear(&scene.entities_to_remove)
 
-	sync_add_entities(scene.entities_to_add[:], &scene.registry)
+	sync_add_entities(scene.entities_to_add[:], &scene.registry, delta_time)
 	clear(&scene.entities_to_add)
 }
 
@@ -67,7 +75,10 @@ sync_with_registry :: proc(scene: ^Scene, delta_time: f64) {
 sync_add_entities :: proc(
 	entities_to_add: []comp.Component_Bundle,
 	registry: ^kec.Registry,
+	delta_time: f64,
 ) {
+	behavior_ctx := make_behavior_context(delta_time)
+
 	for bundle in entities_to_add {
 		entity := kec.create_entity(registry)
 
@@ -83,6 +94,12 @@ sync_add_entities :: proc(
 
 		if behavior, ok := bundle.behavior.?; ok {
 			kec.add_component(registry, entity, behavior)
+
+			if on_start, ok := behavior.on_start.?; ok {
+				behavior_ctx.entity = entity
+
+				on_start(behavior_ctx)
+			}
 		}
 	}
 }
@@ -91,8 +108,22 @@ sync_add_entities :: proc(
 sync_remove_entities :: proc(
 	entities_to_remove: []kec.Entity,
 	registry: ^kec.Registry,
+	delta_time: f64,
 ) {
+	behavior_ctx := make_behavior_context(delta_time)
+
 	for entity in entities_to_remove {
+		behavior := kec.get_component(
+			registry^,
+			entity,
+			comp.Behavior_Component,
+		)
+		if behavior != nil {
+			if on_destroy, ok := behavior.on_destroy.?; ok {
+				on_destroy(behavior_ctx)
+			}
+		}
+
 		kec.destroy_entity(registry, entity)
 	}
 }

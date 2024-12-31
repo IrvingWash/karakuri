@@ -2,11 +2,12 @@ package karakuri
 
 import ku "../kutils"
 import kw "../kwindow"
-import im "../kwindow/input_manager"
-import ren "../kwindow/renderer"
+import fps "../kwindow/fps_manager"
+import input "../kwindow/input_manager"
+import renderer "../kwindow/renderer"
 
 Game_Info :: struct {
-	renderer_info: ren.Renderer_Info,
+	renderer_info: renderer.Renderer_Info,
 }
 
 new_game :: proc(
@@ -16,6 +17,7 @@ new_game :: proc(
 	clear_color := ku.ColorBlue,
 	fullscreen := true,
 	vsync := true,
+	target_fps: uint = 60,
 ) -> Game_Info {
 	kw.create_window(
 		title = title,
@@ -25,7 +27,9 @@ new_game :: proc(
 		vsync = vsync,
 	)
 
-	return Game_Info{renderer_info = ren.new_renderer_info(clear_color)}
+	fps.set_target_fps(target_fps)
+
+	return Game_Info{renderer_info = renderer.new_renderer_info(clear_color)}
 }
 
 destroy_game :: proc(game_info: Game_Info) {
@@ -33,7 +37,7 @@ destroy_game :: proc(game_info: Game_Info) {
 }
 
 start_scene :: proc(game_info: ^Game_Info, scene: ^Scene) {
-	for !im.is_quit_requested() {
+	for !input.is_quit_requested() {
 		scene_update(scene, &game_info.renderer_info)
 	}
 }

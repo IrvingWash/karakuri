@@ -2,7 +2,7 @@ package canary
 
 import "core:fmt"
 import "karakuri:karakuri"
-import c "karakuri:karakuri/components"
+import comp "karakuri:karakuri/components"
 import v2 "karakuri:kmath/vector2"
 import ku "karakuri:kutils"
 
@@ -19,18 +19,19 @@ main :: proc() {
 	level_1 := karakuri.scene_new(
 		{
 			// Player
-			c.Component_Bundle {
-				transform = c.new_transform_component(
+			comp.Component_Bundle {
+				transform = comp.new_transform_component(
 					position = v2.Vector2{0, 0},
 				),
-				shape = c.Shape_Component {
+				shape = comp.Shape_Component {
 					width = 100,
 					height = 100,
 					color = ku.ColorBlue,
 				},
-				behavior = c.Behavior_Component {
+				behavior = comp.Behavior_Component {
 					on_start = on_player_start,
 					on_update = on_player_update,
+					on_destroy = on_player_destroy,
 				},
 			},
 		},
@@ -42,9 +43,14 @@ main :: proc() {
 	karakuri.destroy_game(game)
 }
 
-on_player_start: c.On_Start_Proc : proc(ctx: c.Behavior_Context) {
+on_player_start: comp.On_Start_Proc : proc(ctx: comp.Behavior_Context) {
 	fmt.println("Player started with dt ", ctx.dt)
 }
 
-on_player_update: c.On_Update_Proc : proc(ctx: c.Behavior_Context) {
+on_player_update: comp.On_Update_Proc : proc(ctx: comp.Behavior_Context) {
+	fmt.println("Player updated wth dt ", ctx.dt)
+}
+
+on_player_destroy: comp.On_Destroy_Proc : proc(ctx: comp.Behavior_Context) {
+	fmt.println("Player destroyed")
 }
