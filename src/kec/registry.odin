@@ -8,6 +8,9 @@ Component_Array :: [dynamic]rawptr
 @(private = "file")
 Entity_To_Component_Slot_Map :: map[Entity]int
 
+// Contains all the components associated to entities that have been attached to entities
+// as well as some additional info.
+// Initialized with `new_registry`
 Registry :: struct {
 	component_pools:   map[typeid]Component_Pool,
 	next_entity:       Entity,
@@ -16,16 +19,21 @@ Registry :: struct {
 	entity_signatures: map[Entity]Signature,
 }
 
+// A pool of components of the same time with some additional info
+// Initialized with `new_component_pool`
+@(private = "file")
 Component_Pool :: struct {
 	component_array: ^Component_Array,
 	etcsm:           Entity_To_Component_Slot_Map,
 	free_slots:      q.Queue(int),
 }
 
+// Initialized a new registry
 new_registry :: proc() -> Registry {
 	return Registry{}
 }
 
+// Cleans up a registry
 destroy_registry :: proc(r: Registry) {
 	for _, cp in r.component_pools {
 		destroy_component_pool(cp)
@@ -36,12 +44,15 @@ destroy_registry :: proc(r: Registry) {
 	delete(r.entity_signatures)
 }
 
+// Creates a new entity to which components can be attached.
+// Every entity is unique to a registry.
 create_entity :: proc(r: ^Registry) -> Entity {
 	defer r.next_entity += 1
 
 	return r.next_entity
 }
 
+// Cleans up an entity, removing all the components attached to it.
 destroy_entity :: proc(r: ^Registry, entity: Entity) {
 	for _, &component_pool in r.component_pools {
 		slot, ok := component_pool.etcsm[entity]
@@ -55,6 +66,7 @@ destroy_entity :: proc(r: ^Registry, entity: Entity) {
 	}
 }
 
+// Adds a components to an entity.
 add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 	if C not_in r.component_pools {
 		register_component(r, C)
@@ -80,6 +92,7 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 	}
 }
 
+// Gets a component attached to an entity.
 get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 	if C not_in r.component_pools {
 		return nil
@@ -95,6 +108,7 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 	return cast(^C)&component_pool.component_array[slot]
 }
 
+// Initializes a new component_pool.
 @(private)
 new_component_pool :: proc() -> Component_Pool {
 	component_array := new(Component_Array)
@@ -107,6 +121,7 @@ new_component_pool :: proc() -> Component_Pool {
 	}
 }
 
+// Cleans up a component pool.
 @(private)
 destroy_component_pool :: proc(cp: Component_Pool) {
 	delete(cp.component_array^)
@@ -115,6 +130,7 @@ destroy_component_pool :: proc(cp: Component_Pool) {
 	delete(cp.etcsm)
 }
 
+// Registers a new component type.
 @(private)
 register_component :: proc(r: ^Registry, $C: typeid) {
 	defer r.next_component_id += 1
