@@ -132,6 +132,12 @@ update_entities :: proc(scene: ^Scene, delta_time: f64) {
 			Behavior_Component,
 		)
 
+		// TODO: It should not be possible to get nils.
+		// It's possible now, it's even expected, but the design is bad.
+		if behavior == nil {
+			continue
+		}
+
 		if on_update, ok := behavior.on_update.?; ok {
 			ctx.entity = entity
 
@@ -153,6 +159,12 @@ render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
 	for entity in renderable_entities {
 		transform := kec.get_component(s.registry, entity, Transform_Component)
 		shape := kec.get_component(s.registry, entity, Shape_Component)
+
+		// TODO: It should not be possible to get nils.
+		// It's possible now, it's even expected, but the design is bad.
+		if transform == nil || shape == nil {
+			continue
+		}
 
 		renderer.draw_rectangle(
 			renderer_info = renderer_info^,
