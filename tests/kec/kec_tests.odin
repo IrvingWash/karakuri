@@ -139,24 +139,24 @@ test_query :: proc(t: ^testing.T) {
 	add_component(&r, tails, Inventory{50})
 	add_component(&r, knuckles, HP{700})
 
-	query_1 := start_query()
+	query_1 := query_start()
 	query_with(HP, &query_1, r)
-	with_hp := submit_query(query_1, r)
+	with_hp := query_submit(query_1, r)
 	defer delete(with_hp)
 
 	expect(t, len(with_hp) == 3)
 
-	query_2 := start_query()
+	query_2 := query_start()
 	query_with(HP, &query_2, r)
 	query_with(Inventory, &query_2, r)
-	with_hp_and_inventory := submit_query(query_2, r)
+	with_hp_and_inventory := query_submit(query_2, r)
 	defer delete(with_hp_and_inventory)
 
 	expect(t, len(with_hp_and_inventory) == 2)
 
-	query_3 := start_query()
+	query_3 := query_start()
 	query_with(Inventory, &query_3, r)
-	with_inventory := submit_query(query_3, r)
+	with_inventory := query_submit(query_3, r)
 	defer delete(with_inventory)
 
 	expect(t, len(with_inventory) == 2)

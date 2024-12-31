@@ -93,9 +93,9 @@ sync_remove_entities :: proc(
 
 @(private = "file")
 update_entities :: proc(scene: ^Scene, delta_time: f64) {
-	updatable_query := kec.start_query()
+	updatable_query := kec.query_start()
 	kec.query_with(comp.Behavior_Component, &updatable_query, scene.registry)
-	updatable_entities := kec.submit_query(updatable_query, scene.registry)
+	updatable_entities := kec.query_submit(updatable_query, scene.registry)
 	defer delete(updatable_entities)
 
 	ctx := make_behavior_context(delta_time)
@@ -117,10 +117,10 @@ update_entities :: proc(scene: ^Scene, delta_time: f64) {
 
 @(private = "file")
 render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
-	renderable := kec.start_query()
+	renderable := kec.query_start()
 	kec.query_with(comp.Transform_Component, &renderable, s.registry)
 	kec.query_with(comp.Shape_Component, &renderable, s.registry)
-	renderable_entities := kec.submit_query(renderable, s.registry)
+	renderable_entities := kec.query_submit(renderable, s.registry)
 	defer delete(renderable_entities)
 
 	renderer.start_drawing(renderer_info)

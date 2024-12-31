@@ -2,16 +2,21 @@ package kec
 
 @(private = "file")
 Queried_Components :: [dynamic]typeid
+@(private = "file")
 Queried_Entities :: [dynamic]Entity
 
+// Query is used to retrieve a set of entities that have all the listed components attached to them.
+// Initialized by `start_query`.
 Query :: struct {
 	queried_components: Queried_Components,
 }
 
-start_query :: proc() -> Query {
+// Initializes a new empty query
+query_start :: proc() -> Query {
 	return Query{queried_components = make(Queried_Components)}
 }
 
+// Adds a component to the query
 query_with :: proc($C: typeid, q: ^Query, r: Registry) {
 	if C not_in r.component_pools {
 		return
@@ -20,7 +25,9 @@ query_with :: proc($C: typeid, q: ^Query, r: Registry) {
 	append(&q.queried_components, C)
 }
 
-submit_query :: proc(q: Query, r: Registry) -> Queried_Entities {
+// Returns the list of entities conforming to the query.
+// Cleans up the passed query.
+query_submit :: proc(q: Query, r: Registry) -> Queried_Entities {
 	defer delete(q.queried_components)
 
 	reference_signature: Signature = {}
@@ -33,7 +40,6 @@ submit_query :: proc(q: Query, r: Registry) -> Queried_Entities {
 		return make(Queried_Entities)
 	}
 
-	// TODO: This should be cleared at the caller's scope. Sucks
 	entities := make(Queried_Entities)
 
 	for entity, signature in r.entity_signatures {
