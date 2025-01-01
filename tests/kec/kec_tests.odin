@@ -176,67 +176,89 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 	using testing
 	using kec
 
+	Vector2 :: [2]f64
+
+	Shape :: struct {
+		size:  Vector2,
+		color: [4]f64,
+	}
+
+	Transform :: struct {
+		position: Vector2,
+		scale:    Vector2,
+		rotation: f64,
+	}
+
 	r := new_registry()
 	defer destroy_registry(r)
 
 	sonic := kec.create_entity(&r)
 	tails := kec.create_entity(&r)
 
-	add_component(&r, sonic, HP{300})
-	add_component(&r, sonic, Inventory{30})
-	add_component(&r, tails, HP{500})
-	add_component(&r, tails, Inventory{50})
+	add_component(
+		&r,
+		sonic,
+		Transform{position = {300, 300}, scale = {3, 3}, rotation = 3},
+	)
+	add_component(&r, sonic, Shape{size = {30, 30}, color = {3, 3, 3, 3}})
+	add_component(
+		&r,
+		tails,
+		Transform{position = {500, 500}, scale = {5, 5}, rotation = 5},
+	)
+	add_component(&r, tails, Shape{size = {50, 50}, color = {5, 5, 5, 5}})
 
-	hps_and_inventories_query := kec.query_start()
-	kec.query_with(HP, &hps_and_inventories_query, r)
-	kec.query_with(Inventory, &hps_and_inventories_query, r)
-	entities_with_hps_and_inventories := kec.query_submit(
-		hps_and_inventories_query,
+	transforms_and_shapes_query := kec.query_start()
+	kec.query_with(Transform, &transforms_and_shapes_query, r)
+	kec.query_with(Shape, &transforms_and_shapes_query, r)
+	entities_with_transforms_and_shapes := kec.query_submit(
+		transforms_and_shapes_query,
 		r,
 	)
-	defer delete(entities_with_hps_and_inventories)
+	defer delete(entities_with_transforms_and_shapes)
 
-	expect(t, len(entities_with_hps_and_inventories) == 2)
+	expect(t, len(entities_with_transforms_and_shapes) == 2)
 
 	sonic_from_query :=
-		entities_with_hps_and_inventories[0] == sonic ? entities_with_hps_and_inventories[0] : entities_with_hps_and_inventories[1]
+		entities_with_transforms_and_shapes[0] == sonic ? entities_with_transforms_and_shapes[0] : entities_with_transforms_and_shapes[1]
 	tails_from_query :=
-		entities_with_hps_and_inventories[0] == tails ? entities_with_hps_and_inventories[0] : entities_with_hps_and_inventories[1]
+		entities_with_transforms_and_shapes[0] == tails ? entities_with_transforms_and_shapes[0] : entities_with_transforms_and_shapes[1]
 
-	sonic_hp := kec.get_component(r, sonic_from_query, HP)
-	tails_hp := kec.get_component(r, tails_from_query, HP)
+	sonic_transform := kec.get_component(r, sonic_from_query, Transform)
+	tails_transform := kec.get_component(r, tails_from_query, Transform)
 
-	expect(t, sonic_hp.value == 300)
-	expect(t, tails_hp.value == 500)
+	expect(t, sonic_transform.position == Vector2{300, 300})
+	expect(t, tails_transform.position == Vector2{500, 500})
 
-	sonic_inventory := kec.get_component(r, sonic_from_query, Inventory)
-	tails_inventory := kec.get_component(r, tails_from_query, Inventory)
+	sonic_shape := kec.get_component(r, sonic_from_query, Shape)
+	tails_shape := kec.get_component(r, tails_from_query, Shape)
 
-	expect(t, sonic_inventory.rings == 30)
-	expect(t, tails_inventory.rings == 50)
+	expect(t, sonic_shape.size == Vector2{30, 30})
+	expect(t, tails_shape.size == Vector2{50, 50})
 
+	// After destroy
 	kec.destroy_entity(&r, sonic)
 
-	hps_and_inventories_query_2 := kec.query_start()
-	kec.query_with(HP, &hps_and_inventories_query_2, r)
-	kec.query_with(Inventory, &hps_and_inventories_query_2, r)
-	entities_with_hps_and_inventories_2 := kec.query_submit(
-		hps_and_inventories_query_2,
+	transforms_and_shapes_query_2 := kec.query_start()
+	kec.query_with(Transform, &transforms_and_shapes_query_2, r)
+	kec.query_with(Shape, &transforms_and_shapes_query_2, r)
+	entities_with_transforms_and_shapes_2 := kec.query_submit(
+		transforms_and_shapes_query_2,
 		r,
 	)
-	defer delete(entities_with_hps_and_inventories_2)
+	defer delete(entities_with_transforms_and_shapes_2)
 
-	expect(t, len(entities_with_hps_and_inventories_2) == 1)
+	expect(t, len(entities_with_transforms_and_shapes_2) == 1)
 
-	tails_from_query_2 := entities_with_hps_and_inventories_2[0]
+	tails_from_query_2 := entities_with_transforms_and_shapes_2[0]
 
-	sonic_hp_2 := kec.get_component(r, sonic, HP)
-	sonic_inventory_2 := kec.get_component(r, sonic, Inventory)
-	expect(t, sonic_hp_2 == nil)
-	expect(t, sonic_inventory_2 == nil)
+	sonic_transform_2 := kec.get_component(r, sonic, Transform)
+	sonic_shape_2 := kec.get_component(r, sonic, Shape)
+	expect(t, sonic_transform_2 == nil)
+	expect(t, sonic_shape_2 == nil)
 
-	tails_hp_2 := kec.get_component(r, tails_from_query_2, HP)
-	tails_inventory_2 := kec.get_component(r, tails_from_query_2, Inventory)
-	expect(t, tails_hp_2.value == 500)
-	expect(t, tails_inventory_2.rings == 50)
+	tails_transform_2 := kec.get_component(r, tails_from_query_2, Transform)
+	tails_shape_2 := kec.get_component(r, tails_from_query_2, Shape)
+	expect(t, tails_transform_2.position == {500, 500})
+	expect(t, tails_shape_2.size == {50, 50})
 }

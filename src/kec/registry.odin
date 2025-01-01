@@ -107,7 +107,9 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 		return nil
 	}
 
-	return cast(^C)&component_pool.component_array[slot]
+	array := cast(^[dynamic]C)component_pool.component_array
+
+	return &array[slot]
 }
 
 // Initializes a new component_pool.
