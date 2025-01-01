@@ -67,9 +67,9 @@ on_player_update: components.On_Update_Proc : proc(
 					size = kmath.Vector2{10, 50},
 					color = kutils.ColorRed,
 				},
-				transform = components.Transform_Component {
+				transform = components.new_transform_component(
 					position = kmath.Vector2{0, -200},
-				},
+				),
 			},
 		)
 	}

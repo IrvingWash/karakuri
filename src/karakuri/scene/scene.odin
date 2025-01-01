@@ -183,6 +183,7 @@ render_entities :: proc(
 	defer delete(renderable_entities)
 
 	renderer.start_drawing(renderer_info)
+	defer renderer.finish_drawing()
 
 	for entity in renderable_entities {
 		transform := kec.get_component(
@@ -206,8 +207,6 @@ render_entities :: proc(
 			color = shape.color,
 		)
 	}
-
-	renderer.finish_drawing()
 }
 
 @(private = "file")
