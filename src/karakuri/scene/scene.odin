@@ -75,7 +75,7 @@ sync_add_entities :: proc(
 	spawner_info: ^components.Spawner_Info,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time, spawner_info)
+	behavior_ctx := make_behavior_context(delta_time, spawner_info, registry^)
 
 	for bundle in entities_to_add {
 		entity := kec.create_entity(registry)
@@ -113,7 +113,7 @@ sync_remove_entities :: proc(
 	spawner_info: ^components.Spawner_Info,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time, spawner_info)
+	behavior_ctx := make_behavior_context(delta_time, spawner_info, registry^)
 
 	for entity in entities_to_remove {
 		behavior := kec.get_component(
@@ -146,7 +146,11 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 	)
 	defer delete(updatable_entities)
 
-	ctx := make_behavior_context(delta_time, &scene_info.spawner_info)
+	ctx := make_behavior_context(
+		delta_time,
+		&scene_info.spawner_info,
+		scene_info.registry,
+	)
 
 	for entity in updatable_entities {
 		behavior := kec.get_component(
@@ -213,10 +217,12 @@ render_entities :: proc(
 make_behavior_context :: proc(
 	dt: f64,
 	spawner_info: ^components.Spawner_Info,
+	registry: kec.Registry,
 ) -> components.Behavior_Context {
 	return components.Behavior_Context {
 		dt = dt,
 		spawner = spawner_info,
+		registry = registry,
 		input = {
 			is_key_down = input_manager.is_key_down,
 			is_key_up = input_manager.is_key_up,

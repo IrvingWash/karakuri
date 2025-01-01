@@ -4,10 +4,11 @@ import "../../kec"
 import "../../kwindow/input_manager"
 
 Behavior_Context :: struct {
-	entity:  kec.Entity,
-	dt:      f64,
-	spawner: ^Spawner_Info,
-	input:   struct {
+	entity:   kec.Entity,
+	dt:       f64,
+	spawner:  ^Spawner_Info,
+	registry: kec.Registry,
+	input:    struct {
 		is_key_pressed:  input_manager.Key_State_Proc,
 		is_key_down:     input_manager.Key_State_Proc,
 		is_key_up:       input_manager.Key_State_Proc,

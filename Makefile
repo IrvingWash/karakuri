@@ -42,3 +42,7 @@ canary-debug:
 canary-release:
 	@mkdir -p ${examples_release_build_dir}
 	@odin run ${examples_src}/canary ${vet_flags} ${release_flags} -out:${examples_release_build_dir}/canary ${collections}
+
+shmup-debug:
+	@mkdir -p ${examples_debug_build_dir}
+	@odin run ${examples_src}/shmup ${vet_flags} ${debug_flags} -out:${examples_debug_build_dir}/shmup ${collections}
