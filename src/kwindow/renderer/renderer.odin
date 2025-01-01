@@ -2,8 +2,9 @@ package renderer
 
 import rl "vendor:raylib"
 
-import v2 "../../kmath/vector2"
 import kutils "../../kutils"
+
+Vector2 :: [2]f64
 
 // Contains the info required for each draw call.
 // If created with `new_renderer_info()`, the origin of the canvas will be at the center of the screen
@@ -12,7 +13,7 @@ Renderer_Info :: struct {
 	clear_color:   kutils.Color,
 	window_width:  uint,
 	window_height: uint,
-	origin:        v2.Vector2,
+	origin:        Vector2,
 }
 
 // Initializes `Renderer_Info` with the origin of the canvas at the center of the screen
@@ -25,10 +26,7 @@ new_renderer_info :: proc(clear_color: kutils.Color) -> Renderer_Info {
 		clear_color = clear_color,
 		window_width = uint(window_width),
 		window_height = uint(window_height),
-		origin = v2.Vector2 {
-			x = f64(window_width) / 2,
-			y = f64(window_height) / 2,
-		},
+		origin = Vector2{f64(window_width) / 2, f64(window_height) / 2},
 	}
 }
 
@@ -50,13 +48,13 @@ finish_drawing :: proc() {
 // This can be overridden by passing `custom_origin`
 draw_rectangle :: proc(
 	renderer_info: Renderer_Info,
-	position: v2.Vector2,
+	position: Vector2,
 	width: f64,
 	height: f64,
-	scale: v2.Vector2,
+	scale: Vector2,
 	rotation: f64,
 	color: kutils.Color,
-	custom_origin: Maybe(v2.Vector2) = nil,
+	custom_origin: Maybe(Vector2) = nil,
 ) {
 	scaled_width := width * scale.x
 	scaled_height := height * scale.y
