@@ -51,6 +51,19 @@ on_player_update: karakuri.On_Update_Proc : proc(
 	ctx: karakuri.Behavior_Context,
 ) {
 	if ctx.input.is_key_pressed(ku.Key.SPACE) {
+		ctx.spawner.add_entity(ctx.spawner, karakuri.Component_Bundle{
+			shape = karakuri.Shape_Component{
+				width = 10,
+				height = 50,
+				color = ku.ColorRed,
+			},
+			transform = karakuri.Transform_Component {
+				position = v2.Vector2{0, -200},
+			},
+		})
+	}
+
+	if ctx.input.is_key_pressed(ku.Key.X) {
 		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
 	}
 }

@@ -35,8 +35,8 @@ new_registry :: proc() -> Registry {
 
 // Cleans up a registry
 destroy_registry :: proc(r: Registry) {
-	for _, cp in r.component_pools {
-		destroy_component_pool(cp)
+	for _, &cp in r.component_pools {
+		destroy_component_pool(&cp)
 	}
 
 	delete(r.component_pools)
@@ -125,8 +125,9 @@ new_component_pool :: proc() -> Component_Pool {
 
 // Cleans up a component pool.
 @(private)
-destroy_component_pool :: proc(cp: Component_Pool) {
+destroy_component_pool :: proc(cp: ^Component_Pool) {
 	delete(cp.component_array^)
+	q.destroy(&cp.free_slots)
 	free(cp.component_array)
 
 	delete(cp.etcsm)
