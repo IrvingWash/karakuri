@@ -3,7 +3,6 @@ package karakuri
 import ku "../kutils"
 import kw "../kwindow"
 import fps "../kwindow/fps_manager"
-import input "../kwindow/input_manager"
 import renderer "../kwindow/renderer"
 
 // Contains the game info.
@@ -37,19 +36,4 @@ new_game :: proc(
 // Cleans up the game.
 destroy_game :: proc(game_info: Game_Info) {
 	kw.destroy_window()
-}
-
-create_scene :: proc(entities: [dynamic]Component_Bundle) -> Scene {
-	return new_scene(entities)
-}
-
-// Starts playing the passed scene.
-// TODO: Disallow running several scene at once
-// TODO: Maybe the previous scene should be destroyed here
-start_scene :: proc(game_info: ^Game_Info, scene: ^Scene) {
-	for !input.is_quit_requested() {
-		update_scene(scene, &game_info.renderer_info)
-	}
-
-	destroy_scene(scene^)
 }
