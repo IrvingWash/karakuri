@@ -1,4 +1,4 @@
-package karakuri
+package scene
 
 import "../../kec"
 import "../../kwindow/fps_manager"
@@ -6,63 +6,66 @@ import "../../kwindow/input_manager"
 import "../../kwindow/renderer"
 import "../components"
 
-Scene :: struct {
+Scene_Info :: struct {
 	spawner_info: components.Spawner_Info,
 	registry:     kec.Registry,
 }
 
 new_scene :: proc(
 	initial_entities: [dynamic]components.Component_Bundle,
-) -> Scene {
+) -> Scene_Info {
 	defer delete(initial_entities)
 
-	scene := Scene {
+	scene_info := Scene_Info {
 		spawner_info = components.new_spawner_info(),
 		registry     = kec.new_registry(),
 	}
 
 	sync_add_entities(
 		initial_entities[:],
-		&scene.registry,
-		&scene.spawner_info,
+		&scene_info.registry,
+		&scene_info.spawner_info,
 		fps_manager.get_delta_time(),
 	)
 
-	return scene
+	return scene_info
 }
 
-destroy_scene :: proc(s: Scene) {
-	components.destroy_spawner_info(s.spawner_info)
-	kec.destroy_registry(s.registry)
+destroy_scene_info :: proc(scene_info: Scene_Info) {
+	components.destroy_spawner_info(scene_info.spawner_info)
+	kec.destroy_registry(scene_info.registry)
 }
 
-update_scene :: proc(scene: ^Scene, renderer_info: ^renderer.Renderer_Info) {
+update :: proc(
+	scene_info: ^Scene_Info,
+	renderer_info: ^renderer.Renderer_Info,
+) {
 	delta_time := fps_manager.get_delta_time()
 
-	sync_with_registry(scene, delta_time)
+	sync_with_registry(scene_info, delta_time)
 
-	update_entities(scene, delta_time)
+	update_entities(scene_info, delta_time)
 
-	render_entities(scene, renderer_info)
+	render_entities(scene_info, renderer_info)
 }
 
 @(private = "file")
-sync_with_registry :: proc(scene: ^Scene, delta_time: f64) {
+sync_with_registry :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 	sync_remove_entities(
-		scene.spawner_info.entities_to_remove[:],
-		&scene.registry,
-		&scene.spawner_info,
+		scene_info.spawner_info.entities_to_remove[:],
+		&scene_info.registry,
+		&scene_info.spawner_info,
 		delta_time,
 	)
-	clear(&scene.spawner_info.entities_to_remove)
+	clear(&scene_info.spawner_info.entities_to_remove)
 
 	sync_add_entities(
-		scene.spawner_info.entities_to_add[:],
-		&scene.registry,
-		&scene.spawner_info,
+		scene_info.spawner_info.entities_to_add[:],
+		&scene_info.registry,
+		&scene_info.spawner_info,
 		delta_time,
 	)
-	clear(&scene.spawner_info.entities_to_add)
+	clear(&scene_info.spawner_info.entities_to_add)
 }
 
 @(private = "file")
@@ -130,21 +133,24 @@ sync_remove_entities :: proc(
 }
 
 @(private = "file")
-update_entities :: proc(scene: ^Scene, delta_time: f64) {
+update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 	updatable_query := kec.query_start()
 	kec.query_with(
 		components.Behavior_Component,
 		&updatable_query,
-		scene.registry,
+		scene_info.registry,
 	)
-	updatable_entities := kec.query_submit(updatable_query, scene.registry)
+	updatable_entities := kec.query_submit(
+		updatable_query,
+		scene_info.registry,
+	)
 	defer delete(updatable_entities)
 
-	ctx := make_behavior_context(delta_time, &scene.spawner_info)
+	ctx := make_behavior_context(delta_time, &scene_info.spawner_info)
 
 	for entity in updatable_entities {
 		behavior := kec.get_component(
-			scene.registry,
+			scene_info.registry,
 			entity,
 			components.Behavior_Component,
 		)
@@ -158,23 +164,34 @@ update_entities :: proc(scene: ^Scene, delta_time: f64) {
 }
 
 @(private = "file")
-render_entities :: proc(s: ^Scene, renderer_info: ^renderer.Renderer_Info) {
+render_entities :: proc(
+	scene_info: ^Scene_Info,
+	renderer_info: ^renderer.Renderer_Info,
+) {
 	renderable := kec.query_start()
-	kec.query_with(components.Transform_Component, &renderable, s.registry)
-	kec.query_with(components.Shape_Component, &renderable, s.registry)
-	renderable_entities := kec.query_submit(renderable, s.registry)
+	kec.query_with(
+		components.Transform_Component,
+		&renderable,
+		scene_info.registry,
+	)
+	kec.query_with(
+		components.Shape_Component,
+		&renderable,
+		scene_info.registry,
+	)
+	renderable_entities := kec.query_submit(renderable, scene_info.registry)
 	defer delete(renderable_entities)
 
 	renderer.start_drawing(renderer_info)
 
 	for entity in renderable_entities {
 		transform := kec.get_component(
-			s.registry,
+			scene_info.registry,
 			entity,
 			components.Transform_Component,
 		)
 		shape := kec.get_component(
-			s.registry,
+			scene_info.registry,
 			entity,
 			components.Shape_Component,
 		)

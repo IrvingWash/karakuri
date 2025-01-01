@@ -1,94 +1,86 @@
 package canary
 
-import "karakuri:kec"
+import "core:fmt"
+import "karakuri:karakuri/components"
+import karakuri "karakuri:karakuri/game"
 import "karakuri:kmath"
 import "karakuri:kutils"
-import "karakuri:kwindow"
-import "karakuri:kwindow/fps_manager"
-import "karakuri:kwindow/input_manager"
-import renderer "karakuri:kwindow/renderer"
-
-Shape :: struct {
-	size:  kmath.Vector2,
-	color: kutils.Color,
-}
-
-Transform :: struct {
-	position: kmath.Vector2,
-	scale:    kmath.Vector2,
-	rotation: f64,
-}
 
 main :: proc() {
-	// Setup window
-	kwindow.create_window(
-		"Sonic The Hedgehog",
-		800,
-		600,
+	game := karakuri.new_game(
+		title = "Sonic The Hedgehog",
+		width = 800,
+		height = 600,
+		clear_color = kutils.ColorWhite,
 		fullscreen = false,
 		vsync = true,
 	)
-	defer kwindow.destroy_window()
+	defer karakuri.destroy_game(game)
 
-	fps_manager.set_target_fps(60)
-
-	// Setup registry and renderer
-	registry := kec.new_registry()
-	defer kec.destroy_registry(registry)
-
-	renderer_info := renderer.new_renderer_info(kutils.ColorBlack)
-
-	// Setup game objects
-	sonic := kec.create_entity(&registry)
-	tails := kec.create_entity(&registry)
-
-	kec.add_component(
-		&registry,
-		sonic,
-		Shape{size = {100, 100}, color = kutils.ColorBlue},
-	)
-	kec.add_component(
-		&registry,
-		sonic,
-		Transform{position = {0, 0}, scale = {1, 1}, rotation = 0},
-	)
-
-	kec.add_component(
-		&registry,
-		tails,
-		Shape{size = {80, 80}, color = kutils.new_color(255, 255, 0)},
-	)
-	kec.add_component(
-		&registry,
-		tails,
-		Transform{position = {100, 100}, scale = {1, 1}, rotation = 0},
+	level_1 := karakuri.create_scene(
+	{
+		// Sonic
+		components.Component_Bundle {
+			transform = components.new_transform_component(
+				position = kmath.Vector2{0, 0},
+			),
+			shape = components.Shape_Component {
+				size = kmath.Vector2{100, 100},
+				color = kutils.ColorBlue,
+			},
+			behavior = components.Behavior_Component {
+				on_start = on_player_start,
+				on_update = on_player_update,
+				on_destroy = on_player_destroy,
+			},
+		},
+		// Tails
+		components.Component_Bundle {
+			transform = components.new_transform_component(
+				position = kmath.Vector2{0, -100},
+			),
+			shape = components.Shape_Component {
+				size = kmath.Vector2{100, 100},
+				color = kutils.ColorYellow,
+			},
+		},
+	},
 	)
 
-	// Game loop
-	for !input_manager.is_quit_requested() {
-		// Render
-		renderer.start_drawing(&renderer_info)
-		defer renderer.finish_drawing()
+	karakuri.start_scene(&game, &level_1)
+}
 
-		renderable_query := kec.query_start()
-		kec.query_with(Transform, &renderable_query, registry)
-		kec.query_with(Shape, &renderable_query, registry)
-		renderable_entities := kec.query_submit(renderable_query, registry)
-		defer delete(renderable_entities)
+on_player_start: components.On_Start_Proc : proc(
+	ctx: components.Behavior_Context,
+) {
+	fmt.println("Player started with dt ", ctx.dt)
+}
 
-		for entity in renderable_entities {
-			transform := kec.get_component(registry, entity, Transform)
-			shape := kec.get_component(registry, entity, Shape)
-
-			renderer.draw_rectangle(
-				renderer_info,
-				transform.position,
-				shape.size.x,
-				shape.size.y,
-				transform.scale,
-				transform.rotation,
-				shape.color,
-			)
-		}
+on_player_update: components.On_Update_Proc : proc(
+	ctx: components.Behavior_Context,
+) {
+	if ctx.input.is_key_pressed(kutils.Key.SPACE) {
+		ctx.spawner.add_entity(
+			ctx.spawner,
+			components.Component_Bundle {
+				shape = components.Shape_Component {
+					size = kmath.Vector2{10, 50},
+					color = kutils.ColorRed,
+				},
+				transform = components.Transform_Component {
+					position = kmath.Vector2{0, -200},
+				},
+			},
+		)
 	}
+
+	if ctx.input.is_key_pressed(kutils.Key.X) {
+		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
+	}
+}
+
+on_player_destroy: components.On_Destroy_Proc : proc(
+	ctx: components.Behavior_Context,
+) {
+	fmt.println("Player destroyed")
 }
