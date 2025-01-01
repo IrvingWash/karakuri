@@ -40,8 +40,6 @@ destroy_game :: proc(game_info: Game_Info) {
 }
 
 create_scene :: proc(entities: [dynamic]Component_Bundle) -> Scene {
-	defer delete(entities)
-
 	return new_scene(entities)
 }
 

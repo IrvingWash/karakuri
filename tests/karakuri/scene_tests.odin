@@ -1,7 +1,7 @@
 package scene_tests
 
-import "core:testing"
 import "../../src/karakuri"
+import "core:testing"
 
 test_entity_cycle :: proc(t: ^testing.T) {
 	using testing

@@ -25,6 +25,8 @@ new_scene :: proc(initial_entities: [dynamic]Component_Bundle) -> Scene {
 		fps.get_delta_time(),
 	)
 
+	delete(initial_entities)
+
 	return scene
 }
 
