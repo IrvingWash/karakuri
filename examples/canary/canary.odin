@@ -2,6 +2,7 @@ package canary
 
 import "core:fmt"
 import "karakuri:kec"
+import "karakuri:kmath"
 import "karakuri:kutils"
 import "karakuri:kwindow"
 import "karakuri:kwindow/fps_manager"
@@ -10,16 +11,14 @@ import renderer "karakuri:kwindow/renderer"
 
 _ :: input_manager
 
-Vector2 :: [2]f64
-
 Shape :: struct {
-	size:  Vector2,
+	size:  kmath.Vector2,
 	color: kutils.Color,
 }
 
 Transform :: struct {
-	position: Vector2,
-	scale:    Vector2,
+	position: kmath.Vector2,
+	scale:    kmath.Vector2,
 	rotation: f64,
 }
 
