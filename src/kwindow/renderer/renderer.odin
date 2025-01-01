@@ -3,13 +3,13 @@ package renderer
 import rl "vendor:raylib"
 
 import v2 "../../kmath/vector2"
-import ku "../../kutils"
+import kutils "../../kutils"
 
 // Contains the info required for each draw call.
 // If created with `new_renderer_info()`, the origin of the canvas will be at the center of the screen
 // with X increasing to the right and Y increasing to the bottom.
 Renderer_Info :: struct {
-	clear_color:   ku.Color,
+	clear_color:   kutils.Color,
 	window_width:  uint,
 	window_height: uint,
 	origin:        v2.Vector2,
@@ -17,7 +17,7 @@ Renderer_Info :: struct {
 
 // Initializes `Renderer_Info` with the origin of the canvas at the center of the screen
 // with X increasing to the right and Y increasing to the bottom.
-new_renderer_info :: proc(clear_color: ku.Color) -> Renderer_Info {
+new_renderer_info :: proc(clear_color: kutils.Color) -> Renderer_Info {
 	window_width := rl.GetScreenWidth()
 	window_height := rl.GetScreenHeight()
 
@@ -55,7 +55,7 @@ draw_rectangle :: proc(
 	height: f64,
 	scale: v2.Vector2,
 	rotation: f64,
-	color: ku.Color,
+	color: kutils.Color,
 	custom_origin: Maybe(v2.Vector2) = nil,
 ) {
 	scaled_width := width * scale.x
@@ -101,7 +101,7 @@ update_window_size :: proc(renderer_info: ^Renderer_Info) {
 
 // Converts karakuri's `kutils.Color` into `raylib.Color`
 @(private = "file")
-color_to_rl :: proc(color: ku.Color) -> rl.Color {
+color_to_rl :: proc(color: kutils.Color) -> rl.Color {
 	using color
 
 	return rl.Color{r, g, b, a}
