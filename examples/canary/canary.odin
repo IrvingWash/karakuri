@@ -33,6 +33,17 @@ main :: proc() {
 					on_destroy = on_player_destroy,
 				},
 			},
+			// Tail
+			karakuri.Component_Bundle {
+				transform = karakuri.new_transform_component(
+					position = v2.Vector2{0, 200},
+				),
+				shape = karakuri.Shape_Component {
+					width = 100,
+					height = 100,
+					color = ku.ColorRed,
+				},
+			},
 		},
 	)
 
@@ -51,16 +62,19 @@ on_player_update: karakuri.On_Update_Proc : proc(
 	ctx: karakuri.Behavior_Context,
 ) {
 	if ctx.input.is_key_pressed(ku.Key.SPACE) {
-		ctx.spawner.add_entity(ctx.spawner, karakuri.Component_Bundle{
-			shape = karakuri.Shape_Component{
-				width = 10,
-				height = 50,
-				color = ku.ColorRed,
+		ctx.spawner.add_entity(
+			ctx.spawner,
+			karakuri.Component_Bundle {
+				shape = karakuri.Shape_Component {
+					width = 10,
+					height = 50,
+					color = ku.ColorRed,
+				},
+				transform = karakuri.Transform_Component {
+					position = v2.Vector2{0, -200},
+				},
 			},
-			transform = karakuri.Transform_Component {
-				position = v2.Vector2{0, -200},
-			},
-		})
+		)
 	}
 
 	if ctx.input.is_key_pressed(ku.Key.X) {
