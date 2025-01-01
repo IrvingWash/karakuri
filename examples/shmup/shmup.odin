@@ -18,7 +18,7 @@ main :: proc() {
 	)
 	defer karakuri.destroy_game(shmup_game)
 
-	level_1 := karakuri.create_scene({player_prefub()})
+	level_1 := karakuri.create_scene({player_prefub(), projectile_destroyer_prefub({0, -DODONPACHI_HEIGHT})})
 
 	karakuri.start_scene(&shmup_game, &level_1)
 }
