@@ -209,4 +209,25 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 
 	expect(t, sonic_inventory.rings == 30)
 	expect(t, tails_inventory.rings == 50)
+
+	kec.destroy_entity(&r, sonic)
+
+	hps_and_inventories_query_2 := kec.query_start()
+	kec.query_with(HP, &hps_and_inventories_query, r)
+	kec.query_with(Inventory, &hps_and_inventories_query, r)
+	entities_with_hps_and_inventories_2 := kec.query_submit(
+		hps_and_inventories_query_2,
+		r,
+	)
+	defer delete(entities_with_hps_and_inventories_2)
+
+	sonic_hp_2 := kec.get_component(r, sonic, HP)
+	sonic_inventory_2 := kec.get_component(r, sonic, Inventory)
+	expect(t, sonic_hp_2 == nil)
+	expect(t, sonic_inventory_2 == nil)
+
+	tails_hp_2 := kec.get_component(r, tails, HP)
+	tails_inventory_2 := kec.get_component(r, tails, Inventory)
+	expect(t, tails_hp_2.value == 500)
+	expect(t, tails_inventory_2.rings == 50)
 }
