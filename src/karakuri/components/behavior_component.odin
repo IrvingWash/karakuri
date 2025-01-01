@@ -1,7 +1,7 @@
-package karakuri
+package components
 
-import "../kec"
-import input_manager "../kwindow/input_manager"
+import "../../kec"
+import input_manager "../../kwindow/input_manager"
 
 Behavior_Component :: struct {
 	on_start:   Maybe(On_Start_Proc),
