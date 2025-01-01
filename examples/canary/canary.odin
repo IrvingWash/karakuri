@@ -1,6 +1,5 @@
 package canary
 
-import "core:fmt"
 import "karakuri:kec"
 import "karakuri:kmath"
 import "karakuri:kutils"
@@ -8,8 +7,6 @@ import "karakuri:kwindow"
 import "karakuri:kwindow/fps_manager"
 import "karakuri:kwindow/input_manager"
 import renderer "karakuri:kwindow/renderer"
-
-_ :: input_manager
 
 Shape :: struct {
 	size:  kmath.Vector2,
@@ -82,10 +79,6 @@ main :: proc() {
 		for entity in renderable_entities {
 			transform := kec.get_component(registry, entity, Transform)
 			shape := kec.get_component(registry, entity, Shape)
-
-			fmt.println(entity)
-			fmt.println(transform)
-			fmt.println(shape)
 
 			renderer.draw_rectangle(
 				renderer_info,
