@@ -1,6 +1,6 @@
 package input_manager
 
-import kutils "../../kutils"
+import "../../kutils"
 import rl "vendor:raylib"
 
 // Proc type for key state checkers

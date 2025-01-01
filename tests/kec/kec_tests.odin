@@ -198,14 +198,19 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 
 	expect(t, len(entities_with_hps_and_inventories) == 2)
 
-	sonic_hp := kec.get_component(r, sonic, HP)
-	tails_hp := kec.get_component(r, tails, HP)
+	sonic_from_query :=
+		entities_with_hps_and_inventories[0] == sonic ? entities_with_hps_and_inventories[0] : entities_with_hps_and_inventories[1]
+	tails_from_query :=
+		entities_with_hps_and_inventories[0] == tails ? entities_with_hps_and_inventories[0] : entities_with_hps_and_inventories[1]
+
+	sonic_hp := kec.get_component(r, sonic_from_query, HP)
+	tails_hp := kec.get_component(r, tails_from_query, HP)
 
 	expect(t, sonic_hp.value == 300)
 	expect(t, tails_hp.value == 500)
 
-	sonic_inventory := kec.get_component(r, sonic, Inventory)
-	tails_inventory := kec.get_component(r, tails, Inventory)
+	sonic_inventory := kec.get_component(r, sonic_from_query, Inventory)
+	tails_inventory := kec.get_component(r, tails_from_query, Inventory)
 
 	expect(t, sonic_inventory.rings == 30)
 	expect(t, tails_inventory.rings == 50)
@@ -213,21 +218,25 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 	kec.destroy_entity(&r, sonic)
 
 	hps_and_inventories_query_2 := kec.query_start()
-	kec.query_with(HP, &hps_and_inventories_query, r)
-	kec.query_with(Inventory, &hps_and_inventories_query, r)
+	kec.query_with(HP, &hps_and_inventories_query_2, r)
+	kec.query_with(Inventory, &hps_and_inventories_query_2, r)
 	entities_with_hps_and_inventories_2 := kec.query_submit(
 		hps_and_inventories_query_2,
 		r,
 	)
 	defer delete(entities_with_hps_and_inventories_2)
 
+	expect(t, len(entities_with_hps_and_inventories_2) == 1)
+
+	tails_from_query_2 := entities_with_hps_and_inventories_2[0]
+
 	sonic_hp_2 := kec.get_component(r, sonic, HP)
 	sonic_inventory_2 := kec.get_component(r, sonic, Inventory)
 	expect(t, sonic_hp_2 == nil)
 	expect(t, sonic_inventory_2 == nil)
 
-	tails_hp_2 := kec.get_component(r, tails, HP)
-	tails_inventory_2 := kec.get_component(r, tails, Inventory)
+	tails_hp_2 := kec.get_component(r, tails_from_query_2, HP)
+	tails_inventory_2 := kec.get_component(r, tails_from_query_2, Inventory)
 	expect(t, tails_hp_2.value == 500)
 	expect(t, tails_inventory_2.rings == 50)
 }

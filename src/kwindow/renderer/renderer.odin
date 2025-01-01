@@ -2,8 +2,9 @@ package renderer
 
 import rl "vendor:raylib"
 
-import kutils "../../kutils"
+import "../../kutils"
 
+@(private = "file")
 Vector2 :: [2]f64
 
 // Contains the info required for each draw call.
