@@ -20,9 +20,18 @@ player_prefub :: proc() -> components.Component_Bundle {
 	}
 }
 
-SPEED :: 400
+PLAYER_SPEED :: 400
 
-move :: proc(ctx: components.Behavior_Context) {
+player_shoot :: proc(ctx: components.Behavior_Context) {
+	if ctx.input.is_key_pressed(kutils.Key.SPACE) {
+		position :=
+			kec.get_component(ctx.registry, ctx.entity, components.Transform_Component).position
+
+		ctx.spawner.add_entity(ctx.spawner, projectile_prefab(position))
+	}
+}
+
+player_move :: proc(ctx: components.Behavior_Context) {
 	transform := kec.get_component(
 		ctx.registry,
 		ctx.entity,
@@ -32,29 +41,33 @@ move :: proc(ctx: components.Behavior_Context) {
 	velocity := [2]f64{}
 
 	if ctx.input.is_key_down(kutils.Key.W) {
-		velocity.y = -SPEED * ctx.dt
+		velocity.y = -PLAYER_SPEED * ctx.dt
 	}
 	if ctx.input.is_key_down(kutils.Key.S) {
-		velocity.y = SPEED * ctx.dt
+		velocity.y = PLAYER_SPEED * ctx.dt
 	}
 	if ctx.input.is_key_down(kutils.Key.A) {
-		velocity.x = -SPEED * ctx.dt
+		velocity.x = -PLAYER_SPEED * ctx.dt
 	}
 	if ctx.input.is_key_down(kutils.Key.D) {
-		velocity.x = SPEED * ctx.dt
+		velocity.x = PLAYER_SPEED * ctx.dt
 	}
 
 	transform.position += velocity
 }
 
+@(private = "file")
 on_update: components.On_Update_Proc : proc(ctx: components.Behavior_Context) {
-	move(ctx)
+	player_shoot(ctx)
+	player_move(ctx)
 }
 
+@(private = "file")
 on_start: components.On_Start_Proc : proc(ctx: components.Behavior_Context) {
 	fmt.println("Player started")
 }
 
+@(private = "file")
 on_destroy: components.On_Destroy_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
