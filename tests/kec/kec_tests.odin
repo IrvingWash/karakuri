@@ -170,3 +170,43 @@ test_query :: proc(t: ^testing.T) {
 
 	expect(t, len(with_hp_after_destroying) == 2)
 }
+
+@(test)
+test_get_component_from_query :: proc(t: ^testing.T) {
+	using testing
+	using kec
+
+	r := new_registry()
+	defer destroy_registry(r)
+
+	sonic := kec.create_entity(&r)
+	tails := kec.create_entity(&r)
+
+	add_component(&r, sonic, HP{300})
+	add_component(&r, sonic, Inventory{30})
+	add_component(&r, tails, HP{500})
+	add_component(&r, tails, Inventory{50})
+
+	hps_and_inventories_query := kec.query_start()
+	kec.query_with(HP, &hps_and_inventories_query, r)
+	kec.query_with(Inventory, &hps_and_inventories_query, r)
+	entities_with_hps_and_inventories := kec.query_submit(
+		hps_and_inventories_query,
+		r,
+	)
+	defer delete(entities_with_hps_and_inventories)
+
+	expect(t, len(entities_with_hps_and_inventories) == 2)
+
+	sonic_hp := kec.get_component(r, sonic, HP)
+	tails_hp := kec.get_component(r, tails, HP)
+
+	expect(t, sonic_hp.value == 300)
+	expect(t, tails_hp.value == 500)
+
+	sonic_inventory := kec.get_component(r, sonic, Inventory)
+	tails_inventory := kec.get_component(r, tails, Inventory)
+
+	expect(t, sonic_inventory.rings == 30)
+	expect(t, tails_inventory.rings == 50)
+}
