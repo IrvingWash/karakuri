@@ -60,8 +60,6 @@ destroy_entity :: proc(r: ^Registry, entity: Entity) {
 			delete_key(&component_pool.etcsm, entity)
 
 			q.push_back(&component_pool.free_slots, slot)
-
-			component_pool.component_array[slot] = nil
 		}
 
 		delete_key(&r.entity_signatures, entity)

@@ -237,7 +237,7 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 	expect(t, tails_shape.size == Vector2{50, 50})
 
 	// After destroy
-	kec.destroy_entity(&r, sonic)
+	kec.destroy_entity(&r, tails)
 
 	transforms_and_shapes_query_2 := kec.query_start()
 	kec.query_with(Transform, &transforms_and_shapes_query_2, r)
@@ -250,15 +250,15 @@ test_get_component_from_query :: proc(t: ^testing.T) {
 
 	expect(t, len(entities_with_transforms_and_shapes_2) == 1)
 
-	tails_from_query_2 := entities_with_transforms_and_shapes_2[0]
+	sonic_from_query_2 := entities_with_transforms_and_shapes_2[0]
 
-	sonic_transform_2 := kec.get_component(r, sonic, Transform)
-	sonic_shape_2 := kec.get_component(r, sonic, Shape)
-	expect(t, sonic_transform_2 == nil)
-	expect(t, sonic_shape_2 == nil)
+	sonic_transform_2 := kec.get_component(r, sonic_from_query_2, Transform)
+	sonic_shape_2 := kec.get_component(r, sonic_from_query_2, Shape)
+	expect(t, sonic_transform_2.position == Vector2{300, 300})
+	expect(t, sonic_shape_2.size == Vector2{30, 30})
 
-	tails_transform_2 := kec.get_component(r, tails_from_query_2, Transform)
-	tails_shape_2 := kec.get_component(r, tails_from_query_2, Shape)
-	expect(t, tails_transform_2.position == {500, 500})
-	expect(t, tails_shape_2.size == {50, 50})
+	tails_transform_2 := kec.get_component(r, tails, Transform)
+	tails_shape_2 := kec.get_component(r, tails, Shape)
+	expect(t, tails_transform_2 == nil)
+	expect(t, tails_shape_2 == nil)
 }
