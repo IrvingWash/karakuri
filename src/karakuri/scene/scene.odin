@@ -76,8 +76,6 @@ sync_add_entities :: proc(
 	spawner_info: ^components.Spawner_Info,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time, spawner_info, registry^)
-
 	for bundle in entities_to_add {
 		entity := kec.create_entity(registry)
 
@@ -99,7 +97,12 @@ sync_add_entities :: proc(
 			kec.add_component(registry, entity, behavior)
 
 			if on_start, ok := behavior.on_start.?; ok {
-				behavior_ctx.entity = entity
+				behavior_ctx := make_behavior_context(
+					delta_time,
+					spawner_info,
+					registry^,
+					entity,
+				)
 
 				on_start(behavior_ctx)
 			}
@@ -107,6 +110,10 @@ sync_add_entities :: proc(
 
 		if rigid_body, ok := bundle.rigid_body.?; ok {
 			kec.add_component(registry, entity, rigid_body)
+		}
+
+		if tag, ok := bundle.tag.?; ok {
+			kec.add_component(registry, entity, tag)
 		}
 	}
 }
@@ -118,8 +125,6 @@ sync_remove_entities :: proc(
 	spawner_info: ^components.Spawner_Info,
 	delta_time: f64,
 ) {
-	behavior_ctx := make_behavior_context(delta_time, spawner_info, registry^)
-
 	for entity in entities_to_remove {
 		behavior := kec.get_component(
 			registry^,
@@ -129,7 +134,13 @@ sync_remove_entities :: proc(
 
 		if behavior != nil {
 			if on_destroy, ok := behavior.on_destroy.?; ok {
-				behavior_ctx.entity = entity
+				behavior_ctx := make_behavior_context(
+					delta_time,
+					spawner_info,
+					registry^,
+					entity,
+				)
+
 				on_destroy(behavior_ctx)
 			}
 		}
@@ -152,12 +163,6 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 	)
 	defer delete(updatable_entities)
 
-	ctx := make_behavior_context(
-		delta_time,
-		&scene_info.spawner_info,
-		scene_info.registry,
-	)
-
 	for entity in updatable_entities {
 		behavior := kec.get_component(
 			scene_info.registry,
@@ -166,13 +171,23 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 		)
 
 		if on_update, ok := behavior.on_update.?; ok {
-			ctx.entity = entity
+			ctx := make_behavior_context(
+				delta_time,
+				&scene_info.spawner_info,
+				scene_info.registry,
+				entity,
+			)
 
 			on_update(ctx)
 		}
 	}
 
-	systems.physics_system(scene_info.registry, &ctx)
+	systems.physics_system(
+		scene_info.registry,
+		delta_time,
+		make_behavior_context,
+		&scene_info.spawner_info,
+	)
 }
 
 @(private = "file")
@@ -226,8 +241,10 @@ make_behavior_context :: proc(
 	dt: f64,
 	spawner_info: ^components.Spawner_Info,
 	registry: kec.Registry,
+	entity: kec.Entity,
 ) -> components.Behavior_Context {
 	return components.Behavior_Context {
+		entity = entity,
 		dt = dt,
 		spawner = spawner_info,
 		registry = registry,

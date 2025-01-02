@@ -6,10 +6,17 @@ import rl "vendor:raylib"
 
 physics_system :: proc(
 	registry: kec.Registry,
-	behavior_context: ^components.Behavior_Context,
+	dt: f64,
+	ctx_maker: proc(
+		dt: f64,
+		spawner_info: ^components.Spawner_Info,
+		registry: kec.Registry,
+		entity: kec.Entity,
+	) -> components.Behavior_Context,
+	spawner_info: ^components.Spawner_Info,
 ) {
-	move_entities(registry, behavior_context.dt)
-	collide_entities(registry, behavior_context)
+	move_entities(registry, dt)
+	collide_entities(registry, ctx_maker, dt, spawner_info)
 }
 
 @(private = "file")
@@ -38,7 +45,14 @@ move_entities :: proc(registry: kec.Registry, dt: f64) {
 @(private = "file")
 collide_entities :: proc(
 	registry: kec.Registry,
-	behavior_context: ^components.Behavior_Context,
+	ctx_maker: proc(
+		dt: f64,
+		spawner_info: ^components.Spawner_Info,
+		registry: kec.Registry,
+		entity: kec.Entity,
+	) -> components.Behavior_Context,
+	dt: f64,
+	spawner_info: ^components.Spawner_Info,
 ) {
 	collidable_query := kec.query_start()
 	kec.query_with(components.Shape_Component, &collidable_query, registry)
@@ -75,14 +89,18 @@ collide_entities :: proc(
 
 			are_colliding := rl.CheckCollisionRecs(
 				rl.Rectangle {
-					x = f32(transform.position.x),
-					y = f32(transform.position.y),
+					x = f32(transform.position.x - shape.size.x / 2),
+					y = f32(transform.position.y - shape.size.y / 2),
 					width = f32(shape.size.x),
 					height = f32(shape.size.y),
 				},
 				rl.Rectangle {
-					x = f32(other_transform.position.x),
-					y = f32(other_transform.position.y),
+					x = f32(
+						other_transform.position.x - other_shape.size.x / 2,
+					),
+					y = f32(
+						other_transform.position.y - other_shape.size.y / 2,
+					),
 					width = f32(other_shape.size.x),
 					height = f32(other_shape.size.y),
 				},
@@ -101,12 +119,12 @@ collide_entities :: proc(
 				)
 
 				if on_collision, ok := behavior.on_collision.?; ok {
-					behavior_context.entity = entity
-					on_collision(behavior_context^, other)
+					ctx := ctx_maker(dt, spawner_info, registry, entity)
+					on_collision(ctx, other)
 				}
 				if on_collision, ok := other_behavior.on_collision.?; ok {
-					behavior_context.entity = other
-					on_collision(behavior_context^, entity)
+					ctx := ctx_maker(dt, spawner_info, registry, other)
+					on_collision(ctx, entity)
 				}
 			}
 		}

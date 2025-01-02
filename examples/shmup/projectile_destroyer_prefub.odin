@@ -23,5 +23,12 @@ on_collision: components.On_Collision_Proc : proc(
 	ctx: components.Behavior_Context,
 	other: kec.Entity,
 ) {
-	ctx.spawner.remove_entity(ctx.spawner, other)
+	other_tag := kec.get_component(
+		ctx.registry,
+		other,
+		components.Tag_Component,
+	)
+	if other_tag != nil && other_tag.value == "projectile" {
+		ctx.spawner.remove_entity(ctx.spawner, other)
+	}
 }

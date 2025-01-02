@@ -21,7 +21,7 @@ main :: proc() {
 	level_1 := karakuri.create_scene(
 		{
 			player_prefub(),
-			projectile_destroyer_prefub({0, -DODONPACHI_HEIGHT}),
+			projectile_destroyer_prefub({0, -DODONPACHI_HEIGHT / 2}),
 		},
 	)
 

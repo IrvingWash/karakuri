@@ -23,6 +23,7 @@ projectile_prefab :: proc(
 		rigid_body = components.Rigid_Body_Component {
 			velocity = kmath.Vector2{0, -700},
 		},
+		tag = components.Tag_Component{value = "projectile"},
 	}
 }
 
