@@ -129,6 +129,7 @@ sync_remove_entities :: proc(
 
 		if behavior != nil {
 			if on_destroy, ok := behavior.on_destroy.?; ok {
+				behavior_ctx.entity = entity
 				on_destroy(behavior_ctx)
 			}
 		}

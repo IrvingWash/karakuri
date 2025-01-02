@@ -105,6 +105,7 @@ collide_entities :: proc(
 					on_collision(behavior_context^, other)
 				}
 				if on_collision, ok := other_behavior.on_collision.?; ok {
+					behavior_context.entity = other
 					on_collision(behavior_context^, entity)
 				}
 			}
