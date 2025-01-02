@@ -1,7 +1,6 @@
 package kec
 
 import q "core:container/queue"
-import "core:fmt"
 
 @(private = "file")
 Component_Array :: [dynamic]rawptr
@@ -55,7 +54,6 @@ create_entity :: proc(r: ^Registry) -> Entity {
 
 // Cleans up an entity, removing all the components attached to it.
 destroy_entity :: proc(r: ^Registry, entity: Entity) {
-	fmt.println(entity)
 	for _, &component_pool in r.component_pools {
 		slot, ok := component_pool.etcsm[entity]
 		if ok {
