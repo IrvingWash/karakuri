@@ -1,11 +1,13 @@
 package components
 
+import "../../kec"
+
 Behavior_Component :: struct {
-	on_start:   Maybe(On_Start_Proc),
-	on_update:  Maybe(On_Update_Proc),
-	on_destroy: Maybe(On_Destroy_Proc),
+	on_start:     Maybe(Lifecycle_Proc),
+	on_update:    Maybe(Lifecycle_Proc),
+	on_destroy:   Maybe(Lifecycle_Proc),
+	on_collision: Maybe(On_Collision_Proc),
 }
 
-On_Start_Proc :: proc(ctx: Behavior_Context)
-On_Update_Proc :: proc(ctx: Behavior_Context)
-On_Destroy_Proc :: proc(ctx: Behavior_Context)
+Lifecycle_Proc :: proc(ctx: Behavior_Context)
+On_Collision_Proc :: proc(ctx: Behavior_Context, other: kec.Entity)

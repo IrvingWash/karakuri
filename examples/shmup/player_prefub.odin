@@ -57,18 +57,18 @@ player_move :: proc(ctx: components.Behavior_Context) {
 }
 
 @(private = "file")
-on_update: components.On_Update_Proc : proc(ctx: components.Behavior_Context) {
+on_update: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	player_shoot(ctx)
 	player_move(ctx)
 }
 
 @(private = "file")
-on_start: components.On_Start_Proc : proc(ctx: components.Behavior_Context) {
+on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	fmt.println("Player started")
 }
 
 @(private = "file")
-on_destroy: components.On_Destroy_Proc : proc(
+on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
 	fmt.println("Player destroyed")

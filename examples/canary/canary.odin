@@ -50,13 +50,13 @@ main :: proc() {
 	karakuri.start_scene(&game, &level_1)
 }
 
-on_player_start: components.On_Start_Proc : proc(
+on_player_start: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
 	fmt.println("Player started with dt ", ctx.dt)
 }
 
-on_player_update: components.On_Update_Proc : proc(
+on_player_update: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
 	if ctx.input.is_key_pressed(kutils.Key.SPACE) {
@@ -79,7 +79,7 @@ on_player_update: components.On_Update_Proc : proc(
 	}
 }
 
-on_player_destroy: components.On_Destroy_Proc : proc(
+on_player_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
 	fmt.println("Player destroyed")

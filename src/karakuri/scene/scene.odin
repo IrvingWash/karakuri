@@ -5,6 +5,7 @@ import "../../kwindow/fps_manager"
 import "../../kwindow/input_manager"
 import "../../kwindow/renderer"
 import "../components"
+import "../systems"
 
 Scene_Info :: struct {
 	spawner_info: components.Spawner_Info,
@@ -103,6 +104,10 @@ sync_add_entities :: proc(
 				on_start(behavior_ctx)
 			}
 		}
+
+		if rigid_body, ok := bundle.rigid_body.?; ok {
+			kec.add_component(registry, entity, rigid_body)
+		}
 	}
 }
 
@@ -165,6 +170,8 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 			on_update(ctx)
 		}
 	}
+
+	systems.physics_system(scene_info.registry, &ctx)
 }
 
 @(private = "file")
