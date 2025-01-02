@@ -120,10 +120,12 @@ collide_entities :: proc(
 
 				if on_collision, ok := behavior.on_collision.?; ok {
 					ctx := ctx_maker(dt, spawner_info, registry, entity)
+
 					on_collision(ctx, other)
 				}
 				if on_collision, ok := other_behavior.on_collision.?; ok {
 					ctx := ctx_maker(dt, spawner_info, registry, other)
+
 					on_collision(ctx, entity)
 				}
 			}
