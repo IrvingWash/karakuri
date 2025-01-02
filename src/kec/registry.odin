@@ -74,10 +74,11 @@ add_component :: proc(r: ^Registry, entity: Entity, component: $C) {
 
 	component_pool := &r.component_pools[C]
 
-	append(cast(^[dynamic]C)component_pool.component_array, component)
-
 	slot, slot_ok := q.pop_back_safe(&component_pool.free_slots)
-	if !slot_ok {
+	if slot_ok {
+		(cast(^[dynamic]C)component_pool.component_array)[slot] = component
+	} else {
+		append(cast(^[dynamic]C)component_pool.component_array, component)
 		slot = len(r.component_pools[C].component_array) - 1
 	}
 
