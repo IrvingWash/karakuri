@@ -219,31 +219,41 @@ test_query :: proc(t: ^testing.T) {
    test_get_component_from_query ensures we can retrieve the correct
    Transform and Shape from a query, and that destroying an entity
    invalidates its components.
+/*
+   test_get_component_from_query ensures we can retrieve the correct
+   Transform and Shape from a query, and that destroying an entity
+   invalidates its components.
 */
 @(test)
 test_get_component_from_query :: proc(t: ^testing.T) {
     using testing
     using kec
 
+    // We'll define a local Vector2 type (an array of 2 f64s).
     Vector2 :: [2]f64
 
+    // Define a local Shape component with size and color data.
     Shape :: struct {
         size:  Vector2,
         color: [4]f64,
     }
 
+    // Define a local Transform component with position, scale, and rotation data.
     Transform :: struct {
         position: Vector2,
         scale:    Vector2,
         rotation: f64,
     }
 
+    // 1. Create a new registry and ensure we clean it up afterward.
     r := new_registry()
     defer destroy_registry(r)
 
-    sonic := kec.create_entity(&r)
-    tails := kec.create_entity(&r)
+    // 2. Create two entities: sonic and tails.
+    sonic   := kec.create_entity(&r)
+    tails   := kec.create_entity(&r)
 
+    // 3. Give both sonic and tails a Transform and a Shape component, with distinct values.
     add_component(&r, sonic,
         Transform{
             position = {300, 300},
@@ -257,6 +267,7 @@ test_get_component_from_query :: proc(t: ^testing.T) {
             color = {3, 3, 3, 3},
         }
     )
+
     add_component(&r, tails,
         Transform{
             position = {500, 500},
@@ -271,73 +282,90 @@ test_get_component_from_query :: proc(t: ^testing.T) {
         }
     )
 
-    // Query entities with both Transform and Shape
+    //
+    // 4. Query for all entities that have both Transform and Shape components.
+    //
     transforms_and_shapes_query := kec.query_start()
     kec.query_with(Transform, &transforms_and_shapes_query, r)
     kec.query_with(Shape, &transforms_and_shapes_query, r)
+
     entities_with_transforms_and_shapes := kec.query_submit(transforms_and_shapes_query, r)
     defer delete(entities_with_transforms_and_shapes)
 
     expect(t, len(entities_with_transforms_and_shapes) == 2,
-        "Sonic and Tails both have Transform + Shape.")
+        "Sonic and Tails both should have Transform + Shape."
+    )
 
-    // Identify which one is sonic / tails
-    sonic_from_query :=
-        if entities_with_transforms_and_shapes[0] == sonic {
-            entities_with_transforms_and_shapes[0]
-        } else {
-            entities_with_transforms_and_shapes[1]
-        }
-    tails_from_query :=
-        if entities_with_transforms_and_shapes[0] == tails {
-            entities_with_transforms_and_shapes[0]
-        } else {
-            entities_with_transforms_and_shapes[1]
-        }
+    // Identify which array index corresponds to sonic or tails.
+    sonic_from_query := if entities_with_transforms_and_shapes[0] == sonic {
+        entities_with_transforms_and_shapes[0]
+    } else {
+        entities_with_transforms_and_shapes[1]
+    }
+    tails_from_query := if entities_with_transforms_and_shapes[0] == tails {
+        entities_with_transforms_and_shapes[0]
+    } else {
+        entities_with_transforms_and_shapes[1]
+    }
 
-    // Retrieve their transforms
+    // Retrieve their Transform components.
     sonic_transform := kec.get_component(r, sonic_from_query, Transform)
     tails_transform := kec.get_component(r, tails_from_query, Transform)
 
     expect(t, sonic_transform.position == Vector2{300, 300},
-        "Sonic transform has position (300,300).")
+        "Sonic's transform has position (300,300)."
+    )
     expect(t, tails_transform.position == Vector2{500, 500},
-        "Tails transform has position (500,500).")
+        "Tails' transform has position (500,500)."
+    )
 
-    // Retrieve shapes
+    // Retrieve their Shape components.
     sonic_shape := kec.get_component(r, sonic_from_query, Shape)
     tails_shape := kec.get_component(r, tails_from_query, Shape)
 
     expect(t, sonic_shape.size == Vector2{30, 30},
-        "Sonic shape is (30,30).")
+        "Sonic's shape size is (30,30)."
+    )
     expect(t, tails_shape.size == Vector2{50, 50},
-        "Tails shape is (50,50).")
+        "Tails' shape size is (50,50)."
+    )
 
-    // Destroy sonic
+    //
+    // 5. Destroy sonic to ensure his components become invalidated, leaving tails alone.
+    //
     kec.destroy_entity(&r, sonic)
 
+    // Now query again for all entities that have both Transform and Shape.
     transforms_and_shapes_query_2 := kec.query_start()
     kec.query_with(Transform, &transforms_and_shapes_query_2, r)
     kec.query_with(Shape, &transforms_and_shapes_query_2, r)
+
     entities_with_transforms_and_shapes_2 := kec.query_submit(transforms_and_shapes_query_2, r)
     defer delete(entities_with_transforms_and_shapes_2)
 
     expect(t, len(entities_with_transforms_and_shapes_2) == 1,
-        "Only tails remains with both Transform + Shape after sonic destroyed.")
+        "Only tails remains with Transform + Shape after sonic is destroyed."
+    )
 
-    tails_from_query_2 := entities_with_transforms_and_shapes_2[0]
-
-    // Ensure sonic has no components
+    // Make sure sonic's components are now invalid, and tails is unaffected.
     sonic_transform_2 := kec.get_component(r, sonic, Transform)
     sonic_shape_2     := kec.get_component(r, sonic, Shape)
-    expect(t, sonic_transform_2 == nil, "Sonic's transform is invalid after destruction.")
-    expect(t, sonic_shape_2 == nil,     "Sonic's shape is invalid after destruction.")
+    expect(t, sonic_transform_2 == nil,
+        "Sonic's transform is invalid after destruction."
+    )
+    expect(t, sonic_shape_2 == nil,
+        "Sonic's shape is invalid after destruction."
+    )
 
-    // Tails is still valid
-    tails_transform_2 := kec.get_component(r, tails_from_query_2, Transform)
-    tails_shape_2     := kec.get_component(r, tails_from_query_2, Shape)
+    // The one remaining entity is tails. Retrieve its transform & shape from the query results.
+    tails_from_query_2 := entities_with_transforms_and_shapes_2[0]
+    tails_transform_2  := kec.get_component(r, tails_from_query_2, Transform)
+    tails_shape_2      := kec.get_component(r, tails_from_query_2, Shape)
+
     expect(t, tails_transform_2.position == Vector2{500, 500},
-        "Tails transform unaffected.")
+        "Tails' transform is unaffected, still (500, 500)."
+    )
     expect(t, tails_shape_2.size == Vector2{50, 50},
-        "Tails shape unaffected.")
+        "Tails' shape is unaffected, still (50,50)."
+    )
 }
