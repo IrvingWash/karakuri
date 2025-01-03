@@ -1,6 +1,6 @@
 package shmup
 
-import "core:fmt"
+import "core:log"
 import "karakuri:karakuri/components"
 import "karakuri:kmath"
 import "karakuri:kutils"
@@ -29,12 +29,13 @@ projectile_prefab :: proc(
 
 @(private = "file")
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
-	fmt.println("Projectile started")
+	log.log(log.Level.Info, "Projectile started")
 }
 
 @(private = "file")
 on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	fmt.println("Projectile destroyed")
+	log.log(log.Level.Info, "Projectile destroyed")
 }
+

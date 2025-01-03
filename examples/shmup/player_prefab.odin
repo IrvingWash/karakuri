@@ -1,6 +1,6 @@
 package shmup
 
-import "core:fmt"
+import "core:log"
 import "karakuri:karakuri/components"
 import "karakuri:kec"
 import "karakuri:kutils"
@@ -64,13 +64,13 @@ on_update: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 
 @(private = "file")
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
-	fmt.println("Player started")
+	log.log(log.Level.Info, "Player started")
 }
 
 @(private = "file")
 on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	fmt.println("Player destroyed")
+	log.log(log.Level.Info, "Player destroyed")
 }
 

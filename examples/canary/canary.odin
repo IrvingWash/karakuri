@@ -1,6 +1,6 @@
 package canary
 
-import "core:fmt"
+import "core:log"
 import "karakuri:karakuri/components"
 import karakuri "karakuri:karakuri/game"
 import "karakuri:kmath"
@@ -53,7 +53,7 @@ main :: proc() {
 on_player_start: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	fmt.println("Player started with dt ", ctx.dt)
+	log.log(log.Level.Info, "Player started with dt ", ctx.dt)
 }
 
 on_player_update: components.Lifecycle_Proc : proc(
@@ -82,5 +82,6 @@ on_player_update: components.Lifecycle_Proc : proc(
 on_player_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	fmt.println("Player destroyed")
+	log.log(log.Level.Info, "Player destroyed")
 }
+
