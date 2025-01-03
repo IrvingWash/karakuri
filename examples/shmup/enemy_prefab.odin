@@ -24,14 +24,14 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 
 @(private = "file")
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
-	log.log(log.Level.Info, "Enemy started")
+	log.info("Enemy started")
 }
 
 @(private = "file")
 on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	log.log(log.Level.Info, "Enemy destroyed")
+	log.info("Enemy destroyed")
 }
 
 @(private = "file")

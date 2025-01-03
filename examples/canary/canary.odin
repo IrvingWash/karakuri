@@ -53,7 +53,7 @@ main :: proc() {
 on_player_start: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	log.log(log.Level.Info, "Player started with dt ", ctx.dt)
+	log.info("Player started with dt ", ctx.dt)
 }
 
 on_player_update: components.Lifecycle_Proc : proc(
@@ -82,6 +82,6 @@ on_player_update: components.Lifecycle_Proc : proc(
 on_player_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	log.log(log.Level.Info, "Player destroyed")
+	log.info("Player destroyed")
 }
 

@@ -15,7 +15,10 @@ create_window :: proc(
 		rl.SetConfigFlags(rl.ConfigFlags{rl.ConfigFlag.VSYNC_HINT})
 	}
 
-	rl.InitWindow(i32(width), i32(height), strings.clone_to_cstring(title))
+	title_raw := strings.clone_to_cstring(title)
+	defer delete(title_raw)
+
+	rl.InitWindow(i32(width), i32(height), title_raw)
 
 	if fullscreen && !rl.IsWindowFullscreen() {
 		rl.ToggleFullscreen()
@@ -26,3 +29,4 @@ create_window :: proc(
 destroy_window :: proc() {
 	rl.CloseWindow()
 }
+

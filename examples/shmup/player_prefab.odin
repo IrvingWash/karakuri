@@ -64,13 +64,15 @@ on_update: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 
 @(private = "file")
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
-	log.log(log.Level.Info, "Player started")
+	log.info("Player started")
 }
 
 @(private = "file")
 on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	log.log(log.Level.Info, "Player destroyed")
+	context.logger.lowest_level = log.Level.Info
+
+	log.info("Player destroyed")
 }
 
