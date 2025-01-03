@@ -1,5 +1,6 @@
 package shmup
 
+import "core:fmt"
 import "karakuri:karakuri/components"
 import "karakuri:kec"
 import "karakuri:kmath"
@@ -13,8 +14,24 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 			size = kmath.Vector2{30, 50},
 			color = kutils.ColorBlue,
 		},
-		behavior = components.Behavior_Component{on_collision = on_collision},
+		behavior = components.Behavior_Component {
+			on_collision = on_collision,
+			on_start = on_start,
+			on_destroy = on_destroy,
+		},
 	}
+}
+
+@(private = "file")
+on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
+	fmt.println("Enemy started")
+}
+
+@(private = "file")
+on_destroy: components.Lifecycle_Proc : proc(
+	ctx: components.Behavior_Context,
+) {
+	fmt.println("Enemy destroyed")
 }
 
 @(private = "file")
