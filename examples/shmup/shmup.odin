@@ -1,6 +1,7 @@
 package shmup
 
 import "core:fmt"
+import "core:log"
 import "core:mem"
 import karakuri "karakuri:karakuri/game"
 import "karakuri:kutils"
@@ -10,6 +11,9 @@ DODONPACHI_HEIGHT :: 320
 
 main :: proc() {
 	when ODIN_DEBUG {
+		context.logger = log.create_console_logger(lowest = log.Level.Debug)
+		defer log.destroy_console_logger(context.logger)
+
 		track: mem.Tracking_Allocator
 		mem.tracking_allocator_init(&track, context.allocator)
 		context.allocator = mem.tracking_allocator(&track)

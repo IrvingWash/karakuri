@@ -1,5 +1,6 @@
 package shmup
 
+import "core:log"
 import "karakuri:karakuri/components"
 import "karakuri:kec"
 import "karakuri:kmath"
@@ -14,8 +15,24 @@ projectile_destroyer_prefab :: proc(
 			color = kutils.ColorGreen,
 			size = {DODONPACHI_WIDTH * 2, 10},
 		},
-		behavior = components.Behavior_Component{on_collision = on_collision},
+		behavior = components.Behavior_Component {
+			on_collision = on_collision,
+			on_start = on_start,
+			on_destroy = on_destroy,
+		},
 	}
+}
+
+@(private = "file")
+on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
+	log.info("Projectile Destroyer started")
+}
+
+@(private = "file")
+on_destroy: components.Lifecycle_Proc : proc(
+	ctx: components.Behavior_Context,
+) {
+	log.info("Projectile Destroyer destroyed")
 }
 
 @(private = "file")
