@@ -1,8 +1,8 @@
 package shmup
 
-import "core:fmt"
-import "core:log"
-import "core:mem"
+@(require) import "core:fmt"
+@(require) import "core:log"
+@(require) import "core:mem"
 import karakuri "karakuri:karakuri/game"
 import "karakuri:kutils"
 
