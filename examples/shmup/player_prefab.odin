@@ -5,7 +5,7 @@ import "karakuri:karakuri/components"
 import "karakuri:kec"
 import "karakuri:kutils"
 
-player_prefub :: proc() -> components.Component_Bundle {
+player_prefab :: proc() -> components.Component_Bundle {
 	return components.Component_Bundle {
 		transform = components.new_transform_component(position = {0, 200}),
 		shape = components.Shape_Component {
@@ -73,3 +73,4 @@ on_destroy: components.Lifecycle_Proc : proc(
 ) {
 	fmt.println("Player destroyed")
 }
+

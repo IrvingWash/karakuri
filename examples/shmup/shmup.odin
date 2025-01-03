@@ -20,10 +20,12 @@ main :: proc() {
 
 	level_1 := karakuri.create_scene(
 		{
-			player_prefub(),
-			projectile_destroyer_prefub({0, -DODONPACHI_HEIGHT / 2}),
+			player_prefab(),
+			enemy_prefab({0, 0}),
+			projectile_destroyer_prefab({0, -DODONPACHI_HEIGHT / 2}),
 		},
 	)
 
 	karakuri.start_scene(&shmup_game, &level_1)
 }
+

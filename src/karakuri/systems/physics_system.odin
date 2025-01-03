@@ -112,23 +112,29 @@ collide_entities :: proc(
 					entity,
 					components.Behavior_Component,
 				)
+
 				other_behavior := kec.get_component(
 					registry,
 					other,
 					components.Behavior_Component,
 				)
 
-				if on_collision, ok := behavior.on_collision.?; ok {
-					ctx := ctx_maker(dt, spawner_info, registry, entity)
+				if behavior != nil {
+					if on_collision, ok := behavior.on_collision.?; ok {
+						ctx := ctx_maker(dt, spawner_info, registry, entity)
 
-					on_collision(ctx, other)
+						on_collision(ctx, other)
+					}
 				}
-				if on_collision, ok := other_behavior.on_collision.?; ok {
-					ctx := ctx_maker(dt, spawner_info, registry, other)
+				if other_behavior != nil {
+					if on_collision, ok := other_behavior.on_collision.?; ok {
+						ctx := ctx_maker(dt, spawner_info, registry, other)
 
-					on_collision(ctx, entity)
+						on_collision(ctx, entity)
+					}
 				}
 			}
 		}
 	}
 }
+
