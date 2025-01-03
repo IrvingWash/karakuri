@@ -18,6 +18,8 @@ create_window :: proc(
 	title_raw := strings.clone_to_cstring(title)
 	defer delete(title_raw)
 
+	rl.SetTraceLogLevel(rl.TraceLogLevel.WARNING)
+
 	rl.InitWindow(i32(width), i32(height), title_raw)
 
 	if fullscreen && !rl.IsWindowFullscreen() {
