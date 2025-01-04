@@ -86,7 +86,7 @@ on_collision: components.On_Collision_Proc : proc(
 	other: kec.Entity,
 ) {
 	if tag := kec.get_component(ctx.registry, other, components.Tag_Component);
-	   tag.value == "enemy_projectile" {
+	   tag != nil && tag.value == "enemy_projectile" {
 		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
 	}
 }
