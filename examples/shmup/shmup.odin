@@ -59,7 +59,7 @@ main :: proc() {
 	level_1 := karakuri.create_scene(
 		{
 			player_prefab(),
-			enemy_prefab({0, -100}),
+			enemy_spawner_prefab(),
 			projectile_destroyer_prefab({0, -DODONPACHI_HEIGHT + 10}),
 			projectile_destroyer_prefab({0, DODONPACHI_HEIGHT - 10}),
 		},

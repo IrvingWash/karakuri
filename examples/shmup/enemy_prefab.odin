@@ -10,6 +10,9 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 	return components.Component_Bundle {
 		tag = components.Tag_Component{value = "enemy"},
 		transform = components.new_transform_component(position = position),
+		rigid_body = components.Rigid_Body_Component {
+			velocity = kmath.Vector2{0, 50},
+		},
 		shape = components.Shape_Component {
 			size = kmath.Vector2{30, 50},
 			color = kutils.ColorBlue,
@@ -50,7 +53,7 @@ on_collision: components.On_Collision_Proc : proc(
 		ctx.registry,
 		other,
 		components.Tag_Component,
-	); other_tag.value == "player_projectile" {
+	); other_tag != nil && other_tag.value == "player_projectile" {
 		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
 	}
 }

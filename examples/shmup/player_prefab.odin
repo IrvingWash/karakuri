@@ -75,8 +75,6 @@ on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 on_destroy: components.Lifecycle_Proc : proc(
 	ctx: components.Behavior_Context,
 ) {
-	context.logger.lowest_level = log.Level.Info
-
 	log.info("Player destroyed")
 }
 
