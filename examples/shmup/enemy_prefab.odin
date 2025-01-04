@@ -39,13 +39,14 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	log.info("Enemy started")
 
-	enemy := cast(^^Enemy)kec.get_component(
+	enemy := kec.get_component_double_cast(
 		ctx.registry,
 		ctx.entity,
-		^components.Data_Component,
+		components.Data_Component,
+		Enemy,
 	)
 
-	enemy^.shoot_interval_id = ctx.timer.set_interval(
+	enemy.shoot_interval_id = ctx.timer.set_interval(
 		ctx.timer.timer_info,
 		1000,
 	)
@@ -57,15 +58,16 @@ on_destroy: components.Lifecycle_Proc : proc(
 ) {
 	log.info("Enemy destroyed")
 
-	enemy := cast(^^Enemy)kec.get_component(
+	enemy := kec.get_component_double_cast(
 		ctx.registry,
 		ctx.entity,
-		^components.Data_Component,
+		components.Data_Component,
+		Enemy,
 	)
 
-	ctx.timer.clear_interval(ctx.timer.timer_info, enemy^.shoot_interval_id)
+	ctx.timer.clear_interval(ctx.timer.timer_info, enemy.shoot_interval_id)
 
-	free(enemy^)
+	free(enemy)
 }
 
 @(private = "file")
@@ -87,13 +89,14 @@ on_timer: components.On_Timer_Proc : proc(
 	ctx: components.Behavior_Context,
 	finished_timers: map[uint]struct {},
 ) {
-	enemy := cast(^^Enemy)kec.get_component(
+	enemy := kec.get_component_double_cast(
 		ctx.registry,
 		ctx.entity,
-		^components.Data_Component,
+		components.Data_Component,
+		Enemy,
 	)
 
-	if enemy^.shoot_interval_id in finished_timers {
+	if enemy.shoot_interval_id in finished_timers {
 		transform := kec.get_component(
 			ctx.registry,
 			ctx.entity,

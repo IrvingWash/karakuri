@@ -100,6 +100,19 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 	return &array[slot]
 }
 
+get_component_double_cast :: proc(
+	r: Registry,
+	entity: Entity,
+	$C: typeid,
+	$A: typeid,
+) -> ^A {
+	first := get_component(r, entity, ^C)
+
+	second := cast(^^A)first
+
+	return second^
+}
+
 @(private)
 new_component_pool :: proc() -> Component_Pool {
 	component_array := new(Component_Array)
