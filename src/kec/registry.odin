@@ -50,6 +50,7 @@ destroy_entity :: proc(r: ^Registry, entity: Entity) {
 		if ok {
 			if reflect.is_pointer(type_info_of(component_type)) {
 				free(component_pool.component_array[slot])
+				component_pool.component_array[slot] = nil
 			}
 
 			delete_key(&component_pool.etcsm, entity)
