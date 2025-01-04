@@ -66,8 +66,6 @@ on_destroy: components.Lifecycle_Proc : proc(
 	)
 
 	ctx.timer.clear_interval(ctx.timer.timer_info, enemy.shoot_interval_id)
-
-	free(enemy)
 }
 
 @(private = "file")

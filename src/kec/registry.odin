@@ -45,9 +45,13 @@ create_entity :: proc(r: ^Registry) -> Entity {
 }
 
 destroy_entity :: proc(r: ^Registry, entity: Entity) {
-	for _, &component_pool in r.component_pools {
+	for component_type, &component_pool in r.component_pools {
 		slot, ok := component_pool.etcsm[entity]
 		if ok {
+			if reflect.is_pointer(type_info_of(component_type)) {
+				free(component_pool.component_array[slot])
+			}
+
 			delete_key(&component_pool.etcsm, entity)
 
 			q.push_back(&component_pool.free_slots, slot)
