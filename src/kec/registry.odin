@@ -1,6 +1,7 @@
 package kec
 
 import q "core:container/queue"
+import "core:reflect"
 
 @(private = "file")
 Component_Array :: [dynamic]rawptr
@@ -28,8 +29,8 @@ new_registry :: proc() -> Registry {
 }
 
 destroy_registry :: proc(r: Registry) {
-	for _, &cp in r.component_pools {
-		destroy_component_pool(&cp)
+	for component_type, &cp in r.component_pools {
+		destroy_component_pool(&cp, component_type)
 	}
 
 	delete(r.component_pools)
@@ -112,7 +113,13 @@ new_component_pool :: proc() -> Component_Pool {
 }
 
 @(private)
-destroy_component_pool :: proc(cp: ^Component_Pool) {
+destroy_component_pool :: proc(cp: ^Component_Pool, component_type: typeid) {
+	if reflect.is_pointer(type_info_of(component_type)) {
+		for component in cp.component_array {
+			free(component)
+		}
+	}
+
 	delete(cp.component_array^)
 	q.destroy(&cp.free_slots)
 	free(cp.component_array)

@@ -36,3 +36,4 @@ spawner_remove_entity :: proc(
 ) {
 	append(&spawner_info.entities_to_remove, entity)
 }
+

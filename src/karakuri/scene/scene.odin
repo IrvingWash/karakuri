@@ -105,6 +105,10 @@ sync_add_entities :: proc(
 			kec.add_component(registry, entity, shape)
 		}
 
+		if entity_data, ok := bundle.entity_data.?; ok {
+			kec.add_component(registry, entity, entity_data)
+		}
+
 		if behavior, ok := bundle.behavior.?; ok {
 			kec.add_component(registry, entity, behavior)
 

@@ -6,7 +6,15 @@ import "karakuri:kec"
 import "karakuri:kmath"
 import "karakuri:kutils"
 
+Enemy :: struct {
+	using data:        components.Data_Component,
+	shoot_interval_id: uint,
+}
+
 enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
+	enemy_data := new(Enemy)
+	enemy_data^ = Enemy{}
+
 	return components.Component_Bundle {
 		tag = components.Tag_Component{value = "enemy"},
 		transform = components.new_transform_component(position = position),
@@ -17,6 +25,7 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 			size = kmath.Vector2{30, 50},
 			color = kutils.ColorBlue,
 		},
+		entity_data = enemy_data,
 		behavior = components.Behavior_Component {
 			on_collision = on_collision,
 			on_start = on_start,
@@ -26,13 +35,20 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 	}
 }
 
-shoot_interval_id: uint
-
 @(private = "file")
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	log.info("Enemy started")
 
-	shoot_interval_id = ctx.timer.set_interval(ctx.timer.timer_info, 1000)
+	enemy := cast(^^Enemy)kec.get_component(
+		ctx.registry,
+		ctx.entity,
+		^components.Data_Component,
+	)
+
+	enemy^.shoot_interval_id = ctx.timer.set_interval(
+		ctx.timer.timer_info,
+		1000,
+	)
 }
 
 @(private = "file")
@@ -41,7 +57,15 @@ on_destroy: components.Lifecycle_Proc : proc(
 ) {
 	log.info("Enemy destroyed")
 
-	ctx.timer.clear_interval(ctx.timer.timer_info, shoot_interval_id)
+	enemy := cast(^^Enemy)kec.get_component(
+		ctx.registry,
+		ctx.entity,
+		^components.Data_Component,
+	)
+
+	ctx.timer.clear_interval(ctx.timer.timer_info, enemy^.shoot_interval_id)
+
+	free(enemy^)
 }
 
 @(private = "file")
@@ -63,7 +87,13 @@ on_timer: components.On_Timer_Proc : proc(
 	ctx: components.Behavior_Context,
 	finished_timers: map[uint]struct {},
 ) {
-	if shoot_interval_id in finished_timers {
+	enemy := cast(^^Enemy)kec.get_component(
+		ctx.registry,
+		ctx.entity,
+		^components.Data_Component,
+	)
+
+	if enemy^.shoot_interval_id in finished_timers {
 		transform := kec.get_component(
 			ctx.registry,
 			ctx.entity,
