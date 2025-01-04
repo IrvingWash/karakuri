@@ -1,12 +1,6 @@
 package timer
 
-@(private)
-TimerData :: struct {
-	duration:   f64,
-	start_time: f64,
-}
-
-Timer :: struct {
+TimerInfo :: struct {
 	time:               f64,
 	next_id:            uint,
 	timeouts:           map[uint]TimerData,
@@ -14,8 +8,14 @@ Timer :: struct {
 	finished_timer_ids: map[uint]struct {},
 }
 
-new_timer :: proc(time: f64) -> Timer {
-	return Timer {
+@(private)
+TimerData :: struct {
+	duration:   f64,
+	start_time: f64,
+}
+
+new_timer :: proc(time: f64) -> TimerInfo {
+	return TimerInfo {
 		time = time,
 		next_id = 0,
 		timeouts = make(map[uint]TimerData),
@@ -24,13 +24,13 @@ new_timer :: proc(time: f64) -> Timer {
 	}
 }
 
-destroy_timer :: proc(timer: Timer) {
+destroy_timer :: proc(timer: TimerInfo) {
 	delete(timer.timeouts)
 	delete(timer.intervals)
 	delete(timer.finished_timer_ids)
 }
 
-set_interval :: proc(timer: ^Timer, duration: f64) -> uint {
+set_interval :: proc(timer: ^TimerInfo, duration: f64) -> uint {
 	defer timer.next_id += 1
 
 	timer.intervals[timer.next_id] = TimerData {
@@ -41,7 +41,7 @@ set_interval :: proc(timer: ^Timer, duration: f64) -> uint {
 	return timer.next_id
 }
 
-set_timeout :: proc(timer: ^Timer, duration: f64) -> uint {
+set_timeout :: proc(timer: ^TimerInfo, duration: f64) -> uint {
 	defer timer.next_id += 1
 
 	timer.timeouts[timer.next_id] = TimerData {
@@ -52,15 +52,15 @@ set_timeout :: proc(timer: ^Timer, duration: f64) -> uint {
 	return timer.next_id
 }
 
-clear_interval :: proc(timer: ^Timer, id: uint) {
+clear_interval :: proc(timer: ^TimerInfo, id: uint) {
 	delete_key(&timer.intervals, id)
 }
 
-clear_timeout :: proc(timer: ^Timer, id: uint) {
+clear_timeout :: proc(timer: ^TimerInfo, id: uint) {
 	delete_key(&timer.timeouts, id)
 }
 
-update :: proc(timer: ^Timer, time: f64) -> map[uint]struct {} {
+update :: proc(timer: ^TimerInfo, time: f64) -> map[uint]struct {} {
 	timer.time = time
 
 	update_intervals(timer)
@@ -73,7 +73,7 @@ update :: proc(timer: ^Timer, time: f64) -> map[uint]struct {} {
 }
 
 @(private)
-update_intervals :: proc(timer: ^Timer) {
+update_intervals :: proc(timer: ^TimerInfo) {
 	for id, &interval in &timer.intervals {
 		if interval.duration + interval.start_time < timer.time {
 			timer.finished_timer_ids[id] = {}
@@ -84,7 +84,7 @@ update_intervals :: proc(timer: ^Timer) {
 }
 
 @(private)
-update_timeouts :: proc(timer: ^Timer) {
+update_timeouts :: proc(timer: ^TimerInfo) {
 	timeouts_to_remove := make([dynamic]uint)
 	defer delete(timeouts_to_remove)
 

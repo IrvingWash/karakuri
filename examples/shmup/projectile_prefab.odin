@@ -5,9 +5,18 @@ import "karakuri:karakuri/components"
 import "karakuri:kmath"
 import "karakuri:kutils"
 
+Projectile_Shooter :: enum {
+	Enemy,
+	Player,
+}
+
 projectile_prefab :: proc(
 	start_position: kmath.Vector2,
+	owner: Projectile_Shooter,
 ) -> components.Component_Bundle {
+	velocity_multiplier: f64 = owner == .Player ? -1 : 1
+	tag := owner == .Player ? "player_projectile" : "enemy_projectile"
+
 	return components.Component_Bundle {
 		transform = components.new_transform_component(
 			position = start_position,
@@ -21,9 +30,9 @@ projectile_prefab :: proc(
 			on_destroy = on_destroy,
 		},
 		rigid_body = components.Rigid_Body_Component {
-			velocity = kmath.Vector2{0, -700},
+			velocity = kmath.Vector2{0, 700 * velocity_multiplier},
 		},
-		tag = components.Tag_Component{value = "projectile"},
+		tag = components.Tag_Component{value = tag},
 	}
 }
 

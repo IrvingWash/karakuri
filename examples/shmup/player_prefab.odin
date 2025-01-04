@@ -16,6 +16,7 @@ player_prefab :: proc() -> components.Component_Bundle {
 			on_start = on_start,
 			on_update = on_update,
 			on_destroy = on_destroy,
+			on_collision = on_collision,
 		},
 	}
 }
@@ -27,7 +28,10 @@ player_shoot :: proc(ctx: components.Behavior_Context) {
 		position :=
 			kec.get_component(ctx.registry, ctx.entity, components.Transform_Component).position
 
-		ctx.spawner.add_entity(ctx.spawner, projectile_prefab(position))
+		ctx.spawner.add_entity(
+			ctx.spawner,
+			projectile_prefab(position, .Player),
+		)
 	}
 }
 
@@ -74,5 +78,16 @@ on_destroy: components.Lifecycle_Proc : proc(
 	context.logger.lowest_level = log.Level.Info
 
 	log.info("Player destroyed")
+}
+
+@(private = "file")
+on_collision: components.On_Collision_Proc : proc(
+	ctx: components.Behavior_Context,
+	other: kec.Entity,
+) {
+	if tag := kec.get_component(ctx.registry, other, components.Tag_Component);
+	   tag.value == "enemy_projectile" {
+		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
+	}
 }
 

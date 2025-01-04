@@ -16,7 +16,7 @@ Behavior_Context :: struct {
 		is_key_released: input_manager.Key_State_Proc,
 	},
 	timer:    struct {
-		timer_info:     ^timer.Timer,
+		timer_info:     ^timer.TimerInfo,
 		set_timeout:    type_of(timer.set_timeout),
 		set_interval:   type_of(timer.set_interval),
 		clear_timeout:  type_of(timer.clear_timeout),

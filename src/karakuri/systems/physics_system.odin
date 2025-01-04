@@ -2,6 +2,7 @@ package systems
 
 import "../../kec"
 import "../components"
+import "../timer"
 import rl "vendor:raylib"
 
 physics_system :: proc(
@@ -11,12 +12,14 @@ physics_system :: proc(
 		dt: f64,
 		spawner_info: ^components.Spawner_Info,
 		registry: kec.Registry,
+		timer_info: ^timer.TimerInfo,
 		entity: kec.Entity,
 	) -> components.Behavior_Context,
 	spawner_info: ^components.Spawner_Info,
+	timer_info: ^timer.TimerInfo,
 ) {
 	move_entities(registry, dt)
-	collide_entities(registry, ctx_maker, dt, spawner_info)
+	collide_entities(registry, ctx_maker, dt, spawner_info, timer_info)
 }
 
 @(private = "file")
@@ -49,10 +52,12 @@ collide_entities :: proc(
 		dt: f64,
 		spawner_info: ^components.Spawner_Info,
 		registry: kec.Registry,
+		timer_info: ^timer.TimerInfo,
 		entity: kec.Entity,
 	) -> components.Behavior_Context,
 	dt: f64,
 	spawner_info: ^components.Spawner_Info,
+	timer_info: ^timer.TimerInfo,
 ) {
 	collidable_query := kec.query_start()
 	kec.query_with(components.Shape_Component, &collidable_query, registry)
@@ -121,14 +126,26 @@ collide_entities :: proc(
 
 				if behavior != nil {
 					if on_collision, ok := behavior.on_collision.?; ok {
-						ctx := ctx_maker(dt, spawner_info, registry, entity)
+						ctx := ctx_maker(
+							dt,
+							spawner_info,
+							registry,
+							timer_info,
+							entity,
+						)
 
 						on_collision(ctx, other)
 					}
 				}
 				if other_behavior != nil {
 					if on_collision, ok := other_behavior.on_collision.?; ok {
-						ctx := ctx_maker(dt, spawner_info, registry, other)
+						ctx := ctx_maker(
+							dt,
+							spawner_info,
+							registry,
+							timer_info,
+							other,
+						)
 
 						on_collision(ctx, entity)
 					}

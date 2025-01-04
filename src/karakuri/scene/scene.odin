@@ -6,10 +6,12 @@ import "../../kwindow/input_manager"
 import "../../kwindow/renderer"
 import "../components"
 import "../systems"
+import "../timer"
 
 Scene_Info :: struct {
 	spawner_info: components.Spawner_Info,
 	registry:     kec.Registry,
+	timer_info:   timer.TimerInfo,
 }
 
 new_scene :: proc(
@@ -20,12 +22,14 @@ new_scene :: proc(
 	scene_info := Scene_Info {
 		spawner_info = components.new_spawner_info(),
 		registry     = kec.new_registry(),
+		timer_info   = timer.new_timer(0), // TODO: Maybe we should pass the actual time here
 	}
 
 	sync_add_entities(
 		initial_entities[:],
 		&scene_info.registry,
 		&scene_info.spawner_info,
+		&scene_info.timer_info,
 		fps_manager.get_delta_time(),
 	)
 
@@ -35,6 +39,7 @@ new_scene :: proc(
 destroy_scene_info :: proc(scene_info: Scene_Info) {
 	components.destroy_spawner_info(scene_info.spawner_info)
 	kec.destroy_registry(scene_info.registry)
+	timer.destroy_timer(scene_info.timer_info)
 }
 
 update :: proc(
@@ -42,10 +47,14 @@ update :: proc(
 	renderer_info: ^renderer.Renderer_Info,
 ) {
 	delta_time := fps_manager.get_delta_time()
+	time := fps_manager.get_time()
+
+	finished_timers := timer.update(&scene_info.timer_info, time)
+	defer delete(finished_timers)
 
 	sync_with_registry(scene_info, delta_time)
 
-	update_entities(scene_info, delta_time)
+	update_entities(scene_info, delta_time, finished_timers)
 
 	render_entities(scene_info, renderer_info)
 }
@@ -56,6 +65,7 @@ sync_with_registry :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 		scene_info.spawner_info.entities_to_remove[:],
 		&scene_info.registry,
 		&scene_info.spawner_info,
+		&scene_info.timer_info,
 		delta_time,
 	)
 	clear(&scene_info.spawner_info.entities_to_remove)
@@ -64,6 +74,7 @@ sync_with_registry :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 		scene_info.spawner_info.entities_to_add[:],
 		&scene_info.registry,
 		&scene_info.spawner_info,
+		&scene_info.timer_info,
 		delta_time,
 	)
 	clear(&scene_info.spawner_info.entities_to_add)
@@ -74,6 +85,7 @@ sync_add_entities :: proc(
 	entities_to_add: []components.Component_Bundle,
 	registry: ^kec.Registry,
 	spawner_info: ^components.Spawner_Info,
+	timer_info: ^timer.TimerInfo,
 	delta_time: f64,
 ) {
 	for bundle in entities_to_add {
@@ -101,6 +113,7 @@ sync_add_entities :: proc(
 					delta_time,
 					spawner_info,
 					registry^,
+					timer_info,
 					entity,
 				)
 
@@ -123,6 +136,7 @@ sync_remove_entities :: proc(
 	entities_to_remove: []kec.Entity,
 	registry: ^kec.Registry,
 	spawner_info: ^components.Spawner_Info,
+	timer_info: ^timer.TimerInfo,
 	delta_time: f64,
 ) {
 	for entity in entities_to_remove {
@@ -138,6 +152,7 @@ sync_remove_entities :: proc(
 					delta_time,
 					spawner_info,
 					registry^,
+					timer_info,
 					entity,
 				)
 
@@ -150,7 +165,11 @@ sync_remove_entities :: proc(
 }
 
 @(private = "file")
-update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
+update_entities :: proc(
+	scene_info: ^Scene_Info,
+	delta_time: f64,
+	finished_timers: map[uint]struct {},
+) {
 	updatable_query := kec.query_start()
 	kec.query_with(
 		components.Behavior_Component,
@@ -175,10 +194,23 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 				delta_time,
 				&scene_info.spawner_info,
 				scene_info.registry,
+				&scene_info.timer_info,
 				entity,
 			)
 
 			on_update(ctx)
+		}
+
+		if on_timer, ok := behavior.on_timer.?; ok {
+			ctx := make_behavior_context(
+				delta_time,
+				&scene_info.spawner_info,
+				scene_info.registry,
+				&scene_info.timer_info,
+				entity,
+			)
+
+			on_timer(ctx, finished_timers)
 		}
 	}
 
@@ -187,6 +219,7 @@ update_entities :: proc(scene_info: ^Scene_Info, delta_time: f64) {
 		delta_time,
 		make_behavior_context,
 		&scene_info.spawner_info,
+		&scene_info.timer_info,
 	)
 }
 
@@ -241,6 +274,7 @@ make_behavior_context :: proc(
 	dt: f64,
 	spawner_info: ^components.Spawner_Info,
 	registry: kec.Registry,
+	timer_info: ^timer.TimerInfo,
 	entity: kec.Entity,
 ) -> components.Behavior_Context {
 	return components.Behavior_Context {
@@ -253,6 +287,13 @@ make_behavior_context :: proc(
 			is_key_up = input_manager.is_key_up,
 			is_key_pressed = input_manager.is_key_pressed,
 			is_key_released = input_manager.is_key_released,
+		},
+		timer = {
+			timer_info = timer_info,
+			set_interval = timer.set_interval,
+			clear_interval = timer.clear_interval,
+			clear_timeout = timer.clear_timeout,
+			set_timeout = timer.set_timeout,
 		},
 	}
 }

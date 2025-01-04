@@ -1,6 +1,7 @@
 package shmup
 
 import "core:log"
+import "core:strings"
 import "karakuri:karakuri/components"
 import "karakuri:kec"
 import "karakuri:kmath"
@@ -45,7 +46,7 @@ on_collision: components.On_Collision_Proc : proc(
 		other,
 		components.Tag_Component,
 	)
-	if other_tag != nil && other_tag.value == "projectile" {
+	if other_tag != nil && strings.contains(other_tag.value, "projectile") {
 		ctx.spawner.remove_entity(ctx.spawner, other)
 	}
 }

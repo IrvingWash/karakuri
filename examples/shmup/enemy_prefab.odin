@@ -29,7 +29,7 @@ shoot_interval_id: uint
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	log.info("Enemy started")
 
-	shoot_interval_id = ctx.timer.set_interval(ctx.timer.timer_info, 0.5)
+	shoot_interval_id = ctx.timer.set_interval(ctx.timer.timer_info, 1000)
 }
 
 @(private = "file")
@@ -50,7 +50,7 @@ on_collision: components.On_Collision_Proc : proc(
 		ctx.registry,
 		other,
 		components.Tag_Component,
-	); other_tag != nil {
+	); other_tag.value == "player_projectile" {
 		ctx.spawner.remove_entity(ctx.spawner, ctx.entity)
 	}
 }
@@ -69,7 +69,7 @@ on_timer: components.On_Timer_Proc : proc(
 
 		ctx.spawner.add_entity(
 			ctx.spawner,
-			projectile_prefab(transform.position),
+			projectile_prefab(transform.position, .Enemy),
 		)
 	}
 }
