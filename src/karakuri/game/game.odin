@@ -8,12 +8,10 @@ import "../../kwindow/renderer"
 import "../components"
 import "../scene"
 
-// Contains the game info.
 Game_Info :: struct {
 	renderer_info: renderer.Renderer_Info,
 }
 
-// Set's up a new game and returns the game info.
 new_game :: proc(
 	title := "karakuri game",
 	width: uint = 800,
@@ -36,7 +34,6 @@ new_game :: proc(
 	return Game_Info{renderer_info = renderer.new_renderer_info(clear_color)}
 }
 
-// Cleans up the game.
 destroy_game :: proc(game_info: Game_Info) {
 	kwindow.destroy_window()
 }
@@ -47,7 +44,6 @@ create_scene :: proc(
 	return scene.new_scene(entities)
 }
 
-// Starts playing the passed scene.
 // TODO: Disallow running several scene at once
 // TODO: Maybe the previous scene should be destroyed here
 start_scene :: proc(game_info: ^Game_Info, scene_info: ^scene.Scene_Info) {
@@ -58,3 +54,4 @@ start_scene :: proc(game_info: ^Game_Info, scene_info: ^scene.Scene_Info) {
 	// TODO: Is it nice to do this here?
 	scene.destroy_scene_info(scene_info^)
 }
+
