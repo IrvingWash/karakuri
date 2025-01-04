@@ -11,6 +11,6 @@ get_delta_time :: proc() -> f64 {
 }
 
 get_time :: proc() -> f64 {
-	return rl.GetTime()
+	return rl.GetTime() * 1000
 }
 
