@@ -5,9 +5,6 @@ import rl "vendor:raylib"
 import "../../kmath"
 import "../../kutils"
 
-// Contains the info required for each draw call.
-// If created with `new_renderer_info()`, the origin of the canvas will be at the center of the screen
-// with X increasing to the right and Y increasing to the bottom.
 Renderer_Info :: struct {
 	clear_color:   kutils.Color,
 	window_width:  uint,
@@ -15,8 +12,6 @@ Renderer_Info :: struct {
 	origin:        kmath.Vector2,
 }
 
-// Initializes `Renderer_Info` with the origin of the canvas at the center of the screen
-// with X increasing to the right and Y increasing to the bottom.
 new_renderer_info :: proc(clear_color: kutils.Color) -> Renderer_Info {
 	window_width := rl.GetScreenWidth()
 	window_height := rl.GetScreenHeight()
@@ -29,7 +24,6 @@ new_renderer_info :: proc(clear_color: kutils.Color) -> Renderer_Info {
 	}
 }
 
-// Begins a draw call. Should be called each frame.
 start_drawing :: proc(renderer_info: ^Renderer_Info) {
 	update_window_size(renderer_info)
 
@@ -37,14 +31,10 @@ start_drawing :: proc(renderer_info: ^Renderer_Info) {
 	rl.ClearBackground(color_to_rl(renderer_info.clear_color))
 }
 
-// Submits the draw call. Should be called at the end of the each frame.
 finish_drawing :: proc() {
 	rl.EndDrawing()
 }
 
-// Draws a rectangle.
-// The center of the rectangle is used as the origin by default.
-// This can be overridden by passing `custom_origin`
 draw_rectangle :: proc(
 	renderer_info: Renderer_Info,
 	position: kmath.Vector2,
@@ -78,7 +68,6 @@ draw_rectangle :: proc(
 	)
 }
 
-// Updates the stored window size and the canvas origin.
 @(private = "file")
 update_window_size :: proc(renderer_info: ^Renderer_Info) {
 	width := uint(rl.GetScreenWidth())
@@ -96,10 +85,10 @@ update_window_size :: proc(renderer_info: ^Renderer_Info) {
 	renderer_info.origin.y = f64(height) / 2
 }
 
-// Converts karakuri's `kutils.Color` into `raylib.Color`
 @(private = "file")
 color_to_rl :: proc(color: kutils.Color) -> rl.Color {
 	using color
 
 	return rl.Color{r, g, b, a}
 }
+

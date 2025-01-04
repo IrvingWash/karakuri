@@ -3,7 +3,6 @@ package kwindow
 import "core:strings"
 import rl "vendor:raylib"
 
-// Opens a window and initializes rendering context
 create_window :: proc(
 	title: string,
 	width: uint,
@@ -27,7 +26,6 @@ create_window :: proc(
 	}
 }
 
-// Closes the opened window and cleans up the rendering context
 destroy_window :: proc() {
 	rl.CloseWindow()
 }
