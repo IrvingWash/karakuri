@@ -39,7 +39,7 @@ enemy_prefab :: proc(position: kmath.Vector2) -> components.Component_Bundle {
 on_start: components.Lifecycle_Proc : proc(ctx: components.Behavior_Context) {
 	log.info("Enemy started")
 
-	enemy := kec.get_component_double_cast(
+	enemy := kec.get_component_with_subtype(
 		ctx.registry,
 		ctx.entity,
 		components.Data_Component,
@@ -58,7 +58,7 @@ on_destroy: components.Lifecycle_Proc : proc(
 ) {
 	log.info("Enemy destroyed")
 
-	enemy := kec.get_component_double_cast(
+	enemy := kec.get_component_with_subtype(
 		ctx.registry,
 		ctx.entity,
 		components.Data_Component,
@@ -87,7 +87,7 @@ on_timer: components.On_Timer_Proc : proc(
 	ctx: components.Behavior_Context,
 	finished_timers: map[uint]struct {},
 ) {
-	enemy := kec.get_component_double_cast(
+	enemy := kec.get_component_with_subtype(
 		ctx.registry,
 		ctx.entity,
 		components.Data_Component,

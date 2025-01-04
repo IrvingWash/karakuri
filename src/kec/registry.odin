@@ -105,7 +105,7 @@ get_component :: proc(r: Registry, entity: Entity, $C: typeid) -> ^C {
 	return &array[slot]
 }
 
-get_component_double_cast :: proc(
+get_component_with_subtype :: proc(
 	r: Registry,
 	entity: Entity,
 	$C: typeid,
