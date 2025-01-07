@@ -1,4 +1,4 @@
-package components
+package karakuri_components
 
 import v2 "kmath:vector2"
 import "kutils:color"
