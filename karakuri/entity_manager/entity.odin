@@ -1,4 +1,4 @@
-package entity
+package entity_manager
 
 import comp "../components"
 

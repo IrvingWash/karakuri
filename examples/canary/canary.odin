@@ -1,16 +1,16 @@
 package example_canary
 
 import "core:fmt"
-import "karakuri:entity"
+import "karakuri:entity_manager"
 
 Player :: struct {
-	using entity: entity.Entity,
+	using entity: entity_manager.Entity,
 	hp:           uint,
 }
 
 main :: proc() {
-	entity.init_manager()
-	defer entity.deinit_manager()
+	entity_manager.init()
+	defer entity_manager.deinit()
 
 	player := new(Player)
 	player^ = Player {
@@ -18,9 +18,9 @@ main :: proc() {
 		hp = 100,
 	}
 
-	player_id := entity.create_entity(player)
+	player_id := entity_manager.create_entity(player)
 
-	player_gotten := entity.get_entity(player_id, Player)
+	player_gotten := entity_manager.get_entity(player_id, Player)
 
 	if p, ok := player_gotten.?; ok {
 		fmt.println(p.transform.position)
