@@ -39,7 +39,7 @@ build_release:
 # ============================================================
 test:
 	@mkdir -p ${build_dir}/tests
-	@odin test ./tests -all-packages ${vet_flags} -out:${build_dir}/tests/tests
+	@odin test ./tests -all-packages ${vet_flags} -out:${build_dir}/tests/tests ${karakuri_collection} ${kmath_collection} ${kwindow_collection} ${kutils_collection}
 
 # ============================================================
 # Examples
