@@ -4,7 +4,10 @@ import "base:intrinsics"
 
 DEFAULT_ENTITY_CAPACITY :: 1000
 
+@(private = "file")
 next_id: uint
+
+@(private = "file")
 entities: [dynamic]^Entity
 
 init :: proc() {
@@ -12,6 +15,12 @@ init :: proc() {
 }
 
 deinit :: proc() {
+	for entity in entities {
+		delete(entity.tags)
+
+		free(entity)
+	}
+
 	delete(entities)
 }
 
@@ -42,6 +51,10 @@ destroy_entity :: proc(id: uint) {
 	}
 
 	unordered_remove(&entities, slot)
+}
+
+get_entities :: proc() -> []^Entity {
+	return entities[:]
 }
 
 get_entity :: proc {
