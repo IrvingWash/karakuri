@@ -2,11 +2,13 @@ package entity
 
 import "base:intrinsics"
 
+DEFAULT_ENTITY_CAPACITY :: 1000
+
 next_id: uint
 entities: [dynamic]^Entity
 
 init_manager :: proc() {
-	entities = make([dynamic]^Entity)
+	entities = make([dynamic]^Entity, 0, DEFAULT_ENTITY_CAPACITY)
 }
 
 deinit_manager :: proc() {
