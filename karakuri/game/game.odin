@@ -60,7 +60,7 @@ start :: proc() {
 
 // Sets a scene created from the provided procedure
 set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
-	destroy_all_entities_in_the_current_world(delta_time = 0)
+	destroy_entities(current_world.entities[:], delta_time = 0)
 
 	world.destroy(&current_world)
 
@@ -73,12 +73,12 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 		world.add_entity(&current_world, entity)
 	}
 
-	start_all_entities_in_the_current_world(delta_time = 0)
+	start_entities(current_world.entities[:], delta_time = 0)
 }
 
 // Destroys the game
 destroy :: proc() {
-	destroy_all_entities_in_the_current_world(delta_time = 0)
+	destroy_entities(current_world.entities[:], delta_time = 0)
 	world.destroy(&current_world)
 	window_creation.destroy_window()
 }
@@ -126,8 +126,8 @@ render_entities :: proc() {
 }
 
 @(private)
-start_all_entities_in_the_current_world :: proc(delta_time: f64) {
-	for &entity in current_world.entities {
+start_entities :: proc(entities: []world.Entity, delta_time: f64) {
+	for &entity in entities {
 		behavior, ok := entity.behavior.?
 		if !ok {
 			continue
@@ -143,8 +143,8 @@ start_all_entities_in_the_current_world :: proc(delta_time: f64) {
 }
 
 @(private)
-destroy_all_entities_in_the_current_world :: proc(delta_time: f64) {
-	for &entity in current_world.entities {
+destroy_entities :: proc(entities: []world.Entity, delta_time: f64) {
+	for &entity in entities {
 		behavior, behavior_ok := entity.behavior.?
 		if !behavior_ok {
 			continue
