@@ -110,12 +110,12 @@ render_entities :: proc() {
 	defer renderer.finish_drawing()
 
 	for &entity in game_info.current_world.entities {
-		shape, shape_ok := entity.shape.?
+		shape, shape_ok := &entity.shape.?
 		if !shape_ok {
 			continue
 		}
 
-		transform := entity.transform
+		transform := &entity.transform
 
 		renderer.draw_rectangle(
 			transform.position,

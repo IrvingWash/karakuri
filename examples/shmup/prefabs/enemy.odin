@@ -90,7 +90,12 @@ move :: proc(
 }
 
 @(private = "file")
-on_collision :: proc() {
-	fmt.println("Collided")
+on_collision: world.On_Collision_Proc : proc(
+	ctx: world.Behavior_Context,
+	other: ^world.Entity,
+) {
+	if other.tag == "Player Bullet" {
+		world.remove_entity(ctx.world, ctx.self.token)
+	}
 }
 

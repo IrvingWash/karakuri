@@ -53,6 +53,12 @@ destroy :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
 		destroy_entity(world, timer_info, &entity)
 	}
 
+	for &entity in world.entities {
+		if behavior, ok := entity.behavior.?; ok {
+			free(behavior)
+		}
+	}
+
 	// Cleanup
 	delete(world.entities)
 	delete(world.entities_to_add)
@@ -126,8 +132,8 @@ update :: proc(
 			continue
 		}
 
-		sync_remove_entity(world, entity)
 		destroy_entity(world, timer_info, entity)
+		sync_remove_entity(world, entity)
 	}
 	clear(&world.entities_to_remove)
 
@@ -152,7 +158,7 @@ update :: proc(
 	update_entities(world, delta_time, timer_info, finished_timers)
 
 	// Run systems
-	collision_system(world.entities[:])
+	collision_system(world.entities[:], world, delta_time, timer_info)
 }
 
 @(private = "file")
@@ -184,8 +190,6 @@ destroy_entity :: proc(
 	if !behavior_ok {
 		return
 	}
-
-	defer free(behavior)
 
 	on_destroy, on_destroy_ok := behavior.on_destroy.?
 	if !on_destroy_ok {
@@ -229,12 +233,13 @@ sync_add_entity :: proc(
 sync_remove_entity :: proc(world: ^World, entity: ^Entity) {
 	if behavior, ok := entity.behavior.?; ok {
 		free(behavior)
-		entity.behavior = nil
 	}
 
 	queue.append(&world.free_tokens, entity.token)
 
-	entity.token.generation_id = -1
+	world.entities[entity.token.id] = Entity {
+		token = {generation_id = -1},
+	}
 }
 
 @(private = "file")
@@ -274,7 +279,7 @@ update_entities :: proc(
 	}
 }
 
-@(private = "file")
+@(private)
 make_behavior_context :: proc(
 	entity: ^Entity,
 	delta_time: f64,

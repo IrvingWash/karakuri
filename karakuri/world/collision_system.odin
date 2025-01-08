@@ -1,8 +1,14 @@
 package karakuri_world
 
 import rl "vendor:raylib"
+import "ktimer:timer"
 
-collision_system :: proc(entities: []Entity) {
+collision_system :: proc(
+	entities: []Entity,
+	world: ^World,
+	delta_time: f64,
+	timer_info: ^timer.Timer_Info,
+) {
 	for i in 0 ..< len(entities) {
 		entity := &entities[i]
 
@@ -47,7 +53,15 @@ collision_system :: proc(entities: []Entity) {
 				if behavior_ok {
 					if on_collision, on_collision_ok := behavior.on_collision.?;
 					   on_collision_ok {
-						on_collision()
+						on_collision(
+							make_behavior_context(
+								entity,
+								delta_time,
+								world,
+								timer_info,
+							),
+							other,
+						)
 					}
 				}
 
@@ -55,7 +69,15 @@ collision_system :: proc(entities: []Entity) {
 				if other_behavior_ok {
 					if on_collision, on_collision_ok := other_behavior.on_collision.?;
 					   on_collision_ok {
-						on_collision()
+						on_collision(
+							make_behavior_context(
+								other,
+								delta_time,
+								world,
+								timer_info,
+							),
+							entity,
+						)
 					}
 				}
 			}

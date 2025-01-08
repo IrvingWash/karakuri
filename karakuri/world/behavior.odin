@@ -8,7 +8,7 @@ Behavior :: struct {
 	on_update:    Maybe(Lifecycle_Proc),
 	on_destroy:   Maybe(Lifecycle_Proc),
 	on_timer:     Maybe(On_Timer_Proc),
-	on_collision: Maybe(proc()),
+	on_collision: Maybe(On_Collision_Proc),
 }
 
 // A Procedure which is called on every lifecycle event
@@ -19,6 +19,9 @@ On_Timer_Proc :: proc(
 	ctx: Behavior_Context,
 	finished_timers: map[uint]struct {},
 )
+
+// A procedure which is called on every collision event
+On_Collision_Proc :: proc(ctx: Behavior_Context, other: ^Entity)
 
 // Context passed to lifecycle procedures
 Behavior_Context :: struct {
