@@ -69,12 +69,12 @@ start :: proc() {
 
 		finished_timers := timer.update(&game_info.timer_info, time)
 		defer delete(finished_timers)
-		// TODO: on_timer()
 
 		world.update(
 			&game_info.current_world,
 			delta_time,
 			&game_info.timer_info,
+			finished_timers,
 		)
 
 		render_entities()

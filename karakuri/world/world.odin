@@ -112,7 +112,12 @@ remove_entity :: proc(world: ^World, token: Token) {
 	append(&world.entities_to_remove, token)
 }
 
-update :: proc(world: ^World, delta_time: f64, timer_info: ^timer.Timer_Info) {
+update :: proc(
+	world: ^World,
+	delta_time: f64,
+	timer_info: ^timer.Timer_Info,
+	finished_timers: map[uint]struct {},
+) {
 	// Sync destroy and remove entities
 	for &token in world.entities_to_remove {
 		entity := &world.entities[token.id]
@@ -143,7 +148,7 @@ update :: proc(world: ^World, delta_time: f64, timer_info: ^timer.Timer_Info) {
 	}
 
 	// Update entities
-	update_entities(world, delta_time, timer_info)
+	update_entities(world, delta_time, timer_info, finished_timers)
 }
 
 @(private = "file")
@@ -233,11 +238,27 @@ update_entities :: proc(
 	world: ^World,
 	delta_time: f64,
 	timer_info: ^timer.Timer_Info,
+	finished_timers: map[uint]struct {},
 ) {
 	for &entity in world.entities {
 		behavior, ok := entity.behavior.?
 		if !ok {
 			continue
+		}
+
+		if len(finished_timers) != 0 {
+			on_timer, on_timer_ok := behavior.on_timer.?
+			if on_timer_ok {
+				on_timer(
+					make_behavior_context(
+						&entity,
+						delta_time,
+						world,
+						timer_info,
+					),
+					finished_timers,
+				)
+			}
 		}
 
 		on_update, on_update_ok := behavior.on_update.?

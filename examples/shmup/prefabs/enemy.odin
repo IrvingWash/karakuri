@@ -12,6 +12,7 @@ enemy_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 		speed      = 50,
 		on_start   = on_start,
 		on_destroy = on_destroy,
+		on_update  = on_update,
 	}
 
 	return world.Entity_Payload {
@@ -46,12 +47,10 @@ on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 
 @(private = "file")
 on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Enemy destroyed")
-
-	transform := ctx.self.transform
+	transform := &ctx.self.transform
 	behavior := world.get_behavior(ctx.self^, Enemy_Behavior).?
 
-	move(&transform, behavior^, ctx.delta_time)
+	move(transform, behavior^, ctx.delta_time)
 }
 
 @(private = "file")
