@@ -12,8 +12,8 @@ World :: struct {
 	free_tokens: queue.Queue(entity.Token),
 }
 
-// Initialized the world
-init :: proc() -> World {
+// Creates the world
+new :: proc() -> World {
 	free_tokens: queue.Queue(entity.Token)
 	queue.init(&free_tokens, STARTING_CAPACITY)
 
@@ -23,8 +23,8 @@ init :: proc() -> World {
 	}
 }
 
-// Deinitializes and cleans up the world
-deinit :: proc(world: ^World) {
+// Destroys the world
+destroy :: proc(world: ^World) {
 	for &entity in world.entities {
 		if behavior, ok := entity.behavior.?; ok {
 			free(behavior)

@@ -4,7 +4,7 @@ import "core:strings"
 import rl "vendor:raylib"
 
 // Initialzes and opens a window
-create_window :: proc(
+init_window :: proc(
 	title: string,
 	width, height: uint,
 	fullscreen, resizable: bool,
