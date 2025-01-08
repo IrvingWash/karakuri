@@ -9,16 +9,15 @@ import v2 "kmath:vector2"
 // ====================================
 
 @(private = "file")
-clear_color: rl.Color
+Renderer_Info :: struct {
+	clear_color:   rl.Color,
+	window_width:  uint,
+	window_height: uint,
+	canvas_origin: v2.Vector2,
+}
 
 @(private = "file")
-window_width: uint
-
-@(private = "file")
-window_height: uint
-
-@(private = "file")
-canvas_origin: v2.Vector2
+renderer_info := Renderer_Info{}
 
 // ====================================
 // Public procs
@@ -29,10 +28,12 @@ init :: proc(background_color: color.Color) {
 	width := rl.GetScreenWidth()
 	height := rl.GetScreenHeight()
 
-	clear_color = color_to_rl(background_color)
-	window_width = uint(width)
-	window_height = uint(height)
-	canvas_origin = v2.Vector2{f64(window_width) / 2, f64(window_height) / 2}
+	renderer_info = Renderer_Info {
+		clear_color   = color_to_rl(background_color),
+		window_width  = uint(width),
+		window_height = uint(height),
+		canvas_origin = v2.Vector2{f64(width) / 2, f64(height) / 2},
+	}
 }
 
 // Starts a draw queue. All the draw calls should be done after this procedure is invoked
@@ -40,7 +41,7 @@ start_drawing :: proc() {
 	update_renderer_info()
 
 	rl.BeginDrawing()
-	rl.ClearBackground(clear_color)
+	rl.ClearBackground(renderer_info.clear_color)
 }
 
 // Finishes and submits a draw queue. All the draw calls should be done before this procedure is invoked
@@ -69,8 +70,8 @@ draw_rectangle :: proc(
 
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
-			x = f32(position.x + canvas_origin.x),
-			y = f32(position.y + canvas_origin.y),
+			x = f32(position.x + renderer_info.canvas_origin.x),
+			y = f32(position.y + renderer_info.canvas_origin.y),
 			width = f32(scaled_width),
 			height = f32(scaled_height),
 		},
@@ -89,15 +90,16 @@ update_renderer_info :: proc() {
 	width := uint(rl.GetScreenWidth())
 	height := uint(rl.GetScreenHeight())
 
-	if window_width == width && window_height == height {
+	if renderer_info.window_width == width &&
+	   renderer_info.window_height == height {
 		return
 	}
 
-	window_width = width
-	window_height = height
+	renderer_info.window_width = width
+	renderer_info.window_height = height
 
-	canvas_origin.x = f64(width) / 2
-	canvas_origin.y = f64(height) / 2
+	renderer_info.canvas_origin.x = f64(width) / 2
+	renderer_info.canvas_origin.y = f64(height) / 2
 }
 
 @(private = "file")
