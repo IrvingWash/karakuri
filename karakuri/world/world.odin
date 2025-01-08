@@ -112,6 +112,7 @@ remove_entity :: proc(world: ^World, token: Token) {
 	append(&world.entities_to_remove, token)
 }
 
+// Updates the world
 update :: proc(
 	world: ^World,
 	delta_time: f64,

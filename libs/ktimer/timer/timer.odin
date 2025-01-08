@@ -1,5 +1,6 @@
 package ktimer_timer
 
+@(private = "file")
 Timer_Info :: struct {
 	time:               f64,
 	next_id:            uint,
@@ -8,12 +9,13 @@ Timer_Info :: struct {
 	finished_timer_ids: map[uint]struct {},
 }
 
-@(private)
+@(private = "file")
 TimerData :: struct {
 	duration:   f64,
 	start_time: f64,
 }
 
+// Creates a new timer
 new :: proc(time: f64) -> Timer_Info {
 	return Timer_Info {
 		time = time,
@@ -24,12 +26,14 @@ new :: proc(time: f64) -> Timer_Info {
 	}
 }
 
+// Destroys a timer
 destroy :: proc(timer: Timer_Info) {
 	delete(timer.timeouts)
 	delete(timer.intervals)
 	delete(timer.finished_timer_ids)
 }
 
+// Creates a new interval with the given duration
 set_interval :: proc(timer: ^Timer_Info, duration: f64) -> uint {
 	defer timer.next_id += 1
 
@@ -41,6 +45,7 @@ set_interval :: proc(timer: ^Timer_Info, duration: f64) -> uint {
 	return timer.next_id
 }
 
+// Creates a new timeout with the given duration
 set_timeout :: proc(timer: ^Timer_Info, duration: f64) -> uint {
 	defer timer.next_id += 1
 
@@ -52,14 +57,17 @@ set_timeout :: proc(timer: ^Timer_Info, duration: f64) -> uint {
 	return timer.next_id
 }
 
+// Deletes an interval with the given id
 clear_interval :: proc(timer: ^Timer_Info, id: uint) {
 	delete_key(&timer.intervals, id)
 }
 
+// Deeltes a timeout with the given id
 clear_timeout :: proc(timer: ^Timer_Info, id: uint) {
 	delete_key(&timer.timeouts, id)
 }
 
+// Updates the timer
 update :: proc(timer: ^Timer_Info, time: f64) -> map[uint]struct {} {
 	timer.time = time
 
