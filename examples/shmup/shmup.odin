@@ -1,4 +1,4 @@
-package example_canary
+package example_shmup
 
 @(require) import "core:fmt"
 @(require) import "core:log"
@@ -6,6 +6,9 @@ package example_canary
 import "karakuri:game"
 import "kutils:color"
 import "scenes"
+
+DODONPACHI_WIDTH :: 240
+DODONPACHI_HEIGHT :: 320
 
 main :: proc() {
 	// =============================
@@ -52,13 +55,13 @@ main :: proc() {
 	// The actual code
 	// =============================
 	game.init(
-		title = "Sonic The Hedgehog",
-		width = 800,
-		height = 600,
+		title = "Shmup",
+		width = DODONPACHI_WIDTH * 2,
+		height = DODONPACHI_HEIGHT * 2,
 		fullscreen = false,
-		resizable = true,
+		resizable = false,
 		vsync = true,
-		background_color = color.Blue,
+		background_color = color.Black,
 		target_fps = 60,
 	)
 	defer game.destroy()

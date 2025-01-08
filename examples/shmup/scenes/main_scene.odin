@@ -1,4 +1,4 @@
-package example_canary_scenes
+package example_shmup_scenes
 
 import "karakuri:scene"
 import "../prefabs"

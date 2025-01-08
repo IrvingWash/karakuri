@@ -51,12 +51,12 @@ examples_release_build_dir = ${examples_build_dir}/release
 example_collections = ${karakuri_collection} ${kmath_collection} ${kutils_collection} ${kwindow_collection}
 
 # ===============
-# Canary
+# Shmup
 # ===============
-canary-debug:
+shmup-debug:
 	@mkdir -p ${examples_debug_build_dir}
-	@odin run ${examples_src}/canary ${vet_flags} ${debug_flags} -out:${examples_debug_build_dir}/canary ${example_collections}
+	@odin run ${examples_src}/shmup ${vet_flags} ${debug_flags} -out:${examples_debug_build_dir}/shmup ${example_collections}
 
-canary-release:
+shmup-release:
 	@mkdir -p ${examples_release_build_dir}
-	@odin run ${examples_src}/canary ${vet_flags} ${release_flags} -out:${examples_release_build_dir}/canary ${example_collections}
+	@odin run ${examples_src}/shmup ${vet_flags} ${release_flags} -out:${examples_release_build_dir}/shmup ${example_collections}
