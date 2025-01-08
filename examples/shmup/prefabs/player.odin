@@ -18,10 +18,10 @@ player_prefab :: proc() -> world.Entity_Payload {
 	}
 
 	return world.Entity_Payload {
-		tag = "Sonic",
+		tag = "Player",
 		transform = components.Transform_Component {
 			position = v2.Vector2{0, 0},
-			scale = v2.Vector2{1, 1},
+			scale = v2.Unit,
 			rotation = 0,
 		},
 		shape = components.Shape_Component {
@@ -48,12 +48,12 @@ on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Sonic started")
+	fmt.println("Player started")
 }
 
 @(private = "file")
 on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Sonic destroyed")
+	fmt.println("Player destroyed")
 }
 
 @(private = "file")
