@@ -1,6 +1,5 @@
 package ktimer_timer
 
-@(private = "file")
 Timer_Info :: struct {
 	time:               f64,
 	next_id:            uint,

@@ -81,7 +81,10 @@ move :: proc(
 @(private = "file")
 shoot :: proc(w: ^world.World, transform: components.Transform_Component) {
 	if input_manager.is_key_pressed(.SPACE) {
-		world.add_entity(w, bullet_prefab(transform.position))
+		world.add_entity(
+			w,
+			bullet_prefab(transform.position, 700, "Player Bullet"),
+		)
 	}
 }
 

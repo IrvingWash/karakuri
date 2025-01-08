@@ -18,7 +18,7 @@ test_add_entity :: proc(t: ^testing.T) {
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())
 
-	kw.update(&world, 0, timer_info)
+	kw.update(&world, 0, timer_info, {})
 
 	expect_value(t, len(world.entities), 2)
 
@@ -62,19 +62,19 @@ test_remove_entity :: proc(t: ^testing.T) {
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())
 
-	kw.update(&world, 0, timer_info)
+	kw.update(&world, 0, timer_info, {})
 
 	sonic := kw.find_with_tag(&world, "Sonic").?
 
 	kw.remove_entity(&world, sonic.token)
 
-	kw.update(&world, 0, timer_info)
+	kw.update(&world, 0, timer_info, {})
 
 	expect_value(t, world.free_tokens.len, 1)
 
 	kw.add_entity(&world, make_knuckles())
 
-	kw.update(&world, 0, timer_info)
+	kw.update(&world, 0, timer_info, {})
 
 	expect_value(t, len(world.entities), 2)
 	expect_value(t, world.free_tokens.len, 0)

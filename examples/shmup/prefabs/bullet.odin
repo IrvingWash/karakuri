@@ -6,17 +6,21 @@ import "kutils:color"
 import "karakuri:world"
 import "karakuri:components"
 
-bullet_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
+bullet_prefab :: proc(
+	position: v2.Vector2,
+	speed: f64,
+	tag: string,
+) -> world.Entity_Payload {
 	bullet_behavior := new(Bullet_Behavior)
 	bullet_behavior^ = Bullet_Behavior {
-		speed      = 700,
+		speed      = speed,
 		on_start   = on_start,
 		on_update  = on_update,
 		on_destroy = on_destroy,
 	}
 
 	return world.Entity_Payload {
-		tag = "Bullet",
+		tag = tag,
 		transform = components.Transform_Component {
 			position = position,
 			scale = v2.Unit,
@@ -37,7 +41,7 @@ Bullet_Behavior :: struct {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Bullet started")
+	fmt.println("Bullet started ", ctx.self.tag)
 }
 
 @(private = "file")
