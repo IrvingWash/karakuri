@@ -1,0 +1,3 @@
+- Check everything for copy assignment
+- Add Rigid Body component
+- Add sprite renderning
