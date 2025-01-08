@@ -4,18 +4,21 @@ import "core:testing"
 import kw "karakuri:world"
 import kc "karakuri:components"
 import v2 "kmath:vector2"
+import "ktimer:timer"
 
 @(test)
 test_add_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.new({})
-	defer kw.destroy(&world)
+	timer_info := &timer.Timer_Info{}
+
+	world := kw.new({}, timer_info)
+	defer kw.destroy(&world, timer_info)
 
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())
 
-	kw.update(&world, 0)
+	kw.update(&world, 0, timer_info)
 
 	expect_value(t, len(world.entities), 2)
 
@@ -51,25 +54,27 @@ test_add_entity :: proc(t: ^testing.T) {
 test_remove_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.new({})
-	defer kw.destroy(&world)
+	timer_info := &timer.Timer_Info{}
+
+	world := kw.new({}, timer_info)
+	defer kw.destroy(&world, timer_info)
 
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())
 
-	kw.update(&world, 0)
+	kw.update(&world, 0, timer_info)
 
 	sonic := kw.find_with_tag(&world, "Sonic").?
 
 	kw.remove_entity(&world, sonic.token)
 
-	kw.update(&world, 0)
+	kw.update(&world, 0, timer_info)
 
 	expect_value(t, world.free_tokens.len, 1)
 
 	kw.add_entity(&world, make_knuckles())
 
-	kw.update(&world, 0)
+	kw.update(&world, 0, timer_info)
 
 	expect_value(t, len(world.entities), 2)
 	expect_value(t, world.free_tokens.len, 0)

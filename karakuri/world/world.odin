@@ -38,14 +38,20 @@ new :: proc(
 		sync_add_entity(&world, entity)
 	}
 
-	start_entities(&world, timer_info)
+	// Start initial entities
+	for &entity in world.entities {
+		start_entity(&world, timer_info, &entity)
+	}
 
 	return world
 }
 
 // Destroys the world
 destroy :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
-	destroy_entities(world, timer_info)
+	// Destroy all remaining entities
+	for &entity in world.entities {
+		destroy_entity(world, timer_info, &entity)
+	}
 
 	// Cleanup
 	delete(world.entities)
@@ -107,57 +113,84 @@ remove_entity :: proc(world: ^World, token: Token) {
 }
 
 update :: proc(world: ^World, delta_time: f64, timer_info: ^timer.Timer_Info) {
+	// Sync destroy and remove entities
 	for &token in world.entities_to_remove {
-		sync_remove_entity(world, token)
+		entity := &world.entities[token.id]
+		if entity.generation_id != token.generation_id {
+			continue
+		}
+
+		sync_remove_entity(world, entity)
+		destroy_entity(world, timer_info, entity)
 	}
 	clear(&world.entities_to_remove)
 
+	// Sync add and start entities
+	entities_to_start := make([dynamic]Token, 0, len(world.entities_to_add))
+	defer delete(entities_to_start)
+
 	for &payload in world.entities_to_add {
-		sync_add_entity(world, payload)
+		token := sync_add_entity(world, payload)
+
+		append(&entities_to_start, token)
 	}
 	clear(&world.entities_to_add)
 
+	for &token in entities_to_start {
+		entity := &world.entities[token.id]
+
+		start_entity(world, timer_info, entity)
+	}
+
+	// Update entities
 	update_entities(world, delta_time, timer_info)
 }
 
 @(private = "file")
-start_entities :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
-	for &entity in world.entities {
-		behavior, ok := entity.behavior.?
-		if !ok {
-			continue
-		}
-
-		on_start, on_start_ok := behavior.on_start.?
-		if !on_start_ok {
-			continue
-		}
-
-		on_start(make_behavior_context(&entity, 0, world, timer_info))
+start_entity :: proc(
+	world: ^World,
+	timer_info: ^timer.Timer_Info,
+	entity: ^Entity,
+) {
+	behavior, ok := entity.behavior.?
+	if !ok {
+		return
 	}
+
+	on_start, on_start_ok := behavior.on_start.?
+	if !on_start_ok {
+		return
+	}
+
+	on_start(make_behavior_context(entity, 0, world, timer_info))
 }
 
 @(private = "file")
-destroy_entities :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
-	for &entity in world.entities {
-		behavior, behavior_ok := entity.behavior.?
-		if !behavior_ok {
-			continue
-		}
-
-		defer free(behavior)
-
-		on_destroy, on_destroy_ok := behavior.on_destroy.?
-		if !on_destroy_ok {
-			continue
-		}
-
-		on_destroy(make_behavior_context(&entity, 0, world, timer_info))
+destroy_entity :: proc(
+	world: ^World,
+	timer_info: ^timer.Timer_Info,
+	entity: ^Entity,
+) {
+	behavior, behavior_ok := entity.behavior.?
+	if !behavior_ok {
+		return
 	}
+
+	defer free(behavior)
+
+	on_destroy, on_destroy_ok := behavior.on_destroy.?
+	if !on_destroy_ok {
+		return
+	}
+
+	on_destroy(make_behavior_context(entity, 0, world, timer_info))
 }
 
 @(private = "file")
-sync_add_entity :: proc(world: ^World, entity_payload: Entity_Payload) {
+sync_add_entity :: proc(
+	world: ^World,
+	entity_payload: Entity_Payload,
+) -> Token {
 	new_entity := Entity {
 		data = entity_payload, // TODO: Handle defaults
 	}
@@ -168,32 +201,31 @@ sync_add_entity :: proc(world: ^World, entity_payload: Entity_Payload) {
 
 		world.entities[token.id] = new_entity
 
-		return
+		return token
 	}
 
-	new_entity.token = Token {
+	token = Token {
 		generation_id = 0,
 		id            = len(world.entities),
 	}
 
+	new_entity.token = token
+
 	append(&world.entities, new_entity)
+
+	return token
 }
 
 @(private = "file")
-sync_remove_entity :: proc(world: ^World, token: Token) {
-	stored_entity := &world.entities[token.id]
-	if stored_entity.generation_id != token.generation_id {
-		return
-	}
-
-	if behavior, ok := stored_entity.behavior.?; ok {
+sync_remove_entity :: proc(world: ^World, entity: ^Entity) {
+	if behavior, ok := entity.behavior.?; ok {
 		free(behavior)
-		stored_entity.behavior = nil
+		entity.behavior = nil
 	}
 
-	queue.append(&world.free_tokens, stored_entity.token)
+	queue.append(&world.free_tokens, entity.token)
 
-	stored_entity.token.generation_id = -1
+	entity.token.generation_id = -1
 }
 
 @(private = "file")
