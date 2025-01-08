@@ -1,30 +1,25 @@
-package kwindow_input_manager
+package karakuri_input_manager
 
-import rl "vendor:raylib"
+import "kwindow:input_manager"
 import "kutils:keyboard"
 
 // Checks if the keys is down since the current frame
 is_key_pressed :: proc(key: keyboard.Key) -> bool {
-	return rl.IsKeyPressed(key)
+	return input_manager.is_key_pressed(key)
 }
 
 // Checks if the key is down regardles of the previous state
 is_key_down :: proc(key: keyboard.Key) -> bool {
-	return rl.IsKeyDown(key)
+	return input_manager.is_key_down(key)
 }
 
 // Checks if the key is not down/pressed
 is_key_up :: proc(key: keyboard.Key) -> bool {
-	return rl.IsKeyUp(key)
+	return input_manager.is_key_up(key)
 }
 
 // Checks if the key was released since the previous frame
 is_key_released :: proc(key: keyboard.Key) -> bool {
-	return rl.IsKeyReleased(key)
-}
-
-// Checks if the quit command was received
-is_quit_requested :: proc() -> bool {
-	return rl.WindowShouldClose()
+	return input_manager.is_key_released(key)
 }
 

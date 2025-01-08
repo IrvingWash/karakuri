@@ -48,7 +48,7 @@ examples_src = ./examples
 examples_build_dir = ${build_dir}/examples
 examples_debug_build_dir = ${examples_build_dir}/debug
 examples_release_build_dir = ${examples_build_dir}/release
-example_collections = ${karakuri_collection} ${kmath_collection} ${kutils_collection}
+example_collections = ${karakuri_collection} ${kmath_collection} ${kutils_collection} ${kwindow_collection}
 
 # ===============
 # Canary
