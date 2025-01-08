@@ -1,4 +1,4 @@
-package karakuri_entity
+package karakuri_world
 
 import "../components"
 

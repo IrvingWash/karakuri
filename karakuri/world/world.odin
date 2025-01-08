@@ -3,22 +3,21 @@ package karakuri_world
 STARTING_CAPACITY :: 1000
 
 import "core:container/queue"
-import "../entity"
 import "base:intrinsics"
 
 // Represents a world of entities
 World :: struct {
-	entities:    [dynamic]entity.Entity,
-	free_tokens: queue.Queue(entity.Token),
+	entities:    [dynamic]Entity,
+	free_tokens: queue.Queue(Token),
 }
 
 // Creates the world
 new :: proc() -> World {
-	free_tokens: queue.Queue(entity.Token)
+	free_tokens: queue.Queue(Token)
 	queue.init(&free_tokens, STARTING_CAPACITY)
 
 	return {
-		entities = make([dynamic]entity.Entity, 0, STARTING_CAPACITY),
+		entities = make([dynamic]Entity, 0, STARTING_CAPACITY),
 		free_tokens = free_tokens,
 	}
 }
@@ -36,8 +35,8 @@ destroy :: proc(world: ^World) {
 }
 
 // Adds a new entity to the world
-add_entity :: proc(world: ^World, entity_payload: entity.Entity_Payload) {
-	new_entity := entity.Entity {
+add_entity :: proc(world: ^World, entity_payload: Entity_Payload) {
+	new_entity := Entity {
 		data = entity_payload, // TODO: Handle defaults
 	}
 
@@ -50,7 +49,7 @@ add_entity :: proc(world: ^World, entity_payload: entity.Entity_Payload) {
 		return
 	}
 
-	new_entity.token = entity.Token {
+	new_entity.token = Token {
 		generation_id = 0,
 		id            = len(world.entities),
 	}
@@ -59,7 +58,7 @@ add_entity :: proc(world: ^World, entity_payload: entity.Entity_Payload) {
 }
 
 // Removes an entity from the world
-remove_entity :: proc(world: ^World, token: entity.Token) {
+remove_entity :: proc(world: ^World, token: Token) {
 	stored_entity := &world.entities[token.id]
 	if stored_entity.generation_id != token.generation_id {
 		return
@@ -76,14 +75,11 @@ remove_entity :: proc(world: ^World, token: entity.Token) {
 }
 
 // Checks if the given entity is still in the world
-is_alive :: proc(world: World, token: entity.Token) -> bool {
+is_alive :: proc(world: World, token: Token) -> bool {
 	return world.entities[token.id].generation_id == token.generation_id
 }
 
-get_entity :: proc(
-	world: ^World,
-	token: entity.Token,
-) -> Maybe(^entity.Entity) {
+get_entity :: proc(world: ^World, token: Token) -> Maybe(^Entity) {
 	entity := &world.entities[token.id]
 
 	if entity.token.generation_id == -1 {
@@ -94,13 +90,13 @@ get_entity :: proc(
 }
 
 // Returns the first entity with the given tag
-find_with_tag :: proc(world: ^World, tag: string) -> Maybe(^entity.Entity) {
-	for &e in world.entities {
-		if e.tag != tag {
+find_with_tag :: proc(world: ^World, tag: string) -> Maybe(^Entity) {
+	for &entity in world.entities {
+		if entity.tag != tag {
 			continue
 		}
 
-		return &e
+		return &entity
 	}
 
 	return nil
@@ -108,17 +104,14 @@ find_with_tag :: proc(world: ^World, tag: string) -> Maybe(^entity.Entity) {
 
 // Returns the behavior of the entity
 get_behavior :: proc(
-	e: entity.Entity,
-	$Behavior: typeid,
-) -> Maybe(^Behavior) where intrinsics.type_is_subtype_of(
-		Behavior,
-		entity.Behavior,
-	) {
-	behavior, ok := e.behavior.?
+	entity: Entity,
+	$B: typeid,
+) -> Maybe(^B) where intrinsics.type_is_subtype_of(B, Behavior) {
+	behavior, ok := entity.behavior.?
 	if !ok {
 		return nil
 	}
 
-	return cast(^Behavior)behavior
+	return cast(^B)behavior
 }
 

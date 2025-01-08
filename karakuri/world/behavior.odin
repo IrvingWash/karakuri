@@ -1,4 +1,4 @@
-package karakuri_entity
+package karakuri_world
 
 // Lifecycle behavior of an entity
 Behavior :: struct {
@@ -12,5 +12,6 @@ Lifecycle_Proc :: proc(ctx: Behavior_Context)
 Behavior_Context :: struct {
 	self:       ^Entity,
 	delta_time: f64,
+	world:      ^World,
 }
 

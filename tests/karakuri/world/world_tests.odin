@@ -3,7 +3,6 @@ package karakuri_world_tests
 import "core:testing"
 import kw "karakuri:world"
 import kc "karakuri:components"
-import ke "karakuri:entity"
 import v2 "kmath:vector2"
 
 @(test)
@@ -70,17 +69,17 @@ test_remove_entity :: proc(t: ^testing.T) {
 
 @(private = "file")
 Sonic :: struct {
-	using behavior: ke.Behavior,
+	using behavior: kw.Behavior,
 	speed:          f64,
 }
 @(private = "file")
-make_sonic :: proc() -> ke.Entity_Payload {
+make_sonic :: proc() -> kw.Entity_Payload {
 	sonic_behavior := new(Sonic)
 	sonic_behavior^ = Sonic {
 		speed = 10,
 	}
 
-	return ke.Entity_Payload {
+	return kw.Entity_Payload {
 		tag = "Sonic",
 		transform = kc.Transform_Component {
 			position = {100, 100},
@@ -92,12 +91,12 @@ make_sonic :: proc() -> ke.Entity_Payload {
 
 @(private = "file")
 Tails :: struct {
-	using behavior:          ke.Behavior,
+	using behavior:          kw.Behavior,
 	max_flight_duration:     f64,
 	get_max_flight_duration: proc(tails: Tails) -> f64,
 }
 @(private = "file")
-make_tails :: proc() -> ke.Entity_Payload {
+make_tails :: proc() -> kw.Entity_Payload {
 	tails_behavior := new(Tails)
 	tails_behavior^ = Tails {
 		max_flight_duration = 9,
@@ -106,7 +105,7 @@ make_tails :: proc() -> ke.Entity_Payload {
 		},
 	}
 
-	return ke.Entity_Payload {
+	return kw.Entity_Payload {
 		tag = "Tails",
 		transform = kc.Transform_Component {
 			position = {90, 90},
@@ -118,17 +117,17 @@ make_tails :: proc() -> ke.Entity_Payload {
 
 @(private = "file")
 Knuckles :: struct {
-	using behavior: ke.Behavior,
+	using behavior: kw.Behavior,
 	damage:         f64,
 }
 @(private = "file")
-make_knuckles :: proc() -> ke.Entity_Payload {
+make_knuckles :: proc() -> kw.Entity_Payload {
 	knuckles_behavior := new(Knuckles)
 	knuckles_behavior^ = Knuckles {
 		damage = 8,
 	}
 
-	return ke.Entity_Payload {
+	return kw.Entity_Payload {
 		tag = "Knuckles",
 		transform = kc.Transform_Component {
 			position = {80, 80},

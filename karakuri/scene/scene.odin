@@ -1,11 +1,11 @@
 package karakuri_scene
 
-import "../entity"
+import "../world"
 
 // Contains initial information about the world
 Scene :: struct {
 	name:     string,
-	entities: [dynamic]entity.Entity_Payload,
+	entities: [dynamic]world.Entity_Payload,
 	assets:   bool, // TODO: assets go here
 }
 

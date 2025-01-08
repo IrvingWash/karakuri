@@ -7,7 +7,6 @@ import "kwindow:input_manager"
 import "kutils:color"
 import "../world"
 import "../scene"
-import "../entity"
 
 // ====================================
 // Game state
@@ -85,7 +84,13 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 			continue
 		}
 
-		on_start(entity.Behavior_Context{self = &e, delta_time = 0})
+		on_start(
+			world.Behavior_Context {
+				self = &e,
+				delta_time = 0,
+				world = &current_world,
+			},
+		)
 	}
 }
 
@@ -102,8 +107,8 @@ destroy :: proc() {
 
 @(private)
 update_entities :: proc(delta_time: f64) {
-	for &e in current_world.entities {
-		behavior, ok := e.behavior.?
+	for &entity in current_world.entities {
+		behavior, ok := entity.behavior.?
 		if !ok {
 			continue
 		}
@@ -111,7 +116,11 @@ update_entities :: proc(delta_time: f64) {
 		on_update, on_update_ok := behavior.on_update.?
 		if on_update_ok {
 			on_update(
-				entity.Behavior_Context{self = &e, delta_time = delta_time},
+				world.Behavior_Context {
+					self = &entity,
+					delta_time = delta_time,
+					world = &current_world,
+				},
 			)
 		}
 	}
@@ -153,7 +162,7 @@ destroy_all_entities_in_the_current_world :: proc(delta_time: f64) {
 			continue
 		}
 
-		on_destroy(entity.Behavior_Context{self = &e, delta_time = delta_time})
+		on_destroy(world.Behavior_Context{self = &e, delta_time = delta_time})
 	}
 }
 
