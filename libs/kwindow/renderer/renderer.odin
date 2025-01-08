@@ -9,16 +9,16 @@ import v2 "kmath:vector2"
 // ====================================
 
 @(private = "file")
-CLEAR_COLOR: rl.Color
+clear_color: rl.Color
 
 @(private = "file")
-WINDOW_WIDTH: uint
+window_width: uint
 
 @(private = "file")
-WINDOW_HEIGHT: uint
+window_height: uint
 
 @(private = "file")
-CANVAS_ORIGIN: v2.Vector2
+canvas_origin: v2.Vector2
 
 // ====================================
 // Public procs
@@ -29,10 +29,10 @@ init :: proc(background_color: color.Color) {
 	width := rl.GetScreenWidth()
 	height := rl.GetScreenHeight()
 
-	CLEAR_COLOR = color_to_rl(background_color)
-	WINDOW_WIDTH = uint(width)
-	WINDOW_HEIGHT = uint(height)
-	CANVAS_ORIGIN = v2.Vector2{f64(WINDOW_WIDTH) / 2, f64(WINDOW_HEIGHT) / 2}
+	clear_color = color_to_rl(background_color)
+	window_width = uint(width)
+	window_height = uint(height)
+	canvas_origin = v2.Vector2{f64(window_width) / 2, f64(window_height) / 2}
 }
 
 // Starts a draw queue. All the draw calls should be done after this procedure is invoked
@@ -40,7 +40,7 @@ start_drawing :: proc() {
 	update_renderer_info()
 
 	rl.BeginDrawing()
-	rl.ClearBackground(CLEAR_COLOR)
+	rl.ClearBackground(clear_color)
 }
 
 // Finishes and submits a draw queue. All the draw calls should be done before this procedure is invoked
@@ -69,8 +69,8 @@ draw_rectangle :: proc(
 
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
-			x = f32(position.x + CANVAS_ORIGIN.x),
-			y = f32(position.y + CANVAS_ORIGIN.y),
+			x = f32(position.x + canvas_origin.x),
+			y = f32(position.y + canvas_origin.y),
 			width = f32(scaled_width),
 			height = f32(scaled_height),
 		},
@@ -89,15 +89,15 @@ update_renderer_info :: proc() {
 	width := uint(rl.GetScreenWidth())
 	height := uint(rl.GetScreenHeight())
 
-	if WINDOW_WIDTH == width && WINDOW_HEIGHT == height {
+	if window_width == width && window_height == height {
 		return
 	}
 
-	WINDOW_WIDTH = width
-	WINDOW_HEIGHT = height
+	window_width = width
+	window_height = height
 
-	CANVAS_ORIGIN.x = f64(width) / 2
-	CANVAS_ORIGIN.y = f64(height) / 2
+	canvas_origin.x = f64(width) / 2
+	canvas_origin.y = f64(height) / 2
 }
 
 @(private = "file")
