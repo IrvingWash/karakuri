@@ -41,6 +41,7 @@ init :: proc(
 
 	renderer.init(background_color)
 
+	// TODO: This is bad, but someone can call start without setting a scene
 	current_world = world.new({})
 }
 
