@@ -1,5 +1,7 @@
 package karakuri_world
 
+import "ktimer:timer"
+
 // Lifecycle behavior of an entity
 Behavior :: struct {
 	on_start:   Maybe(Lifecycle_Proc),
@@ -15,5 +17,6 @@ Behavior_Context :: struct {
 	self:       ^Entity,
 	delta_time: f64,
 	world:      ^World,
+	timer:      ^timer.Timer_Info,
 }
 

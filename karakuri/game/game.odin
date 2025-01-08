@@ -15,7 +15,7 @@ import "../scene"
 @(private = "file")
 Game_Info :: struct {
 	current_world: world.World,
-	timer:         timer.Timer_Info,
+	timer_info:    timer.Timer_Info,
 }
 
 @(private = "file")
@@ -48,21 +48,34 @@ init :: proc(
 
 	renderer.init(background_color)
 
-	// TODO: This is bad, but someone can call start without setting a scene
-	// Maybe `Maybe`
-	game_info.current_world = world.new({})
+	timer_info := timer.new_timer(0)
+	current_world := world.new({}, &timer_info)
+
+	game_info = Game_Info {
+		current_world = current_world,
+		timer_info    = timer_info,
+	}
 }
 
 // Starts the game
 start :: proc() {
 	for {
 		delta_time := fps_manager.get_delta_time()
+		time := fps_manager.get_time()
 
 		if input_manager.is_quit_requested() {
 			break
 		}
 
-		world.update(&game_info.current_world, delta_time)
+		finished_timers := timer.update(&game_info.timer_info, time)
+		defer delete(finished_timers)
+		// TODO: on_timer()
+
+		world.update(
+			&game_info.current_world,
+			delta_time,
+			&game_info.timer_info,
+		)
 
 		render_entities()
 	}
@@ -73,13 +86,16 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
-	world.destroy(&game_info.current_world)
-	game_info.current_world = world.new(scene_to_set.entities[:])
+	world.destroy(&game_info.current_world, &game_info.timer_info)
+	game_info.current_world = world.new(
+		scene_to_set.entities[:],
+		&game_info.timer_info,
+	)
 }
 
 // Destroys the game
 destroy :: proc() {
-	world.destroy(&game_info.current_world)
+	world.destroy(&game_info.current_world, &game_info.timer_info)
 	window_creation.destroy_window()
 }
 

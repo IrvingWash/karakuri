@@ -4,6 +4,7 @@ STARTING_CAPACITY :: 1000
 
 import "core:container/queue"
 import "base:intrinsics"
+import "ktimer:timer"
 
 // Represents a world of entities
 World :: struct {
@@ -14,7 +15,10 @@ World :: struct {
 }
 
 // Creates the world
-new :: proc(initial_entities: []Entity_Payload) -> World {
+new :: proc(
+	initial_entities: []Entity_Payload,
+	timer_info: ^timer.Timer_Info,
+) -> World {
 	free_tokens: queue.Queue(Token)
 	queue.init(&free_tokens, STARTING_CAPACITY)
 
@@ -34,42 +38,14 @@ new :: proc(initial_entities: []Entity_Payload) -> World {
 		sync_add_entity(&world, entity)
 	}
 
-	// Start entities
-	for &entity in world.entities {
-		behavior, ok := entity.behavior.?
-		if !ok {
-			continue
-		}
-
-		on_start, on_start_ok := behavior.on_start.?
-		if !on_start_ok {
-			continue
-		}
-
-		on_start(make_behavior_context(&entity, 0, &world))
-	}
+	start_entities(&world, timer_info)
 
 	return world
 }
 
 // Destroys the world
-destroy :: proc(world: ^World) {
-	// Destroy entities
-	for &entity in world.entities {
-		behavior, behavior_ok := entity.behavior.?
-		if !behavior_ok {
-			continue
-		}
-
-		defer free(behavior)
-
-		on_destroy, on_destroy_ok := behavior.on_destroy.?
-		if !on_destroy_ok {
-			continue
-		}
-
-		on_destroy(make_behavior_context(&entity, 0, world))
-	}
+destroy :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
+	destroy_entities(world, timer_info)
 
 	// Cleanup
 	delete(world.entities)
@@ -130,7 +106,7 @@ remove_entity :: proc(world: ^World, token: Token) {
 	append(&world.entities_to_remove, token)
 }
 
-update :: proc(world: ^World, delta_time: f64) {
+update :: proc(world: ^World, delta_time: f64, timer_info: ^timer.Timer_Info) {
 	for &token in world.entities_to_remove {
 		sync_remove_entity(world, token)
 	}
@@ -141,7 +117,43 @@ update :: proc(world: ^World, delta_time: f64) {
 	}
 	clear(&world.entities_to_add)
 
-	update_entities(world, delta_time)
+	update_entities(world, delta_time, timer_info)
+}
+
+@(private = "file")
+start_entities :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
+	for &entity in world.entities {
+		behavior, ok := entity.behavior.?
+		if !ok {
+			continue
+		}
+
+		on_start, on_start_ok := behavior.on_start.?
+		if !on_start_ok {
+			continue
+		}
+
+		on_start(make_behavior_context(&entity, 0, world, timer_info))
+	}
+}
+
+@(private = "file")
+destroy_entities :: proc(world: ^World, timer_info: ^timer.Timer_Info) {
+	for &entity in world.entities {
+		behavior, behavior_ok := entity.behavior.?
+		if !behavior_ok {
+			continue
+		}
+
+		defer free(behavior)
+
+		on_destroy, on_destroy_ok := behavior.on_destroy.?
+		if !on_destroy_ok {
+			continue
+		}
+
+		on_destroy(make_behavior_context(&entity, 0, world, timer_info))
+	}
 }
 
 @(private = "file")
@@ -185,7 +197,11 @@ sync_remove_entity :: proc(world: ^World, token: Token) {
 }
 
 @(private = "file")
-update_entities :: proc(world: ^World, delta_time: f64) {
+update_entities :: proc(
+	world: ^World,
+	delta_time: f64,
+	timer_info: ^timer.Timer_Info,
+) {
 	for &entity in world.entities {
 		behavior, ok := entity.behavior.?
 		if !ok {
@@ -194,7 +210,9 @@ update_entities :: proc(world: ^World, delta_time: f64) {
 
 		on_update, on_update_ok := behavior.on_update.?
 		if on_update_ok {
-			on_update(make_behavior_context(&entity, delta_time, world))
+			on_update(
+				make_behavior_context(&entity, delta_time, world, timer_info),
+			)
 		}
 	}
 }
@@ -204,6 +222,7 @@ make_behavior_context :: proc(
 	entity: ^Entity,
 	delta_time: f64,
 	world: ^World,
+	timer_info: ^timer.Timer_Info,
 ) -> Behavior_Context {
 	return Behavior_Context {
 		self = entity,
