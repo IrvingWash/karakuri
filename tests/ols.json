@@ -7,17 +7,17 @@
 			"path": "../libs/kmath"
 		},
 		{
+			"name": "karakuri",
+			"path": "../karakuri"
+		},
+		{
 			"name": "kutils",
 			"path": "../libs/kutils"
 		},
 		{
 			"name": "kwindow",
 			"path": "../libs/kwindow"
-		},
-        {
-            "name": "karakuri",
-            "path": "../karakuri"
-        }
+		}
 	],
 	"enable_format": true,
 	"enable_semantic_tokens": true,

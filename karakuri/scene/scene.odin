@@ -1,9 +1,10 @@
 package karakuri_scene
 
-import "../components"
+import "../entity"
 
 Scene :: struct {
 	name:     string,
-	entities: []components.Component_Bundle,
+	entities: []entity.Entity_Payload,
+	assets:   bool, // TODO: assets go here
 }
 
