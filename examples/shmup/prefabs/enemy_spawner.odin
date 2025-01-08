@@ -1,8 +1,10 @@
 package example_shmup_prefabs
 
 import "core:fmt"
-import "karakuri:world"
+import "core:math/rand"
+import v2 "kmath:vector2"
 import "ktimer:timer"
+import "karakuri:world"
 
 enemy_spawner_prefab :: proc() -> world.Entity_Payload {
 	enemy_spawner := new(Enemy_Spawner)
@@ -10,6 +12,7 @@ enemy_spawner_prefab :: proc() -> world.Entity_Payload {
 		spawn_interval_id = 0,
 		on_start          = on_start,
 		on_destroy        = on_destroy,
+		on_timer          = on_timer,
 	}
 
 	return world.Entity_Payload {
@@ -40,5 +43,18 @@ on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 	behavior := world.get_behavior(ctx.self^, Enemy_Spawner).?
 
 	timer.clear_interval(ctx.timer_info, behavior.spawn_interval_id)
+}
+
+@(private = "file")
+on_timer: world.On_Timer_Proc : proc(
+	ctx: world.Behavior_Context,
+	finished_timers: map[uint]struct {},
+) {
+	behavior := world.get_behavior(ctx.self^, Enemy_Spawner).?
+
+	if behavior.spawn_interval_id in finished_timers {
+		enemy_position := v2.Vector2{rand.float64_range(-200, 200), -320 + 30}
+		world.add_entity(ctx.world, enemy_prefab(enemy_position))
+	}
 }
 

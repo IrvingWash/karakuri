@@ -7,10 +7,17 @@ Behavior :: struct {
 	on_start:   Maybe(Lifecycle_Proc),
 	on_update:  Maybe(Lifecycle_Proc),
 	on_destroy: Maybe(Lifecycle_Proc),
+	on_timer:   Maybe(On_Timer_Proc),
 }
 
-// Lifecycle procedure type that should be implemented
+// A Procedure which is called on every lifecycle event
 Lifecycle_Proc :: proc(ctx: Behavior_Context)
+
+// A procedure which is called on every timer event
+On_Timer_Proc :: proc(
+	ctx: Behavior_Context,
+	finished_timers: map[uint]struct {},
+)
 
 // Context passed to lifecycle procedures
 Behavior_Context :: struct {
