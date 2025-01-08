@@ -4,41 +4,52 @@ import rl "vendor:raylib"
 import "kutils:color"
 import v2 "kmath:vector2"
 
-Renderer_Info :: struct {
-	clear_color:   color.Color,
-	window_width:  uint,
-	window_height: uint,
-	canvas_origin: v2.Vector2,
+// ====================================
+// Renderer state
+// ====================================
+
+@(private = "file")
+CLEAR_COLOR: rl.Color
+
+@(private = "file")
+WINDOW_WIDTH: uint
+
+@(private = "file")
+WINDOW_HEIGHT: uint
+
+@(private = "file")
+CANVAS_ORIGIN: v2.Vector2
+
+// ====================================
+// Public procs
+// ====================================
+
+// Initializes the global renderer
+init :: proc(background_color: color.Color) {
+	width := rl.GetScreenWidth()
+	height := rl.GetScreenHeight()
+
+	CLEAR_COLOR = color_to_rl(background_color)
+	WINDOW_WIDTH = uint(width)
+	WINDOW_HEIGHT = uint(height)
+	CANVAS_ORIGIN = v2.Vector2{f64(WINDOW_WIDTH) / 2, f64(WINDOW_HEIGHT) / 2}
 }
 
-init :: proc(clear_color: color.Color) -> Renderer_Info {
-	window_width := rl.GetScreenWidth()
-	window_height := rl.GetScreenHeight()
-
-	return Renderer_Info {
-		clear_color = clear_color,
-		window_width = uint(window_width),
-		window_height = uint(window_height),
-		canvas_origin = v2.Vector2 {
-			f64(window_width) / 2,
-			f64(window_height) / 2,
-		},
-	}
-}
-
-start_drawing :: proc(renderer_info: ^Renderer_Info) {
-	update_renderer_info(renderer_info)
+// Starts a draw queue. All the draw calls should be done after this procedure is invoked
+start_drawing :: proc() {
+	update_renderer_info()
 
 	rl.BeginDrawing()
-	rl.ClearBackground(color_to_rl(renderer_info.clear_color))
+	rl.ClearBackground(CLEAR_COLOR)
 }
 
+// Finishes and submits a draw queue. All the draw calls should be done before this procedure is invoked
 finish_drawing :: proc() {
 	rl.EndDrawing()
 }
 
+// Draws a rectangle with the origin in the center by default
 draw_rectangle :: proc(
-	renderer_info: Renderer_Info,
 	position: v2.Vector2,
 	size: v2.Vector2,
 	scale: v2.Vector2,
@@ -58,8 +69,8 @@ draw_rectangle :: proc(
 
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
-			x = f32(position.x + renderer_info.canvas_origin.x),
-			y = f32(position.y + renderer_info.canvas_origin.y),
+			x = f32(position.x + CANVAS_ORIGIN.x),
+			y = f32(position.y + CANVAS_ORIGIN.y),
 			width = f32(scaled_width),
 			height = f32(scaled_height),
 		},
@@ -69,21 +80,24 @@ draw_rectangle :: proc(
 	)
 }
 
+// ====================================
+// Private procs
+// ====================================
+
 @(private = "file")
-update_renderer_info :: proc(renderer_info: ^Renderer_Info) {
+update_renderer_info :: proc() {
 	width := uint(rl.GetScreenWidth())
 	height := uint(rl.GetScreenHeight())
 
-	if renderer_info.window_width == width &&
-	   renderer_info.window_height == height {
+	if WINDOW_WIDTH == width && WINDOW_HEIGHT == height {
 		return
 	}
 
-	renderer_info.window_width = width
-	renderer_info.window_height = height
+	WINDOW_WIDTH = width
+	WINDOW_HEIGHT = height
 
-	renderer_info.canvas_origin.x = f64(width) / 2
-	renderer_info.canvas_origin.y = f64(height) / 2
+	CANVAS_ORIGIN.x = f64(width) / 2
+	CANVAS_ORIGIN.y = f64(height) / 2
 }
 
 @(private = "file")

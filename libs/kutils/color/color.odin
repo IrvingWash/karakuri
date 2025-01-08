@@ -1,9 +1,11 @@
 package kutils
 
+// Represents an RGBA color
 Color :: struct {
 	r, g, b, a: u8,
 }
 
+// Creates a new color with alpha channel set to maximum by default
 new :: proc(r, g, b: u8, a: u8 = 255) -> Color {
 	return Color{r, g, b, a}
 }

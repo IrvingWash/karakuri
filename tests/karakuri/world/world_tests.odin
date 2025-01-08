@@ -10,8 +10,8 @@ import v2 "kmath:vector2"
 test_add_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.init_world()
-	defer kw.deinit_world(&world)
+	world := kw.init()
+	defer kw.deinit(&world)
 
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())
@@ -50,8 +50,8 @@ test_add_entity :: proc(t: ^testing.T) {
 test_remove_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.init_world()
-	defer kw.deinit_world(&world)
+	world := kw.init()
+	defer kw.deinit(&world)
 
 	kw.add_entity(&world, make_sonic())
 	kw.add_entity(&world, make_tails())

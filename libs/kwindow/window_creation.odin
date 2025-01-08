@@ -3,6 +3,7 @@ package kwindow
 import "core:strings"
 import rl "vendor:raylib"
 
+// Initialzes and opens a window
 create_window :: proc(
 	title: string,
 	width: uint,
@@ -24,13 +25,14 @@ create_window :: proc(
 	title_raw := strings.clone_to_cstring(title)
 	defer delete(title_raw)
 
-	rl.InitWindow(i32(width), i32(height))
+	rl.InitWindow(i32(width), i32(height), title_raw)
 
 	if fullscreen && !rl.IsWindowFullscreen() {
 		rl.ToggleFullscreen()
 	}
 }
 
+// Destroys the opened window
 destroy_window :: proc() {
 	rl.CloseWindow()
 }
