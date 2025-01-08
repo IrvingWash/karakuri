@@ -12,24 +12,58 @@ World :: struct {
 }
 
 // Creates the world
-new :: proc() -> World {
+new :: proc(initial_entities: []Entity_Payload) -> World {
 	free_tokens: queue.Queue(Token)
 	queue.init(&free_tokens, STARTING_CAPACITY)
 
-	return {
-		entities = make([dynamic]Entity, 0, STARTING_CAPACITY),
+	world := World {
+		entities    = make([dynamic]Entity, 0, STARTING_CAPACITY),
 		free_tokens = free_tokens,
 	}
+
+	// Add initial entities
+	for &entity in initial_entities {
+		add_entity(&world, entity)
+	}
+
+	// Start entities
+	for &entity in world.entities {
+		behavior, ok := entity.behavior.?
+		if !ok {
+			continue
+		}
+
+		on_start, on_start_ok := behavior.on_start.?
+		if !on_start_ok {
+			continue
+		}
+
+		on_start(make_behavior_context(&entity, 0, &world))
+	}
+
+	return world
 }
 
 // Destroys the world
 destroy :: proc(world: ^World) {
+	// Destroy entities
 	for &entity in world.entities {
-		if behavior, ok := entity.behavior.?; ok {
-			free(behavior)
+		behavior, behavior_ok := entity.behavior.?
+		if !behavior_ok {
+			continue
 		}
+
+		defer free(behavior)
+
+		on_destroy, on_destroy_ok := behavior.on_destroy.?
+		if !on_destroy_ok {
+			continue
+		}
+
+		on_destroy(make_behavior_context(&entity, 0, world))
 	}
 
+	// Cleanup
 	delete(world.entities)
 	queue.destroy(&world.free_tokens)
 }
@@ -114,5 +148,37 @@ get_behavior :: proc(
 	}
 
 	return cast(^B)behavior
+}
+
+update :: proc(world: ^World, delta_time: f64) {
+	update_entities(world, delta_time)
+}
+
+@(private)
+update_entities :: proc(world: ^World, delta_time: f64) {
+	for &entity in world.entities {
+		behavior, ok := entity.behavior.?
+		if !ok {
+			continue
+		}
+
+		on_update, on_update_ok := behavior.on_update.?
+		if on_update_ok {
+			on_update(make_behavior_context(&entity, delta_time, world))
+		}
+	}
+}
+
+@(private = "file")
+make_behavior_context :: proc(
+	entity: ^Entity,
+	delta_time: f64,
+	world: ^World,
+) -> Behavior_Context {
+	return Behavior_Context {
+		self = entity,
+		delta_time = delta_time,
+		world = world,
+	}
 }
 

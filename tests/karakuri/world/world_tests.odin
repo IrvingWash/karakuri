@@ -9,7 +9,7 @@ import v2 "kmath:vector2"
 test_add_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.new()
+	world := kw.new({})
 	defer kw.destroy(&world)
 
 	kw.add_entity(&world, make_sonic())
@@ -49,7 +49,7 @@ test_add_entity :: proc(t: ^testing.T) {
 test_remove_entity :: proc(t: ^testing.T) {
 	using testing
 
-	world := kw.new()
+	world := kw.new({})
 	defer kw.destroy(&world)
 
 	kw.add_entity(&world, make_sonic())
