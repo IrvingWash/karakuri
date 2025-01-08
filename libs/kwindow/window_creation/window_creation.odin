@@ -1,4 +1,4 @@
-package kwindow
+package kwindow_window_creation
 
 import "core:strings"
 import rl "vendor:raylib"
@@ -6,10 +6,8 @@ import rl "vendor:raylib"
 // Initialzes and opens a window
 create_window :: proc(
 	title: string,
-	width: uint,
-	height: uint,
-	fullscreen: bool,
-	resizable: bool,
+	width, height: uint,
+	fullscreen, resizable: bool,
 	vsync: bool,
 ) {
 	if resizable {
