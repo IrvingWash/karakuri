@@ -5,6 +5,7 @@ import "kwindow:renderer"
 import "kwindow:fps_manager"
 import "kwindow:input_manager"
 import "kutils:color"
+import "ktimer:timer"
 import "../world"
 import "../scene"
 
@@ -12,7 +13,13 @@ import "../scene"
 // Game state
 // ====================================
 @(private = "file")
-current_world: world.World
+Game_Info :: struct {
+	current_world: world.World,
+	timer:         timer.Timer_Info,
+}
+
+@(private = "file")
+game_info := Game_Info{}
 
 // ====================================
 // Public procedures
@@ -42,7 +49,8 @@ init :: proc(
 	renderer.init(background_color)
 
 	// TODO: This is bad, but someone can call start without setting a scene
-	current_world = world.new({})
+	// Maybe `Maybe`
+	game_info.current_world = world.new({})
 }
 
 // Starts the game
@@ -54,7 +62,7 @@ start :: proc() {
 			break
 		}
 
-		world.update(&current_world, delta_time)
+		world.update(&game_info.current_world, delta_time)
 
 		render_entities()
 	}
@@ -65,13 +73,13 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
-	world.destroy(&current_world)
-	current_world = world.new(scene_to_set.entities[:])
+	world.destroy(&game_info.current_world)
+	game_info.current_world = world.new(scene_to_set.entities[:])
 }
 
 // Destroys the game
 destroy :: proc() {
-	world.destroy(&current_world)
+	world.destroy(&game_info.current_world)
 	window_creation.destroy_window()
 }
 
@@ -84,7 +92,7 @@ render_entities :: proc() {
 	renderer.start_drawing()
 	defer renderer.finish_drawing()
 
-	for &entity in current_world.entities {
+	for &entity in game_info.current_world.entities {
 		shape, shape_ok := entity.shape.?
 		if !shape_ok {
 			continue
