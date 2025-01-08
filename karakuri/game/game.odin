@@ -69,34 +69,16 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
-	for &e in scene_to_set.entities {
-		world.add_entity(&current_world, e)
+	for &entity in scene_to_set.entities {
+		world.add_entity(&current_world, entity)
 	}
 
-	for &e in current_world.entities {
-		behavior, ok := e.behavior.?
-		if !ok {
-			continue
-		}
-
-		on_start, on_start_ok := behavior.on_start.?
-		if !on_start_ok {
-			continue
-		}
-
-		on_start(
-			world.Behavior_Context {
-				self = &e,
-				delta_time = 0,
-				world = &current_world,
-			},
-		)
-	}
+	start_all_entities_in_the_current_world(delta_time = 0)
 }
 
 // Destroys the game
 destroy :: proc() {
-	destroy_all_entities_in_the_current_world(0)
+	destroy_all_entities_in_the_current_world(delta_time = 0)
 	world.destroy(&current_world)
 	window_creation.destroy_window()
 }
@@ -115,13 +97,7 @@ update_entities :: proc(delta_time: f64) {
 
 		on_update, on_update_ok := behavior.on_update.?
 		if on_update_ok {
-			on_update(
-				world.Behavior_Context {
-					self = &entity,
-					delta_time = delta_time,
-					world = &current_world,
-				},
-			)
+			on_update(make_behavior_context(&entity, delta_time))
 		}
 	}
 }
@@ -150,9 +126,26 @@ render_entities :: proc() {
 }
 
 @(private)
+start_all_entities_in_the_current_world :: proc(delta_time: f64) {
+	for &entity in current_world.entities {
+		behavior, ok := entity.behavior.?
+		if !ok {
+			continue
+		}
+
+		on_start, on_start_ok := behavior.on_start.?
+		if !on_start_ok {
+			continue
+		}
+
+		on_start(make_behavior_context(&entity, delta_time))
+	}
+}
+
+@(private)
 destroy_all_entities_in_the_current_world :: proc(delta_time: f64) {
-	for &e in current_world.entities {
-		behavior, behavior_ok := e.behavior.?
+	for &entity in current_world.entities {
+		behavior, behavior_ok := entity.behavior.?
 		if !behavior_ok {
 			continue
 		}
@@ -162,7 +155,19 @@ destroy_all_entities_in_the_current_world :: proc(delta_time: f64) {
 			continue
 		}
 
-		on_destroy(world.Behavior_Context{self = &e, delta_time = delta_time})
+		on_destroy(make_behavior_context(&entity, delta_time))
+	}
+}
+
+@(private = "file")
+make_behavior_context :: proc(
+	entity: ^world.Entity,
+	delta_time: f64,
+) -> world.Behavior_Context {
+	return world.Behavior_Context {
+		self = entity,
+		delta_time = delta_time,
+		world = &current_world,
 	}
 }
 
