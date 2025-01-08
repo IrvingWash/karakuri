@@ -12,6 +12,7 @@ karakuri_collection = -collection:karakuri=./karakuri
 kmath_collection = -collection:kmath=./libs/kmath
 kwindow_collection = -collection:kwindow=./libs/kwindow
 kutils_collection = -collection:kutils=./libs/kutils
+ktimer_collection = -collection:ktimer=./libs/ktimer
 
 # ============================================================
 # Common
@@ -39,7 +40,7 @@ build_release:
 # ============================================================
 test:
 	@mkdir -p ${build_dir}/tests
-	@odin test ./tests -all-packages ${vet_flags} -out:${build_dir}/tests/tests ${karakuri_collection} ${kmath_collection} ${kwindow_collection} ${kutils_collection}
+	@odin test ./tests -all-packages ${vet_flags} -out:${build_dir}/tests/tests ${karakuri_collection} ${kmath_collection} ${kwindow_collection} ${kutils_collection} ${ktimer_collection}
 
 # ============================================================
 # Examples
@@ -48,7 +49,7 @@ examples_src = ./examples
 examples_build_dir = ${build_dir}/examples
 examples_debug_build_dir = ${examples_build_dir}/debug
 examples_release_build_dir = ${examples_build_dir}/release
-example_collections = ${karakuri_collection} ${kmath_collection} ${kutils_collection} ${kwindow_collection}
+example_collections = ${karakuri_collection} ${kmath_collection} ${kutils_collection} ${kwindow_collection} ${ktimer_collection}
 
 # ===============
 # Shmup
