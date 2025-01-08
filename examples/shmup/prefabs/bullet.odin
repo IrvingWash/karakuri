@@ -11,6 +11,7 @@ bullet_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 	bullet_behavior^ = Bullet_Behavior {
 		speed      = 700,
 		on_start   = on_start,
+		on_update  = on_update,
 		on_destroy = on_destroy,
 	}
 
@@ -24,6 +25,7 @@ bullet_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 			size = v2.Vector2{10, 10},
 			color = color.Red,
 		},
+		behavior = bullet_behavior,
 	}
 }
 

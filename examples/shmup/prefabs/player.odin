@@ -6,7 +6,6 @@ import "karakuri:input_manager"
 import "karakuri:world"
 import v2 "kmath:vector2"
 import "kutils:color"
-import "kutils:keyboard"
 
 player_prefab :: proc() -> world.Entity_Payload {
 	player_behavior := new(Player_Behavior)
@@ -44,6 +43,7 @@ on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 	behavior := world.get_behavior(ctx.self^, Player_Behavior).?
 
 	move(transform, behavior, ctx.delta_time)
+	shoot(ctx.world, transform^)
 }
 
 @(private = "file")
@@ -64,17 +64,24 @@ move :: proc(
 ) {
 	disposition := behavior.speed * dt
 
-	if input_manager.is_key_down(keyboard.Key.W) {
+	if input_manager.is_key_down(.W) {
 		transform.position.y -= disposition
 	}
-	if input_manager.is_key_down(keyboard.Key.A) {
+	if input_manager.is_key_down(.A) {
 		transform.position.x -= disposition
 	}
-	if input_manager.is_key_down(keyboard.Key.S) {
+	if input_manager.is_key_down(.S) {
 		transform.position.y += disposition
 	}
-	if input_manager.is_key_down(keyboard.Key.D) {
+	if input_manager.is_key_down(.D) {
 		transform.position.x += disposition
+	}
+}
+
+@(private = "file")
+shoot :: proc(w: ^world.World, transform: components.Transform_Component) {
+	if input_manager.is_key_pressed(.SPACE) {
+		world.add_entity(w, bullet_prefab(transform.position))
 	}
 }
 
