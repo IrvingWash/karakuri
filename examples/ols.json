@@ -13,6 +13,10 @@
 		{
 			"name": "karakuri",
 			"path": "../karakuri"
+		},
+		{
+			"name": "ktimer",
+			"path": "../ktimer"
 		}
 	],
 	"enable_format": true,

@@ -17,6 +17,6 @@ Behavior_Context :: struct {
 	self:       ^Entity,
 	delta_time: f64,
 	world:      ^World,
-	timer:      ^timer.Timer_Info,
+	timer_info: ^timer.Timer_Info,
 }
 

@@ -7,8 +7,8 @@ import "core:testing"
 test_set_timeout :: proc(t: ^testing.T) {
 	using testing
 
-	my_timer := timer.new_timer(0)
-	defer timer.destroy_timer(my_timer)
+	my_timer := timer.new(0)
+	defer timer.destroy(my_timer)
 
 	timeout_id := timer.set_timeout(&my_timer, 5)
 	second_timeout_id := timer.set_timeout(&my_timer, 1)
@@ -37,8 +37,8 @@ test_set_timeout :: proc(t: ^testing.T) {
 test_set_interval :: proc(t: ^testing.T) {
 	using testing
 
-	my_timer := timer.new_timer(0)
-	defer timer.destroy_timer(my_timer)
+	my_timer := timer.new(0)
+	defer timer.destroy(my_timer)
 
 	interval_id := timer.set_interval(&my_timer, 5)
 	second_interval_id := timer.set_interval(&my_timer, 1)
@@ -64,8 +64,8 @@ test_set_interval :: proc(t: ^testing.T) {
 test_timer_id_collision :: proc(t: ^testing.T) {
 	using testing
 
-	my_timer := timer.new_timer(0)
-	defer timer.destroy_timer(my_timer)
+	my_timer := timer.new(0)
+	defer timer.destroy(my_timer)
 
 	interval_id := timer.set_interval(&my_timer, 1)
 	expect(t, interval_id == 0)
@@ -82,8 +82,8 @@ test_timer_id_collision :: proc(t: ^testing.T) {
 test_timeout_passing :: proc(t: ^testing.T) {
 	using testing
 
-	my_timer := timer.new_timer(0)
-	defer timer.destroy_timer(my_timer)
+	my_timer := timer.new(0)
+	defer timer.destroy(my_timer)
 
 	first_timeout_id := timer.set_timeout(&my_timer, 5)
 	second_timeout_id := timer.set_timeout(&my_timer, 10)
@@ -130,8 +130,8 @@ test_timeout_passing :: proc(t: ^testing.T) {
 test_interval_passing :: proc(t: ^testing.T) {
 	using testing
 
-	my_timer := timer.new_timer(0)
-	defer timer.destroy_timer(my_timer)
+	my_timer := timer.new(0)
+	defer timer.destroy(my_timer)
 
 	first_interval := timer.set_interval(&my_timer, 5)
 	second_interval := timer.set_interval(&my_timer, 10)

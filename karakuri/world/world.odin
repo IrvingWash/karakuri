@@ -260,6 +260,7 @@ make_behavior_context :: proc(
 		self = entity,
 		delta_time = delta_time,
 		world = world,
+		timer_info = timer_info,
 	}
 }
 

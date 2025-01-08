@@ -48,7 +48,7 @@ init :: proc(
 
 	renderer.init(background_color)
 
-	timer_info := timer.new_timer(0)
+	timer_info := timer.new(0)
 	current_world := world.new({}, &timer_info)
 
 	game_info = Game_Info {
@@ -96,6 +96,7 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 // Destroys the game
 destroy :: proc() {
 	world.destroy(&game_info.current_world, &game_info.timer_info)
+	timer.destroy(game_info.timer_info)
 	window_creation.destroy_window()
 }
 

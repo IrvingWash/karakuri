@@ -14,7 +14,7 @@ TimerData :: struct {
 	start_time: f64,
 }
 
-new_timer :: proc(time: f64) -> Timer_Info {
+new :: proc(time: f64) -> Timer_Info {
 	return Timer_Info {
 		time = time,
 		next_id = 0,
@@ -24,7 +24,7 @@ new_timer :: proc(time: f64) -> Timer_Info {
 	}
 }
 
-destroy_timer :: proc(timer: Timer_Info) {
+destroy :: proc(timer: Timer_Info) {
 	delete(timer.timeouts)
 	delete(timer.intervals)
 	delete(timer.finished_timer_ids)
