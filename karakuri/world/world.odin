@@ -210,6 +210,7 @@ sync_add_entity :: proc(
 
 	token, token_ok := queue.pop_back_safe(&world.free_tokens)
 	if token_ok {
+		token.generation_id += 1
 		new_entity.token = token
 
 		world.entities[token.id] = new_entity
@@ -237,6 +238,7 @@ sync_remove_entity :: proc(world: ^World, entity: ^Entity) {
 
 	queue.append(&world.free_tokens, entity.token)
 
+	// Replace the entity with an empty one
 	world.entities[entity.token.id] = Entity {
 		token = {generation_id = -1},
 	}
