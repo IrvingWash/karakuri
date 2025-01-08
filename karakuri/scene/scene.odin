@@ -9,8 +9,10 @@ Scene :: struct {
 	assets:   bool, // TODO: assets go here
 }
 
+// Scene maker type that should be implemented for lazy loading
 Scene_Maker_Proc :: proc() -> Scene
 
+// Destroys the scene
 destroy :: proc(scene: Scene) {
 	delete(scene.entities)
 }

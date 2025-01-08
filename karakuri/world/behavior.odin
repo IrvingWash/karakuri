@@ -7,8 +7,10 @@ Behavior :: struct {
 	on_destroy: Maybe(Lifecycle_Proc),
 }
 
+// Lifecycle procedure type that should be implemented
 Lifecycle_Proc :: proc(ctx: Behavior_Context)
 
+// Context passed to lifecycle procedures
 Behavior_Context :: struct {
 	self:       ^Entity,
 	delta_time: f64,

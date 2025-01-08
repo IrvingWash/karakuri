@@ -79,6 +79,7 @@ is_alive :: proc(world: World, token: Token) -> bool {
 	return world.entities[token.id].generation_id == token.generation_id
 }
 
+// Efficiently returns the entity with the given token
 get_entity :: proc(world: ^World, token: Token) -> Maybe(^Entity) {
 	entity := &world.entities[token.id]
 
