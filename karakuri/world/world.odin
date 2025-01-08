@@ -80,6 +80,19 @@ is_alive :: proc(world: World, token: entity.Token) -> bool {
 	return world.entities[token.id].generation_id == token.generation_id
 }
 
+get_entity :: proc(
+	world: ^World,
+	token: entity.Token,
+) -> Maybe(^entity.Entity) {
+	entity := &world.entities[token.id]
+
+	if entity.token.generation_id == -1 {
+		return nil
+	}
+
+	return entity
+}
+
 // Returns the first entity with the given tag
 find_with_tag :: proc(world: ^World, tag: string) -> Maybe(^entity.Entity) {
 	for &e in world.entities {

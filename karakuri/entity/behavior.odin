@@ -7,5 +7,10 @@ Behavior :: struct {
 	on_destroy: Maybe(Lifecycle_Proc),
 }
 
-Lifecycle_Proc :: proc()
+Lifecycle_Proc :: proc(ctx: Behavior_Context)
+
+Behavior_Context :: struct {
+	self:       ^Entity,
+	delta_time: f64,
+}
 
