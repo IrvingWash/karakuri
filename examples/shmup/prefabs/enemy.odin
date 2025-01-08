@@ -10,11 +10,12 @@ import "karakuri:components"
 enemy_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 	enemy_behavior := new(Enemy_Behavior)
 	enemy_behavior^ = Enemy_Behavior {
-		speed      = 50,
-		on_start   = on_start,
-		on_destroy = on_destroy,
-		on_update  = on_update,
-		on_timer   = on_timer,
+		speed        = 50,
+		on_start     = on_start,
+		on_destroy   = on_destroy,
+		on_update    = on_update,
+		on_timer     = on_timer,
+		on_collision = on_collision,
 	}
 
 	return world.Entity_Payload {
@@ -86,5 +87,10 @@ move :: proc(
 	dt: f64,
 ) {
 	transform.position.y += behavior.speed * dt
+}
+
+@(private = "file")
+on_collision :: proc() {
+	fmt.println("Collided")
 }
 

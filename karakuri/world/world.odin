@@ -150,6 +150,9 @@ update :: proc(
 
 	// Update entities
 	update_entities(world, delta_time, timer_info, finished_timers)
+
+	// Run systems
+	collision_system(world.entities[:])
 }
 
 @(private = "file")
