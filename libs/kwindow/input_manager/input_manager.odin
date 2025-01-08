@@ -1,4 +1,4 @@
-package input_manager
+package kwindow_input_manager
 
 import rl "vendor:raylib"
 import "kutils/keyboard"

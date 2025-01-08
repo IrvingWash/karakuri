@@ -1,4 +1,4 @@
-package fps_manager
+package kwindow_fps_manager
 
 import rl "vendor:raylib"
 

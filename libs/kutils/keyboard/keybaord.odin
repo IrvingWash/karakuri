@@ -1,4 +1,4 @@
-package kutils
+package kutils_keyboard
 
 import rl "vendor:raylib"
 

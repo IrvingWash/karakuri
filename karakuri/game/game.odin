@@ -1,0 +1,2 @@
+package karakuri_game
+

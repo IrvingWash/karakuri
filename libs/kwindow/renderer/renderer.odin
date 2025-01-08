@@ -1,4 +1,4 @@
-package renderer
+package kwindow_renderer
 
 import rl "vendor:raylib"
 import "kutils:color"

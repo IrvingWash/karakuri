@@ -1,4 +1,4 @@
-package kutils
+package kutils_color
 
 // Represents an RGBA color
 Color :: struct {
