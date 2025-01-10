@@ -1,6 +1,6 @@
 package example_shmup_prefabs
 
-import "core:fmt"
+import "core:log"
 import "karakuri:components"
 import "karakuri:input_manager"
 import "karakuri:world"
@@ -10,10 +10,10 @@ import "kutils:color"
 player_prefab :: proc() -> world.Entity_Payload {
 	player_behavior := new(Player_Behavior)
 	player_behavior^ = Player_Behavior {
-		speed      = 500,
-		on_start   = on_start,
-		on_update  = on_update,
-		on_destroy = on_destroy,
+		speed        = 500,
+		on_start     = on_start,
+		on_update    = on_update,
+		on_destroy   = on_destroy,
 		on_collision = on_collision,
 	}
 
@@ -35,7 +35,7 @@ player_prefab :: proc() -> world.Entity_Payload {
 @(private = "file")
 Player_Behavior :: struct {
 	using behavior: world.Behavior,
-	speed:			f64,
+	speed:          f64,
 }
 
 @(private = "file")
@@ -49,12 +49,12 @@ on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Player started")
+	log.info("Player started")
 }
 
 @(private = "file")
 on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Player destroyed")
+	log.info("Player destroyed")
 }
 
 @(private = "file")
@@ -81,7 +81,8 @@ move :: proc(
 
 @(private = "file")
 shoot :: proc(w: ^world.World, transform: components.Transform_Component) {
-	if input_manager.is_key_pressed(.SPACE) || input_manager.is_key_pressed(.ENTER) {
+	if input_manager.is_key_pressed(.SPACE) ||
+	   input_manager.is_key_pressed(.ENTER) {
 		world.add_entity(
 			w,
 			bullet_prefab(transform.position, 700, "Player Bullet"),
@@ -111,3 +112,4 @@ on_collision: world.On_Collision_Proc : proc(
 		world.remove_entity(ctx.world, ctx.self.token)
 	}
 }
+

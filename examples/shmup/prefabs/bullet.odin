@@ -1,6 +1,6 @@
 package example_shmup_prefabs
 
-import "core:fmt"
+import "core:log"
 import "core:strings"
 import v2 "kmath:vector2"
 import "kutils:color"
@@ -14,11 +14,11 @@ bullet_prefab :: proc(
 ) -> world.Entity_Payload {
 	bullet_behavior := new(Bullet_Behavior)
 	bullet_behavior^ = Bullet_Behavior {
-		speed      = speed,
-		on_start   = on_start,
-		on_update  = on_update,
-		on_destroy = on_destroy,
-        on_collision = on_collision,
+		speed        = speed,
+		on_start     = on_start,
+		on_update    = on_update,
+		on_destroy   = on_destroy,
+		on_collision = on_collision,
 	}
 
 	return world.Entity_Payload {
@@ -43,12 +43,12 @@ Bullet_Behavior :: struct {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Bullet started ", ctx.self.tag)
+	log.info("Bullet started ", ctx.self.tag)
 }
 
 @(private = "file")
 on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Bullet destroyed")
+	log.info("Bullet destroyed")
 }
 
 @(private = "file")
@@ -60,7 +60,10 @@ on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 }
 
 @(private = "file")
-on_collision: world.On_Collision_Proc : proc(ctx: world.Behavior_Context, other: ^world.Entity) {
+on_collision: world.On_Collision_Proc : proc(
+	ctx: world.Behavior_Context,
+	other: ^world.Entity,
+) {
 	tag := ctx.self.tag.?
 
 	if other.tag == "Enemy" && !strings.contains(tag, "Enemy") {
