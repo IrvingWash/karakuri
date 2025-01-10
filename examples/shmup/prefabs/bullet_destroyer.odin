@@ -1,7 +1,7 @@
 package example_shmup_prefabs
 
 import "core:strings"
-import "core:fmt"
+import "core:log"
 import v2 "kmath:vector2"
 import "kutils:color"
 import "karakuri:world"
@@ -35,12 +35,12 @@ Bullet_Destroyer :: struct {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Projectile Destroyer started")
+	log.info("Projectile Destroyer started")
 }
 
 @(private = "file")
 on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Projectile Destroyer destroyed")
+	log.info("Projectile Destroyer destroyed")
 }
 
 @(private = "file")

@@ -1,6 +1,6 @@
 package example_shmup_prefabs
 
-import "core:fmt"
+import "core:log"
 import "core:math/rand"
 import v2 "kmath:vector2"
 import "ktimer:timer"
@@ -29,7 +29,7 @@ Enemy_Spawner :: struct {
 
 @(private = "file")
 on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Enemy Spawner started")
+	log.info("Enemy Spawner started")
 
 	behavior := world.get_behavior(ctx.self^, Enemy_Spawner).?
 
@@ -38,7 +38,7 @@ on_start: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 
 @(private = "file")
 on_destroy: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
-	fmt.println("Enemy Spawner destroyed")
+	log.info("Enemy Spawner destroyed")
 
 	behavior := world.get_behavior(ctx.self^, Enemy_Spawner).?
 
