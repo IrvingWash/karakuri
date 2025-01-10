@@ -24,7 +24,7 @@ test_add_entity :: proc(t: ^testing.T) {
 
 	// Sonic tests
 	{
-		sonic, sonic_ok := kw.find_with_tag(&world, "Sonic").?
+		sonic, sonic_ok := kw.find_with_tag(world, "Sonic").?
 		expect(t, sonic_ok)
 		expect_value(t, sonic.transform.position, v2.Vector2{100, 100})
 		sonic_behavior, sonic_behavior_ok := kw.get_behavior(sonic^, Sonic).?
@@ -34,7 +34,7 @@ test_add_entity :: proc(t: ^testing.T) {
 
 	// Tails tests
 	{
-		tails, tails_ok := kw.find_with_tag(&world, "Tails").?
+		tails, tails_ok := kw.find_with_tag(world, "Tails").?
 		expect(t, tails_ok)
 		expect_value(t, tails.transform.position, v2.Vector2{90, 90})
 		tails_behavior, tails_behavior_ok := kw.get_behavior(tails^, Tails).?
@@ -64,7 +64,7 @@ test_remove_entity :: proc(t: ^testing.T) {
 
 	kw.update(&world, 0, timer_info, {})
 
-	sonic := kw.find_with_tag(&world, "Sonic").?
+	sonic := kw.find_with_tag(world, "Sonic").?
 
 	kw.remove_entity(&world, sonic.token)
 
