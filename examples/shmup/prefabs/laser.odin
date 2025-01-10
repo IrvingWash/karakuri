@@ -21,7 +21,7 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 			scale = v2.Unit,
 		},
 		shape = components.Shape_Component {
-			size = v2.Vector2{20, 1000},
+			size = v2.Vector2{10, 1000},
 			color = color.Red,
 		},
 		behavior = behavior,
