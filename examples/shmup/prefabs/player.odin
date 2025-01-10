@@ -14,6 +14,7 @@ player_prefab :: proc() -> world.Entity_Payload {
 		on_start   = on_start,
 		on_update  = on_update,
 		on_destroy = on_destroy,
+		on_collision = on_collision,
 	}
 
 	return world.Entity_Payload {
@@ -34,7 +35,7 @@ player_prefab :: proc() -> world.Entity_Payload {
 @(private = "file")
 Player_Behavior :: struct {
 	using behavior: world.Behavior,
-	speed:          f64,
+	speed:			f64,
 }
 
 @(private = "file")
@@ -86,5 +87,27 @@ shoot :: proc(w: ^world.World, transform: components.Transform_Component) {
 			bullet_prefab(transform.position, 700, "Player Bullet"),
 		)
 	}
+
+	if input_manager.is_key_pressed(.K) {
+		world.add_entity(w, laser_prefab(transform.position))
+	}
+
+	if input_manager.is_key_released(.K) {
+		laser, laser_ok := world.find_with_tag(w^, "Laser").?
+		if !laser_ok {
+			return
+		}
+
+		world.remove_entity(w, laser.token)
+	}
 }
 
+@(private = "file")
+on_collision: world.On_Collision_Proc : proc(
+	ctx: world.Behavior_Context,
+	other: ^world.Entity,
+) {
+	if other.tag == "Enemy Bullet" {
+		world.remove_entity(ctx.world, ctx.self.token)
+	}
+}

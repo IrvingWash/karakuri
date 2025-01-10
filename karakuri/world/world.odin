@@ -83,7 +83,7 @@ get_entity :: proc(world: ^World, token: Token) -> Maybe(^Entity) {
 }
 
 // Returns the first entity with the given tag
-find_with_tag :: proc(world: ^World, tag: string) -> Maybe(^Entity) {
+find_with_tag :: proc(world: World, tag: string) -> Maybe(^Entity) {
 	for &entity in world.entities {
 		if entity.tag != tag {
 			continue
