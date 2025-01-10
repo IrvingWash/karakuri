@@ -94,7 +94,7 @@ on_collision: world.On_Collision_Proc : proc(
 	ctx: world.Behavior_Context,
 	other: ^world.Entity,
 ) {
-	if other.tag == "Player Bullet" {
+	if other.tag == "Player Bullet" || other.tag == "Laser" {
 		world.remove_entity(ctx.world, ctx.self.token)
 	}
 }

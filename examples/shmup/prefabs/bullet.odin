@@ -1,6 +1,7 @@
 package example_shmup_prefabs
 
 import "core:fmt"
+import "core:strings"
 import v2 "kmath:vector2"
 import "kutils:color"
 import "karakuri:world"
@@ -17,6 +18,7 @@ bullet_prefab :: proc(
 		on_start   = on_start,
 		on_update  = on_update,
 		on_destroy = on_destroy,
+        on_collision = on_collision,
 	}
 
 	return world.Entity_Payload {
@@ -55,6 +57,15 @@ on_update: world.Lifecycle_Proc : proc(ctx: world.Behavior_Context) {
 	behavior := world.get_behavior(ctx.self^, Bullet_Behavior).?
 
 	move(transform, behavior, ctx.delta_time)
+}
+
+@(private = "file")
+on_collision: world.On_Collision_Proc : proc(ctx: world.Behavior_Context, other: ^world.Entity) {
+	tag := ctx.self.tag.?
+
+	if other.tag == "Enemy" && !strings.contains(tag, "Enemy") {
+		world.remove_entity(ctx.world, ctx.self.token)
+	}
 }
 
 @(private = "file")

@@ -1,3 +1,5 @@
+#+feature dynamic-literals
+
 package example_shmup_scenes
 
 import "karakuri:scene"
