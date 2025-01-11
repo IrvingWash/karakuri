@@ -9,3 +9,9 @@ Transform_Component :: struct {
 	rotation: f64,
 }
 
+DEFAULT_TRANSFORM_COMPONENT :: Transform_Component {
+	position = v2.Zero,
+	scale    = v2.Unit,
+	rotation = 0,
+}
+

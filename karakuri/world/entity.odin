@@ -4,8 +4,11 @@ import "../components"
 
 // An entity
 Entity :: struct {
-	using token: Token,
-	using data:  Entity_Payload,
+	using token:      Token,
+	tag:              Maybe(string),
+	behavior:         Maybe(^Behavior),
+	transform:        components.Transform_Component,
+	using components: Component_Bundle,
 }
 
 // Unique identifier of an entity
@@ -16,8 +19,14 @@ Token :: struct {
 
 // Entity data
 Entity_Payload :: struct {
-	using components: components.Component_Bundle,
 	tag:              Maybe(string),
 	behavior:         Maybe(^Behavior),
+	transform:        Maybe(components.Transform_Component),
+	using components: Component_Bundle,
+}
+
+@(private = "file")
+Component_Bundle :: struct {
+	shape: Maybe(components.Shape_Component),
 }
 
