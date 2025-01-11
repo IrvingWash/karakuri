@@ -5,6 +5,7 @@ STARTING_CAPACITY :: 1000
 import "core:container/queue"
 import "base:intrinsics"
 import "ktimer:timer"
+import "../components"
 
 // Represents a world of entities
 World :: struct {
@@ -205,7 +206,10 @@ sync_add_entity :: proc(
 	entity_payload: Entity_Payload,
 ) -> Token {
 	new_entity := Entity {
-		data = entity_payload, // TODO: Handle defaults
+		tag        = entity_payload.tag,
+		behavior   = entity_payload.behavior,
+		transform  = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
+		components = entity_payload.components,
 	}
 
 	token, token_ok := queue.pop_back_safe(&world.free_tokens)
