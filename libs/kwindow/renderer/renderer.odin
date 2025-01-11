@@ -61,12 +61,8 @@ draw_rectangle :: proc(
 	scaled_width := size.x * scale.x
 	scaled_height := size.y * scale.y
 
-	origin: rl.Vector2 = ---
-	if passed_origin, ok := custom_origin.?; ok {
-		origin = rl.Vector2{f32(passed_origin.x), f32(passed_origin.y)}
-	} else {
-		origin = rl.Vector2{f32(scaled_width / 2), f32(scaled_height / 2)}
-	}
+	origin :=
+		custom_origin.? or_else v2.Vector2{scaled_width / 2, scaled_height / 2}
 
 	rl.DrawRectanglePro(
 		rec = rl.Rectangle {
@@ -75,7 +71,7 @@ draw_rectangle :: proc(
 			width = f32(scaled_width),
 			height = f32(scaled_height),
 		},
-		origin = origin,
+		origin = v2_to_rl(origin),
 		rotation = f32(rotation),
 		color = color_to_rl(color),
 	)
@@ -105,5 +101,10 @@ update_renderer_info :: proc() {
 @(private = "file")
 color_to_rl :: proc(color: color.Color) -> rl.Color {
 	return rl.Color{color.r, color.g, color.b, color.a}
+}
+
+@(private = "file")
+v2_to_rl :: proc(vector2: v2.Vector2) -> rl.Vector2 {
+	return rl.Vector2{f32(vector2.x), f32(vector2.y)}
 }
 
