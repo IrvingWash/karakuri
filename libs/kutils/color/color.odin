@@ -16,4 +16,5 @@ Blue :: Color{0, 0, 255, 255}
 Black :: Color{0, 0, 0, 255}
 White :: Color{255, 255, 255, 255}
 Yellow :: Color{255, 255, 0, 255}
+Transparent :: Color{0, 0, 0, 0}
 
