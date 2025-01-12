@@ -13,8 +13,8 @@ collision_system :: proc(
 		entity := &entities[i]
 
 		transform := &entity.transform
-		shape, shape_ok := &entity.shape.?
-		if !shape_ok {
+		box_collider, box_collider_ok := &entity.box_collider.?
+		if !box_collider_ok {
 			continue
 		}
 
@@ -24,28 +24,44 @@ collision_system :: proc(
 			other := &entities[j]
 
 			other_transform := &other.transform
-			other_shape, other_shape_ok := &other.shape.?
+			other_box_collider, other_box_collider_ok := &other.box_collider.?
 
-			if !other_shape_ok {
+			if !other_box_collider_ok {
 				continue
 			}
 
 			are_colliding := rl.CheckCollisionRecs(
 				rl.Rectangle {
-					x = f32(transform.position.x - shape.size.x / 2),
-					y = f32(transform.position.y - shape.size.y / 2),
-					width = f32(shape.size.x),
-					height = f32(shape.size.y),
+					x = f32(
+						transform.position.x -
+						box_collider.size.x / 2 * transform.scale.x +
+						box_collider.offset.x,
+					),
+					y = f32(
+						transform.position.y -
+						box_collider.size.y / 2 * transform.scale.x +
+						box_collider.offset.y,
+					),
+					width = f32(box_collider.size.x * transform.scale.x),
+					height = f32(box_collider.size.y * transform.scale.y),
 				},
 				rl.Rectangle {
 					x = f32(
-						other_transform.position.x - other_shape.size.x / 2,
+						other_transform.position.x -
+						other_box_collider.size.x /
+							2 *
+							other_transform.scale.x +
+						other_box_collider.offset.x,
 					),
 					y = f32(
-						other_transform.position.y - other_shape.size.y / 2,
+						other_transform.position.y -
+						other_box_collider.size.y / 2 * transform.scale.y +
+						other_box_collider.offset.y,
 					),
-					width = f32(other_shape.size.x),
-					height = f32(other_shape.size.y),
+					width = f32(other_box_collider.size.x * transform.scale.x),
+					height = f32(
+						other_box_collider.size.y * transform.scale.y,
+					),
 				},
 			)
 
@@ -84,3 +100,4 @@ collision_system :: proc(
 		}
 	}
 }
+

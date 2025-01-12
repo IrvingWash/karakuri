@@ -234,7 +234,6 @@ sync_add_entity :: proc(
 		tag          = entity_payload.tag,
 		behavior     = entity_payload.behavior,
 		transform    = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
-		shape        = entity_payload.shape,
 		sprite       = entity_payload.sprite,
 		box_collider = entity_payload.box_collider,
 	}
