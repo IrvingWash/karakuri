@@ -18,7 +18,7 @@ init :: proc() {
 	}
 }
 
-deinit :: proc() {
+destroy :: proc() {
 	for _, &texture in asset_store.textures {
 		rl.UnloadTexture(texture)
 	}
@@ -42,3 +42,4 @@ load_texture :: proc(name: string, path: string) {
 get_texture :: proc(name: string) -> renderer.Texture {
 	return asset_store.textures[name]
 }
+

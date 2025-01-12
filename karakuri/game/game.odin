@@ -88,7 +88,7 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
-	asset_store.deinit()
+	asset_store.destroy()
 	asset_store.init()
 	for &texture in scene_to_set.assets.textures {
 		asset_store.load_texture(texture.name, texture.path)
@@ -104,6 +104,7 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 // Destroys the game
 destroy :: proc() {
 	world.destroy(&game_info.current_world, &game_info.timer_info)
+	asset_store.destroy()
 	timer.destroy(game_info.timer_info)
 	window_creation.destroy_window()
 }
