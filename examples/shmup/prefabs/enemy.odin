@@ -2,7 +2,6 @@ package example_shmup_prefabs
 
 import "core:log"
 import v2 "kmath:vector2"
-import "kutils:color"
 import "ktimer:timer"
 import "karakuri:world"
 import "karakuri:components"
@@ -21,10 +20,7 @@ enemy_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 	return world.Entity_Payload {
 		tag = "Enemy",
 		transform = components.Transform_Component{position = position},
-		shape = components.Shape_Component {
-			size = v2.Vector2{30, 50},
-			color = color.Blue,
-		},
+		box_collider = components.Box_Collider_Component{size = {30, 50}},
 		behavior = enemy_behavior,
 	}
 }

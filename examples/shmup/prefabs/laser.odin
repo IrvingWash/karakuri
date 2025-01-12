@@ -2,7 +2,6 @@ package example_shmup_prefabs
 
 import "core:log"
 import v2 "kmath:vector2"
-import "kutils:color"
 import "karakuri:world"
 import "karakuri:components"
 
@@ -19,10 +18,7 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 		transform = components.Transform_Component {
 			position = {start_position.x, start_position.y / 2},
 		},
-		shape = components.Shape_Component {
-			size = v2.Vector2{10, 1000},
-			color = color.Red,
-		},
+		box_collider = components.Box_Collider_Component{size = {10, 1000}},
 		behavior = behavior,
 	}
 }
