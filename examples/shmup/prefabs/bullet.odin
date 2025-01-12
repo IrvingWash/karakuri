@@ -28,6 +28,7 @@ bullet_prefab :: proc(
 			size = v2.Vector2{10, 10},
 			color = color.Transparent,
 		},
+		box_collider = components.Box_Collider_Component{},
 		behavior = bullet_behavior,
 		sprite = components.Sprite_Component {
 			sprite_name = speed < 0 ? "bullet_blue" : "bullet_green",
