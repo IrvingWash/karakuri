@@ -1,5 +1,6 @@
 package karakuri_game
 
+import "core:slice"
 import "kwindow:window_creation"
 import "kwindow:renderer"
 import "kwindow:fps_manager"
@@ -87,7 +88,7 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
-	asset_store.deinit()
+	asset_store.destroy()
 	asset_store.init()
 	for &texture in scene_to_set.assets.textures {
 		asset_store.load_texture(texture.name, texture.path)
@@ -103,6 +104,7 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 // Destroys the game
 destroy :: proc() {
 	world.destroy(&game_info.current_world, &game_info.timer_info)
+	asset_store.destroy()
 	timer.destroy(game_info.timer_info)
 	window_creation.destroy_window()
 }
@@ -116,6 +118,32 @@ render_entities :: proc() {
 	renderer.start_drawing()
 	defer renderer.finish_drawing()
 
+	renderables := make(
+		[dynamic]^world.Entity,
+		0,
+		len(game_info.current_world.entities),
+	)
+	defer delete(renderables)
+	for &entity in game_info.current_world.entities {
+		if _, ok := entity.sprite.?; ok {
+			append(&renderables, &entity)
+		}
+	}
+
+	slice.sort_by(renderables[:], proc(a, b: ^world.Entity) -> bool {
+		return a.sprite.?.sorting_layer < b.sprite.?.sorting_layer
+	})
+
+	for &entity in renderables {
+		renderer.draw_sprite(
+			entity.sprite.?.sprite,
+			entity.transform.position,
+			entity.transform.scale,
+			entity.transform.rotation,
+		)
+	}
+
+	// Draw shapes. TODO: Delete
 	for &entity in game_info.current_world.entities {
 		if shape, ok := &entity.shape.?; ok {
 			transform := &entity.transform
@@ -126,17 +154,6 @@ render_entities :: proc() {
 				transform.scale,
 				transform.rotation,
 				shape.color,
-			)
-		}
-
-		if sprite, ok := &entity.sprite.?; ok {
-			transform := &entity.transform
-
-			renderer.draw_sprite(
-				sprite.sprite,
-				transform.position,
-				transform.scale,
-				transform.rotation,
 			)
 		}
 	}
