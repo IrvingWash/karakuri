@@ -84,4 +84,3 @@ collision_system :: proc(
 		}
 	}
 }
-

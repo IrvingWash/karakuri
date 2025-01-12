@@ -14,6 +14,14 @@ make_main_scene: scene.Scene_Maker_Proc : proc() -> scene.Scene {
 			prefabs.player_prefab(),
 			prefabs.enemy_spawner_prefab(),
 		},
+		assets = {
+			textures = {
+				{
+					name = "bullet_green",
+					path = "examples/shmup/assets/sprites/bullet_green.png",
+				},
+			},
+		},
 	}
 }
 

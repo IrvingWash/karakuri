@@ -6,6 +6,7 @@ import "core:container/queue"
 import "base:intrinsics"
 import "ktimer:timer"
 import "../components"
+import "../asset_store"
 
 // Represents a world of entities
 World :: struct {
@@ -36,7 +37,7 @@ new :: proc(
 
 	// Add initial entities
 	for &entity in initial_entities {
-		sync_add_entity(&world, entity)
+		sync_add_entity(&world, &entity)
 	}
 
 	// Start initial entities
@@ -143,7 +144,7 @@ update :: proc(
 	defer delete(entities_to_start)
 
 	for &payload in world.entities_to_add {
-		token := sync_add_entity(world, payload)
+		token := sync_add_entity(world, &payload)
 
 		append(&entities_to_start, token)
 	}
@@ -203,13 +204,18 @@ destroy_entity :: proc(
 @(private = "file")
 sync_add_entity :: proc(
 	world: ^World,
-	entity_payload: Entity_Payload,
+	entity_payload: ^Entity_Payload,
 ) -> Token {
+	if sprite, ok := &entity_payload.sprite.?; ok {
+		sprite.sprite.texture = asset_store.get_texture(sprite.sprite_name)
+	}
+
 	new_entity := Entity {
-		tag        = entity_payload.tag,
-		behavior   = entity_payload.behavior,
-		transform  = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
-		components = entity_payload.components,
+		tag       = entity_payload.tag,
+		behavior  = entity_payload.behavior,
+		transform = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
+		shape     = entity_payload.shape,
+		sprite    = entity_payload.sprite,
 	}
 
 	token, token_ok := queue.pop_back_safe(&world.free_tokens)
