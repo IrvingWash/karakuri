@@ -144,17 +144,19 @@ render_entities :: proc() {
 	}
 
 	// Debug drawing
-	for &entity in game_info.current_world.entities {
-		if box_collider, ok := &entity.box_collider.?; ok {
-			transform := &entity.transform
+	when ODIN_DEBUG {
+		for &entity in game_info.current_world.entities {
+			if box_collider, ok := &entity.box_collider.?; ok {
+				transform := &entity.transform
 
-			renderer.draw_rectangle(
-				transform.position + box_collider.offset,
-				box_collider.size,
-				transform.scale,
-				transform.rotation,
-				color.Color{0, 255, 0, 50},
-			)
+				renderer.draw_rectangle(
+					transform.position + box_collider.offset,
+					box_collider.size,
+					transform.scale,
+					transform.rotation,
+					color.Color{0, 255, 0, 50},
+				)
+			}
 		}
 	}
 }
