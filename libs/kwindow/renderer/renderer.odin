@@ -77,11 +77,48 @@ draw_rectangle :: proc(
 	)
 }
 
+draw_sprite :: proc(
+	sprite: Sprite,
+	position: v2.Vector2,
+	scale: v2.Vector2,
+	rotation: f64,
+) {
+	size :=
+		sprite.clip_size.? or_else v2.Vector2 {
+			f64(sprite.texture.width),
+			f64(sprite.texture.height),
+		}
+
+	origin :=
+		sprite.origin.? or_else v2.Vector2 {
+			size.x * scale.x / 2,
+			size.y * scale.y / 2,
+		}
+
+	rl.DrawTexturePro(
+		sprite.texture,
+		source = rl.Rectangle {
+			x = f32(sprite.clip_position.x),
+			y = f32(sprite.clip_position.y),
+			width = f32(size.x) * (sprite.flip.x ? -1 : 1),
+			height = f32(size.y) * (sprite.flip.y ? -1 : 1),
+		},
+		dest = rl.Rectangle {
+			x = f32(position.x + renderer_info.canvas_origin.x),
+			y = f32(position.y + renderer_info.canvas_origin.y),
+			width = f32(size.x * scale.x),
+			height = f32(size.y * scale.y),
+		},
+		origin = v2_to_rl(origin),
+		rotation = f32(rotation),
+		tint = color_to_rl(sprite.tint.? or_else color.White),
+	)
+}
+
 // ====================================
 // Private procs
 // ====================================
 
-@(private = "file")
 update_renderer_info :: proc() {
 	width := uint(rl.GetScreenWidth())
 	height := uint(rl.GetScreenHeight())

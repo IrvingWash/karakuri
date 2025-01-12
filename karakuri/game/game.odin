@@ -8,6 +8,7 @@ import "kutils:color"
 import "ktimer:timer"
 import "../world"
 import "../scene"
+import "../asset_store"
 
 // ====================================
 // Game state
@@ -86,6 +87,12 @@ set_scene :: proc(scene_maker: scene.Scene_Maker_Proc) {
 	scene_to_set := scene_maker()
 	defer scene.destroy(scene_to_set)
 
+	asset_store.deinit()
+	asset_store.init()
+	for &texture in scene_to_set.assets.textures {
+		asset_store.load_texture(texture.name, texture.path)
+	}
+
 	world.destroy(&game_info.current_world, &game_info.timer_info)
 	game_info.current_world = world.new(
 		scene_to_set.entities[:],
@@ -110,20 +117,28 @@ render_entities :: proc() {
 	defer renderer.finish_drawing()
 
 	for &entity in game_info.current_world.entities {
-		shape, shape_ok := &entity.shape.?
-		if !shape_ok {
-			continue
+		if shape, ok := &entity.shape.?; ok {
+			transform := &entity.transform
+
+			renderer.draw_rectangle(
+				transform.position,
+				shape.size,
+				transform.scale,
+				transform.rotation,
+				shape.color,
+			)
 		}
 
-		transform := &entity.transform
+		if sprite, ok := &entity.sprite.?; ok {
+			transform := &entity.transform
 
-		renderer.draw_rectangle(
-			transform.position,
-			shape.size,
-			transform.scale,
-			transform.rotation,
-			shape.color,
-		)
+			renderer.draw_sprite(
+				sprite.sprite,
+				transform.position,
+				transform.scale,
+				transform.rotation,
+			)
+		}
 	}
 }
 

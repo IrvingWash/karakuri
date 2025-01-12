@@ -25,13 +25,17 @@ bullet_prefab :: proc(
 		tag = tag,
 		transform = components.Transform_Component {
 			position = position,
-			scale = v2.Unit,
+			scale = v2.Vector2{1, 1},
 		},
 		shape = components.Shape_Component {
 			size = v2.Vector2{10, 10},
 			color = color.Red,
 		},
 		behavior = bullet_behavior,
+		sprite = components.Sprite_Component {
+			sprite_name = "bullet_green",
+			flip = {y = speed < 0 ? true : false},
+		},
 	}
 }
 
@@ -79,4 +83,3 @@ move :: proc(
 ) {
 	transform.position.y -= behavior.speed * dt
 }
-

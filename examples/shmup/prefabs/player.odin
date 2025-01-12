@@ -112,4 +112,3 @@ on_collision: world.On_Collision_Proc : proc(
 		world.remove_entity(ctx.world, ctx.self.token)
 	}
 }
-
