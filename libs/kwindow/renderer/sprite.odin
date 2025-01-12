@@ -10,7 +10,7 @@ Sprite :: struct {
 	texture:       Texture,
 	clip_position: v2.Vector2,
 	clip_size:     Maybe(v2.Vector2),
-	origin:        Maybe(v2.Vector2),
+	origin:        Maybe(v2.Vector2), // TODO
 	flip:          struct {
 		x: bool,
 		y: bool,

@@ -17,8 +17,10 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 		tag = "Laser",
 		transform = components.Transform_Component {
 			position = {start_position.x, start_position.y / 2},
+			scale = {1, 10},
 		},
-		box_collider = components.Box_Collider_Component{size = {10, 1000}},
+		box_collider = components.Box_Collider_Component{},
+		sprite = components.Sprite_Component{sprite_name = "laser_blue"},
 		behavior = behavior,
 	}
 }
@@ -48,12 +50,13 @@ on_update :: proc(ctx: world.Behavior_Context) {
 	behavior := world.get_behavior(ctx.self^, Laser_Behavior).?
 
 	if !world.is_alive(ctx.world^, behavior.player_token) {
+		world.remove_entity(ctx.world, ctx.self.token)
 		return
 	}
 
 	player_position :=
 		world.get_entity(ctx.world, behavior.player_token).?.transform.position
 
-	ctx.self.transform.position = {player_position.x, player_position.y - 500}
+	ctx.self.transform.position = {player_position.x, player_position.y - 250}
 }
 

@@ -22,7 +22,14 @@ player_prefab :: proc() -> world.Entity_Payload {
 			position = v2.Vector2{0, 0},
 			rotation = 0,
 		},
-		box_collider = components.Box_Collider_Component{size = {30, 50}},
+		sprite = components.Sprite_Component {
+			sprite_name = "player_straight",
+			sorting_layer = 5,
+		},
+		box_collider = components.Box_Collider_Component {
+			size = {25, 45},
+			offset = {0, -5},
+		},
 		behavior = player_behavior,
 	}
 }
