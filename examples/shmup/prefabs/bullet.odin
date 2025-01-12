@@ -3,7 +3,6 @@ package example_shmup_prefabs
 import "core:log"
 import "core:strings"
 import v2 "kmath:vector2"
-import "kutils:color"
 import "karakuri:world"
 import "karakuri:components"
 
@@ -23,14 +22,8 @@ bullet_prefab :: proc(
 
 	return world.Entity_Payload {
 		tag = tag,
-		transform = components.Transform_Component {
-			position = position,
-			scale = v2.Unit,
-		},
-		shape = components.Shape_Component {
-			size = v2.Vector2{10, 10},
-			color = color.Transparent,
-		},
+		transform = components.Transform_Component{position = position},
+		box_collider = components.Box_Collider_Component{},
 		behavior = bullet_behavior,
 		sprite = components.Sprite_Component {
 			sprite_name = speed < 0 ? "bullet_blue" : "bullet_green",

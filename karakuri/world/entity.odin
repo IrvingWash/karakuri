@@ -27,7 +27,7 @@ Entity_Payload :: struct {
 
 @(private = "file")
 Component_Bundle :: struct {
-	shape:  Maybe(components.Shape_Component),
-	sprite: Maybe(components.Sprite_Component),
+	sprite:       Maybe(components.Sprite_Component),
+	box_collider: Maybe(components.Box_Collider_Component),
 }
 

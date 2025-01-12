@@ -1,11 +1,10 @@
 package example_shmup_prefabs
 
 import "core:log"
+import v2 "kmath:vector2"
 import "karakuri:components"
 import "karakuri:input_manager"
 import "karakuri:world"
-import v2 "kmath:vector2"
-import "kutils:color"
 
 player_prefab :: proc() -> world.Entity_Payload {
 	player_behavior := new(Player_Behavior)
@@ -21,13 +20,9 @@ player_prefab :: proc() -> world.Entity_Payload {
 		tag = "Player",
 		transform = components.Transform_Component {
 			position = v2.Vector2{0, 0},
-			scale = v2.Unit,
 			rotation = 0,
 		},
-		shape = components.Shape_Component {
-			size = v2.Vector2{30, 50},
-			color = color.Yellow,
-		},
+		box_collider = components.Box_Collider_Component{size = {30, 50}},
 		behavior = player_behavior,
 	}
 }
@@ -112,3 +107,4 @@ on_collision: world.On_Collision_Proc : proc(
 		world.remove_entity(ctx.world, ctx.self.token)
 	}
 }
+

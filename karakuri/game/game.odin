@@ -143,17 +143,17 @@ render_entities :: proc() {
 		)
 	}
 
-	// Draw shapes. TODO: Delete
+	// Debug drawing
 	for &entity in game_info.current_world.entities {
-		if shape, ok := &entity.shape.?; ok {
+		if box_collider, ok := &entity.box_collider.?; ok {
 			transform := &entity.transform
 
 			renderer.draw_rectangle(
-				transform.position,
-				shape.size,
+				transform.position + box_collider.offset,
+				box_collider.size,
 				transform.scale,
 				transform.rotation,
-				shape.color,
+				color.Color{0, 255, 0, 50},
 			)
 		}
 	}
