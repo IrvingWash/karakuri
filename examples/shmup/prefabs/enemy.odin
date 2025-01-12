@@ -20,10 +20,7 @@ enemy_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 
 	return world.Entity_Payload {
 		tag = "Enemy",
-		transform = components.Transform_Component {
-			position = position,
-			scale = v2.Unit,
-		},
+		transform = components.Transform_Component{position = position},
 		shape = components.Shape_Component {
 			size = v2.Vector2{30, 50},
 			color = color.Blue,

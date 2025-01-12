@@ -5,6 +5,7 @@ STARTING_CAPACITY :: 1000
 import "core:container/queue"
 import "base:intrinsics"
 import "ktimer:timer"
+import v2 "kmath:vector2"
 import "../components"
 import "../asset_store"
 
@@ -210,12 +211,32 @@ sync_add_entity :: proc(
 		sprite.sprite.texture = asset_store.get_texture(sprite.sprite_name)
 	}
 
+	if box_collider, ok := &entity_payload.box_collider.?;
+	   ok && box_collider.size.x == 0 && box_collider.size.y == 0 {
+		if sprite, sprite_ok := &entity_payload.sprite.?; sprite_ok {
+			box_collider.size =
+				sprite.sprite.clip_size.? or_else v2.Vector2 {
+					f64(sprite.sprite.texture.width),
+					f64(sprite.sprite.texture.height),
+				}
+		}
+	}
+
+	if transform, ok := &entity_payload.transform.?; ok {
+		if transform.scale.x == 0 && transform.scale.y == 0 {
+			transform.scale = v2.Unit
+		}
+	} else {
+		entity_payload.transform = components.DEFAULT_TRANSFORM_COMPONENT
+	}
+
 	new_entity := Entity {
-		tag       = entity_payload.tag,
-		behavior  = entity_payload.behavior,
-		transform = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
-		shape     = entity_payload.shape,
-		sprite    = entity_payload.sprite,
+		tag          = entity_payload.tag,
+		behavior     = entity_payload.behavior,
+		transform    = entity_payload.transform.? or_else components.DEFAULT_TRANSFORM_COMPONENT,
+		shape        = entity_payload.shape,
+		sprite       = entity_payload.sprite,
+		box_collider = entity_payload.box_collider,
 	}
 
 	token, token_ok := queue.pop_back_safe(&world.free_tokens)

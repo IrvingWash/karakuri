@@ -21,7 +21,6 @@ player_prefab :: proc() -> world.Entity_Payload {
 		tag = "Player",
 		transform = components.Transform_Component {
 			position = v2.Vector2{0, 0},
-			scale = v2.Unit,
 			rotation = 0,
 		},
 		shape = components.Shape_Component {
@@ -112,3 +111,4 @@ on_collision: world.On_Collision_Proc : proc(
 		world.remove_entity(ctx.world, ctx.self.token)
 	}
 }
+

@@ -23,10 +23,7 @@ bullet_prefab :: proc(
 
 	return world.Entity_Payload {
 		tag = tag,
-		transform = components.Transform_Component {
-			position = position,
-			scale = v2.Unit,
-		},
+		transform = components.Transform_Component{position = position},
 		shape = components.Shape_Component {
 			size = v2.Vector2{10, 10},
 			color = color.Transparent,

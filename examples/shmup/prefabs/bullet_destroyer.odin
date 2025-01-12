@@ -17,10 +17,7 @@ bullet_destroyer_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 
 	return world.Entity_Payload {
 		tag = "Bullet Destroyer",
-		transform = components.Transform_Component {
-			position = position,
-			scale = v2.Unit,
-		},
+		transform = components.Transform_Component{position = position},
 		shape = components.Shape_Component {
 			color = color.Green,
 			size = {1000, 10},

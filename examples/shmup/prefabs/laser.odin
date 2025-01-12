@@ -18,7 +18,6 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 		tag = "Laser",
 		transform = components.Transform_Component {
 			position = {start_position.x, start_position.y / 2},
-			scale = v2.Unit,
 		},
 		shape = components.Shape_Component {
 			size = v2.Vector2{10, 1000},
