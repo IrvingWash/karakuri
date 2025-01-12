@@ -153,7 +153,7 @@ render_entities :: proc() {
 				box_collider.size,
 				transform.scale,
 				transform.rotation,
-				color.Color{0, 255, 0, 127},
+				color.Color{0, 255, 0, 50},
 			)
 		}
 	}
