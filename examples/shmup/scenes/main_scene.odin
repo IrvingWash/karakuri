@@ -34,6 +34,10 @@ make_main_scene: scene.Scene_Maker_Proc : proc() -> scene.Scene {
 					name = "stars",
 					path = "examples/shmup/assets/sprites/stars.png",
 				},
+				{
+					name = "player_straight",
+					path = "examples/shmup/assets/sprites/player_straight.png",
+				},
 			},
 		},
 	}
