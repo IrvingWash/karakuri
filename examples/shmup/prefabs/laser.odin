@@ -20,7 +20,10 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 			scale = {1, 10},
 		},
 		box_collider = components.Box_Collider_Component{},
-		sprite = components.Sprite_Component{sprite_name = "laser_blue"},
+		sprite = components.Sprite_Component{
+			sprite_name = "laser_blue",
+			sorting_layer = 3,
+		},
 		behavior = behavior,
 	}
 }

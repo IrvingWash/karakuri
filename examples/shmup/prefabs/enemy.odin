@@ -22,7 +22,10 @@ enemy_prefab :: proc(position: v2.Vector2) -> world.Entity_Payload {
 		transform = components.Transform_Component{position = position},
 		box_collider = components.Box_Collider_Component{size = {45, 30}},
 		behavior = enemy_behavior,
-		sprite = components.Sprite_Component{sprite_name = "enemy_straight"},
+		sprite = components.Sprite_Component{
+ 			sprite_name = "enemy_straight",
+ 			sorting_layer = 3,
+ 		},
 	}
 }
 
