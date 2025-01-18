@@ -68,3 +68,6 @@ shmup-release:
 collisions-debug:
 	@mkdir -p ${examples_debug_build_dir}
 	@odin run ${examples_src}/collisions ${vet_flags} ${debug_flags} -out:${examples_debug_build_dir}/collisions ${example_collections}
+collisions-release:
+	@mkdir -p ${examples_release_build_dir}
+	@odin run ${examples_src}/collisions ${vet_flags} ${release_flags} -out:${examples_release_build_dir}/collisions ${example_collections}
