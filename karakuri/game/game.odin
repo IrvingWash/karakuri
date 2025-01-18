@@ -7,6 +7,7 @@ import "kwindow:fps_manager"
 import "kwindow:input_manager"
 import "kutils:color"
 import "ktimer:timer"
+import v2 "kmath:vector2"
 import "../world"
 import "../scene"
 import "../asset_store"
@@ -149,12 +150,18 @@ render_entities :: proc() {
 			if box_collider, ok := &entity.box_collider.?; ok {
 				transform := &entity.transform
 
+				origin: Maybe(v2.Vector2) = nil
+				if sprite, ok := &entity.sprite.?; ok {
+					origin = sprite.origin
+				}
+
 				renderer.draw_rectangle(
 					transform.position + box_collider.offset,
 					box_collider.size,
 					transform.scale,
 					transform.rotation,
 					color.Color{0, 255, 0, 50},
+					origin,
 				)
 			}
 		}
