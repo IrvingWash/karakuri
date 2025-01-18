@@ -224,7 +224,7 @@ sync_add_entity :: proc(
 
 	if transform, ok := &entity_payload.transform.?; ok {
 		if transform.scale.x == 0 && transform.scale.y == 0 {
-			transform.scale = v2.Unit
+			transform.scale = v2.UNIT
 		}
 	} else {
 		entity_payload.transform = components.DEFAULT_TRANSFORM_COMPONENT

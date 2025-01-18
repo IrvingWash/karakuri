@@ -10,8 +10,8 @@ Transform_Component :: struct {
 }
 
 DEFAULT_TRANSFORM_COMPONENT :: Transform_Component {
-	position = v2.Zero,
-	scale    = v2.Unit,
+	position = v2.ZERO,
+	scale    = v2.UNIT,
 	rotation = 0,
 }
 

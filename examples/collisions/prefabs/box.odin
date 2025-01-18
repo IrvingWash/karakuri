@@ -2,6 +2,7 @@ package example_collisions_prefabs
 
 import "core:log"
 import "kutils:color"
+import v2 "kmath:vector2"
 import "karakuri:world"
 import "karakuri:input_manager"
 import "karakuri:components"
@@ -28,8 +29,9 @@ box_prefab :: proc(kind: Box_Kind) -> world.Entity_Payload {
 		sprite = components.Sprite_Component {
 			sprite_name = "square",
 			tint = kind == .Dynamic ? color.White : color.Yellow,
+			origin = kind == .Dynamic ? v2.Vector2{64 / 2, 64} : nil,
 		},
-		box_collider = components.Box_Collider_Component{offset = {10, 10}},
+		box_collider = components.Box_Collider_Component{offset = {5, 5}},
 	}
 }
 
