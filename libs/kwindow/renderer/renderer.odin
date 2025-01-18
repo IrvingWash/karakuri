@@ -90,7 +90,7 @@ draw_sprite :: proc(
 			f64(sprite.texture.height),
 		}
 
-	origin := sprite.origin.? or_else v2.Vector2{size.x / 2, size.y / 2}
+	origin := sprite.origin.? or_else size / 2
 	scaled_origin := origin * scale
 
 	scaled_size := size * scale

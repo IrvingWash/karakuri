@@ -2,6 +2,7 @@ package karakuri_world
 
 import rl "vendor:raylib"
 import "ktimer:timer"
+import v2 "kmath:vector2"
 
 collision_system :: proc(
 	entities: []Entity,
@@ -20,10 +21,15 @@ collision_system :: proc(
 
 		behavior, behavior_ok := entity.behavior.?
 
+		origin: v2.Vector2 = ---
+		if sprite, ok := &entity.sprite.?; ok {
+			origin = sprite.origin.? or_else box_collider.size / 2
+		} else {
+			origin = box_collider.size / 2
+		}
+
 		position :=
-			transform.position +
-			box_collider.offset -
-			box_collider.size / 2 * transform.scale
+			transform.position + box_collider.offset - origin * transform.scale
 		size := box_collider.size * transform.scale
 
 		for j in i + 1 ..< len(entities) {
@@ -36,10 +42,18 @@ collision_system :: proc(
 				continue
 			}
 
+			other_origin: v2.Vector2 = ---
+			if other_sprite, ok := &other.sprite.?; ok {
+				other_origin =
+					other_sprite.origin.? or_else other_box_collider.size / 2
+			} else {
+				other_origin = box_collider.size / 2
+			}
+
 			other_position :=
 				other_transform.position +
 				other_box_collider.offset -
-				other_box_collider.size / 2 * other_transform.scale
+				other_origin * other_transform.scale
 			other_size := other_box_collider.size * other_transform.scale
 
 			are_colliding := rl.CheckCollisionRecs(
