@@ -89,11 +89,11 @@ draw_sprite :: proc(
 			f64(sprite.texture.height),
 		}
 
-	origin :=
-		sprite.origin.? or_else v2.Vector2 {
-			size.x * scale.x / 2,
-			size.y * scale.y / 2,
-		}
+	origin := sprite.origin.? or_else v2.Vector2{size.x / 2, size.y / 2}
+	scaled_origin := origin * scale
+
+	scaled_size := size * scale
+	position_at_canvas_origin := position + renderer_info.canvas_origin
 
 	rl.DrawTexturePro(
 		sprite.texture,
@@ -104,12 +104,12 @@ draw_sprite :: proc(
 			height = f32(size.y) * (sprite.flip.y ? -1 : 1),
 		},
 		dest = rl.Rectangle {
-			x = f32(position.x + renderer_info.canvas_origin.x),
-			y = f32(position.y + renderer_info.canvas_origin.y),
-			width = f32(size.x * scale.x),
-			height = f32(size.y * scale.y),
+			x = f32(position_at_canvas_origin.x),
+			y = f32(position_at_canvas_origin.y),
+			width = f32(scaled_size.x),
+			height = f32(scaled_size.y),
 		},
-		origin = v2_to_rl(origin),
+		origin = v2_to_rl(scaled_origin),
 		rotation = f32(rotation),
 		tint = color_to_rl(sprite.tint.? or_else color.White),
 	)

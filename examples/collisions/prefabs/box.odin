@@ -29,7 +29,7 @@ box_prefab :: proc(kind: Box_Kind) -> world.Entity_Payload {
 		sprite = components.Sprite_Component {
 			sprite_name = "square",
 			tint = kind == .Dynamic ? color.White : color.Yellow,
-			origin = kind == .Dynamic ? v2.Vector2{64 * 0.75 / 2, 64} : nil,
+			origin = kind == .Dynamic ? v2.Vector2{64 / 2, 64} : nil,
 		},
 		box_collider = components.Box_Collider_Component{offset = {10, 10}},
 	}
