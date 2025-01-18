@@ -20,9 +20,10 @@ laser_prefab :: proc(start_position: v2.Vector2) -> world.Entity_Payload {
 			scale = {1, 10},
 		},
 		box_collider = components.Box_Collider_Component{},
-		sprite = components.Sprite_Component{
+		sprite = components.Sprite_Component {
 			sprite_name = "laser_blue",
 			sorting_layer = 3,
+			origin = v2.Vector2{9 / 2, 54},
 		},
 		behavior = behavior,
 	}
@@ -60,6 +61,6 @@ on_update :: proc(ctx: world.Behavior_Context) {
 	player_position :=
 		world.get_entity(ctx.world, behavior.player_token).?.transform.position
 
-	ctx.self.transform.position = {player_position.x, player_position.y - 250}
+	ctx.self.transform.position = {player_position.x, player_position.y}
 }
 
