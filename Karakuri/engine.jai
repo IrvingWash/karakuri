@@ -10,9 +10,21 @@ init :: (config: Engine_Config) {
         config.name
     );
 
+    World.init_world();
+
     engine = .{
         scenes = config.scenes,
     };
+
+    initial_scene: Scene;
+    for scene: engine.scenes {
+        if scene.id == config.initial_scene_id {
+            initial_scene = scene;
+            break;
+        }
+    }
+
+    World.set_initial_entities(initial_scene.load());
 }
 
 run :: () {

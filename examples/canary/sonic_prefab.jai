@@ -1,4 +1,4 @@
-sonic_prefab :: () -> Karakuri.World.Entity_Params {
+sonic_prefab :: () -> Karakuri.Entity_Params {
     return .{
         transform = .{
             position = .{100, 100, 0},
