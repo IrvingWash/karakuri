@@ -1,6 +1,11 @@
 #import "Basic";
-#import "Karakuri";
+Karakuri :: #import "Karakuri";
 
 main :: () {
-    print("Hello, Sailor!\n");
+    Karakuri.init(.{
+        name = "Canary",
+        target_fps = 60,
+    });
+
+    Karakuri.run();
 }
