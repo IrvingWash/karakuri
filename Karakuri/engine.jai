@@ -1,3 +1,6 @@
+#import "Basic";
+#import,dir "platform";
+
 init :: (config: Engine_Config) {
     engine = .{
         name = config.name,
@@ -38,7 +41,3 @@ Engine_Config :: struct {
         height: u32 = 600;
     };
 }
-
-#import "Basic";
-#load "fps_manager.jai";
-#load "window_manager.jai";
