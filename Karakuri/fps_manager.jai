@@ -1,3 +1,5 @@
+#scope_module
+
 #import "Basic";
 
 FPS_Manager :: struct {

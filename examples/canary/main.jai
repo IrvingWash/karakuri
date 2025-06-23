@@ -6,6 +6,7 @@ main :: () {
         name = "Canary",
         target_fps = 60,
     });
+    defer Karakuri.deinit();
 
     Karakuri.run();
 }
