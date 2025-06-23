@@ -1,4 +1,4 @@
-#import "Basic";
+#import "Basic"()(MEMORY_DEBUGGER = true);
 Karakuri :: #import "Karakuri";
 
 main :: () {
