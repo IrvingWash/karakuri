@@ -10,7 +10,9 @@ init :: (config: Engine_Config) {
         config.name
     );
 
-    engine = .{};
+    engine = .{
+        scenes = config.scenes,
+    };
 }
 
 run :: () {
@@ -34,7 +36,9 @@ process_input :: () -> Events {
 
 engine: Engine = ---;
 
-Engine :: struct {}
+Engine :: struct {
+    scenes: []World.Scene;
+}
 
 Engine_Config :: struct {
     name: string;
@@ -43,4 +47,6 @@ Engine_Config :: struct {
         width: u32 = 800;
         height: u32 = 600;
     };
+    scenes: []World.Scene;
+    initial_scene_id: u32;
 }
