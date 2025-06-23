@@ -2,22 +2,25 @@
 #import,dir "platform";
 
 init :: (config: Engine_Config) {
-    engine = .{
-        name = config.name,
-        fps_manager = init_fps_manager(config.target_fps),
-        window_manager = init_window_manager(
-            config.window_size.width,
-            config.window_size.height,
-            config.name
-        ),
-    };
+    init_fps_manager(config.target_fps);
+
+    init_window_manager(
+        config.window_size.width,
+        config.window_size.height,
+        config.name
+    );
+
+    engine = .{};
 }
 
 run :: () {
-    while !engine.window_manager.events.quit {
-        dt := cap_frame_rate(*engine.fps_manager);
+    while true {
+        dt := cap_frame_rate();
 
-        get_events(*engine.window_manager);
+        events := process_input();
+        if events.quit {
+            break;
+        }
     }
 }
 
@@ -25,13 +28,13 @@ deinit :: () {}
 
 #scope_file
 
+process_input :: () -> Events {
+    return get_events();
+}
+
 engine: Engine = ---;
 
-Engine :: struct {
-    name: string;
-    fps_manager: FPS_Manager;
-    window_manager: Window_Manager;
-}
+Engine :: struct {}
 
 Engine_Config :: struct {
     name: string;

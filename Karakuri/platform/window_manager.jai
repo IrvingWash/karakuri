@@ -2,30 +2,21 @@ WC :: #import "Window_Creation";
 Simp :: #import "Simp";
 Input :: #import "Input";
 
-Window_Manager :: struct {
-    window: WC.Window_Type;
-    width: u32;
-    height: u32;
-    events: Events;
-}
-
 Events :: struct {
     quit: bool;
 }
 
-init_window_manager :: (width: u32, height: u32, title: string) -> Window_Manager {
-    manager: Window_Manager;
-
-    manager.window = WC.create_window(width, height, title);
-    manager.width = width;
-    manager.height = height;
+init_window_manager :: (width: u32, height: u32, title: string) {
+    manager = .{
+        window = WC.create_window(width, height, title),
+        width = width,
+        height = height,
+    };
 
     Simp.set_render_target(manager.window);
-
-    return manager;
 }
 
-get_events :: (manager: *Window_Manager) {
+get_events :: () -> Events {
     Input.update_window_events();
 
     for Input.events_this_frame {
@@ -43,16 +34,29 @@ get_events :: (manager: *Window_Manager) {
             manager.height = xx it.height;
         }
     }
+
+    return manager.events;
 }
 
-get_window_dimensions :: (manager: Window_Manager) -> width: u32, height: u32 {
+get_window_dimensions :: () -> width: u32, height: u32 {
     return manager.width, manager.height;
 }
 
-swap_buffers :: (manager: Window_Manager) {
+swap_buffers :: () {
     Simp.swap_buffers(manager.window);
 }
 
-toggle_fullscreen :: (manager: Window_Manager) {
+toggle_fullscreen :: () {
     WC.toggle_fullscreen(manager.window, true, null);
 }
+
+#scope_file
+
+Window_Manager :: struct {
+    window: WC.Window_Type;
+    width: u32;
+    height: u32;
+    events: Events;
+}
+
+manager: Window_Manager = ---;
