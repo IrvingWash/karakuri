@@ -30,10 +30,10 @@ draw_sprite :: (
     Simp.set_shader_for_color();
 
     Simp.immediate_quad(
-        position.x,
-        position.y,
-        position.x + scale.x,
-        position.y + scale.y,
+        position.x + scale.x / 2,
+        position.y + scale.y / 2,
+        position.x - scale.x / 2,
+        position.y - scale.y / 2,
         color,
     );
 }
@@ -46,6 +46,12 @@ finish_drawing :: () {
 // Updates window if it was resized or something
 update_window :: () {
     Simp.update_window(renderer.window);
+}
+
+get_render_dimensions :: () -> u32, u32 {
+    x, y := Simp.get_render_dimensions(renderer.window);
+
+    return xx x, xx y;
 }
 
 #scope_file

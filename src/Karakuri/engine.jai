@@ -53,6 +53,8 @@ run :: () {
 
 deinit :: () {}
 
+get_render_size :: get_render_dimensions;
+
 #scope_file
 
 process_input :: () -> Events {
