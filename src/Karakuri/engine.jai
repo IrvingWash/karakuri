@@ -19,6 +19,11 @@ init :: (config: Engine_Config) {
         scenes = config.scenes,
     };
 
+    if engine.scenes.count == 0 {
+        print("No scenes provided. Aborting\n");
+        exit(1);
+    }
+
     initial_scene: Scene;
     for scene: engine.scenes {
         if scene.id == config.initial_scene_id {
@@ -28,6 +33,7 @@ init :: (config: Engine_Config) {
     }
 
     init_world();
+
     set_entities(initial_scene.load());
 }
 
@@ -40,6 +46,8 @@ run :: () {
         update(dt);
 
         render();
+
+        reset_temporary_storage();
     }
 }
 
