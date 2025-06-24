@@ -33,10 +33,25 @@ get_entities :: () -> []Entity {
     return world.entities;
 }
 
+get_entity :: (token: Entity_Token) -> *Entity {
+    entity := *world.entities[token.id];
+
+    if token == entity.token {
+        return entity;
+    }
+
+    return null;
+}
+
 get_component :: (entity: Entity, $Component: Type) -> *Component {
+    if !signature_has_component(entity.signature, Component) {
+        return null;
+    }
+
     #if Component == Sprite_Component {
         return *world.sprite_components[entity.id];
-    } else #if Component == Behavior_Component {
+    }
+    #if Component == Behavior_Component {
         return *world.behavior_components[entity.id];
     }
 
@@ -73,10 +88,14 @@ add_entity :: (params: Entity_Params) {
         array_add(*world.behavior_components);
     }
 
+    entity := get_entity(token);
+
     if is_some(params.sprite_component) {
+        signature_set_component(*entity.signature, Sprite_Component);
         world.sprite_components[token.id] = params.sprite_component.some;
     }
     if is_some(params.behavior_component) {
+        signature_set_component(*entity.signature, Behavior_Component);
         world.behavior_components[token.id] = params.behavior_component.some;
     }
 }

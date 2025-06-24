@@ -26,6 +26,10 @@ Entity_Params :: struct {
     behavior_component := #run none(*Behavior_Component);
 }
 
+operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
+    return a.id == b.id && a.generation == b.generation;
+}
+
 #scope_module
 
 create_entity :: (
