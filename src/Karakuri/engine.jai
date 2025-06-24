@@ -93,7 +93,7 @@ render :: () {
 engine: Engine = ---;
 
 Engine :: struct {
-    scenes: [..]Scene;
+    scenes: [..]Scene; // @Todo try to make these []
     should_terminate: bool;
 }
 
