@@ -1,10 +1,20 @@
-Maybe:: union (value: $T) {
-    some: value;
+Maybe :: union ($T: Type) {
+    some: T;
     none: int = -1;
 }
 
 some :: (value: $T) -> Maybe(T) {
-    return .{some = value};
+    maybe: Maybe(T);
+    maybe.some = value;
+
+    return maybe;
+}
+
+none :: inline ($T: Type) -> Maybe(T) #compile_time {
+    maybe: Maybe(T);
+    maybe.none = -1;
+
+    return maybe;
 }
 
 is_some :: (maybe: Maybe) -> bool {

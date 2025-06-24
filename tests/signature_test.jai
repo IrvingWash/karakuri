@@ -1,6 +1,5 @@
 #import "Basic";
 #load "../src/Karakuri/signature.jai";
-#load "../src/Karakuri/components.jai";
 
 test_has_component :: () {
     signature: Signature;

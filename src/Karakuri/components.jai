@@ -24,16 +24,6 @@ instantiate_behavior :: ($B: Type, v: B) -> *Behavior_Component
     return behavior;
 }
 
-downcast_behavior :: (entity: Entity, $B: Type) -> bool, *B
-#modify { return uses_behavior_with_as(B); }
-{
-    if entity.behavior == null {
-        return false, null;
-    }
-
-    return true, cast(*B)entity.behavior;
-}
-
 #scope_module
 
 Component_Type :: enum u64 {
@@ -54,8 +44,6 @@ component_to_component_type :: inline ($Component: Type) -> Component_Type {
 
     return .Unknown;
 }
-
-#scope_file
 
 uses_behavior_with_as :: (T: Type) -> bool #compile_time {
     ti := cast(*Type_Info) T;

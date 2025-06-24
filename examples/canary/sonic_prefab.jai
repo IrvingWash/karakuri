@@ -30,6 +30,8 @@ on_start :: (self: *Karakuri.Entity) {
 }
 
 on_update :: (using self: *Karakuri.Entity, dt: float) {
-    transform.position.x += 100 * dt;
-    transform.position.y += 100 * dt;
+    sonic := Karakuri.get_behavior(self.*, Sonic);
+
+    transform.position.x += sonic.rings * dt;
+    transform.position.y += sonic.rings * dt;
 }
