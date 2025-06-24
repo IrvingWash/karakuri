@@ -5,9 +5,10 @@ Simp :: #import "Simp";
 #import "Math";
 
 // Initializes the sprite renderer
-init_sprite_renderer :: (window: Window_Type) {
+init_sprite_renderer :: (window: Window_Type, clear_color: Vector4) {
     renderer = .{
         window = window,
+        clear_color = clear_color,
     };
 
     Simp.set_render_target(renderer.window);
@@ -15,7 +16,9 @@ init_sprite_renderer :: (window: Window_Type) {
 
 // Sets all the necessary data to begin drawing for the current frame
 start_drawing :: () {
-    Simp.clear_render_target(0, 0, 0.7, 1);
+    using renderer.clear_color;
+
+    Simp.clear_render_target(x, y, z, w);
 }
 
 // Draws a sprite
@@ -49,6 +52,7 @@ update_window :: () {
 
 Sprite_Renderer :: struct {
     window: Window_Type;
+    clear_color: Vector4;
 }
 
 renderer: Sprite_Renderer = ---;

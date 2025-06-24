@@ -13,7 +13,7 @@ init :: (config: Engine_Config) {
         config.name
     );
 
-    init_sprite_renderer(window);
+    init_sprite_renderer(window, config.clear_color);
 
     engine = .{
         scenes = config.scenes,
@@ -97,4 +97,5 @@ Engine_Config :: struct {
     };
     scenes: [..]Scene;
     initial_scene_id: u32;
+    clear_color: Vector4;
 }

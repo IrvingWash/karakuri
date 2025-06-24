@@ -1,4 +1,5 @@
 #import "Basic"()(MEMORY_DEBUGGER = true);
+#import "Math";
 Karakuri :: #import "Karakuri";
 
 #load "level_1.jai";
@@ -14,6 +15,7 @@ main :: () {
         target_fps = 60,
         scenes = scenes,
         initial_scene_id = 1,
+        clear_color = .{0.32, 0.55, 0.92, 1}
     });
     defer Karakuri.deinit();
 
