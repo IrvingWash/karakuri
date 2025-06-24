@@ -26,28 +26,8 @@ create_entity :: (token: Entity_Token, params: Entity_Params) -> Entity {
     };
 }
 
-destroy_entity :: (entity: Entity) {}
-
-uses_behavior_with_as :: (T: Type) -> bool #compile_time {
-    ti := cast(*Type_Info) T;
-
-    if ti.type != .STRUCT {
-        return false;
+destroy_entity :: (entity: *$T/interface Entity_Params) {
+    if entity.behavior != null {
+        free(entity.behavior);
     }
-
-    tis := cast(*Type_Info_Struct) ti;
-
-    for member: tis.members {
-        if !(member.flags & .AS) {
-            continue;
-        }
-
-        if member.type != type_info(Behavior) {
-            continue;
-        }
-
-        return true;
-    }
-
-    return false;
 }
