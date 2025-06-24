@@ -30,13 +30,10 @@ Entity_Params :: struct {
 
 create_entity :: (
     token: Entity_Token,
-    signature: u32,
     params: Entity_Params
 ) -> Entity {
     return .{
         token = token,
-
-        signature = signature,
 
         transform = params.transform,
 
