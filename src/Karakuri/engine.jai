@@ -26,6 +26,9 @@ init :: (config: Engine_Config) {
             break;
         }
     }
+
+    init_world();
+    set_entities(initial_scene.load());
 }
 
 run :: () {
@@ -58,10 +61,22 @@ process_input :: () -> Events {
     return events;
 }
 
-update :: (dt: float) {}
+update :: (dt: float) {
+    update_world(dt);
+}
 
 render :: () {
     start_drawing();
+
+    for entity: get_entities() {
+        sprite := get_component(entity, Sprite_Component);
+
+        draw_sprite(
+            entity.transform.position,
+            entity.transform.scale,
+            sprite.color,
+        );
+    }
 
     finish_drawing();
 }
@@ -69,7 +84,7 @@ render :: () {
 engine: Engine = ---;
 
 Engine :: struct {
-    scenes: [..]World.Scene;
+    scenes: [..]Scene;
     should_terminate: bool;
 }
 
@@ -80,6 +95,6 @@ Engine_Config :: struct {
         width: u32 = 800;
         height: u32 = 600;
     };
-    scenes: [..]World.Scene;
+    scenes: [..]Scene;
     initial_scene_id: u32;
 }

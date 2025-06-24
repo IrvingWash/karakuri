@@ -1,8 +1,12 @@
-Maybe(T) :: union {
-    some: T;
+Maybe:: union (value: $T) {
+    some: value;
     none: int = -1;
 }
 
-is_some :: (maybe: Maybe(T)) -> bool {
+some :: (value: $T) -> Maybe(T) {
+    return .{some = value};
+}
+
+is_some :: (maybe: Maybe) -> bool {
     return maybe.none != -1;
 }

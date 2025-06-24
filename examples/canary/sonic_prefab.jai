@@ -1,4 +1,5 @@
 #import "Basic";
+#import "Maybe";
 
 sonic_prefab :: () -> Karakuri.Entity_Params {
     return .{
@@ -6,18 +7,20 @@ sonic_prefab :: () -> Karakuri.Entity_Params {
             position = .{100, 100, 0},
             scale = .{100, 100, 1},
         },
-        sprite = .{color = .{1, 0, 0, 1}},
+        sprite_component = some(Karakuri.Sprite_Component.{color = .{1, 0, 0, 1}}),
         on_start = on_start,
         on_update = on_update,
-        behavior = Karakuri.instantiate_behavior(
-            Sonic,
-            .{rings = 100}
+        behavior_component = some(
+            Karakuri.instantiate_behavior(
+                Sonic,
+                .{rings = 100}
+            )
         ),
     };
 }
 
 Sonic :: struct {
-    using #as behavior: Karakuri.Behavior;
+    using #as behavior: Karakuri.Behavior_Component;
 
     rings: u32;
 }

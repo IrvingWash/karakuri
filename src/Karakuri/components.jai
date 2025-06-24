@@ -15,6 +15,25 @@ Sprite_Component :: struct {
 // Represents a behavior where all the specific data can be placed
 Behavior_Component :: struct {}
 
+instantiate_behavior :: ($B: Type, v: B) -> *Behavior_Component
+#modify { return uses_behavior_with_as(B); }
+{
+    behavior: *B = New(B);
+    behavior.* = v;
+
+    return behavior;
+}
+
+downcast_behavior :: (entity: Entity, $B: Type) -> bool, *B
+#modify { return uses_behavior_with_as(B); }
+{
+    if entity.behavior == null {
+        return false, null;
+    }
+
+    return true, cast(*B)entity.behavior;
+}
+
 #scope_module
 
 Component_Type :: enum u64 {
@@ -35,3 +54,30 @@ component_to_component_type :: inline ($Component: Type) -> Component_Type {
 
     return .Unknown;
 }
+
+#scope_file
+
+uses_behavior_with_as :: (T: Type) -> bool #compile_time {
+    ti := cast(*Type_Info) T;
+
+    if ti.type != .STRUCT {
+        return false;
+    }
+
+    tis := cast(*Type_Info_Struct) ti;
+
+    for member: tis.members {
+        if !(member.flags & .AS) {
+            continue;
+        }
+
+        if member.type != type_info(Behavior_Component) {
+            continue;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
