@@ -35,6 +35,8 @@ run :: () {
         if events.quit {
             break;
         }
+
+        update(dt);
     }
 }
 
@@ -46,10 +48,14 @@ process_input :: () -> Events {
     return get_events();
 }
 
+update :: (dt: float) {
+    World.update(dt);
+}
+
 engine: Engine = ---;
 
 Engine :: struct {
-    scenes: []World.Scene;
+    scenes: [..]World.Scene;
 }
 
 Engine_Config :: struct {
@@ -59,6 +65,6 @@ Engine_Config :: struct {
         width: u32 = 800;
         height: u32 = 600;
     };
-    scenes: []World.Scene;
+    scenes: [..]World.Scene;
     initial_scene_id: u32;
 }

@@ -5,12 +5,13 @@ Karakuri :: #import "Karakuri";
 main :: () {
     setup_formatting();
 
+    scenes: [..]Karakuri.Scene;
+    array_add(*scenes, LEVEL_1);
+
     Karakuri.init(.{
         name = "Canary",
         target_fps = 60,
-        scenes = .[
-            LEVEL_1,
-        ],
+        scenes = scenes,
         initial_scene_id = 1,
     });
     defer Karakuri.deinit();

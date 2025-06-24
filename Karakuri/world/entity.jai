@@ -7,12 +7,21 @@ Entity :: struct {
 
 Entity_Params :: struct {
     transform: Components.Transform;
+    behavior: *Behavior;
 }
 
 Entity_Token :: struct {
     id: u32;
     generation: u32;
 }
+
+Behavior :: struct {
+    on_start: (self: *Entity);
+    on_update: (self: *Entity, dt: float);
+}
+
+// instantiate_behavior :: ($T: Type, v: T) -> *T {
+// }
 
 #scope_module
 
