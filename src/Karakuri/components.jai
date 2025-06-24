@@ -33,12 +33,12 @@ Component_Type :: enum u64 {
     Behavior;
 }
 
-component_to_component_type :: inline ($Component: Type) -> Component_Type {
-    #if Component == Transform_Component {
+component_to_component_type :: inline ($$Component: Type) -> Component_Type {
+    if Component == Transform_Component {
         return .Transform;
-    } else #if Component == Sprite_Component {
+    } else if Component == Sprite_Component {
         return .Sprite;
-    } else #if Component == Behavior_Component {
+    } else if Component == Behavior_Component {
         return .Behavior;
     }
 

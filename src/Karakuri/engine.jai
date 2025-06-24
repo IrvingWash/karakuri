@@ -76,7 +76,8 @@ update :: (dt: float) {
 render :: () {
     start_drawing();
 
-    for entity: get_entities() {
+    entities_with_sprite := get_entities_with_components(Sprite_Component);
+    for entity: entities_with_sprite {
         sprite := get_component(entity, Sprite_Component);
 
         draw_sprite(

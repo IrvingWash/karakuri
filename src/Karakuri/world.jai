@@ -64,6 +64,23 @@ get_downcasted_behavior :: (entity: Entity, $B: Type) -> *B
     return cast(*B) world.behavior_components[entity.id];
 }
 
+get_entities_with_components :: ($Components: ..Type) -> []*Entity {
+    signature: Signature;
+    for component: Components {
+        signature_set_component(*signature, component);
+    }
+
+    result: [..]*Entity;
+    result.allocator = temp;
+    for *entity: world.entities {
+        if signature_is_subset(signature, entity.signature) {
+            array_add(*result, entity);
+        };
+    }
+
+    return result;
+}
+
 update_world :: (dt: float) {
     for *entity: world.entities {
         update_entity(entity, dt);

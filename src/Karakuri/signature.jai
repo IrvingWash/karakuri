@@ -3,13 +3,11 @@
 // A bitset of components
 Signature :: #type u64;
 
-signature_set_component :: (signature: *Signature, $Component: Type)
-{
+signature_set_component :: (signature: *Signature, $$Component: Type) {
     signature.* |= xx (1 << component_to_component_type(Component));
 }
 
-signature_has_component :: (signature: Signature, $Component: Type) -> bool
-{
+signature_has_component :: (signature: Signature, $Component: Type) -> bool {
     return (signature & xx (1 << component_to_component_type(Component))) != 0;
 }
 
