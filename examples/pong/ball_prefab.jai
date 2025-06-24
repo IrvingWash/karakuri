@@ -50,8 +50,10 @@ launch_if_needed :: (self: *Karakuri.Entity, using ball: *Ball) {
 }
 
 move :: (self: *Karakuri.Entity, using ball: *Ball, dt: float) {
-    self.transform.position.x += ball.velocity.x * dt;
-    self.transform.position.y += ball.velocity.y * dt;
+    using self.transform;
+
+    position.x += ball.velocity.x * dt;
+    position.y += ball.velocity.y * dt;
 }
 
 collide_with_walls :: (self: *Karakuri.Entity, velocity: *Vector2) {

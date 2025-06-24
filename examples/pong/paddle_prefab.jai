@@ -46,11 +46,13 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 move :: (self: *Karakuri.Entity, paddle: *Paddle, dt: float) {
+    using self.transform;
+
     if Karakuri.is_key_down(.D) {
-        self.transform.position.x += paddle.speed * dt;
+        position.x += paddle.speed * dt;
     }
     if Karakuri.is_key_down(.A) {
-        self.transform.position.x -= paddle.speed * dt;
+        position.x -= paddle.speed * dt;
     }
 }
 
