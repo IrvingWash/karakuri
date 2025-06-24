@@ -1,17 +1,26 @@
 #import "Basic"()(MEMORY_DEBUGGER = true);
 Karakuri :: #import "Karakuri";
 
+#load "scene.jai";
+
 main :: () {
     setup_formatting();
+
+    scenes: [..]Karakuri.Scene;
+    array_add(
+        *scenes,
+        SCENE,
+    );
 
     Karakuri.init(.{
         name = "Pong",
         target_fps = 120,
-        clear_color = .{0.3, 0.3, 0.3, 1},
+        scenes = scenes,
+        clear_color = .{1, 1, 1, 1},
     });
     defer Karakuri.deinit();
 
-    print("Hello, Pong!\n");
+    Karakuri.run();
 }
 
 setup_formatting :: () {
