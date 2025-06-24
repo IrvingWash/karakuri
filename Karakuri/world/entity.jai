@@ -7,6 +7,7 @@ Entity :: struct {
 
 Entity_Params :: struct {
     transform: Components.Transform;
+    sprite: Components.Sprite;
     behavior: *Behavior;
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);

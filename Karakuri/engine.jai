@@ -67,6 +67,14 @@ update :: (dt: float) {
 render :: () {
     Sprite_Renderer.start_drawing();
 
+    for entity: World.entities() {
+        Sprite_Renderer.draw_sprite(
+            entity.transform.position,
+            entity.transform.scale,
+            entity.sprite.color,
+        );
+    }
+
     Sprite_Renderer.finish_drawing();
 }
 

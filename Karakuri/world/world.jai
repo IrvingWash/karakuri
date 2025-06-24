@@ -22,6 +22,10 @@ set_initial_entities :: (entities: [..]Entity_Params) {
     }
 }
 
+entities :: () -> []Entity {
+    return world.entities;
+}
+
 update :: (dt: float) {
     for *entity: world.entities {
         if entity.on_update != null {

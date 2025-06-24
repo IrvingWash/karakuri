@@ -4,8 +4,9 @@ sonic_prefab :: () -> Karakuri.Entity_Params {
     return .{
         transform = .{
             position = .{100, 100, 0},
-            scale = .{2, 2, 1},
+            scale = .{100, 100, 1},
         },
+        sprite = .{color = .{1, 0, 0, 1}},
         on_start = on_start,
         on_update = on_update,
         behavior = Karakuri.instantiate_behavior(
