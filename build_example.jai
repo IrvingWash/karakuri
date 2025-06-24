@@ -88,7 +88,7 @@ make_import_paths :: (import_paths: []string) -> []string {
         array_add(*result, path);
     }
 
-    array_add(*result, ".");
+    array_add(*result, "src");
 
     return result;
 }

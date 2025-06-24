@@ -1,6 +1,8 @@
 #import "Basic";
-#import,dir "platform";
-Sprite_Renderer :: #import,dir "sprite_renderer";
+#import "FPS_Manager";
+#import "Window_Manager";
+#import "Input_Manager";
+#import "Sprite_Renderer";
 
 init :: (config: Engine_Config) {
     init_fps_manager(config.target_fps);
@@ -11,7 +13,7 @@ init :: (config: Engine_Config) {
         config.name
     );
 
-    Sprite_Renderer.init(window);
+    init_sprite_renderer(window);
 
     World.init_world();
 
@@ -54,7 +56,7 @@ process_input :: () -> Events {
     }
 
     for events.window_resizes {
-        Sprite_Renderer.update_window();
+        update_window();
     }
 
     return events;
@@ -65,17 +67,17 @@ update :: (dt: float) {
 }
 
 render :: () {
-    Sprite_Renderer.start_drawing();
+    start_drawing();
 
     for entity: World.entities() {
-        Sprite_Renderer.draw_sprite(
+        derer.draw_sprite(
             entity.transform.position,
             entity.transform.scale,
             entity.sprite.color,
         );
     }
 
-    Sprite_Renderer.finish_drawing();
+    finish_drawing();
 }
 
 engine: Engine = ---;

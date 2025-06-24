@@ -1,8 +1,11 @@
+// A sprite renderer
+
 #import "Window_Type";
 Simp :: #import "Simp";
 #import "Math";
 
-init :: (window: Window_Type) {
+// Initializes the sprite renderer
+init_sprite_renderer :: (window: Window_Type) {
     renderer = .{
         window = window,
     };
@@ -10,10 +13,12 @@ init :: (window: Window_Type) {
     Simp.set_render_target(renderer.window);
 }
 
+// Sets all the necessary data to begin drawing for the current frame
 start_drawing :: () {
     Simp.clear_render_target(0, 0, 0.7, 1);
 }
 
+// Draws a sprite
 draw_sprite :: (
     position: Vector3,
     scale: Vector3,
@@ -30,10 +35,12 @@ draw_sprite :: (
     );
 }
 
+// Finishes the drawing
 finish_drawing :: () {
     Simp.swap_buffers(renderer.window);
 }
 
+// Updates window if it was resized or something
 update_window :: () {
     Simp.update_window(renderer.window);
 }

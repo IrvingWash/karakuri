@@ -1,11 +1,14 @@
 #import "Compiler";
 #import "Basic";
 
-TESTS_SRC_DEFAULT_ENTRY :: "tests/main_tests.jai";
+TESTS_SRC_DEFAULT_ENTRY :: "tests/main_test.jai";
 TEST_NOTE :: "test";
 
 RUNNER_CODE :: #string DONE
-#run %();
+#run {
+    print("Running %\n");
+    %();
+}
 DONE
 
 test_procs: [..] *Code_Procedure_Header;

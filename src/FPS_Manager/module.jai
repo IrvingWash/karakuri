@@ -1,3 +1,5 @@
+// Simple and probably very naive implementation of a FPS manager
+
 #import "Basic";
 
 init_fps_manager :: (target_fps: u32) {
@@ -10,6 +12,7 @@ init_fps_manager :: (target_fps: u32) {
     };
 }
 
+// Caps FPS to the given target rate and returns the delta time
 cap_frame_rate :: () -> float {
     time_to_wait := manager.target_delta_time - (seconds_since_init() - manager.last_time);
 
