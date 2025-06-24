@@ -26,7 +26,7 @@ on_start :: (self: *Karakuri.Entity) {
     print("Sonic started\n");
 }
 
-on_update :: (self: *Karakuri.Entity, dt: float) {
-    _, sonic := Karakuri.downcast_behavior(self.*, Sonic);
-    print("Sonic has % rings\n", sonic.rings);
+on_update :: (using self: *Karakuri.Entity, dt: float) {
+    transform.position.x += 100 * dt;
+    transform.position.y += 100 * dt;
 }
