@@ -6,13 +6,11 @@ sonic_prefab :: () -> Karakuri.Entity_Params {
             position = .{100, 100, 0},
             scale = .{2, 2, 1},
         },
+        on_start = on_start,
+        on_update = on_update,
         behavior = Karakuri.instantiate_behavior(
             Sonic,
-            .{
-                on_start = on_start,
-                on_update = on_update,
-                rings = 100,
-            }
+            .{rings = 100}
         ),
     };
 }

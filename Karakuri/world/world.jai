@@ -16,16 +16,16 @@ set_initial_entities :: (entities: [..]Entity_Params) {
     }
 
     for *entity: world.entities {
-        if entity.behavior != null && entity.behavior.on_start != null {
-            entity.behavior.on_start(entity);
+        if entity.on_start != null {
+            entity.on_start(entity);
         }
     }
 }
 
 update :: (dt: float) {
     for *entity: world.entities {
-        if entity.behavior != null && entity.behavior.on_update != null {
-            entity.behavior.on_update(entity, dt);
+        if entity.on_update != null {
+            entity.on_update(entity, dt);
         }
     }
 }

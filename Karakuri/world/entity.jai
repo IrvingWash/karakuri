@@ -8,35 +8,13 @@ Entity :: struct {
 Entity_Params :: struct {
     transform: Components.Transform;
     behavior: *Behavior;
+    on_start: (self: *Entity);
+    on_update: (self: *Entity, dt: float);
 }
 
 Entity_Token :: struct {
     id: u32;
     generation: u32;
-}
-
-Behavior :: struct {
-    on_start: (self: *Entity);
-    on_update: (self: *Entity, dt: float);
-}
-
-instantiate_behavior :: ($B: Type, v: B) -> *B
-#modify { return uses_behavior_with_as(B); }
-{
-    behavior: *B = New(B);
-    behavior.* = v;
-
-    return behavior;
-}
-
-downcast_behavior :: (entity: Entity, $B: Type) -> bool, *B
-#modify { return uses_behavior_with_as(B); }
-{
-    if entity.behavior == null {
-        return false, null;
-    }
-
-    return true, cast(*B)entity.behavior;
 }
 
 #scope_module
