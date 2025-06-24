@@ -51,7 +51,9 @@ run :: () {
     }
 }
 
-deinit :: () {}
+deinit :: () {
+    deinit_world();
+}
 
 #scope_file
 

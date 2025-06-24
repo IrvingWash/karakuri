@@ -13,10 +13,10 @@ deinit_world :: () {
         }
     }
 
-    array_reset(entities);
-    array_reset(free_tokens);
-    array_reset(sprite_components);
-    array_reset(behavior_components);
+    array_reset(*world.entities);
+    array_reset(*world.free_tokens);
+    array_reset(*world.sprite_components);
+    array_reset(*world.behavior_components);
 }
 
 set_entities :: (entities: []Entity_Params) {
@@ -27,6 +27,8 @@ set_entities :: (entities: []Entity_Params) {
     for *entity: world.entities {
         start_entity(entity);
     }
+
+    array_free(entities);
 }
 
 get_entities :: () -> []Entity {
