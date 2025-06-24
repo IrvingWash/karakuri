@@ -4,8 +4,6 @@
 
 paddle_prefab :: () -> Karakuri.Entity_Params {
     width, height := Karakuri.get_render_size();
-    scale_x: float = 100;
-    scale_y: float = 20;
 
     return .{
         transform = .{
@@ -14,7 +12,7 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
                 height - (height  - height / 10.0),
                 0,
             },
-            scale = .{scale_x, scale_y, 1},
+            scale = .{100, 20, 1},
         },
         sprite_component = some(
             Karakuri.Sprite_Component.{
@@ -33,6 +31,8 @@ Paddle :: struct {
     #as using behavior: Karakuri.Behavior_Component;
     speed := 500;
 }
+
+#scope_file
 
 on_start :: (self: *Karakuri.Entity) {
     print("Paddle started\n");

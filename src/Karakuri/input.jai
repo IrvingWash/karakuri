@@ -1,6 +1,7 @@
 Key :: enum {
     A :: #run #char "A";
     D :: #run #char "D";
+    SPACE :: #run #char " ";
 }
 
 is_key_pressed :: (key: Key) -> bool {
