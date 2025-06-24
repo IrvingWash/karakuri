@@ -53,8 +53,6 @@ run :: () {
 
 deinit :: () {}
 
-get_render_size :: get_render_dimensions;
-
 #scope_file
 
 process_input :: () -> Events {
@@ -67,6 +65,8 @@ process_input :: () -> Events {
     for events.window_resizes {
         update_window();
     }
+
+    input_set_events(events);
 
     return events;
 }
