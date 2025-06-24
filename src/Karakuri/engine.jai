@@ -15,8 +15,6 @@ init :: (config: Engine_Config) {
 
     init_sprite_renderer(window);
 
-    World.init_world();
-
     engine = .{
         scenes = config.scenes,
     };
@@ -28,8 +26,6 @@ init :: (config: Engine_Config) {
             break;
         }
     }
-
-    World.set_initial_entities(initial_scene.load());
 }
 
 run :: () {
@@ -62,20 +58,10 @@ process_input :: () -> Events {
     return events;
 }
 
-update :: (dt: float) {
-    World.update(dt);
-}
+update :: (dt: float) {}
 
 render :: () {
     start_drawing();
-
-    for entity: World.entities() {
-        derer.draw_sprite(
-            entity.transform.position,
-            entity.transform.scale,
-            entity.sprite.color,
-        );
-    }
 
     finish_drawing();
 }
