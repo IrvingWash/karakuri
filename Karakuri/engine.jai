@@ -1,14 +1,17 @@
 #import "Basic";
 #import,dir "platform";
+Sprite_Renderer :: #import,dir "sprite_renderer";
 
 init :: (config: Engine_Config) {
     init_fps_manager(config.target_fps);
 
-    init_window_manager(
+    window := init_window_manager(
         config.window_size.width,
         config.window_size.height,
         config.name
     );
+
+    Sprite_Renderer.init(window);
 
     World.init_world();
 
@@ -28,15 +31,14 @@ init :: (config: Engine_Config) {
 }
 
 run :: () {
-    while true {
+    while !engine.should_terminate {
         dt := cap_frame_rate();
 
         events := process_input();
-        if events.quit {
-            break;
-        }
 
         update(dt);
+
+        render();
     }
 }
 
@@ -45,17 +47,34 @@ deinit :: () {}
 #scope_file
 
 process_input :: () -> Events {
-    return get_events();
+    events := get_events();
+
+    if events.quit {
+        engine.should_terminate = true;
+    }
+
+    for events.window_resizes {
+        Sprite_Renderer.update_window();
+    }
+
+    return events;
 }
 
 update :: (dt: float) {
     World.update(dt);
 }
 
+render :: () {
+    Sprite_Renderer.start_drawing();
+
+    Sprite_Renderer.finish_drawing();
+}
+
 engine: Engine = ---;
 
 Engine :: struct {
     scenes: [..]World.Scene;
+    should_terminate: bool;
 }
 
 Engine_Config :: struct {
