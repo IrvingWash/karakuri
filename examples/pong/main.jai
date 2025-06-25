@@ -7,16 +7,12 @@ Karakuri :: #import "Karakuri";
 main :: () {
     setup_formatting();
 
-    scenes: [..]Karakuri.Scene;
-    array_add(
-        *scenes,
-        SCENE,
-    );
-
     Karakuri.init(.{
         name = "Pong",
         target_fps = 120,
-        scenes = scenes,
+        scenes = .[
+            SCENE,
+        ],
         clear_color = .{1, 1, 1, 1},
     });
     defer Karakuri.deinit();

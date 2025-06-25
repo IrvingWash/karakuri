@@ -97,7 +97,7 @@ render :: () {
 engine: Engine = ---;
 
 Engine :: struct {
-    scenes: [..]Scene; // @Todo try to make these []
+    scenes: []Scene; // @Todo try to make these []
     should_terminate: bool;
 }
 
@@ -108,7 +108,7 @@ Engine_Config :: struct {
         width: u32 = 800;
         height: u32 = 600;
     };
-    scenes: [..]Scene;
+    scenes: []Scene;
     initial_scene_id: u32;
     clear_color: Vector4;
 }
