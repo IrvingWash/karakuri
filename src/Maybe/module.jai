@@ -10,7 +10,7 @@ some :: (value: $T) -> Maybe(T) {
     return maybe;
 }
 
-none :: inline ($T: Type) -> Maybe(T) #compile_time {
+none :: inline ($T: Type) -> Maybe(T) {
     maybe: Maybe(T);
     maybe.none = -1;
 
