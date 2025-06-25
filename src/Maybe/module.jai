@@ -1,22 +1,31 @@
-Maybe :: union ($T: Type) {
+Maybe :: struct ($T: Type) {
+    kind: Maybe_Kind;
+
+    none: void;
+    #place none;
     some: T;
-    none: int = -1;
 }
 
 some :: (value: $T) -> Maybe(T) {
-    maybe: Maybe(T);
-    maybe.some = value;
-
-    return maybe;
+    return .{
+        some = value,
+        kind = .Some,
+    };
 }
 
 none :: inline ($T: Type) -> Maybe(T) {
-    maybe: Maybe(T);
-    maybe.none = -1;
-
-    return maybe;
+    return .{
+        kind = .None,
+    };
 }
 
 is_some :: (maybe: Maybe) -> bool {
-    return maybe.none != -1;
+    return maybe.kind == .Some;
+}
+
+#scope_file
+
+Maybe_Kind :: enum {
+    None;
+    Some;
 }

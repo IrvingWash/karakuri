@@ -22,8 +22,8 @@ Entity_Params :: struct {
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
 
-    sprite_component := #run none(Sprite_Component);
-    behavior_component := #run none(*Behavior_Component);
+    sprite_component: Maybe(Sprite_Component);
+    behavior_component: Maybe(*Behavior_Component);
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
