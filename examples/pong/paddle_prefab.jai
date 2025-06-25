@@ -42,7 +42,6 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     paddle := Karakuri.get_behavior(self.*, Paddle);
 
     move(self, paddle, dt);
-    collide_with_walls(self);
 }
 
 move :: (self: *Karakuri.Entity, paddle: *Paddle, dt: float) {
@@ -53,22 +52,5 @@ move :: (self: *Karakuri.Entity, paddle: *Paddle, dt: float) {
     }
     if Karakuri.is_key_down(.A) {
         position.x -= paddle.speed * dt;
-    }
-}
-
-collide_with_walls :: (self: *Karakuri.Entity) {
-    using self.transform;
-
-    width := Karakuri.get_render_size();
-
-    half_scale := scale.x / 2;
-    left_coordinate := position.x - half_scale;
-    right_coordinate := position.x + half_scale;
-
-    if (left_coordinate) <= 0 {
-        position.x = half_scale;
-    }
-    if right_coordinate >= xx width {
-        position.x = width - half_scale;
     }
 }

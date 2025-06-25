@@ -40,7 +40,6 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     launch_if_needed(self, ball);
     move(self, ball, dt);
-    collide_with_walls(self, *ball.velocity);
 }
 
 launch_if_needed :: (self: *Karakuri.Entity, using ball: *Ball) {
@@ -54,24 +53,4 @@ move :: (self: *Karakuri.Entity, using ball: *Ball, dt: float) {
 
     position.x += ball.velocity.x * dt;
     position.y += ball.velocity.y * dt;
-}
-
-collide_with_walls :: (self: *Karakuri.Entity, velocity: *Vector2) {
-    using self.transform;
-
-    width, height := Karakuri.get_render_size();
-
-    half_scale := scale.x / 2;
-    left_coordinate := position.x - half_scale;
-    right_coordinate := position.x + half_scale;
-    top_coordinate := position.y + half_scale;
-    bottom_coordinate := position.y - half_scale;
-
-    if (left_coordinate) <= 0 || right_coordinate >= xx width {
-        velocity.x *= -1;
-    }
-
-    if (top_coordinate) >= xx height || bottom_coordinate <= 0 {
-        velocity.y *= -1;
-    }
 }
