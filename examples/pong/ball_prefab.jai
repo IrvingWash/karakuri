@@ -34,7 +34,7 @@ Ball :: struct {
 
 on_start :: (self: *Karakuri.Entity) {
     ball := Karakuri.get_behavior(self.*, Ball);
-    ball.paddle_token = Karakuri.get_entity_by_name("paddle").token;
+    ball.paddle_token = Karakuri.get_entity_with_name("paddle").token;
 
     print("Ball started\n");
 }
@@ -64,7 +64,12 @@ move :: (self: *Karakuri.Entity, using ball: *Ball, dt: float) {
 collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
     paddle_entity := Karakuri.get_entity(ball.paddle_token);
 
-    if check_aabb_centered(self.transform.position.xy, paddle_entity.transform.position.xy, self.transform.scale.xy, paddle_entity.transform.scale.xy) {
+    if check_aabb_centered(
+        self.transform.position.xy,
+        paddle_entity.transform.position.xy,
+        self.transform.scale.xy,
+        paddle_entity.transform.scale.xy
+    ) {
         ball.velocity.y *= -1;
     }
 }

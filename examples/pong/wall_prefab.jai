@@ -10,7 +10,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
 
     transform: Karakuri.Transform_Component;
 
-    #if position == {
+    #if #complete position == {
         case .Top;
             transform = .{
                 position = .{

@@ -45,7 +45,7 @@ world_get_entity :: (token: Entity_Token) -> *Entity {
     return null;
 }
 
-world_get_entity_by_name :: (name: string) -> *Entity {
+world_get_entity_with_name :: (name: string) -> *Entity {
     result: *Entity;
     for *entity: world.entities {
         if entity.name == name {
