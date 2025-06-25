@@ -2,6 +2,7 @@
 Karakuri :: #import "Karakuri";
 
 #load "scene.jai";
+#load "aabb.jai";
 
 main :: () {
     setup_formatting();

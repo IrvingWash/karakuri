@@ -34,7 +34,7 @@ init :: (config: Engine_Config) {
 
     init_world();
 
-    set_entities(initial_scene.load());
+    world_set_entities(initial_scene.load());
 }
 
 run :: () {
@@ -80,9 +80,9 @@ update :: (dt: float) {
 render :: () {
     start_drawing();
 
-    entities_with_sprite := get_entities_with_components(Sprite_Component);
+    entities_with_sprite := world_get_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
-        sprite := get_component(entity, Sprite_Component);
+        sprite := world_get_component(entity, Sprite_Component);
 
         draw_sprite(
             entity.transform.position,

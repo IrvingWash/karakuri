@@ -4,7 +4,9 @@
 #load "scene.jai";
 #load "input.jai";
 
-get_behavior :: get_downcasted_behavior;
+get_behavior :: world_get_downcasted_behavior;
+get_entity_by_name :: world_get_entity_by_name;
+get_entity :: world_get_entity;
 get_render_size :: get_render_dimensions;
 
 #scope_module

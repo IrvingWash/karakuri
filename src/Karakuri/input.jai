@@ -5,7 +5,7 @@ Key :: enum {
 }
 
 is_key_pressed :: (key: Key) -> bool {
-    return (input.events.input_button_states[key] & (.DOWN | .START | .END)) != 0;
+    return (input.events.input_button_states[key] & ~.NONE) != 0;
 }
 
 is_key_down :: (key : Key) -> bool {

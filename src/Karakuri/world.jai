@@ -19,7 +19,7 @@ deinit_world :: () {
     array_reset(*world.behavior_components);
 }
 
-set_entities :: (entities: []Entity_Params) {
+world_set_entities :: (entities: []Entity_Params) {
     for entity: entities {
         add_entity(entity);
     }
@@ -31,11 +31,11 @@ set_entities :: (entities: []Entity_Params) {
     array_free(entities);
 }
 
-get_entities :: () -> []Entity {
+world_get_entities :: () -> []Entity {
     return world.entities;
 }
 
-get_entity :: (token: Entity_Token) -> *Entity {
+world_get_entity :: (token: Entity_Token) -> *Entity {
     entity := *world.entities[token.id];
 
     if token == entity.token {
@@ -45,7 +45,19 @@ get_entity :: (token: Entity_Token) -> *Entity {
     return null;
 }
 
-get_component :: (entity: Entity, $Component: Type) -> *Component {
+world_get_entity_by_name :: (name: string) -> *Entity {
+    result: *Entity;
+    for *entity: world.entities {
+        if entity.name == name {
+            result = entity;
+            break;
+        }
+    }
+
+    return result;
+}
+
+world_get_component :: (entity: Entity, $Component: Type) -> *Component {
     if !signature_has_component(entity.signature, Component) {
         return null;
     }
@@ -60,13 +72,13 @@ get_component :: (entity: Entity, $Component: Type) -> *Component {
     return null;
 }
 
-get_downcasted_behavior :: (entity: Entity, $B: Type) -> *B
+world_get_downcasted_behavior :: (entity: Entity, $B: Type) -> *B
 #modify { return uses_behavior_with_as(B); }
 {
     return cast(*B) world.behavior_components[entity.id];
 }
 
-get_entities_with_components :: ($Components: ..Type) -> []*Entity {
+world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
     signature: Signature;
     for component: Components {
         signature_set_component(*signature, component);
@@ -107,7 +119,7 @@ add_entity :: (params: Entity_Params) {
         array_add(*world.behavior_components);
     }
 
-    entity := get_entity(token);
+    entity := world_get_entity(token);
 
     if is_some(params.sprite_component) {
         signature_set_component(*entity.signature, Sprite_Component);

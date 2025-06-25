@@ -6,6 +6,7 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
     width, height := Karakuri.get_render_size();
 
     return .{
+        name = "paddle",
         transform = .{
             position = .{
                 width / 2.0,
@@ -42,15 +43,20 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     paddle := Karakuri.get_behavior(self.*, Paddle);
 
     move(self, paddle, dt);
+
+    {
+        using self.transform;
+        check_aabb_centered(position.xy, position.xy, scale.xy, scale.xy);
+    }
 }
 
 move :: (self: *Karakuri.Entity, paddle: *Paddle, dt: float) {
     using self.transform;
 
-    if Karakuri.is_key_down(.D) {
+    if Karakuri.is_key_pressed(.D) {
         position.x += paddle.speed * dt;
     }
-    if Karakuri.is_key_down(.A) {
+    if Karakuri.is_key_pressed(.A) {
         position.x -= paddle.speed * dt;
     }
 }
