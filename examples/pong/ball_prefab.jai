@@ -2,6 +2,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
     width, height := Karakuri.get_render_size();
 
     return .{
+        name = "ball",
         transform = .{
             position = .{
                 width / 2.0,

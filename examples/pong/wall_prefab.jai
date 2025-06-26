@@ -51,10 +51,62 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
 
     return .{
         transform = transform,
+        behavior_component = some(
+            Karakuri.instantiate_behavior(
+                Wall,
+                .{
+                    position = position,
+                }
+            )
+        ),
         sprite_component = some(
             Karakuri.Sprite_Component.{
                 color = .{0, 0, 0, 1},
             },
         ),
+        on_start = on_start,
+        on_update = on_update,
+    };
+}
+
+Wall :: struct {
+    #as using behavior: Karakuri.Behavior_Component;
+    ball_token: Karakuri.Entity_Token;
+    position: Wall_Position;
+}
+
+#scope_file
+
+on_start :: (self: *Karakuri.Entity) {
+    wall := Karakuri.get_behavior(self, Wall);
+    ball_entity := Karakuri.get_entity_with_name("ball");
+
+    wall.ball_token = ball_entity.token;
+}
+
+on_update :: (self: *Karakuri.Entity, dt: float) {
+    wall := Karakuri.get_behavior(self, Wall);
+
+    ball_entity := Karakuri.get_entity(wall.ball_token);
+    ball := Karakuri.get_behavior(ball_entity, Ball);
+
+    width, height := Karakuri.get_render_size();
+
+    if check_aabb_centered(
+        self.transform.position.xy,
+        ball_entity.transform.position.xy,
+        self.transform.scale.xy,
+        ball_entity.transform.scale.xy
+    ) {
+        if wall.position == {
+            case .Top;
+                #through;
+            case .Bottom;
+                ball.velocity.y *= -1;
+            case .Right;
+                #through;
+            case .Left;
+                ball.velocity.x *= -1;
+        }
     };
 }
