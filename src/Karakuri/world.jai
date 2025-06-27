@@ -5,6 +5,10 @@ init_world :: () {
 }
 
 deinit_world :: () {
+    for entity: world.entities {
+        destroy_entity(entity);
+    }
+
     for behavior: world.behavior_components {
         if behavior != null {
             free(behavior);

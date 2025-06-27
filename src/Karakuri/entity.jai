@@ -18,14 +18,14 @@ Entity_Token :: struct {
 
 Entity_Params :: struct {
     name: string;
-    tags: [..]string; // @Todo destroy
+    tags: [..]string;
     transform: Transform_Component;
 
-    on_start: (self: *Entity);
+    on_start: (self: *Entity); // @Todo `Code` instead of these?
     on_update: (self: *Entity, dt: float);
 
     sprite_component: Maybe.Maybe(Sprite_Component);
-    behavior_component: Maybe.Maybe(*Behavior_Component);
+    behavior_component: Maybe.Maybe(*Behavior_Component); // @Todo `Code` instead of behavior component?
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
@@ -59,5 +59,17 @@ start_entity :: (entity: *Entity) {
 update_entity :: (entity: *Entity, dt: float) {
     if entity.on_update != null {
         entity.on_update(entity, dt);
+    }
+}
+
+destroy_entity :: (entity: Entity) {
+    array_free(entity.tags);
+}
+
+destroy_entiy_params :: (entity_params: Entity_Params) {
+    array_free(entity_params.tags);
+
+    if Maybe.is_some(entity_params.behavior_component) {
+        free(entity_params.behavior_component);
     }
 }

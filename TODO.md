@@ -1,8 +1,8 @@
-[ ] tagging system
 [ ] pure opengl
 [ ] simple collision detector/solver
 [ ] fix tests
-[ ] manage memory properly
+[x] manage memory properly
+[x] tagging system
 [x] make component type a enum_flags
 [x] replace some prints with logs
 [x] reexport `Maybe` from `Karakuri/module.jai'`
