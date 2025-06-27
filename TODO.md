@@ -2,4 +2,6 @@
 [ ] pure opengl
 [ ] simple collision detector/solver
 [ ] fix tests
-[ ] reexport `Maybe` from `Karakuri/module.jai'`
+[x] reexport `Maybe` from `Karakuri/module.jai'`
+[ ] success return values
+[ ] get_entity -> get_entity_with_token

@@ -1,3 +1,5 @@
+Maybe :: #import "Maybe";
+
 #load "engine.jai";
 #load "components.jai";
 #load "entity.jai";

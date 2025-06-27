@@ -1,6 +1,5 @@
 #import "Basic";
 #import "Math";
-#import "Maybe";
 
 paddle_prefab :: () -> Karakuri.Entity_Params {
     width, height := Karakuri.get_render_size();
@@ -15,12 +14,12 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
             },
             scale = .{100, 20, 1},
         },
-        sprite_component = some(
+        sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
                 color = .{0, 0, 1, 1},
             }
         ),
-        behavior_component = some(
+        behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Paddle, Paddle.{})
         ),
         on_start = on_start,

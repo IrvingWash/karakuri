@@ -1,7 +1,5 @@
 #scope_module
 
-#import "Maybe";
-
 init_world :: () {
     world = .{};
 }
@@ -121,11 +119,11 @@ add_entity :: (params: Entity_Params) {
 
     entity := world_get_entity(token);
 
-    if is_some(params.sprite_component) {
+    if Maybe.is_some(params.sprite_component) {
         signature_set_component(*entity.signature, Sprite_Component);
         world.sprite_components[token.id] = params.sprite_component.some;
     }
-    if is_some(params.behavior_component) {
+    if Maybe.is_some(params.behavior_component) {
         signature_set_component(*entity.signature, Behavior_Component);
         world.behavior_components[token.id] = params.behavior_component.some;
     }

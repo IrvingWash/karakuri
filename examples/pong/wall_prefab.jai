@@ -51,7 +51,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
 
     return .{
         transform = transform,
-        behavior_component = some(
+        behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(
                 Wall,
                 .{
@@ -59,7 +59,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                 }
             )
         ),
-        sprite_component = some(
+        sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
                 color = .{0, 0, 0, 1},
             },
@@ -72,6 +72,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
 Wall :: struct {
     #as using behavior: Karakuri.Behavior_Component;
     ball_token: Karakuri.Entity_Token;
+    paddle_token: Karakuri.Entity_Token;
     position: Wall_Position;
 }
 
@@ -80,8 +81,10 @@ Wall :: struct {
 on_start :: (self: *Karakuri.Entity) {
     wall := Karakuri.get_behavior(self, Wall);
     ball_entity := Karakuri.get_entity_with_name("ball");
+    paddle_entity := Karakuri.get_entity_with_name("paddle");
 
     wall.ball_token = ball_entity.token;
+    wall.paddle_token = paddle_entity.token;
 }
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
@@ -89,6 +92,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     ball_entity := Karakuri.get_entity(wall.ball_token);
     ball := Karakuri.get_behavior(ball_entity, Ball);
+    paddle_entity := Karakuri.get_entity(wall.paddle_token);
 
     width, height := Karakuri.get_render_size();
 
@@ -107,6 +111,23 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
                 #through;
             case .Left;
                 ball.velocity.x *= -1;
+        }
+    };
+
+    if (
+        (wall.position == .Right || wall.position == .Left)
+        && check_aabb_centered(
+            self.transform.position.xy,
+            paddle_entity.transform.position.xy,
+            self.transform.scale.xy,
+            paddle_entity.transform.scale.xy
+        )
+    ) {
+        if wall.position == {
+            case .Right;
+                paddle_entity.transform.position.x = self.transform.position.x - self.transform.scale.x / 2 - paddle_entity.transform.scale.x / 2;
+            case .Left;
+                paddle_entity.transform.position.x = self.transform.position.x + self.transform.scale.x / 2 + paddle_entity.transform.scale.x / 2;
         }
     };
 }
