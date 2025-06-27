@@ -27,7 +27,7 @@ instantiate_behavior :: ($B: Type, v: B) -> *Behavior_Component
 
 #scope_module
 
-Component_Type :: enum u64 {
+Component_Type :: enum_flags u64 {
     Unknown;
     Transform;
     Sprite;
