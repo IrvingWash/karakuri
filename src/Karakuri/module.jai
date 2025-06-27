@@ -8,7 +8,7 @@ Maybe :: #import "Maybe";
 
 get_behavior :: world_get_downcasted_behavior;
 get_entity_with_name :: world_get_entity_with_name;
-get_entity :: world_get_entity;
+get_entity_with_token :: world_get_entity_with_token;
 get_render_size :: get_render_dimensions;
 
 #scope_module

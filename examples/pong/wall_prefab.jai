@@ -74,20 +74,44 @@ Wall :: struct {
 #scope_file
 
 on_start :: (self: *Karakuri.Entity) {
-    wall := Karakuri.get_behavior(self, Wall);
-    ball_entity := Karakuri.get_entity_with_name("ball");
-    paddle_entity := Karakuri.get_entity_with_name("paddle");
+    ok, wall := Karakuri.get_behavior(self, Wall);
+    if !ok {
+        exit(1);
+    }
+
+    ok =, ball_entity := Karakuri.get_entity_with_name("ball");
+    if !ok {
+        exit(1);
+    }
+
+    ok =, paddle_entity := Karakuri.get_entity_with_name("paddle");
+    if !ok {
+        exit(1);
+    }
 
     wall.ball_token = ball_entity.token;
     wall.paddle_token = paddle_entity.token;
 }
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    wall := Karakuri.get_behavior(self, Wall);
+    ok, wall := Karakuri.get_behavior(self, Wall);
+    if !ok {
+        exit(1);
+    }
 
-    ball_entity := Karakuri.get_entity(wall.ball_token);
-    ball := Karakuri.get_behavior(ball_entity, Ball);
-    paddle_entity := Karakuri.get_entity(wall.paddle_token);
+    ok =, ball_entity := Karakuri.get_entity_with_token(wall.ball_token);
+    if !ok {
+        exit(1);
+    }
+    ok =, ball := Karakuri.get_behavior(ball_entity, Ball);
+    if !ok {
+        exit(1);
+    }
+
+    ok =, paddle_entity := Karakuri.get_entity_with_token(wall.paddle_token);
+    if !ok {
+        exit(1);
+    }
 
     width, height := Karakuri.get_render_size();
 

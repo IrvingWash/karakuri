@@ -34,14 +34,26 @@ Ball :: struct {
 #scope_file
 
 on_start :: (self: *Karakuri.Entity) {
-    ball := Karakuri.get_behavior(self.*, Ball);
-    ball.paddle_token = Karakuri.get_entity_with_name("paddle").token;
+    ok, ball := Karakuri.get_behavior(self.*, Ball);
+    if !ok {
+        exit(1);
+    }
+
+    ok =, paddle_entity := Karakuri.get_entity_with_name("paddle");
+    if !ok {
+        exit(1);
+    }
+
+    ball.paddle_token = paddle_entity.token;
 
     print("Ball started\n");
 }
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    ball := Karakuri.get_behavior(self.*, Ball);
+    ok, ball := Karakuri.get_behavior(self.*, Ball);
+    if !ok {
+        exit(1);
+    }
 
     launch_if_needed(self, ball);
     move(self, ball, dt);
@@ -63,7 +75,10 @@ move :: (self: *Karakuri.Entity, using ball: *Ball, dt: float) {
 }
 
 collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
-    paddle_entity := Karakuri.get_entity(ball.paddle_token);
+    ok, paddle_entity := Karakuri.get_entity_with_token(ball.paddle_token);
+    if !ok {
+        exit(1);
+    }
 
     if check_aabb_centered(
         self.transform.position.xy,

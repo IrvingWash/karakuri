@@ -3,12 +3,17 @@
 WC :: #import "Window_Creation";
 
 // Initializes the manager, creates a window and returns a handle to it
-init_window_manager :: (width: u32, height: u32, title: string) -> WC.Window_Type {
+init_window_manager :: (width: u32, height: u32, title: string) -> ok: bool, WC.Window_Type {
+    window := WC.create_window(width, height, title);
+    if !window {
+        return false, null;
+    }
+
     manager = .{
-        window = WC.create_window(width, height, title),
+        window = window,
     };
 
-    return manager.window;
+    return true, manager.window;
 }
 
 // Toggles the fullscreen mode

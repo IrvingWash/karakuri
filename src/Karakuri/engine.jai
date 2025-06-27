@@ -7,11 +7,15 @@
 init :: (config: Engine_Config) {
     init_fps_manager(config.target_fps);
 
-    window := init_window_manager(
+    ok, window := init_window_manager(
         config.window_size.width,
         config.window_size.height,
         config.name
     );
+    if !ok {
+        print("Failed to initialize window\n", to_standard_error = true);
+        exit(1);
+    }
 
     init_sprite_renderer(window, config.clear_color);
 
@@ -82,7 +86,12 @@ render :: () {
 
     entities_with_sprite := world_get_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
-        sprite := world_get_component(entity, Sprite_Component);
+        ok, sprite := world_get_component(entity, Sprite_Component);
+        if !ok {
+            print("Component % for entity $ was not found though it should have been", Sprite_Component, entity.token, to_standard_error = true);
+
+            continue;
+        }
 
         draw_sprite(
             entity.transform.position,

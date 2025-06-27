@@ -39,7 +39,10 @@ on_start :: (self: *Karakuri.Entity) {
 }
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    paddle := Karakuri.get_behavior(self.*, Paddle);
+    ok, paddle := Karakuri.get_behavior(self.*, Paddle);
+    if !ok {
+        exit(1);
+    }
 
     move(self, paddle, dt);
 

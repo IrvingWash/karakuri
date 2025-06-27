@@ -33,17 +33,17 @@ world_get_entities :: () -> []Entity {
     return world.entities;
 }
 
-world_get_entity :: (token: Entity_Token) -> *Entity {
+world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
     entity := *world.entities[token.id];
 
     if token == entity.token {
-        return entity;
+        return true, entity;
     }
 
-    return null;
+    return false, null;
 }
 
-world_get_entity_with_name :: (name: string) -> *Entity {
+world_get_entity_with_name :: (name: string) -> ok: bool, *Entity {
     result: *Entity;
     for *entity: world.entities {
         if entity.name == name {
@@ -52,28 +52,30 @@ world_get_entity_with_name :: (name: string) -> *Entity {
         }
     }
 
-    return result;
+    return result != null, result;
 }
 
-world_get_component :: (entity: Entity, $Component: Type) -> *Component {
+world_get_component :: (entity: Entity, $Component: Type) -> ok: bool, *Component {
     if !signature_has_component(entity.signature, Component) {
-        return null;
+        return false, null;
     }
 
     #if Component == Sprite_Component {
-        return *world.sprite_components[entity.id];
+        return true, *world.sprite_components[entity.id];
     }
     #if Component == Behavior_Component {
-        return *world.behavior_components[entity.id];
+        return true, *world.behavior_components[entity.id];
     }
 
-    return null;
+    return false, null;
 }
 
-world_get_downcasted_behavior :: (entity: Entity, $B: Type) -> *B
+world_get_downcasted_behavior :: (entity: Entity, $B: Type) -> ok: bool, *B
 #modify { return uses_behavior_with_as(B); }
 {
-    return cast(*B) world.behavior_components[entity.id];
+    result := cast(*B) world.behavior_components[entity.id];
+
+    return result != null, result;
 }
 
 world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
@@ -117,7 +119,7 @@ add_entity :: (params: Entity_Params) {
         array_add(*world.behavior_components);
     }
 
-    entity := world_get_entity(token);
+    _, entity := world_get_entity_with_token(token);
 
     if Maybe.is_some(params.sprite_component) {
         signature_set_component(*entity.signature, Sprite_Component);
