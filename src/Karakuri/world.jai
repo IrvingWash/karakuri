@@ -96,16 +96,40 @@ world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
 }
 
 world_get_entities_with_tag :: (tag: string) -> []*Entity {
-    entities: [..]*Entity;
-    entities.allocator = temp;
+    result: [..]*Entity;
+    result.allocator = temp;
 
     for *entity: world.entities {
         if array_find(entity.tags, tag) {
-            array_add(*entities, entity);
+            array_add(*result, entity);
         }
     }
 
-    return entities;
+    return result;
+}
+
+world_get_entities_with_tags :: (tags: ..string) -> []*Entity {
+    result: [..]*Entity;
+    result.allocator = temp;
+
+    // @Todo this looks very insufficient
+    for *entity: world.entities {
+        has_all_tags := true;
+
+        for tag: tags {
+            if !array_find(entity.tags, tag) {
+                has_all_tags = false;
+
+                break;
+            }
+        }
+
+        if has_all_tags {
+            array_add(*result, entity);
+        }
+    }
+
+    return result;
 }
 
 update_world :: (dt: float) {
