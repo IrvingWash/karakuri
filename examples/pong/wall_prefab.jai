@@ -123,11 +123,22 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     width, height := Karakuri.get_render_size();
 
-    if check_aabb_centered(
+    ok =, ball_sprite := Karakuri.get_component(ball_entity, Karakuri.Sprite_Component);
+    if !ok {
+        exit(1);
+    }
+    ok =, paddle_sprite := Karakuri.get_component(paddle_entity, Karakuri.Sprite_Component);
+    if !ok {
+        exit(1);
+    }
+
+    if check_aabb_2d(
         self.transform.position.xy,
         ball_entity.transform.position.xy,
         self.transform.scale.xy,
-        ball_entity.transform.scale.xy
+        ball_entity.transform.scale.xy,
+        .{0.5, 0.5},
+        ball_sprite.origin,
     ) {
         if wall.position == {
             case .Top;
@@ -143,18 +154,24 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     if (
         (wall.position == .Right || wall.position == .Left)
-        && check_aabb_centered(
+        && check_aabb_2d(
             self.transform.position.xy,
             paddle_entity.transform.position.xy,
             self.transform.scale.xy,
-            paddle_entity.transform.scale.xy
+            paddle_entity.transform.scale.xy,
+            .{},
+            paddle_sprite.origin,
         )
     ) {
         if wall.position == {
             case .Right;
-                paddle_entity.transform.position.x = self.transform.position.x - self.transform.scale.x / 2 - paddle_entity.transform.scale.x / 2;
+                paddle_entity.transform.position.x = self.transform.position.x
+                    - self.transform.scale.x
+                    - paddle_entity.transform.scale.x;
             case .Left;
-                paddle_entity.transform.position.x = self.transform.position.x + self.transform.scale.x / 2 + paddle_entity.transform.scale.x / 2;
+                paddle_entity.transform.position.x = self.transform.position.x
+                    + self.transform.scale.x
+                    + paddle_entity.transform.scale.x * paddle_sprite.origin.x;
         }
     };
 }

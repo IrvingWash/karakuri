@@ -1,13 +1,35 @@
 #import "Math";
 
-check_aabb_centered :: (a: Vector2, b: Vector2, a_size: Vector2, b_size: Vector2) -> bool {
-    a_half_width := a_size.x / 2;
-    a_half_height := a_size.y / 2;
-    b_half_width := b_size.x / 2;
-    b_half_height := b_size.y / 2;
+check_aabb_2d :: (
+    a_position: Vector2,
+    b_position: Vector2,
+    a_size: Vector2,
+    b_size: Vector2,
+    a_origin: Vector2,
+    b_origin: Vector2
+) -> bool {
+    a_x0, a_y0, a_x1, a_y1 := get_aabb(a_position, a_size, a_origin);
+    b_x0, b_y0, b_x1, b_y1 := get_aabb(b_position, b_size, b_origin);
 
-    return (
-        abs(a.x - b.x) < a_half_width + b_half_width &&
-        abs(a.y - b.y) < a_half_height + b_half_height
+    return !(
+        a_x1 < b_x0
+        || a_x0 > b_x1
+        || a_y1 > b_y0
+        || a_y0 < b_y1
     );
+}
+
+#scope_file
+
+get_aabb :: (
+    position: Vector2,
+    size: Vector2,
+    origin: Vector2
+) -> x0: float, y0: float, x1: float, y1: float {
+    x0 := position.x - size.x * origin.x;
+    y0 := position.y + size.y * origin.y;
+    x1 := x0 + size.x;
+    y1 := y0 - size.y;
+
+    return x0, y0, x1, y1;
 }

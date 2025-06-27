@@ -16,6 +16,7 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
+                // origin = .{0.5, 0.5},
                 color = .{0, 0, 1, 1},
             }
         ),
@@ -45,11 +46,6 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     }
 
     move(self, paddle, dt);
-
-    {
-        using self.transform;
-        check_aabb_centered(position.xy, position.xy, scale.xy, scale.xy);
-    }
 }
 
 move :: (self: *Karakuri.Entity, paddle: *Paddle, dt: float) {

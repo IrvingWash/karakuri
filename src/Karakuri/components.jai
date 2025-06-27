@@ -10,6 +10,7 @@ Transform_Component :: struct {
 // Represents a sprite
 Sprite_Component :: struct {
     color: Vector4;
+    origin: Vector2;
 }
 
 // Represents a behavior where all the specific data can be placed

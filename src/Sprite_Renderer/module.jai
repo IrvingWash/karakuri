@@ -25,15 +25,19 @@ start_drawing :: () {
 draw_sprite :: (
     position: Vector3,
     scale: Vector3,
-    color: Vector4
+    color: Vector4,
+    origin: Vector2
 ) {
     Simp.set_shader_for_color();
 
+    x0 := position.x - scale.x * origin.x;
+    y0 := position.y + scale.y * origin.y;
+
     Simp.immediate_quad(
-        position.x + scale.x / 2,
-        position.y + scale.y / 2,
-        position.x - scale.x / 2,
-        position.y - scale.y / 2,
+        x0,
+        y0,
+        x0 + scale.x,
+        y0 - scale.y,
         color,
     );
 }

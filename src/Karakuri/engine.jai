@@ -100,6 +100,7 @@ render :: () {
             entity.transform.position,
             entity.transform.scale,
             sprite.color,
+            sprite.origin,
         );
     }
 

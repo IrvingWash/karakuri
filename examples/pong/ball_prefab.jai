@@ -13,6 +13,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
+                origin = .{0.5, 0.5},
                 color = .{1, 0, 0, 1},
             }
         ),
@@ -79,12 +80,22 @@ collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
     if !ok {
         exit(1);
     }
+    ok =, ball_sprite := Karakuri.get_component(self, Karakuri.Sprite_Component);
+    if !ok {
+        exit(1);
+    }
+    ok =, paddle_sprite := Karakuri.get_component(paddle_entity, Karakuri.Sprite_Component);
+    if !ok {
+        exit(1);
+    }
 
-    if check_aabb_centered(
+    if check_aabb_2d(
         self.transform.position.xy,
         paddle_entity.transform.position.xy,
         self.transform.scale.xy,
-        paddle_entity.transform.scale.xy
+        paddle_entity.transform.scale.xy,
+        ball_sprite.origin,
+        paddle_sprite.origin,
     ) {
         ball.velocity.y *= -1;
     }
