@@ -13,7 +13,7 @@ init :: (config: Engine_Config) {
         config.name
     );
     if !ok {
-        print("Failed to initialize window\n", to_standard_error = true);
+        log_error("Failed to initialize window");
         exit(1);
     }
 
@@ -24,7 +24,7 @@ init :: (config: Engine_Config) {
     };
 
     if engine.scenes.count == 0 {
-        print("No scenes provided. Aborting\n");
+        log("No scenes provided. Aborting", flags = .WARNING);
         exit(1);
     }
 
@@ -88,7 +88,7 @@ render :: () {
     for entity: entities_with_sprite {
         ok, sprite := world_get_component(entity, Sprite_Component);
         if !ok {
-            print("Component % for entity $ was not found though it should have been", Sprite_Component, entity.token, to_standard_error = true);
+            log_error("Component % for entity $ was not found though it should have been", Sprite_Component, entity.token);
 
             continue;
         }

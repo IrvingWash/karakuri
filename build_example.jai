@@ -51,7 +51,7 @@ make_config_from_args :: (args: []string) -> Config {
 
 build :: (w: int, config: Config, build_options_dc: Build_Options) {
     if config.example == "" {
-        print("No example name provided. Aborting\n", to_standard_error = true);
+        log_error("No example name provided. Aborting");
         return;
     }
 
