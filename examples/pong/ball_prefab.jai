@@ -26,7 +26,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
 
 Ball :: struct {
     #as using behavior: Karakuri.Behavior_Component;
-    speed := 700;
+    speed := 600;
     velocity: Vector2;
     paddle_token: Karakuri.Entity_Token;
 }
