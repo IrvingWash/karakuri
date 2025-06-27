@@ -4,6 +4,7 @@ Entity :: struct {
     signature: Signature;
 
     name: string;
+    tags: [..]string;
     transform: Transform_Component;
 
     on_start: (self: *Entity);
@@ -17,6 +18,7 @@ Entity_Token :: struct {
 
 Entity_Params :: struct {
     name: string;
+    tags: [..]string; // @Todo destroy
     transform: Transform_Component;
 
     on_start: (self: *Entity);
@@ -40,6 +42,7 @@ create_entity :: (
         token = token,
 
         name = params.name,
+        tags = params.tags,
         transform = params.transform,
 
         on_start = params.on_start,

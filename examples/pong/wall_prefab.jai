@@ -49,7 +49,15 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
             };
     }
 
+    tags: [..]string;
+    array_add(
+        *tags,
+        "wall",
+        "test",
+    );
+
     return .{
+        tags = tags,
         transform = transform,
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(

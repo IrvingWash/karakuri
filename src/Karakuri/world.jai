@@ -95,6 +95,19 @@ world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
     return result;
 }
 
+world_get_entities_with_tag :: (tag: string) -> []*Entity {
+    entities: [..]*Entity;
+    entities.allocator = temp;
+
+    for *entity: world.entities {
+        if array_find(entity.tags, tag) {
+            array_add(*entities, entity);
+        }
+    }
+
+    return entities;
+}
+
 update_world :: (dt: float) {
     for *entity: world.entities {
         update_entity(entity, dt);
