@@ -18,7 +18,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                     height - 5.0,
                     0,
                 },
-                scale = .{xx width, 10, 1},
+                scale = .{xx width, 1, 1},
             };
         case .Right;
             transform = .{
@@ -27,7 +27,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                     height / 2.0,
                     0,
                 },
-                scale = .{10, xx height, 1},
+                scale = .{1, xx height, 1},
             };
         case .Left;
             transform = .{
@@ -36,7 +36,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                     height / 2.0,
                     0,
                 },
-                scale = .{10, xx height, 1},
+                scale = .{1, xx height, 1},
             };
         case .Bottom;
             transform = .{
@@ -45,7 +45,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                     0 + 5.0,
                     0,
                 },
-                scale = .{xx width, 10, 1},
+                scale = .{xx width, 1, 1},
             };
     }
 
@@ -58,11 +58,6 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                     position = position,
                 }
             )
-        ),
-        sprite_component = Karakuri.Maybe.some(
-            Karakuri.Sprite_Component.{
-                color = .{0, 0, 0, 1},
-            },
         ),
         on_start = on_start,
         on_update = on_update,
