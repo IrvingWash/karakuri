@@ -15,7 +15,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
             transform = .{
                 position = .{
                     width / 2.0,
-                    height - 5.0,
+                    xx height,
                     0,
                 },
                 scale = .{xx width, 1, 1},
@@ -23,7 +23,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
         case .Right;
             transform = .{
                 position = .{
-                    width - 5.0,
+                    xx width,
                     height / 2.0,
                     0,
                 },
@@ -32,7 +32,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
         case .Left;
             transform = .{
                 position = .{
-                    0 + 5.0,
+                    0,
                     height / 2.0,
                     0,
                 },
@@ -42,7 +42,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
             transform = .{
                 position = .{
                     width / 2.0,
-                    0 + 5.0,
+                    0,
                     0,
                 },
                 scale = .{xx width, 1, 1},
