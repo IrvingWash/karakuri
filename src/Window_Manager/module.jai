@@ -16,11 +16,6 @@ init_window_manager :: (width: u32, height: u32, title: string) -> ok: bool, WC.
     return true, manager.window;
 }
 
-// Toggles the fullscreen mode
-toggle_fullscreen :: () {
-    WC.toggle_fullscreen(manager.window, true, null);
-}
-
 #scope_file
 
 Window_Manager :: struct {

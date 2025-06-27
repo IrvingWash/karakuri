@@ -18,7 +18,7 @@ init_sprite_renderer :: (window: Window_Type, clear_color: Vector4) {
 start_drawing :: () {
     using renderer.clear_color;
 
-    Simp.clear_render_target(x, y, z, w);
+    Simp.clear_render_target(x, y, z, w); // @Todo remove this for OpenGL
 }
 
 // Draws a sprite
