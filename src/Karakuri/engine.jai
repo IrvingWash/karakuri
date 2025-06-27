@@ -52,6 +52,9 @@ run :: () {
         render();
 
         reset_temporary_storage();
+
+        // @Todo don't do this if the user doesn't want to
+        memory_visualizer_per_frame_update();
     }
 }
 

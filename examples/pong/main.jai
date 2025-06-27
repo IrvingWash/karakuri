@@ -1,4 +1,4 @@
-#import "Basic"()(MEMORY_DEBUGGER = true);
+#import "Basic"()(MEMORY_DEBUGGER = true, TEMP_ALLOCATOR_POISON_FREED_MEMORY = true);
 Karakuri :: #import "Karakuri";
 
 #load "scene.jai";
@@ -15,9 +15,12 @@ main :: () {
         ],
         clear_color = .{1, 1, 1, 1},
     });
-    defer Karakuri.deinit();
 
     Karakuri.run();
+
+    Karakuri.deinit();
+
+    report_memory_leaks();
 }
 
 setup_formatting :: () {
