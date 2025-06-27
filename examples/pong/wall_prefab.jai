@@ -16,36 +16,32 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                 position = .{
                     width / 2.0,
                     xx height,
-                    0,
                 },
-                scale = .{xx width, 1, 1},
+                scale = .{xx width, 1},
             };
         case .Right;
             transform = .{
                 position = .{
                     xx width,
                     height / 2.0,
-                    0,
                 },
-                scale = .{1, xx height, 1},
+                scale = .{1, xx height},
             };
         case .Left;
             transform = .{
                 position = .{
                     0,
                     height / 2.0,
-                    0,
                 },
-                scale = .{1, xx height, 1},
+                scale = .{1, xx height},
             };
         case .Bottom;
             transform = .{
                 position = .{
                     width / 2.0,
                     0,
-                    0,
                 },
-                scale = .{xx width, 1, 1},
+                scale = .{xx width, 1},
             };
     }
 
@@ -133,10 +129,10 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     }
 
     if check_aabb_2d(
-        self.transform.position.xy,
-        ball_entity.transform.position.xy,
-        self.transform.scale.xy,
-        ball_entity.transform.scale.xy,
+        self.transform.position,
+        ball_entity.transform.position,
+        self.transform.scale,
+        ball_entity.transform.scale,
         .{0.5, 0.5},
         ball_sprite.origin,
     ) {
@@ -155,10 +151,10 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     if (
         (wall.position == .Right || wall.position == .Left)
         && check_aabb_2d(
-            self.transform.position.xy,
-            paddle_entity.transform.position.xy,
-            self.transform.scale.xy,
-            paddle_entity.transform.scale.xy,
+            self.transform.position,
+            paddle_entity.transform.position,
+            self.transform.scale,
+            paddle_entity.transform.scale,
             .{},
             paddle_sprite.origin,
         )

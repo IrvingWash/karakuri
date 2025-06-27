@@ -23,8 +23,8 @@ start_drawing :: () {
 
 // Draws a sprite
 draw_sprite :: (
-    position: Vector3,
-    scale: Vector3,
+    position: Vector2,
+    scale: Vector2,
     color: Vector4,
     origin: Vector2
 ) {

@@ -10,9 +10,8 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
             position = .{
                 width / 2.0,
                 height - (height  - height / 10.0),
-                0,
             },
-            scale = .{100, 20, 1},
+            scale = .{100, 20},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{

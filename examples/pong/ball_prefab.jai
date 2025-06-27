@@ -7,9 +7,8 @@ ball_prefab :: () -> Karakuri.Entity_Params {
             position = .{
                 width / 2.0,
                 height / 2.0,
-                0,
             },
-            scale = .{20, 20, 1},
+            scale = .{20, 20},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
@@ -90,10 +89,10 @@ collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
     }
 
     if check_aabb_2d(
-        self.transform.position.xy,
-        paddle_entity.transform.position.xy,
-        self.transform.scale.xy,
-        paddle_entity.transform.scale.xy,
+        self.transform.position,
+        paddle_entity.transform.position,
+        self.transform.scale,
+        paddle_entity.transform.scale,
         ball_sprite.origin,
         paddle_sprite.origin,
     ) {

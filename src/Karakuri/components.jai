@@ -2,8 +2,8 @@
 
 // Represents transformations of an object
 Transform_Component :: struct {
-    position: Vector3;
-    scale: Vector3 = .{1, 1, 1};
+    position: Vector2;
+    scale: Vector2 = .{1, 1};
     rotation: Quaternion;
 }
 
