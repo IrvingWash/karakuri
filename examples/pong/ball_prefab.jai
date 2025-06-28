@@ -53,7 +53,10 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
         exit(1);
     }
 
-    launch_if_needed(self, ball);
+    if ball.velocity.x == 0 {
+        launch_if_needed(self, ball);
+    }
+
     move(self, ball, dt);
 
     collide_with_paddle(self, ball);
