@@ -11,3 +11,6 @@ To build an example, use the `--example` flag of the `build_example` metaprogram
 ```bash
 jai build_example.jai - --example pong
 ```
+
+## Development
+nstall git hooks by running `jai tools/pre_commit.jai`.
