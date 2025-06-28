@@ -1,9 +1,11 @@
 #load "paddle_prefab.jai";
 #load "ball_prefab.jai";
 #load "wall_prefab.jai";
+#load "camera_prefab.jai";
 
 SCENE :: Karakuri.Scene.{
-    load = load_scene,
+    load_entities = load_scene,
+    load_camera = camera_prefab,
 };
 
 load_scene :: () -> [..]Karakuri.Entity_Params {

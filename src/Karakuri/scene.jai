@@ -1,4 +1,5 @@
 Scene :: struct {
     id: u32;
-    load: () -> [..]Entity_Params;
+    load_entities: () -> [..]Entity_Params;
+    load_camera: () -> Camera_Params;
 }

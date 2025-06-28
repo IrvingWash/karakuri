@@ -1,8 +1,9 @@
-[ ] Add camera
 [ ] simple collision detector/solver
 [ ] fix tests
 [ ] instaced arrays
 [ ] switch from WC to GLFW
+[ ] Rename slow procs to find instead of get
+[x] Add camera
 [x] pure opengl
 [x] having two input manager is confusing
 [x] manage memory properly

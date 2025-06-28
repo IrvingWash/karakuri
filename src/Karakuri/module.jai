@@ -7,6 +7,7 @@ Maybe :: #import "Maybe";
 #load "entity.jai";
 #load "scene.jai";
 #load "math.jai";
+#load "camera.jai";
 
 get_component :: world_get_component;
 get_behavior :: world_get_downcasted_behavior;
@@ -14,6 +15,7 @@ get_entity_with_name :: world_get_entity_with_name;
 get_entity_with_token :: world_get_entity_with_token;
 get_entities_with_tag :: world_get_entities_with_tag;
 get_entities_with_tags :: world_get_entities_with_tags;
+get_camera :: world_get_camera;
 
 is_key_pressed :: Input_Manager.is_key_pressed;
 is_key_down :: Input_Manager.is_key_down;

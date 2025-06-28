@@ -36,7 +36,7 @@ init :: (config: Engine_Config) {
 
     init_world();
 
-    world_set_entities(initial_scene.load());
+    world_set_entities(initial_scene);
 }
 
 run :: () {
@@ -86,7 +86,12 @@ update :: (dt: float) {
 }
 
 render :: () {
-    Sprite_Renderer.start_drawing();
+    camera := world_get_camera();
+    Sprite_Renderer.start_drawing(
+            make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
+            * make_view_matrix(camera.*
+        ),
+    );
 
     entities_with_sprite := world_get_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {

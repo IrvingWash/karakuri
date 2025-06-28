@@ -1,0 +1,45 @@
+#import "Math";
+
+Camera :: struct {
+    using params: Camera_Params;
+
+    front :: Vector3.{0, 0, -1};
+    up :: Vector3.{0, 1, 0};
+    right :: Vector3.{1, 1, 0};
+}
+
+Camera_Params :: struct {
+    position: Vector2;
+    size: float = 1;
+    behavior: *Behavior_Component;
+
+    on_start: (self: *Camera);
+    on_update: (self: *Camera, dt: float);
+}
+
+get_downcasted_behavior :: (camera: Camera, $B: Type) -> ok: bool, *B
+#modify { return uses_behavior_with_as(B); } {
+    return camera.behavior != null, cast(*B) camera.behavior;
+}
+
+#scope_module
+
+create_camera :: (params: Camera_Params) -> Camera {
+    return .{params = params};
+}
+
+destroy_camera :: (camera: Camera) {
+    if camera.behavior {
+        free(camera.behavior);
+    }
+}
+
+make_view_matrix :: (camera: Camera) -> Matrix4 {
+    position := Vector3.{
+        camera.position.x,
+        camera.position.y,
+        0,
+    };
+
+    return make_look_at_matrix(position, position + camera.front, camera.up, false);
+}

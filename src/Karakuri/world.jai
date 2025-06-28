@@ -5,6 +5,8 @@ init_world :: () {
 }
 
 deinit_world :: () {
+    destroy_camera(world.camera);
+
     for entity: world.entities {
         destroy_entity(entity);
     }
@@ -21,9 +23,17 @@ deinit_world :: () {
     array_reset(*world.behavior_components);
 }
 
-world_set_entities :: (entities: []Entity_Params) {
+world_set_entities :: (scene: Scene) {
+    entities := scene.load_entities();
+
+    world.camera = create_camera(scene.load_camera());
+
     for entity: entities {
         add_entity(entity);
+    }
+
+    if world.camera.on_start {
+        world.camera.on_start(*world.camera);
     }
 
     for *entity: world.entities {
@@ -136,9 +146,17 @@ world_get_entities_with_tags :: (tags: ..string) -> []*Entity {
     return result;
 }
 
+world_get_camera :: () -> *Camera {
+    return *world.camera;
+}
+
 update_world :: (dt: float) {
     for *entity: world.entities {
         update_entity(entity, dt);
+    }
+
+    if world.camera.on_update {
+        world.camera.on_update(*world.camera, dt);
     }
 }
 
@@ -178,6 +196,8 @@ World :: struct {
 
     sprite_components: [..]Sprite_Component;
     behavior_components: [..]*Behavior_Component;
+
+    camera: Camera;
 }
 
 world: World = ---;

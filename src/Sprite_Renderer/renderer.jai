@@ -36,7 +36,7 @@ deinit :: () {
 }
 
 // Sets all the necessary data to begin drawing for the current frame
-start_drawing :: () {
+start_drawing :: (view_matrix: Matrix4) {
     using renderer.clear_color;
 
     glClearColor(x, y, z, w);
@@ -44,6 +44,7 @@ start_drawing :: () {
 
     use_shader(renderer.shader);
     set_uniform(renderer.shader, "projection", renderer.projection_matrix);
+    set_uniform(renderer.shader, "view", view_matrix);
 
     glBindVertexArray(renderer.mesh.vao);
 
