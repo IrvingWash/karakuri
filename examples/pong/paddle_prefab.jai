@@ -8,8 +8,8 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
         name = "paddle",
         transform = .{
             position = .{
-                width / 2.0,
-                height - (height  - height / 10.0),
+                0,
+                -(height / 2.0) + 50,
             },
             scale = .{100, 20},
         },

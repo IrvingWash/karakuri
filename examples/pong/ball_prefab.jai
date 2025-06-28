@@ -4,11 +4,9 @@ ball_prefab :: () -> Karakuri.Entity_Params {
     return .{
         name = "ball",
         transform = .{
-            position = .{
-                width / 2.0,
-                height / 2.0,
-            },
+            position = .{},
             scale = .{20, 20},
+            rotation = 0.78,
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{

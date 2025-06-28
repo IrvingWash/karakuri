@@ -9,41 +9,32 @@ Shader :: struct {
     program_id: u32;
 }
 
-PROGRAM_INFO_LOG_BUFFER_SIZE :: 512;
-
-create :: (vertex_path: string, fragment_path: string) -> Shader {
-    // @Todo do these with temp allocator? Not sure, because this is just for creating
-    vertex_src := read_entire_file(vertex_path);
-    fragment_src := read_entire_file(fragment_path);
-    defer free(vertex_src);
-    defer free(fragment_src);
-    c_vertex_src := to_c_string(vertex_src);
-    c_fragment_src := to_c_string(fragment_src);
-    defer free(c_vertex_src);
-    defer free(c_fragment_src);
+create_shader :: (vertex_src: string, fragment_src: string) -> Shader {
+    c_vertex_src := temp_c_string(vertex_src);
+    c_fragment_src := temp_c_string(fragment_src);
 
     vertex := glCreateShader(GL_VERTEX_SHADER);
     defer glDeleteShader(vertex);
     glShaderSource(vertex, 1, *c_vertex_src, null);
     glCompileShader(vertex);
-    check_compile_error(vertex, vertex_path);
+    check_compile_error(vertex);
 
     fragment := glCreateShader(GL_FRAGMENT_SHADER);
     defer glDeleteShader(fragment);
     glShaderSource(fragment, 1, *c_fragment_src, null);
     glCompileShader(fragment);
-    check_compile_error(fragment, fragment_path);
+    check_compile_error(fragment);
 
     shader_program := glCreateProgram();
     glAttachShader(shader_program, vertex);
     glAttachShader(shader_program, fragment);
     glLinkProgram(shader_program);
-    check_linking_error(shader_program, vertex_path, fragment_path);
+    check_linking_error(shader_program);
 
     return .{ program_id = shader_program };
 }
 
-use :: (shader: Shader) {
+use_shader :: (shader: Shader) {
     glUseProgram(shader.program_id);
 }
 
@@ -103,13 +94,15 @@ set_uniform :: (shader: Shader, name: string, values: ..$T)
     }
 }
 
-destroy :: (shader: Shader) {
+destroy_shader :: (shader: Shader) {
     glDeleteProgram(shader.program_id);
 }
 
 #scope_file
 
-check_compile_error :: (shader: u32, path: string) {
+PROGRAM_INFO_LOG_BUFFER_SIZE :: 512;
+
+check_compile_error :: (shader: u32) {
     ok: s32;
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, *ok);
@@ -123,11 +116,11 @@ check_compile_error :: (shader: u32, path: string) {
 
         info_data_text := to_string(info_data);
         defer free(info_data_text);
-        log_error("Failed to compile shader for %: %\n", path, info_data_text);
+        log_error("Failed to compile shader %\n", info_data_text);
     }
 }
 
-check_linking_error :: (program: u32, vertex_path: string, fragment_path: string) {
+check_linking_error :: (program: u32) {
     ok: s32;
 
     glGetProgramiv(program, GL_LINK_STATUS, *ok);
@@ -135,9 +128,7 @@ check_linking_error :: (program: u32, vertex_path: string, fragment_path: string
         log_data: [PROGRAM_INFO_LOG_BUFFER_SIZE]u8;
         glGetProgramInfoLog(program, log_data.count, null, log_data.data);
         log_error(
-            "Failed to link shader program for % %: %\n",
-            vertex_path,
-            fragment_path,
+            "Failed to link shader program: %\n",
             to_string(log_data.data) // @Todo leaks?
         );
     }

@@ -1,7 +1,8 @@
-[ ] pure opengl
 [ ] simple collision detector/solver
 [ ] fix tests
 [ ] instaced arrays
+[ ] switch from WC to GLFW
+[x] pure opengl
 [x] having two input manager is confusing
 [x] manage memory properly
 [x] tagging system

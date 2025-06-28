@@ -14,32 +14,32 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
         case .Top;
             transform = .{
                 position = .{
-                    width / 2.0,
-                    xx height,
+                    0,
+                    height / 2.0,
                 },
                 scale = .{xx width, 1},
             };
         case .Right;
             transform = .{
                 position = .{
-                    xx width,
-                    height / 2.0,
+                    (width / 2.0),
+                    0
                 },
                 scale = .{1, xx height},
             };
         case .Left;
             transform = .{
                 position = .{
-                    0,
-                    height / 2.0,
+                    -(width / 2.0),
+                    0
                 },
                 scale = .{1, xx height},
             };
         case .Bottom;
             transform = .{
                 position = .{
-                    width / 2.0,
                     0,
+                    -(height / 2.0)
                 },
                 scale = .{xx width, 1},
             };

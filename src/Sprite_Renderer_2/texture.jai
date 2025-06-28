@@ -8,7 +8,7 @@ Texture :: struct {
     id: u32;
 }
 
-create :: (image_path: string, flip := false) -> Texture {
+create_texture :: (image_path: string, flip := false) -> Texture {
     texture: Texture;
 
     width, height, channels: s32;
@@ -54,10 +54,10 @@ create :: (image_path: string, flip := false) -> Texture {
     return texture;
 }
 
-use :: (texture: Texture) {
+bind_texture :: (texture: Texture) {
     glBindTexture(GL_TEXTURE_2D, texture.id);
 }
 
-destroy :: (texture: Texture) {
+destroy_texture :: (texture: Texture) {
     glDeleteTextures(1, *texture.id);
 }
