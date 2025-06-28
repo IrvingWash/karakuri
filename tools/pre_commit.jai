@@ -31,5 +31,5 @@
 PRE_COMMIT :: #string BASH
 #!/bin/sh
 
-cspell src tests examples
+cspell lint ../../ --gitignore
 BASH

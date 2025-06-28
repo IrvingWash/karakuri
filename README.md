@@ -13,4 +13,4 @@ jai build_example.jai - --example pong
 ```
 
 ## Development
-nstall git hooks by running `jai tools/pre_commit.jai`.
+Install git hooks by running `jai tools/pre_commit.jai`.
