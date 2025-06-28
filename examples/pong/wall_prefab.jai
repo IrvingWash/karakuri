@@ -163,7 +163,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
             case .Right;
                 paddle_entity.transform.position.x = self.transform.position.x
                     - self.transform.scale.x
-                    - paddle_entity.transform.scale.x;
+                    - paddle_entity.transform.scale.x * paddle_sprite.origin.x;
             case .Left;
                 paddle_entity.transform.position.x = self.transform.position.x
                     + self.transform.scale.x
