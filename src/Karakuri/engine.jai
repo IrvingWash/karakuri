@@ -95,12 +95,16 @@ render :: () {
     for entity: entities_with_sprite {
         ok, sprite := world_get_component(entity, Sprite_Component);
         if !ok {
-            log_error("Component % for entity $ was not found though it should have been", Sprite_Component, entity.token);
+            log_error(
+                "Component % for entity $ was not found though it should have been",
+                Sprite_Component,
+                entity.token,
+            );
 
             continue;
         }
 
-        Sprite_Renderer.draw_sprite(
+        Sprite_Renderer.draw(
             entity.transform.position,
             entity.transform.scale,
             sprite.color,
