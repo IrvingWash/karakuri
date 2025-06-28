@@ -6,7 +6,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
         transform = .{
             position = .{},
             scale = .{20, 20},
-            rotation = 0.78,
+            rotation = Karakuri.deg_to_rad(45),
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
@@ -15,7 +15,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
             }
         ),
         behavior_component = Karakuri.Maybe.some(
-            Karakuri.instantiate_behavior(Ball, Ball.{})
+            Karakuri.instantiate_behavior(Ball.{})
         ),
         on_start = on_start,
         on_update = on_update,

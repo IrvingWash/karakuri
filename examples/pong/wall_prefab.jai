@@ -57,8 +57,7 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
         transform = transform,
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(
-                Wall,
-                .{
+                Wall.{
                     position = position,
                 }
             )

@@ -20,7 +20,7 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
             }
         ),
         behavior_component = Karakuri.Maybe.some(
-            Karakuri.instantiate_behavior(Paddle, Paddle.{})
+            Karakuri.instantiate_behavior(Paddle.{})
         ),
         on_start = on_start,
         on_update = on_update,

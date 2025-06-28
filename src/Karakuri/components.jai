@@ -17,7 +17,7 @@ Sprite_Component :: struct {
 Behavior_Component :: struct {}
 
 // @Todo we probably can get this done using only one argument
-instantiate_behavior :: ($B: Type, v: B) -> *Behavior_Component
+instantiate_behavior :: (v: $B) -> *Behavior_Component
 #modify { return uses_behavior_with_as(B); }
 {
     behavior: *B = New(B);

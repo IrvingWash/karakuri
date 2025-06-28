@@ -6,6 +6,7 @@ Maybe :: #import "Maybe";
 #load "components.jai";
 #load "entity.jai";
 #load "scene.jai";
+#load "math.jai";
 
 get_component :: world_get_component;
 get_behavior :: world_get_downcasted_behavior;
