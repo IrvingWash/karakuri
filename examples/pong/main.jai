@@ -1,5 +1,5 @@
 #import "Basic"()(MEMORY_DEBUGGER = true, TEMP_ALLOCATOR_POISON_FREED_MEMORY = true);
-Karakuri :: #import "Karakuri"()(DEBUG = true, NEW_RENDERER = true);
+Karakuri :: #import "Karakuri"()(DEBUG = true, NEW_RENDERER = false);
 
 #load "scene.jai";
 #load "aabb.jai";
