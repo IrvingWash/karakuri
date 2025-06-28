@@ -1,4 +1,4 @@
-#module_parameters()(DEBUG := false);
+#module_parameters()(DEBUG := false, UPDATE_MEMORY_VISUALIZER := false);
 
 Maybe :: #import "Maybe";
 
