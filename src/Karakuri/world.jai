@@ -57,7 +57,7 @@ world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
     return false, null;
 }
 
-world_get_entity_with_name :: (name: string) -> ok: bool, *Entity {
+world_find_entity_with_name :: (name: string) -> ok: bool, *Entity {
     result: *Entity;
     for *entity: world.entities {
         if entity.name == name {
@@ -92,7 +92,7 @@ world_get_downcasted_behavior :: (entity: Entity, $B: Type) -> ok: bool, *B
     return result != null, result;
 }
 
-world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
+world_find_entities_with_components :: ($Components: ..Type) -> []*Entity {
     signature: Signature;
     for component: Components {
         signature_set_component(*signature, component);
@@ -109,7 +109,7 @@ world_get_entities_with_components :: ($Components: ..Type) -> []*Entity {
     return result;
 }
 
-world_get_entities_with_tag :: (tag: string) -> []*Entity {
+world_find_entities_with_tag :: (tag: string) -> []*Entity {
     result: [..]*Entity;
     result.allocator = temp;
 
@@ -122,7 +122,7 @@ world_get_entities_with_tag :: (tag: string) -> []*Entity {
     return result;
 }
 
-world_get_entities_with_tags :: (tags: ..string) -> []*Entity {
+world_find_entities_with_tags :: (tags: ..string) -> []*Entity {
     result: [..]*Entity;
     result.allocator = temp;
 

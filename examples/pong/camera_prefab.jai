@@ -6,7 +6,7 @@ camera_prefab :: () -> Karakuri.Camera_Params {
             ok, camera := Karakuri.get_downcasted_behavior(self.*, Camera);
             assert(ok);
 
-            ok =, ball := Karakuri.get_entity_with_name("ball");
+            ok =, ball := Karakuri.find_entity_with_name("ball");
             assert(ok);
 
             camera.ball_token = ball.token;

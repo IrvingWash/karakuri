@@ -35,7 +35,7 @@ on_start :: (self: *Karakuri.Entity) {
     ok, ball := Karakuri.get_behavior(self.*, Ball);
     assert(ok);
 
-    ok =, paddle_entity := Karakuri.get_entity_with_name("paddle");
+    ok =, paddle_entity := Karakuri.find_entity_with_name("paddle");
     assert(ok);
 
     ball.paddle_token = paddle_entity.token;

@@ -93,7 +93,7 @@ render :: () {
         ),
     );
 
-    entities_with_sprite := world_get_entities_with_components(Sprite_Component);
+    entities_with_sprite := world_find_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
         ok, sprite := world_get_component(entity, Sprite_Component);
         if !ok {
