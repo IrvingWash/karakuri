@@ -14,6 +14,8 @@ init :: (window: Window_Type, clear_color: Vector4) {
     Simp.set_render_target(renderer.window);
 }
 
+deinit :: () {}
+
 // Sets all the necessary data to begin drawing for the current frame
 start_drawing :: () {
     using renderer.clear_color;
@@ -22,11 +24,12 @@ start_drawing :: () {
 }
 
 // Draws a sprite
-draw_sprite :: (
+draw :: (
     position: Vector2,
     scale: Vector2,
-    color: Vector4,
-    origin: Vector2
+    rotation: float,
+    origin: Vector2,
+    color: Vector4
 ) {
     Simp.set_shader_for_color();
 

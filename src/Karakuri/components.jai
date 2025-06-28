@@ -4,7 +4,7 @@
 Transform_Component :: struct {
     position: Vector2;
     scale: Vector2 = .{1, 1};
-    rotation: Quaternion;
+    rotation: float;
 }
 
 // Represents a sprite

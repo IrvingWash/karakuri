@@ -59,6 +59,7 @@ run :: () {
 
 deinit :: () {
     deinit_world();
+    Sprite_Renderer.deinit();
 }
 
 #scope_module
@@ -107,8 +108,9 @@ render :: () {
         Sprite_Renderer.draw(
             entity.transform.position,
             entity.transform.scale,
-            sprite.color,
+            entity.transform.rotation,
             sprite.origin,
+            sprite.color,
         );
     }
 

@@ -6,8 +6,6 @@ Maybe :: #import "Maybe";
 #load "components.jai";
 #load "entity.jai";
 #load "scene.jai";
-#load "signature.jai";
-#load "world.jai";
 
 get_component :: world_get_component;
 get_behavior :: world_get_downcasted_behavior;
@@ -23,3 +21,8 @@ is_key_end :: Input_Manager.is_key_end;
 is_key_up :: Input_Manager.is_key_up;
 
 get_render_size :: Sprite_Renderer.get_render_dimensions;
+
+#scope_module
+
+#load "signature.jai";
+#load "world.jai";
