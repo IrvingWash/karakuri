@@ -1,5 +1,6 @@
 // A sprite renderer
 
+#import "GL";
 #import "Window_Type";
 Simp :: #import "Simp";
 #import "Math";
@@ -12,13 +13,15 @@ init_sprite_renderer :: (window: Window_Type, clear_color: Vector4) {
     };
 
     Simp.set_render_target(renderer.window);
+    glEnable(GL_CULL_FACE);
 }
 
 // Sets all the necessary data to begin drawing for the current frame
 start_drawing :: () {
     using renderer.clear_color;
 
-    Simp.clear_render_target(x, y, z, w);
+    glClearColor(x, y, z, w);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 // Draws a sprite
@@ -27,20 +30,7 @@ draw_sprite :: (
     scale: Vector2,
     color: Vector4,
     origin: Vector2
-) {
-    Simp.set_shader_for_color();
-
-    x0 := position.x - scale.x * origin.x;
-    y0 := position.y + scale.y * origin.y;
-
-    Simp.immediate_quad(
-        x0,
-        y0,
-        x0 + scale.x,
-        y0 - scale.y,
-        color,
-    );
-}
+) {}
 
 // Finishes the drawing
 finish_drawing :: () {

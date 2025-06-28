@@ -2,7 +2,11 @@
 #import "FPS_Manager";
 #import "Window_Manager";
 #import "Input_Manager";
-#import "Sprite_Renderer";
+#if true {
+    #import "Sprite_Renderer_2";
+} else {
+    #import "Sprite_Renderer";
+}
 
 init :: (config: Engine_Config) {
     init_fps_manager(config.target_fps);
