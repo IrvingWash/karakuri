@@ -1,4 +1,4 @@
-// A simple and probaby very naive implemention of an input manager
+// A simple and probably very naive implementation of an input manager
 
 #import "Input";
 

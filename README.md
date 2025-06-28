@@ -3,7 +3,7 @@
 Game Engine
 
 ## Program parameters
-`DEBUGE` - enable debug info, such as sending updates to Memory Visualizer
+`DEBUG` - enable debug info, such as sending updates to Memory Visualizer
 
 ## Building examples
 The examples are located in the `./examples` directory.  

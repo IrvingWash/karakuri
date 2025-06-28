@@ -37,7 +37,7 @@ create_texture :: (image_path: string, flip := false) -> Texture {
 
     glTexImage2D(
         GL_TEXTURE_2D,
-        0, // The mipmap level for which we are generarting a texture
+        0, // The mipmap level for which we are generating a texture
         xx format, // internal format
         xx width,
         xx height,

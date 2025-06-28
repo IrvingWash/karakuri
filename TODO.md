@@ -1,6 +1,6 @@
 [ ] simple collision detector/solver
 [ ] fix tests
-[ ] instaced arrays
+[ ] instanced arrays
 [ ] switch from WC to GLFW
 [x] Rename slow procs to find instead of get
 [x] Add camera

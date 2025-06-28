@@ -66,7 +66,7 @@ destroy_entity :: (entity: Entity) {
     array_free(entity.tags);
 }
 
-destroy_entiy_params :: (entity_params: Entity_Params) {
+destroy_entity_params :: (entity_params: Entity_Params) {
     array_free(entity_params.tags);
 
     if Maybe.is_some(entity_params.behavior_component) {
