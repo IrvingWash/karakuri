@@ -1,3 +1,4 @@
+[ ] Add camera
 [ ] simple collision detector/solver
 [ ] fix tests
 [ ] instaced arrays
