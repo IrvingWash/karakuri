@@ -19,7 +19,7 @@ init :: (window: Window_Type, clear_color: Vector4) {
 
     // @Todo this should be passable
     renderer.texture = create_texture(
-        "src/Sprite_Renderer_2/textures/square.png"
+        "src/Sprite_Renderer/textures/square.png"
     );
 
     renderer.shader = create_shader(VERTEX_TEXTURE, FRAGMENT_TEXTURE);

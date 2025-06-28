@@ -65,11 +65,7 @@ deinit :: () {
 #scope_module
 
 Input_Manager :: #import "Input_Manager";
-#if NEW_RENDERER {
-    Sprite_Renderer :: #import "Sprite_Renderer_2";
-} else {
-    Sprite_Renderer :: #import "Sprite_Renderer";
-}
+Sprite_Renderer :: #import "Sprite_Renderer";
 
 #scope_file
 
