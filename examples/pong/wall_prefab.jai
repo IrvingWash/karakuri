@@ -78,19 +78,13 @@ Wall :: struct {
 
 on_start :: (self: *Karakuri.Entity) {
     ok, wall := Karakuri.get_behavior(self, Wall);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ok =, ball_entity := Karakuri.get_entity_with_name("ball");
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ok =, paddle_entity := Karakuri.get_entity_with_name("paddle");
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     wall.ball_token = ball_entity.token;
     wall.paddle_token = paddle_entity.token;
@@ -98,34 +92,22 @@ on_start :: (self: *Karakuri.Entity) {
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
     ok, wall := Karakuri.get_behavior(self, Wall);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ok =, ball_entity := Karakuri.get_entity_with_token(wall.ball_token);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
     ok =, ball := Karakuri.get_behavior(ball_entity, Ball);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ok =, paddle_entity := Karakuri.get_entity_with_token(wall.paddle_token);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     width, height := Karakuri.get_render_size();
 
     ok =, ball_sprite := Karakuri.get_component(ball_entity, Karakuri.Sprite_Component);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
     ok =, paddle_sprite := Karakuri.get_component(paddle_entity, Karakuri.Sprite_Component);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     if Karakuri.check_aabb(
         self.transform.position,

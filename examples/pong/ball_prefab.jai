@@ -33,14 +33,10 @@ Ball :: struct {
 
 on_start :: (self: *Karakuri.Entity) {
     ok, ball := Karakuri.get_behavior(self.*, Ball);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ok =, paddle_entity := Karakuri.get_entity_with_name("paddle");
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     ball.paddle_token = paddle_entity.token;
 
@@ -49,9 +45,7 @@ on_start :: (self: *Karakuri.Entity) {
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
     ok, ball := Karakuri.get_behavior(self.*, Ball);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     if ball.velocity.x == 0 {
         launch_if_needed(self, ball);
@@ -77,17 +71,11 @@ move :: (self: *Karakuri.Entity, using ball: *Ball, dt: float) {
 
 collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
     ok, paddle_entity := Karakuri.get_entity_with_token(ball.paddle_token);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
     ok =, ball_sprite := Karakuri.get_component(self, Karakuri.Sprite_Component);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
     ok =, paddle_sprite := Karakuri.get_component(paddle_entity, Karakuri.Sprite_Component);
-    if !ok {
-        exit(1);
-    }
+    assert(ok);
 
     if Karakuri.check_aabb(
         self.transform.position,
