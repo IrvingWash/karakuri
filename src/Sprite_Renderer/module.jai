@@ -5,7 +5,7 @@ Simp :: #import "Simp";
 #import "Math";
 
 // Initializes the sprite renderer
-init_sprite_renderer :: (window: Window_Type, clear_color: Vector4) {
+init :: (window: Window_Type, clear_color: Vector4) {
     renderer = .{
         window = window,
         clear_color = clear_color,

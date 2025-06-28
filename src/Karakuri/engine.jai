@@ -15,7 +15,7 @@ init :: (config: Engine_Config) {
 
     Input_Manager.init();
 
-    init_sprite_renderer(window, config.clear_color);
+    Sprite_Renderer.init(window, config.clear_color);
 
     engine = .{
         scenes = config.scenes,
@@ -64,6 +64,11 @@ deinit :: () {
 #scope_module
 
 Input_Manager :: #import "Input_Manager";
+#if NEW_RENDERER {
+    Sprite_Renderer :: #import "Sprite_Renderer_2";
+} else {
+    Sprite_Renderer :: #import "Sprite_Renderer";
+}
 
 #scope_file
 
@@ -75,7 +80,7 @@ process_input :: () {
     }
 
     for events.window_resizes {
-        update_window();
+        Sprite_Renderer.update_window();
     }
 }
 
@@ -84,7 +89,7 @@ update :: (dt: float) {
 }
 
 render :: () {
-    start_drawing();
+    Sprite_Renderer.start_drawing();
 
     entities_with_sprite := world_get_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
@@ -95,7 +100,7 @@ render :: () {
             continue;
         }
 
-        draw_sprite(
+        Sprite_Renderer.draw_sprite(
             entity.transform.position,
             entity.transform.scale,
             sprite.color,
@@ -103,7 +108,7 @@ render :: () {
         );
     }
 
-    finish_drawing();
+    Sprite_Renderer.finish_drawing();
 }
 
 engine: Engine = ---;
@@ -127,8 +132,3 @@ Engine_Config :: struct {
 
 FPS_Manager :: #import "FPS_Manager";
 Window_Manager :: #import "Window_Manager";
-#if NEW_RENDERER {
-    #import "Sprite_Renderer_2";
-} else {
-    #import "Sprite_Renderer";
-}
