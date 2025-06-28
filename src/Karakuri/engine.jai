@@ -1,17 +1,9 @@
 #import "Basic";
-#import "FPS_Manager";
-#import "Window_Manager";
-#import "Input_Manager";
-#if NEW_RENDERER {
-    #import "Sprite_Renderer_2";
-} else {
-    #import "Sprite_Renderer";
-}
 
 init :: (config: Engine_Config) {
-    init_fps_manager(config.target_fps);
+    FPS_Manager.init(config.target_fps);
 
-    ok, window := init_window_manager(
+    ok, window := Window_Manager.init(
         config.window_size.width,
         config.window_size.height,
         config.name
@@ -20,6 +12,8 @@ init :: (config: Engine_Config) {
         log_error("Failed to initialize window");
         exit(1);
     }
+
+    Input_Manager.init();
 
     init_sprite_renderer(window, config.clear_color);
 
@@ -47,9 +41,9 @@ init :: (config: Engine_Config) {
 
 run :: () {
     while !engine.should_terminate {
-        dt := cap_frame_rate();
+        dt := FPS_Manager.cap_frame_rate();
 
-        events := process_input();
+        process_input();
 
         update(dt);
 
@@ -67,10 +61,14 @@ deinit :: () {
     deinit_world();
 }
 
+#scope_module
+
+Input_Manager :: #import "Input_Manager";
+
 #scope_file
 
-process_input :: () -> Events {
-    events := get_events();
+process_input :: () {
+    events := Input_Manager.get_events();
 
     if events.quit {
         engine.should_terminate = true;
@@ -79,10 +77,6 @@ process_input :: () -> Events {
     for events.window_resizes {
         update_window();
     }
-
-    input_set_events(events);
-
-    return events;
 }
 
 update :: (dt: float) {
@@ -129,4 +123,12 @@ Engine_Config :: struct {
     scenes: []Scene;
     initial_scene_id: u32;
     clear_color: Vector4;
+}
+
+FPS_Manager :: #import "FPS_Manager";
+Window_Manager :: #import "Window_Manager";
+#if NEW_RENDERER {
+    #import "Sprite_Renderer_2";
+} else {
+    #import "Sprite_Renderer";
 }

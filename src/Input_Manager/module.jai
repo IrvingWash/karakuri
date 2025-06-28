@@ -2,6 +2,10 @@
 
 #import "Input";
 
+init :: () {
+    manager = .{};
+}
+
 // Holds all the events for the frame
 Events :: struct {
     window_resizes: []Window_Resize_Record;
@@ -9,27 +13,53 @@ Events :: struct {
     input_button_states: []Key_Current_State;
 }
 
+Key :: enum {
+    A :: #run #char "A";
+    D :: #run #char "D";
+    SPACE :: #run #char " ";
+}
+
+is_key_pressed :: (key: Key) -> bool {
+    return (manager.events.input_button_states[key] & ~.NONE) != 0;
+}
+
+is_key_down :: (key : Key) -> bool {
+    return (manager.events.input_button_states[key] & .DOWN) != 0;
+}
+
+is_key_start :: (key: Key) -> bool {
+    return (manager.events.input_button_states[key] & .START) != 0;
+}
+
+is_key_end :: (key: Key) -> bool {
+    return (manager.events.input_button_states[key] & .END) != 0;
+}
+
+is_key_up :: (key: Key) -> bool {
+    return (manager.events.input_button_states[key] & .NONE) != 0;
+}
+
 // Reads all the events for the frame and returns the them
 get_events :: () -> Events {
-    events: Events;
-
     update_window_events();
-    events.input_button_states = input_button_states;
+    manager.events.input_button_states = input_button_states;
 
     for events_this_frame {
         if it.type == {
             case .QUIT;
-                events.quit = true;
+                manager.events.quit = true;
         }
     }
 
-    events.window_resizes = get_window_resizes();
+    manager.events.window_resizes = get_window_resizes();
 
-    return events;
+    return manager.events;
 }
 
 #scope_file
 
-Input_Manager :: struct {}
+Input_Manager :: struct {
+    events: Events;
+}
 
 manager: Input_Manager = ---;

@@ -2,7 +2,7 @@
 
 #import "Basic";
 
-init_fps_manager :: (target_fps: u32) {
+init :: (target_fps: u32) {
     target_delta_time: float64 = 1.0 / target_fps;
     max_delta_time: float64 = target_delta_time * 2.0;
 

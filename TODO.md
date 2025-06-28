@@ -1,6 +1,8 @@
 [ ] pure opengl
 [ ] simple collision detector/solver
 [ ] fix tests
+[ ] instaced arrays
+[x] having two input manager is confusing
 [x] manage memory properly
 [x] tagging system
 [x] make component type a enum_flags
