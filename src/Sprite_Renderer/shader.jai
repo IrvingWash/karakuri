@@ -43,9 +43,7 @@ set_uniform :: (shader: Shader, name: string, values: ..$T)
     return IsScalar(T) || T == Matrix4;
 }
 {
-    // @Todo do this using the temp allocator
-    c_name := to_c_string(name);
-    defer free(c_name);
+    c_name := temp_c_string(name);
     location := glGetUniformLocation(shader.program_id, c_name);
 
     if location == -1 {
