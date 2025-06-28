@@ -2,7 +2,7 @@
 #import "FPS_Manager";
 #import "Window_Manager";
 #import "Input_Manager";
-#if true {
+#if NEW_RENDERER {
     #import "Sprite_Renderer_2";
 } else {
     #import "Sprite_Renderer";
@@ -57,8 +57,9 @@ run :: () {
 
         reset_temporary_storage();
 
-        // @Todo don't do this if the user doesn't want to
-        memory_visualizer_per_frame_update();
+        #if DEBUG {
+            memory_visualizer_per_frame_update();
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+#module_parameters()(DEBUG := false, NEW_RENDERER := false);
+
 Maybe :: #import "Maybe";
 
 #load "engine.jai";

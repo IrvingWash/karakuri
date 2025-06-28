@@ -116,7 +116,7 @@ world_get_entities_with_tags :: (tags: ..string) -> []*Entity {
     result: [..]*Entity;
     result.allocator = temp;
 
-    // @Todo this looks very insufficient
+    // @Todo this looks very insufficient. Try to optimize with a Table of tag <-> tokens
     for *entity: world.entities {
         has_all_tags := true;
 
