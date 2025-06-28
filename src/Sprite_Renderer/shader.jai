@@ -126,10 +126,15 @@ check_linking_error :: (program: u32) {
     glGetProgramiv(program, GL_LINK_STATUS, *ok);
     if !ok {
         log_data: [PROGRAM_INFO_LOG_BUFFER_SIZE]u8;
+
         glGetProgramInfoLog(program, log_data.count, null, log_data.data);
+
+        log_data_text := to_string(log_data.data);
+        free(log_data_text);
+
         log_error(
             "Failed to link shader program: %\n",
-            to_string(log_data.data) // @Todo leaks?
+            log_data_text,
         );
     }
 }
