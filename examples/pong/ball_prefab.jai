@@ -89,7 +89,7 @@ collide_with_paddle :: (self: *Karakuri.Entity, ball: *Ball) {
         exit(1);
     }
 
-    if check_aabb_2d(
+    if Karakuri.check_aabb(
         self.transform.position,
         paddle_entity.transform.position,
         self.transform.scale,

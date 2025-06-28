@@ -127,7 +127,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
         exit(1);
     }
 
-    if check_aabb_2d(
+    if Karakuri.check_aabb(
         self.transform.position,
         ball_entity.transform.position,
         self.transform.scale,
@@ -149,7 +149,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     if (
         (wall.position == .Right || wall.position == .Left)
-        && check_aabb_2d(
+        && Karakuri.check_aabb(
             self.transform.position,
             paddle_entity.transform.position,
             self.transform.scale,
