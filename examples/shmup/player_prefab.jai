@@ -1,9 +1,8 @@
 #load "projectile_prefab.jai";
 
 player_prefab :: () -> Karakuri.Entity_Params {
-
     return .{
-        name = "paddle",
+        name = "player",
         transform = .{
             scale = .{48 * 2, 58 * 2},
         },
