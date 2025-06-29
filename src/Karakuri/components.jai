@@ -9,7 +9,8 @@ Transform_Component :: struct {
 
 // Represents a sprite
 Sprite_Component :: struct {
-    color: Vector4;
+    texture: string;
+    color: Vector4 = .{1, 1, 1, 1};
     origin: Vector2;
 }
 

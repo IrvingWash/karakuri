@@ -15,8 +15,9 @@ paddle_prefab :: () -> Karakuri.Entity_Params {
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
-                origin = .{0.5, 0.5},
+                texture = "examples/pong/square.png",
                 color = .{0, 0, 1, 1},
+                origin = .{0.5, 0.5},
             }
         ),
         behavior_component = Karakuri.Maybe.some(

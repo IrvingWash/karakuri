@@ -27,5 +27,6 @@ get_render_size :: Sprite_Renderer.get_render_dimensions;
 
 #scope_module
 
+Asset_Manager :: #import "Asset_Manager";
 #load "signature.jai";
 #load "world.jai";

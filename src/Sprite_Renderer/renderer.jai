@@ -17,11 +17,6 @@ init :: (window: Window_Type, clear_color: Vector4) {
 
     renderer.projection_matrix = make_projection_matrix();
 
-    // @Todo this should be passable
-    renderer.texture = create_texture(
-        "src/Sprite_Renderer/textures/square.png"
-    );
-
     renderer.shader = create_shader(VERTEX_TEXTURE, FRAGMENT_TEXTURE);
     use_shader(renderer.shader);
     set_uniform(renderer.shader, "texture1", 0);
@@ -30,7 +25,6 @@ init :: (window: Window_Type, clear_color: Vector4) {
 }
 
 deinit :: () {
-    destroy_texture(renderer.texture);
     destroy_shader(renderer.shader);
     destroy_mesh(renderer.mesh);
 }
@@ -47,9 +41,6 @@ start_drawing :: (view_matrix: Matrix4) {
     set_uniform(renderer.shader, "view", view_matrix);
 
     glBindVertexArray(renderer.mesh.vao);
-
-    glActiveTexture(GL_TEXTURE0);
-    bind_texture(renderer.texture);
 }
 
 // Draws a sprite
@@ -58,8 +49,12 @@ draw :: (
     scale: Vector2,
     rotation: float,
     origin: Vector2,
-    color: Vector4
+    color: Vector4,
+    texture: Texture
 ) {
+    glActiveTexture(GL_TEXTURE0);
+    bind_texture(texture);
+
     translation_matrix := make_translation_matrix4(Vector3.{position.x, position.y, 1});
     scale_matrix := make_scale_matrix4(Vector3.{scale.x, scale.y, 1});
     orientation: Quaternion;
@@ -107,7 +102,6 @@ Sprite_Renderer :: struct {
     projection_matrix: Matrix4;
     shader: Shader;
     mesh: Quad_Mesh; // @Todo meshes per texture
-    texture: Texture;
 }
 
 renderer: Sprite_Renderer = ---;

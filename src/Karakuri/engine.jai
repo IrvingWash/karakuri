@@ -17,6 +17,8 @@ init :: (config: Engine_Config) {
 
     Sprite_Renderer.init(window, config.clear_color);
 
+    Asset_Manager.init();
+
     engine = .{
         scenes = config.scenes,
     };
@@ -59,6 +61,7 @@ run :: () {
 
 deinit :: () {
     deinit_world();
+    Asset_Manager.deinit();
     Sprite_Renderer.deinit();
 }
 
@@ -88,9 +91,8 @@ update :: (dt: float) {
 render :: () {
     camera := world_get_camera();
     Sprite_Renderer.start_drawing(
-            make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
-            * make_view_matrix(camera.*
-        ),
+        make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
+        * make_view_matrix(camera.*),
     );
 
     entities_with_sprite := world_find_entities_with_components(Sprite_Component);
@@ -106,12 +108,23 @@ render :: () {
             continue;
         }
 
+        // @Todo Store the actual texture in the sprite to avoid this
+        ok =, texture := Asset_Manager.get_texture(sprite.texture);
+        if !ok {
+            log_error(
+                "Texture '%' for entity $ was not found",
+                sprite.texture,
+                entity.token,
+            );
+        }
+
         Sprite_Renderer.draw(
             entity.transform.position,
             entity.transform.scale,
             entity.transform.rotation,
             sprite.origin,
             sprite.color,
+            texture,
         );
     }
 
