@@ -101,7 +101,7 @@ Sprite_Renderer :: struct {
     clear_color: Vector4;
     projection_matrix: Matrix4;
     shader: Shader;
-    mesh: Quad_Mesh; // @Todo meshes per texture
+    mesh: Quad_Mesh;
 }
 
 renderer: Sprite_Renderer = ---;
