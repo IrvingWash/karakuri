@@ -1,6 +1,6 @@
 # Karakuri
 
-Game Engine
+2D Game Engine
 
 ## Program parameters
 - `DEBUG` - enable debugging
@@ -12,3 +12,7 @@ To build an example, use the `--example` flag of the `build_example` metaprogram
 ```bash
 jai build_example.jai - --example shmup
 ```
+
+## Usage
+
+Check `./examples` to see the engine in action
