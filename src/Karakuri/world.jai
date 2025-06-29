@@ -184,6 +184,7 @@ add_entity :: (params: Entity_Params) {
         signature_set_component(*entity.signature, Sprite_Component);
         world.sprite_components[token.id] = params.sprite_component.some;
 
+        // @Todo Instead do this in the engine when a scene starts. Consider adding start_scene procedure
         Asset_Manager.add_texture(params.sprite_component.some.texture);
     }
     if Maybe.is_some(params.behavior_component) {
