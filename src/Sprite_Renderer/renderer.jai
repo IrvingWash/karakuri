@@ -22,6 +22,9 @@ init :: (window: Window_Type, clear_color: Vector4) {
     set_uniform(renderer.shader, "texture1", 0);
 
     renderer.mesh = create_mesh();
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 }
 
 deinit :: () {
