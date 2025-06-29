@@ -14,10 +14,12 @@ Events :: struct {
 }
 
 Key :: enum {
+    SPACE :: #run #char " ";
     A :: #run #char "A";
     D :: #run #char "D";
     P :: #run #char "P";
-    SPACE :: #run #char " ";
+    S :: #run #char "S";
+    W :: #run #char "W";
 }
 
 is_key_pressed :: (key: Key) -> bool {

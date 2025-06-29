@@ -24,8 +24,18 @@ deinit_world :: () {
 }
 
 world_set_entities :: (scene: Scene) {
-    entities := scene.load_entities();
-    world.camera = create_camera(scene.load_camera());
+    entities: []Entity_Params;
+    if scene.load_entities {
+        entities = scene.load_entities();
+    } else {
+        log("Entities loader is not provided in the Scene", flags = .WARNING);
+    }
+
+    if !scene.load_camera {
+        log("Camera loader is not provided in the Scene", flags = .VERBOSE_ONLY);
+    } else {
+        world.camera = create_camera(scene.load_camera());
+    }
 
     for entity: entities {
         add_entity(entity);
@@ -184,7 +194,9 @@ add_entity :: (params: Entity_Params) {
 
         sprite := params.sprite_component.some;
         // @Todo I don't like using asset manager here
-        sprite.texture = Asset_Manager.add_texture(params.sprite_component.some.texture_path);
+        sprite.texture = Asset_Manager.add_texture(
+            sprite.texture_path,
+        );
 
         world.sprite_components[token.id] = sprite;
     }

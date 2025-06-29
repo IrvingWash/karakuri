@@ -19,7 +19,7 @@ add_texture :: (path: string) -> Texture {
         return texture;
     }
 
-    texture = create_texture(path);
+    texture = create_texture(path, true);
 
     table_set(*manager.textures, path, texture);
 
