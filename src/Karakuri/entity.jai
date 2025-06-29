@@ -70,6 +70,6 @@ destroy_entity_params :: (entity_params: Entity_Params) {
     array_free(entity_params.tags);
 
     if Maybe.is_some(entity_params.behavior_component) {
-        free(entity_params.behavior_component);
+        free(entity_params.behavior_component.some);
     }
 }

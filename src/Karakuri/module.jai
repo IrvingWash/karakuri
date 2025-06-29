@@ -16,6 +16,7 @@ get_camera :: world_get_camera;
 find_entity_with_name :: world_find_entity_with_name;
 find_entities_with_tag :: world_find_entities_with_tag;
 find_entities_with_tags :: world_find_entities_with_tags;
+spawn_entity :: world_spawn_entity;
 
 is_key_pressed :: Input_Manager.is_key_pressed;
 is_key_down :: Input_Manager.is_key_down;

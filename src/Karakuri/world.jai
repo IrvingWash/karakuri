@@ -17,6 +17,11 @@ deinit_world :: () {
         }
     }
 
+    for entity: world.entities_to_spawn {
+        destroy_entity_params(entity);
+    }
+
+    array_reset(*world.entities_to_spawn);
     array_reset(*world.entities);
     array_reset(*world.free_tokens);
     array_reset(*world.sprite_components);
@@ -159,7 +164,26 @@ world_get_camera :: () -> *Camera {
     return *world.camera;
 }
 
+world_spawn_entity :: (entity: Entity_Params) {
+    array_add(*world.entities_to_spawn, entity);
+}
+
 update_world :: (dt: float) {
+    spawned_entities_tokens: [..]Entity_Token;
+    spawned_entities_tokens.allocator = temp;
+    for entity: world.entities_to_spawn {
+        token := add_entity(entity);
+
+        array_add(*spawned_entities_tokens, token);
+    }
+    array_reset(*world.entities_to_spawn);
+    for token: spawned_entities_tokens {
+        ok, entity := world_get_entity_with_token(token);
+        assert(ok);
+
+        start_entity(entity);
+    }
+
     for *entity: world.entities {
         update_entity(entity, dt);
     }
@@ -171,7 +195,7 @@ update_world :: (dt: float) {
 
 #scope_file
 
-add_entity :: (params: Entity_Params) {
+add_entity :: (params: Entity_Params) -> Entity_Token {
     token: Entity_Token = ---;
     if world.free_tokens.count > 0 {
         token = pop(*world.free_tokens);
@@ -187,7 +211,8 @@ add_entity :: (params: Entity_Params) {
         array_add(*world.behavior_components);
     }
 
-    _, entity := world_get_entity_with_token(token);
+    ok, entity := world_get_entity_with_token(token);
+    assert(ok);
 
     if Maybe.is_some(params.sprite_component) {
         signature_set_component(*entity.signature, Sprite_Component);
@@ -204,11 +229,14 @@ add_entity :: (params: Entity_Params) {
         signature_set_component(*entity.signature, Behavior_Component);
         world.behavior_components[token.id] = params.behavior_component.some;
     }
+
+    return token;
 }
 
 World :: struct {
     entities: [..]Entity;
     free_tokens: [..]Entity_Token;
+    entities_to_spawn: [..]Entity_Params;
 
     sprite_components: [..]Sprite_Component;
     behavior_components: [..]*Behavior_Component;

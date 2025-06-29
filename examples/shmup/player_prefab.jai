@@ -1,5 +1,6 @@
+#load "projectile_prefab.jai";
+
 player_prefab :: () -> Karakuri.Entity_Params {
-    width, height := Karakuri.get_render_size();
 
     return .{
         name = "paddle",
@@ -32,6 +33,13 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     assert(ok);
 
     move(self, player, dt);
+    shoot(self);
+}
+
+shoot :: (self: *Karakuri.Entity) {
+    if Karakuri.is_key_start(.SPACE) {
+        Karakuri.spawn_entity(projectile_prefab(self.transform.position));
+    }
 }
 
 move :: (self: *Karakuri.Entity, player: *Player, dt: float) {
