@@ -10,8 +10,6 @@ Entity :: struct {
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
     on_destroy: (self: *Entity);
-
-    // @Todo I think having component pointers here is a good idea
 }
 
 Entity_Token :: struct {
