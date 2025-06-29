@@ -10,8 +10,7 @@ create_texture :: (image_path: string, flip := false) -> Texture {
     texture: Texture;
 
     width, height, channels: s32;
-    c_image_path := to_c_string(image_path); // @Todo do this with temp allocator
-    defer free(c_image_path);
+    c_image_path := temp_c_string(image_path);
     stbi_set_flip_vertically_on_load(xx flip);
     data := stbi_load(c_image_path, *width, *height, *channels, 0);
     defer stbi_image_free(data);

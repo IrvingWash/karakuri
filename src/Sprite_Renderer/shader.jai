@@ -98,23 +98,21 @@ destroy_shader :: (shader: Shader) {
 
 #scope_file
 
-PROGRAM_INFO_LOG_BUFFER_SIZE :: 512;
+INFO_LOG_BUFFER_SIZE :: 512;
 
 check_compile_error :: (shader: u32) {
     ok: s32;
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, *ok);
     if !ok {
-        info_len: s32;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, *info_len);
+        log_data: [INFO_LOG_BUFFER_SIZE]u8;
 
-        info_data := cast(*u8) alloc(info_len);
-        defer free(info_data);
-        glGetShaderInfoLog(shader, xx info_len, xx *info_len, info_data);
+        glGetShaderInfoLog(shader, log_data.count, null, log_data.data);
 
-        info_data_text := to_string(info_data);
-        defer free(info_data_text);
-        log_error("Failed to compile shader %\n", info_data_text);
+        log_data_text := to_string(log_data.data);
+        defer free(log_data_text);
+
+        log_error("Failed to compile shader %\n", log_data_text);
     }
 }
 
@@ -123,12 +121,12 @@ check_linking_error :: (program: u32) {
 
     glGetProgramiv(program, GL_LINK_STATUS, *ok);
     if !ok {
-        log_data: [PROGRAM_INFO_LOG_BUFFER_SIZE]u8;
+        log_data: [INFO_LOG_BUFFER_SIZE]u8;
 
         glGetProgramInfoLog(program, log_data.count, null, log_data.data);
 
         log_data_text := to_string(log_data.data);
-        free(log_data_text);
+        defer free(log_data_text);
 
         log_error(
             "Failed to link shader program: %\n",
