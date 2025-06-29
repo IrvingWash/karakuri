@@ -16,6 +16,7 @@ Events :: struct {
 Key :: enum {
     A :: #run #char "A";
     D :: #run #char "D";
+    P :: #run #char "P";
     SPACE :: #run #char " ";
 }
 

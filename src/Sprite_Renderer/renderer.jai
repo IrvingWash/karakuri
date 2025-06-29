@@ -48,7 +48,7 @@ draw :: (
     position: Vector2,
     scale: Vector2,
     rotation: float,
-    origin: Vector2,
+    origin: Vector2, // @Todo use origin
     color: Vector4,
     texture: Texture
 ) {

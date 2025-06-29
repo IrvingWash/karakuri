@@ -5,12 +5,12 @@ ball_prefab :: () -> Karakuri.Entity_Params {
         name = "ball",
         transform = .{
             position = .{},
-            scale = .{50, 50},
+            scale = .{30, 30},
             rotation = Karakuri.deg_to_rad(45),
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
-                texture = "examples/pong/container.jpg",
+                texture = "examples/pong/assets/container.jpg",
                 origin = .{0.5, 0.5},
             }
         ),

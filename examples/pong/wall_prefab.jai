@@ -61,6 +61,12 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
                 }
             )
         ),
+        sprite_component = Karakuri.Maybe.some(
+            Karakuri.Sprite_Component.{
+                texture = "examples/pong/assets/square.png",
+                color = .{0.9, 0.9, 0.9, 1},
+            }
+        ),
         on_start = on_start,
         on_update = on_update,
     };

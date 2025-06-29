@@ -11,7 +11,7 @@ Transform_Component :: struct {
 Sprite_Component :: struct {
     texture: string;
     color: Vector4 = .{1, 1, 1, 1};
-    origin: Vector2;
+    origin: Vector2 = .{0.5, 0.5};
 }
 
 // Represents a behavior where all the specific data can be placed

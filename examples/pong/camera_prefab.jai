@@ -15,10 +15,20 @@ camera_prefab :: () -> Karakuri.Camera_Params {
             ok, camera := Karakuri.get_downcasted_behavior(self.*, Camera);
             assert(ok);
 
-            ok =, ball := Karakuri.get_entity_with_token(camera.ball_token);
-            assert(ok);
+            if Karakuri.is_key_start(.P) {
+                camera.is_targeting = !camera.is_targeting;
 
-            self.position = ball.transform.position;
+                if !camera.is_targeting {
+                    self.position = .{};
+                }
+            }
+
+            if camera.is_targeting {
+                ok =, ball := Karakuri.get_entity_with_token(camera.ball_token);
+                assert(ok);
+
+                self.position = ball.transform.position;
+            }
         },
     };
 }
@@ -27,4 +37,5 @@ Camera :: struct {
     #as using behavior: Karakuri.Behavior_Component;
 
     ball_token: Karakuri.Entity_Token;
+    is_targeting := false;
 }
