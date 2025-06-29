@@ -8,7 +8,7 @@ deinit_world :: () {
     destroy_camera(*world.camera);
 
     for *entity: world.entities {
-        if !Maybe.is_some(entity) {
+        if Maybe.is_none(entity) {
             continue;
         }
 
@@ -62,7 +62,7 @@ world_get_entities :: () -> []Entity {
 
 world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
     entity := *world.entities[token.id];
-    if !Maybe.is_some(entity) {
+    if Maybe.is_none(entity) {
         return false, null;
     }
 
@@ -76,7 +76,7 @@ world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
 world_find_entity_with_name :: (name: string) -> ok: bool, *Entity {
     result: *Entity;
     for *entity: world.entities {
-        if !Maybe.is_some(entity) {
+        if Maybe.is_none(entity) {
             continue;
         }
 
@@ -121,7 +121,7 @@ world_find_entities_with_components :: ($Components: ..Type) -> []*Entity {
     result: [..]*Entity;
     result.allocator = temp;
     for *entity: world.entities {
-        if !Maybe.is_some(entity) {
+        if Maybe.is_none(entity) {
             continue;
         }
 
@@ -139,7 +139,7 @@ world_find_entities_with_tags :: (tags: ..string) -> []*Entity {
 
     // @Todo this looks very insufficient. Try to optimize with a Table of tag <-> tokens
     for *entity: world.entities {
-        if !Maybe.is_some(entity) {
+        if Maybe.is_none(entity) {
             continue;
         };
 
@@ -204,7 +204,7 @@ update_world :: (dt: float) {
 
     // Update
     for *entity: world.entities {
-        if !Maybe.is_some(entity) {
+        if Maybe.is_none(entity) {
             continue;
         };
 

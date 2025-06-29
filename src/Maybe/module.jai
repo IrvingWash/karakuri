@@ -23,6 +23,27 @@ is_some :: (maybe: Maybe) -> bool {
     return maybe.kind == .Some;
 }
 
+is_none :: (maybe: Maybe) -> bool {
+    return maybe.kind == .None;
+}
+
+get_or :: (maybe: Maybe($T), or: T) -> T {
+    if is_some(maybe) {
+        return maybe.some;
+    }
+
+    return or;
+}
+
+get_or_default :: (maybe: Maybe($T)) -> T {
+    if is_some(maybe) {
+        return maybe.some;
+    }
+
+    dummy: T;
+    return dummy;
+}
+
 #scope_file
 
 Maybe_Kind :: enum {
