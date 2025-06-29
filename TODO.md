@@ -2,6 +2,7 @@
 [ ] fix tests
 [ ] instanced arrays
 [ ] switch from WC to GLFW
+[ ] replace with temp allocator where possible
 [x] Rename slow procs to find instead of get
 [x] Add camera
 [x] pure opengl

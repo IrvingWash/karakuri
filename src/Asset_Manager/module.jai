@@ -13,14 +13,17 @@ deinit :: () {
     deinit(*manager.textures);
 }
 
-add_texture :: (path: string) {
-    if table_contains(*manager.textures, path) {
-        return;
+add_texture :: (path: string) -> Texture {
+    ok, texture := table_find_new(*manager.textures, path);
+    if ok {
+        return texture;
     }
 
-    texture := create_texture(path);
+    texture = create_texture(path);
 
     table_set(*manager.textures, path, texture);
+
+    return texture;
 }
 
 get_texture :: (path: string) -> ok: bool, texture: Texture {

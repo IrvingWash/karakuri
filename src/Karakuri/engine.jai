@@ -113,23 +113,13 @@ render :: () {
             continue;
         }
 
-        // @Todo Store the actual texture in the sprite to avoid this
-        ok =, texture := Asset_Manager.get_texture(sprite.texture);
-        if !ok {
-            log_error(
-                "Texture '%' for entity $ was not found",
-                sprite.texture,
-                entity.token,
-            );
-        }
-
         Sprite_Renderer.draw(
             entity.transform.position,
             entity.transform.scale,
             entity.transform.rotation,
             sprite.origin,
             sprite.color,
-            texture,
+            sprite.texture,
         );
     }
 

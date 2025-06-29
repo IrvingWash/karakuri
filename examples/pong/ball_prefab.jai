@@ -10,7 +10,7 @@ ball_prefab :: () -> Karakuri.Entity_Params {
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
-                texture = "examples/pong/assets/container.jpg",
+                texture_path = "examples/pong/assets/container.jpg",
                 origin = .{0.5, 0.5},
             }
         ),

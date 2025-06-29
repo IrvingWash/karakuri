@@ -181,10 +181,12 @@ add_entity :: (params: Entity_Params) {
 
     if Maybe.is_some(params.sprite_component) {
         signature_set_component(*entity.signature, Sprite_Component);
-        world.sprite_components[token.id] = params.sprite_component.some;
 
+        sprite := params.sprite_component.some;
         // @Todo I don't like using asset manager here
-        Asset_Manager.add_texture(params.sprite_component.some.texture);
+        sprite.texture = Asset_Manager.add_texture(params.sprite_component.some.texture_path);
+
+        world.sprite_components[token.id] = sprite;
     }
     if Maybe.is_some(params.behavior_component) {
         signature_set_component(*entity.signature, Behavior_Component);

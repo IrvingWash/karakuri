@@ -9,9 +9,10 @@ Transform_Component :: struct {
 
 // Represents a sprite
 Sprite_Component :: struct {
-    texture: string;
+    texture_path: string;
     color: Vector4 = .{1, 1, 1, 1};
     origin: Vector2 = .{0.5, 0.5};
+    texture: Sprite_Renderer.Texture = ---;
 }
 
 // Represents a behavior where all the specific data can be placed
