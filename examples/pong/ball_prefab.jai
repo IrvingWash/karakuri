@@ -58,7 +58,8 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
 launch_if_needed :: (self: *Karakuri.Entity, using ball: *Ball) {
     if Karakuri.is_key_start(.SPACE) {
-        velocity.x, velocity.y = xx -speed;
+        velocity.x = xx ifx Karakuri.random_in_range(0, 1) > 0.5 then -speed else speed;
+        velocity.y = xx speed;
     }
 }
 
