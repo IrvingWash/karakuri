@@ -17,18 +17,33 @@ Camera_Params :: struct {
     on_update: (self: *Camera, dt: float);
 }
 
-get_downcasted_behavior :: (camera: Camera, $B: Type) -> ok: bool, *B
+#scope_module
+
+camera_get_behavior :: (camera: Camera, $B: Type) -> ok: bool, *B
 #modify { return uses_behavior_with_as(B); } {
     return camera.behavior != null, cast(*B) camera.behavior;
 }
-
-#scope_module
 
 create_camera :: (params: Camera_Params) -> Camera {
     return .{params = params};
 }
 
-destroy_camera :: (camera: Camera) {
+start_camera :: (camera: *Camera) {
+    if camera.on_start {
+        camera.on_start(camera);
+    }
+}
+
+update_camera :: (camera: *Camera, dt: float) {
+    if camera.on_update {
+        camera.on_update(camera, dt);
+    }
+}
+
+destroy_camera :: (camera: *Camera) {
+    camera.on_start = null;
+    camera.on_update = null;
+
     if camera.behavior {
         free(camera.behavior);
     }

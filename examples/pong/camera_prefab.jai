@@ -3,7 +3,7 @@ camera_prefab :: () -> Karakuri.Camera_Params {
         size = 0.9,
         behavior = Karakuri.instantiate_behavior(Camera.{}),
         on_start = (self: *Karakuri.Camera) {
-            ok, camera := Karakuri.get_downcasted_behavior(self.*, Camera);
+            ok, camera := Karakuri.get_behavior(self.*, Camera);
             assert(ok);
 
             ok =, ball := Karakuri.find_entity_with_name("ball");
@@ -12,7 +12,7 @@ camera_prefab :: () -> Karakuri.Camera_Params {
             camera.ball_token = ball.token;
         },
         on_update = (self: *Karakuri.Camera, dt: float) {
-            ok, camera := Karakuri.get_downcasted_behavior(self.*, Camera);
+            ok, camera := Karakuri.get_behavior(self.*, Camera);
             assert(ok);
 
             if Karakuri.is_key_start(.P) {

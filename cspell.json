@@ -15,6 +15,7 @@
     "stbi",
     "Parameteri",
     "RGBA",
-    "Shmup"
+    "Shmup",
+    "despawn"
   ]
 }

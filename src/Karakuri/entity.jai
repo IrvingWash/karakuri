@@ -9,6 +9,9 @@ Entity :: struct {
 
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
+    on_destroy: (self: *Entity);
+
+    // @Todo I think having component pointers here is a good idea
 }
 
 Entity_Token :: struct {
@@ -23,6 +26,7 @@ Entity_Params :: struct {
 
     on_start: (self: *Entity); // @Todo `Code` instead of these?
     on_update: (self: *Entity, dt: float);
+    on_destroy: (self: *Entity);
 
     sprite_component: Maybe.Maybe(Sprite_Component);
     behavior_component: Maybe.Maybe(*Behavior_Component); // @Todo `Code` instead of behavior component?
@@ -47,6 +51,7 @@ create_entity :: (
 
         on_start = params.on_start,
         on_update = params.on_update,
+        on_destroy = params.on_destroy,
     };
 }
 
@@ -62,7 +67,22 @@ update_entity :: (entity: *Entity, dt: float) {
     }
 }
 
-destroy_entity :: (entity: Entity) {
+destroy_entity :: (entity: *Entity) {
+    if entity.on_destroy != null {
+        entity.on_destroy(entity);
+    }
+
+    ok, behavior := world_get_component(entity, Behavior_Component);
+    if ok {
+        free(behavior);
+    }
+
+    entity.signature = 0;
+
+    entity.on_start = null;
+    entity.on_update = null;
+    entity.on_destroy = null;
+
     array_free(entity.tags);
 }
 

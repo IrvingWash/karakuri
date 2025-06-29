@@ -5,22 +5,21 @@ init_world :: () {
 }
 
 deinit_world :: () {
-    destroy_camera(world.camera);
+    destroy_camera(*world.camera);
 
-    for entity: world.entities {
-        destroy_entity(entity);
-    }
-
-    for behavior: world.behavior_components {
-        if behavior != null {
-            free(behavior);
+    for *entity: world.entities {
+        if !Maybe.is_some(entity) {
+            continue;
         }
+
+        destroy_entity(*entity.some);
     }
 
     for entity: world.entities_to_spawn {
         destroy_entity_params(entity);
     }
 
+    array_reset(*world.entities_to_despawn);
     array_reset(*world.entities_to_spawn);
     array_reset(*world.entities);
     array_reset(*world.free_tokens);
@@ -46,12 +45,12 @@ world_set_entities :: (scene: Scene) {
         add_entity(entity);
     }
 
-    if world.camera.on_start {
-        world.camera.on_start(*world.camera);
+    for *entity: world.entities {
+        start_entity(*entity.some);
     }
 
-    for *entity: world.entities {
-        start_entity(entity);
+    if world.camera.on_start {
+        start_camera(*world.camera);
     }
 
     array_free(entities);
@@ -63,9 +62,12 @@ world_get_entities :: () -> []Entity {
 
 world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
     entity := *world.entities[token.id];
+    if !Maybe.is_some(entity) {
+        return false, null;
+    }
 
-    if token == entity.token {
-        return true, entity;
+    if token == entity.some.token {
+        return true, *entity.some;
     }
 
     return false, null;
@@ -74,8 +76,12 @@ world_get_entity_with_token :: (token: Entity_Token) -> ok: bool, *Entity {
 world_find_entity_with_name :: (name: string) -> ok: bool, *Entity {
     result: *Entity;
     for *entity: world.entities {
-        if entity.name == name {
-            result = entity;
+        if !Maybe.is_some(entity) {
+            continue;
+        }
+
+        if entity.some.name == name {
+            result = *entity.some;
             break;
         }
     }
@@ -92,18 +98,18 @@ world_get_component :: (entity: Entity, $Component: Type) -> ok: bool, *Componen
         return true, *world.sprite_components[entity.id];
     }
     #if Component == Behavior_Component {
-        return true, *world.behavior_components[entity.id];
+        return true, world.behavior_components[entity.id];
     }
 
     return false, null;
 }
 
-world_get_downcasted_behavior :: (entity: Entity, $B: Type) -> ok: bool, *B
+world_get_behavior :: (entity: Entity, $B: Type) -> ok: bool, *B
 #modify { return uses_behavior_with_as(B); }
 {
-    result := cast(*B) world.behavior_components[entity.id];
+    ok, behavior := world_get_component(entity, Behavior_Component);
 
-    return result != null, result;
+    return ok && behavior != null, cast(*B) behavior;
 }
 
 world_find_entities_with_components :: ($Components: ..Type) -> []*Entity {
@@ -115,22 +121,13 @@ world_find_entities_with_components :: ($Components: ..Type) -> []*Entity {
     result: [..]*Entity;
     result.allocator = temp;
     for *entity: world.entities {
-        if signature_is_subset(signature, entity.signature) {
-            array_add(*result, entity);
-        };
-    }
-
-    return result;
-}
-
-world_find_entities_with_tag :: (tag: string) -> []*Entity {
-    result: [..]*Entity;
-    result.allocator = temp;
-
-    for *entity: world.entities {
-        if array_find(entity.tags, tag) {
-            array_add(*result, entity);
+        if !Maybe.is_some(entity) {
+            continue;
         }
+
+        if signature_is_subset(signature, entity.some.signature) {
+            array_add(*result, *entity.some);
+        };
     }
 
     return result;
@@ -142,10 +139,14 @@ world_find_entities_with_tags :: (tags: ..string) -> []*Entity {
 
     // @Todo this looks very insufficient. Try to optimize with a Table of tag <-> tokens
     for *entity: world.entities {
+        if !Maybe.is_some(entity) {
+            continue;
+        };
+
         has_all_tags := true;
 
         for tag: tags {
-            if !array_find(entity.tags, tag) {
+            if !array_find(entity.some.tags, tag) {
                 has_all_tags = false;
 
                 break;
@@ -153,7 +154,7 @@ world_find_entities_with_tags :: (tags: ..string) -> []*Entity {
         }
 
         if has_all_tags {
-            array_add(*result, entity);
+            array_add(*result, *entity.some);
         }
     }
 
@@ -168,7 +169,24 @@ world_spawn_entity :: (entity: Entity_Params) {
     array_add(*world.entities_to_spawn, entity);
 }
 
+world_despawn_entity :: (entity: Entity) {
+    array_add(*world.entities_to_despawn, entity.token);
+}
+
 update_world :: (dt: float) {
+    // Destroy scheduled entities
+    for token: world.entities_to_despawn {
+        ok, entity := world_get_entity_with_token(token);
+        assert(ok);
+
+        // @Todo entities destroyed one by one. If one of them wants to the something with the other in on_destroy the things will go badly
+        destroy_entity(entity);
+
+        world.entities[entity.token.id] = Maybe.none(Entity);
+    }
+    array_reset(*world.entities_to_despawn);
+
+    // Create scheduled entities
     spawned_entities_tokens: [..]Entity_Token;
     spawned_entities_tokens.allocator = temp;
     for entity: world.entities_to_spawn {
@@ -184,13 +202,16 @@ update_world :: (dt: float) {
         start_entity(entity);
     }
 
+    // Update
     for *entity: world.entities {
-        update_entity(entity, dt);
+        if !Maybe.is_some(entity) {
+            continue;
+        };
+
+        update_entity(*entity.some, dt);
     }
 
-    if world.camera.on_update {
-        world.camera.on_update(*world.camera, dt);
-    }
+    update_camera(*world.camera, dt);
 }
 
 #scope_file
@@ -201,11 +222,11 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
         token = pop(*world.free_tokens);
         token.generation += 1;
 
-        world.entities[token.id] = create_entity(token, params);
+        world.entities[token.id] = Maybe.some(create_entity(token, params));
     } else {
         token = .{ id = xx world.entities.count };
 
-        array_add(*world.entities, create_entity(token, params));
+        array_add(*world.entities, Maybe.some(create_entity(token, params)));
 
         array_add(*world.sprite_components);
         array_add(*world.behavior_components);
@@ -234,9 +255,10 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 }
 
 World :: struct {
-    entities: [..]Entity;
+    entities: [..]Maybe.Maybe(Entity);
     free_tokens: [..]Entity_Token;
     entities_to_spawn: [..]Entity_Params;
+    entities_to_despawn: [..]Entity_Token;
 
     sprite_components: [..]Sprite_Component;
     behavior_components: [..]*Behavior_Component;

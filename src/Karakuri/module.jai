@@ -10,13 +10,14 @@ Maybe :: #import "Maybe";
 #load "camera.jai";
 
 get_component :: world_get_component;
-get_behavior :: world_get_downcasted_behavior;
+get_behavior :: camera_get_behavior;
+get_behavior :: world_get_behavior;
 get_entity_with_token :: world_get_entity_with_token;
 get_camera :: world_get_camera;
 find_entity_with_name :: world_find_entity_with_name;
-find_entities_with_tag :: world_find_entities_with_tag;
 find_entities_with_tags :: world_find_entities_with_tags;
 spawn_entity :: world_spawn_entity;
+despawn_entity :: world_despawn_entity;
 
 is_key_pressed :: Input_Manager.is_key_pressed;
 is_key_down :: Input_Manager.is_key_down;

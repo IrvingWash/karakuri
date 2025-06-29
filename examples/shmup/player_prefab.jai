@@ -40,6 +40,14 @@ shoot :: (self: *Karakuri.Entity) {
     if Karakuri.is_key_start(.SPACE) {
         Karakuri.spawn_entity(projectile_prefab(self.transform.position));
     }
+
+    if Karakuri.is_key_start(.P) {
+        projectiles := Karakuri.find_entities_with_tags("projectile");
+
+        for projectile: projectiles {
+            Karakuri.despawn_entity(projectile);
+        }
+    }
 }
 
 move :: (self: *Karakuri.Entity, player: *Player, dt: float) {

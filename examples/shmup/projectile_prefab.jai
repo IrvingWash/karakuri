@@ -26,6 +26,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 
         on_start = on_start,
         on_update = on_update,
+        on_destroy = on_destroy,
     };
 }
 
@@ -46,6 +47,10 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     assert(ok);
 
     move(self, projectile, dt);
+}
+
+on_destroy :: (self: *Karakuri.Entity) {
+    print("Projectile destroyed\n");
 }
 
 move :: (self: *Karakuri.Entity, projectile: *Projectile, dt: float) {
