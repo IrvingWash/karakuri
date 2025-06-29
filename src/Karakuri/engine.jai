@@ -17,14 +17,12 @@ init :: (config: Engine_Config) {
 
     Sprite_Renderer.init(window, config.clear_color);
 
-    Asset_Manager.init();
-
     engine = .{
         scenes = config.scenes,
     };
 
     if engine.scenes.count == 0 {
-        log("No scenes provided. Aborting", flags = .WARNING);
+        log_error("No scenes provided. Aborting");
         exit(1);
     }
 
@@ -35,10 +33,7 @@ init :: (config: Engine_Config) {
             break;
         }
     }
-
-    init_world();
-
-    world_set_entities(initial_scene);
+    set_scene(initial_scene);
 }
 
 run :: () {
@@ -71,6 +66,16 @@ Input_Manager :: #import "Input_Manager";
 Sprite_Renderer :: #import "Sprite_Renderer";
 
 #scope_file
+
+set_scene :: (scene: Scene) {
+    Asset_Manager.deinit();
+    deinit_world();
+
+    Asset_Manager.init();
+    init_world();
+
+    world_set_entities(scene);
+}
 
 process_input :: () {
     events := Input_Manager.get_events();
