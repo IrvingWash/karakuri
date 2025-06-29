@@ -49,7 +49,6 @@ wall_prefab :: ($position: Wall_Position) -> Karakuri.Entity_Params {
     array_add(
         *tags,
         "wall",
-        "test",
     );
 
     return .{
