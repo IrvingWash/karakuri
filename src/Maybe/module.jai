@@ -27,21 +27,21 @@ is_none :: (maybe: Maybe) -> bool {
     return maybe.kind == .None;
 }
 
+get :: (maybe: Maybe($T)) -> ok: bool, value: T {
+    if is_some(maybe) {
+        return true, maybe.some;
+    }
+
+    dummy: T;
+    return false, dummy;
+}
+
 get_or :: (maybe: Maybe($T), or: T) -> T {
     if is_some(maybe) {
         return maybe.some;
     }
 
     return or;
-}
-
-get_or_default :: (maybe: Maybe($T)) -> T {
-    if is_some(maybe) {
-        return maybe.some;
-    }
-
-    dummy: T;
-    return dummy;
 }
 
 #scope_file

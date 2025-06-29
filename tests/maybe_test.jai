@@ -32,8 +32,16 @@ test_get_or :: () {
     assert(get_or(maybe_none, 5) == 5);
 } @test
 
-test_get_or_default :: () {
+test_get :: () {
     maybe_none := none(int);
 
-    assert(get_or_default(maybe_none) == 0);
+    ok, value := get(maybe_none);
+    assert(!ok);
+    assert(value == 0);
+
+    maybe_some := some(5);
+
+    ok, value = get(maybe_some);
+    assert(ok);
+    assert(value == 5);
 } @test
