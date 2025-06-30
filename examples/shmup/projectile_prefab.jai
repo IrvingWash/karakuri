@@ -13,7 +13,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         tags = tags,
         transform = .{
             position = position,
-            scale = .{9 * 2, 34 * 2},
+            scale = .{9, 34},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{

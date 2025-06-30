@@ -4,11 +4,12 @@ player_prefab :: () -> Karakuri.Entity_Params {
     return .{
         name = "player",
         transform = .{
-            scale = .{48 * 2, 58 * 2},
+            scale = .{48, 58},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
                 texture_path = "examples/shmup/assets/main_ship-1.png",
+                origin = .{0, 1},
             }
         ),
         behavior_component = Karakuri.Maybe.some(
