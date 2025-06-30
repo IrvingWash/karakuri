@@ -51,14 +51,21 @@ draw :: (
     position: Vector2,
     scale: Vector2,
     rotation: float,
-    origin: Vector2, // @Todo use origin
+    origin: Vector2,
     color: Vector4,
     texture: Texture
 ) {
     glActiveTexture(GL_TEXTURE0);
     bind_texture(texture);
 
-    translation_matrix := make_translation_matrix4(Vector3.{position.x, position.y, 1});
+    origin_translation_matrix := make_translation_matrix4(
+        Vector3.{
+            clamp(origin.x, 0, 1),
+            clamp(origin.y, 0, 1),
+            0
+        }
+    );
+    translation_matrix := make_translation_matrix4(Vector3.{position.x, position.y, 0});
     scale_matrix := make_scale_matrix4(Vector3.{scale.x, scale.y, 1});
     orientation: Quaternion;
     set_from_axis_and_angle(*orientation, .{0, 0, 1}, rotation);
@@ -67,7 +74,11 @@ draw :: (
         orientation,
     );
 
-    model_transform := translation_matrix * scale_matrix * _rotation_matrix;
+    model_transform := translation_matrix
+        * _rotation_matrix
+        * scale_matrix
+        * origin_translation_matrix;
+
     set_uniform(renderer.shader, "model", model_transform);
     set_uniform(renderer.shader, "color", ..color.component);
 

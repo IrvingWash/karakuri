@@ -11,7 +11,7 @@ Transform_Component :: struct {
 Sprite_Component :: struct {
     texture_path: string;
     color: Vector4 = .{1, 1, 1, 1};
-    origin: Vector2 = .{0.5, 0.5};
+    origin: Vector2;
     texture: Sprite_Renderer.Texture = ---;
 }
 
