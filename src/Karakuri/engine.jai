@@ -120,6 +120,7 @@ render :: () {
             sprite.origin,
             sprite.color,
             sprite.texture,
+            sprite.flip,
         );
     }
 

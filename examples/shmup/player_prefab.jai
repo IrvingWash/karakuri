@@ -10,6 +10,7 @@ player_prefab :: () -> Karakuri.Entity_Params {
             Karakuri.Sprite_Component.{
                 texture_path = "examples/shmup/assets/main_ship-1.png",
                 origin = .{0, 1},
+                flip = .{x = true},
             }
         ),
         behavior_component = Karakuri.Maybe.some(

@@ -53,7 +53,11 @@ draw :: (
     rotation: float,
     origin: Vector2,
     color: Vector4,
-    texture: Texture
+    texture: Texture,
+    flip: $T/interface struct {
+        x: bool;
+        y: bool;
+    }
 ) {
     glActiveTexture(GL_TEXTURE0);
     bind_texture(texture);
@@ -65,8 +69,15 @@ draw :: (
             0
         }
     );
+
     translation_matrix := make_translation_matrix4(Vector3.{position.x, position.y, 0});
-    scale_matrix := make_scale_matrix4(Vector3.{scale.x, scale.y, 1});
+
+    scale_matrix := make_scale_matrix4(Vector3.{
+        scale.x * ifx flip.x then -1 else 1,
+        scale.y * ifx flip.y then -1 else 1,
+        1
+    });
+
     orientation: Quaternion;
     set_from_axis_and_angle(*orientation, .{0, 0, 1}, rotation);
     _rotation_matrix := rotation_matrix(
