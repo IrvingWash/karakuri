@@ -13,6 +13,10 @@ Sprite_Component :: struct {
     color: Vector4 = .{1, 1, 1, 1};
     origin: Vector2;
     texture: Sprite_Renderer.Texture = ---;
+    flip: struct {
+        x: bool;
+        y: bool;
+    };
 }
 
 // Represents a behavior where all the specific data can be placed
