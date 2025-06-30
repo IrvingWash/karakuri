@@ -12,7 +12,7 @@ main :: () {
         scenes = .[
             SCENE,
         ],
-        clear_color = .{1, 1, 1, 1},
+        clear_color = .{0.3, 0.3, 0.3, 1},
     });
 
     Karakuri.run();
