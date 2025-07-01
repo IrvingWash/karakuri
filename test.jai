@@ -1,7 +1,7 @@
 #import "Compiler";
 #import "Basic";
 
-TESTS_SRC_DEFAULT_ENTRY :: "tests/main_test.jai";
+TESTS_SRC_DEFAULT_ENTRY :: "tests/tests.jai";
 TEST_NOTE :: "test";
 
 RUNNER_CODE :: #string DONE

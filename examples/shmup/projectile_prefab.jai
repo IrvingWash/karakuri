@@ -38,9 +38,7 @@ Projectile :: struct {
 
 #scope_file
 
-on_start :: (self: *Karakuri.Entity) {
-    print("Projectile started\n");
-}
+on_start :: (self: *Karakuri.Entity) {}
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
     ok, projectile := Karakuri.get_behavior(self.*, Projectile);
@@ -49,9 +47,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     move(self, projectile, dt);
 }
 
-on_destroy :: (self: *Karakuri.Entity) {
-    print("Projectile destroyed\n");
-}
+on_destroy :: (self: *Karakuri.Entity) {}
 
 move :: (self: *Karakuri.Entity, projectile: *Projectile, dt: float) {
     using self.transform;
