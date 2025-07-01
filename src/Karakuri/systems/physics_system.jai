@@ -2,6 +2,7 @@
 #import "Basic";
 
 physics_system :: () {
+    // @Todo avoid sprite
     entities := world_find_entities_with_components(Box_Collider_Component, Sprite_Component);
 
     for a, i: entities {
@@ -64,6 +65,7 @@ get_aabb :: (
     size: Vector2,
     origin: Vector2
 ) -> x0: float, y0: float, x1: float, y1: float {
+    // @Todo try to do this once per entity per frame when generating box colliders
     x0 := position.x - size.x * 0.5 * (1 - origin.x);
     y0 := position.y + size.y * 0.5 * (1 + origin.y);
     x1 := x0 + size.x;
