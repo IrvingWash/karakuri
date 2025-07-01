@@ -19,6 +19,8 @@ Sprite_Component :: struct {
     };
 }
 
+Box_Collider_Component :: struct {}
+
 // Represents a behavior where all the specific data can be placed
 Behavior_Component :: struct {}
 

@@ -90,6 +90,8 @@ process_input :: () {
 }
 
 update :: (dt: float) {
+    physics_system();
+
     update_world(dt);
 }
 
@@ -148,3 +150,4 @@ Engine_Config :: struct {
 
 FPS_Manager :: #import "FPS_Manager";
 Window_Manager :: #import "Window_Manager";
+#load "systems/physics_system.jai";

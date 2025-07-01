@@ -64,8 +64,8 @@ draw :: (
 
     origin_translation_matrix := make_translation_matrix4(
         Vector3.{
-            clamp(origin.x, 0, 1),
-            clamp(origin.y, 0, 1),
+            clamp(origin.x, -1, 1), // @Todo this is kind of confusing, 1 is the bottom, though -1 one is more intuitive
+            clamp(origin.y, -1, 1),
             0
         }
     );

@@ -7,5 +7,8 @@ enemy_prefab :: () -> Karakuri.Entity_Params {
         sprite_component = Karakuri.Maybe.some(Karakuri.Sprite_Component.{
             texture_path = "examples/shmup/assets/enemy_2_1.png",
         }),
+        box_collider_component = Karakuri.Maybe.some(
+            Karakuri.Box_Collider_Component.{}
+        ),
     };
 }

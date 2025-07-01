@@ -22,12 +22,13 @@ Entity_Params :: struct {
     tags: [..]string;
     transform: Transform_Component;
 
-    on_start: (self: *Entity); // @Todo `Code` instead of these?
+    on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
     on_destroy: (self: *Entity);
 
     sprite_component: Maybe.Maybe(Sprite_Component);
-    behavior_component: Maybe.Maybe(*Behavior_Component); // @Todo `Code` instead of behavior component?
+    behavior_component: Maybe.Maybe(*Behavior_Component);
+    box_collider_component: Maybe.Maybe(Box_Collider_Component);
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {

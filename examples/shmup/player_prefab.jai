@@ -12,6 +12,9 @@ player_prefab :: () -> Karakuri.Entity_Params {
                 origin = .{0, 0},
             }
         ),
+        box_collider_component = Karakuri.Maybe.some(
+            Karakuri.Box_Collider_Component.{}
+        ),
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Player.{})
         ),
