@@ -38,7 +38,8 @@ check_aabb :: (
     a_origin: Vector2,
     b_origin: Vector2
 ) -> bool {
-    // @Todo why * 2? Dpi?
+    // @Todo why * 2? Dpi? Can't confirm as this works both on MacBook Air and on my Linux machine
+    // Try to implement pixels per unit to check this out
     a_x0, a_y0, a_x1, a_y1 := get_aabb(a_position, a_size * 2, a_origin);
     b_x0, b_y0, b_x1, b_y1 := get_aabb(b_position, b_size * 2, b_origin);
 
