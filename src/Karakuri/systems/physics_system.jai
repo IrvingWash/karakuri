@@ -17,8 +17,6 @@ physics_system :: () {
             ok =, b_sprite := world_get_component(b, Sprite_Component);
             assert(ok);
 
-            print("% with %\n", a.token.id, b.token.id);
-
             if check_aabb(
                 a.transform.position,
                 b.transform.position,

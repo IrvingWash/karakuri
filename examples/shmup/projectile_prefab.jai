@@ -29,6 +29,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 
         on_start = on_start,
         on_update = on_update,
+        on_collision = on_collision,
         on_destroy = on_destroy,
     };
 }
@@ -48,6 +49,14 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     assert(ok);
 
     move(self, projectile, dt);
+}
+
+on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
+    if other.name == "player" {
+        return;
+    }
+
+    Karakuri.despawn_entity(self);
 }
 
 on_destroy :: (self: *Karakuri.Entity) {}
