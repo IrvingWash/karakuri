@@ -52,7 +52,9 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
-    if other.name == "player" {
+    if other.name == "player"
+    || (other.tags.count > 0 && other.tags[0] == "projectile")
+    {
         return;
     }
 
