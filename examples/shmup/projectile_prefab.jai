@@ -20,6 +20,9 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
                 texture_path = "examples/shmup/assets/projectile_1.png",
             }
         ),
+        box_collider_component = Karakuri.Maybe.some(
+            Karakuri.Box_Collider_Component.{}
+        ),
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Projectile.{})
         ),

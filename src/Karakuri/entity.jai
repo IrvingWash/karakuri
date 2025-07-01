@@ -9,6 +9,7 @@ Entity :: struct {
 
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
+    on_collision: (self: *Entity, other: *Entity);
     on_destroy: (self: *Entity);
 }
 
@@ -24,6 +25,7 @@ Entity_Params :: struct {
 
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
+    on_collision: (self: *Entity, other: *Entity);
     on_destroy: (self: *Entity);
 
     sprite_component: Maybe.Maybe(Sprite_Component);
@@ -50,6 +52,7 @@ create_entity :: (
 
         on_start = params.on_start,
         on_update = params.on_update,
+        on_collision = params.on_collision,
         on_destroy = params.on_destroy,
     };
 }
@@ -79,6 +82,7 @@ destroy_entity :: (entity: *Entity) {
     entity.signature = 0;
 
     entity.on_start = null;
+    entity.on_update = null;
     entity.on_update = null;
     entity.on_destroy = null;
 

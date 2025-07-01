@@ -10,9 +10,14 @@ physics_system :: () {
         ok, a_sprite := world_get_component(a, Sprite_Component);
         assert(ok);
 
-        for j..entities.count - 1 {
+        while j < entities.count {
+            defer j += 1;
+
             b := entities[j];
             ok =, b_sprite := world_get_component(b, Sprite_Component);
+            assert(ok);
+
+            print("% with %\n", a.token.id, b.token.id);
 
             if check_aabb(
                 a.transform.position,
@@ -22,7 +27,12 @@ physics_system :: () {
                 a_sprite.origin,
                 b_sprite.origin,
             ) {
-                print("Colliding!");
+                if a.on_collision {
+                    a.on_collision(a, b);
+                }
+                if b.on_collision {
+                    b.on_collision(b, a);
+                }
             }
         }
     }
