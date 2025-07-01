@@ -183,6 +183,8 @@ update_world :: (dt: float) {
         ok, entity := world_get_entity_with_token(token);
         assert(ok);
 
+        array_add(*world.free_tokens, entity.token);
+
         // @Todo entities destroyed one by one. If one of them wants to the something with the other in on_destroy the things will go badly
         destroy_entity(entity);
 
