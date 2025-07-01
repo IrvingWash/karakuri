@@ -20,6 +20,7 @@ player_prefab :: () -> Karakuri.Entity_Params {
         ),
 
         on_update = on_update,
+        on_collision = on_collision,
     };
 }
 
@@ -37,6 +38,12 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     move(self, player, dt);
     shoot(self);
+}
+
+on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
+    if other.tags.count > 0 && other.tags[0] == "enemy" {
+        Karakuri.despawn_entity(self);
+    }
 }
 
 shoot :: (self: *Karakuri.Entity) {

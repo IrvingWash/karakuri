@@ -1,5 +1,12 @@
 enemy_prefab :: () -> Karakuri.Entity_Params {
+    tags: [..]string;
+    array_add(
+        *tags,
+        "enemy"
+    );
+
     return .{
+        tags = tags,
         transform = .{
             position = .{0, 200},
             scale = .{48, 48},
