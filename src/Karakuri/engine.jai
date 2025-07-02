@@ -137,6 +137,7 @@ render :: () {
         // @Todo do something with this flip
         Flip :: struct {x: bool; y: bool;};
         flip :: Flip.{};
+        GREEN :: Vector4.{0, 1, 0, 0.2};
         ok, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
         assert(ok);
         entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
@@ -157,7 +158,7 @@ render :: () {
                 entity.transform.scale * box_collider.size,
                 entity.transform.rotation,
                 box_collider.offset,
-                .{0, 1, 0, 0.3},
+                GREEN,
                 PIXELS_PER_UNIT,
                 collider_texture,
                 flip,

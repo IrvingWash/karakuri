@@ -67,7 +67,7 @@ draw :: (
     origin_translation_matrix := make_translation_matrix4(
         Vector3.{
             clamp(origin.x, -1, 1), // @Todo this is kind of confusing, 1 is the bottom, though -1 one is more intuitive. Unity uses 0,0 as bottom left
-            clamp(origin.y, -1, 1),
+            clamp(origin.y, -1, 1), // @Todo box colliders offset is clamped to, thought it should not. Also this probably should be normalized to 0 -> 1
             0
         }
     );

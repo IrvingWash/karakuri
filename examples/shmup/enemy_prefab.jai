@@ -16,7 +16,7 @@ enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         }),
         box_collider_component = Karakuri.Maybe.some(
             Karakuri.Box_Collider_Component.{
-                size = .{0.48, 0.48},
+                size = .{0.38, 0.34},
             }
         ),
         on_collision = on_collision,
