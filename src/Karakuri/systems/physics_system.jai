@@ -2,29 +2,27 @@
 #import "Basic";
 
 physics_system :: () {
-    // @Todo avoid sprite
-    entities := world_find_entities_with_components(Box_Collider_Component, Sprite_Component);
-
+    entities := world_find_entities_with_components(Box_Collider_Component);
     for a, i: entities {
         j := i + 1;
 
-        ok, a_sprite := world_get_component(a, Sprite_Component);
+        ok:, a_box_collider := world_get_component(a, Box_Collider_Component);
         assert(ok);
 
         while j < entities.count {
             defer j += 1;
 
             b := entities[j];
-            ok =, b_sprite := world_get_component(b, Sprite_Component);
+            ok =, b_box_collider := world_get_component(b, Box_Collider_Component);
             assert(ok);
 
             if check_aabb(
                 a.transform.position,
                 b.transform.position,
-                a.transform.scale,
-                b.transform.scale,
-                a_sprite.origin,
-                b_sprite.origin,
+                a.transform.scale * a_box_collider.size,
+                b.transform.scale * b_box_collider.size,
+                a_box_collider.offset,
+                b_box_collider.offset,
             ) {
                 if a.on_collision {
                     a.on_collision(a, b);
@@ -47,8 +45,9 @@ check_aabb :: (
     a_origin: Vector2,
     b_origin: Vector2
 ) -> bool {
-    a_x0, a_y0, a_x1, a_y1 := get_aabb(a_position, a_size, a_origin);
-    b_x0, b_y0, b_x1, b_y1 := get_aabb(b_position, b_size, b_origin);
+    // @Todo why x 2?
+    a_x0, a_y0, a_x1, a_y1 := get_aabb(a_position, a_size * 2, a_origin);
+    b_x0, b_y0, b_x1, b_y1 := get_aabb(b_position, b_size * 2, b_origin);
 
     return !(
         a_x1 < b_x0

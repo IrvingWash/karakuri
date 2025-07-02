@@ -25,7 +25,7 @@ init :: (window: Window_Type, clear_color: Vector4, pixels_per_unit: u32) {
     renderer.mesh = create_mesh();
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
 }
 
 deinit :: () {
@@ -81,6 +81,7 @@ draw :: (
         }
     );
 
+    // @Todo maybe move some computations into the shader
     scale_matrix := make_scale_matrix4(Vector3.{
         scale.x * (texture.width * pixels_per_unit / renderer.pixels_per_unit) * ifx flip.x then -1 else 1,
         scale.y * (texture.height * pixels_per_unit / renderer.pixels_per_unit) * ifx flip.y then -1 else 1,

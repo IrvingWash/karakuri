@@ -15,7 +15,9 @@ enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
             texture_path = "examples/shmup/assets/enemy_2_1.png",
         }),
         box_collider_component = Karakuri.Maybe.some(
-            Karakuri.Box_Collider_Component.{}
+            Karakuri.Box_Collider_Component.{
+                size = .{0.48, 0.48},
+            }
         ),
         on_collision = on_collision,
     };
