@@ -17,12 +17,15 @@ Sprite_Component :: struct {
         x: bool;
         y: bool;
     };
+    pixels_per_unit: u32 = 100;
 }
 
 Box_Collider_Component :: struct {}
 
 // Represents a behavior where all the specific data can be placed
-Behavior_Component :: struct {} // @Todo add things
+Behavior_Component :: struct {
+    size: Vector2 = .{1, 1},
+} // @Todo add things
 
 instantiate_behavior :: (v: $B) -> *Behavior_Component
 #modify { return uses_behavior_with_as(B); }

@@ -13,7 +13,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         tags = tags,
         transform = .{
             position = position,
-            scale = .{9, 34},
+            scale = .{1, 1},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
@@ -37,7 +37,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 Projectile :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 800;
+    speed := 8;
 }
 
 #scope_file

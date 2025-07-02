@@ -4,8 +4,8 @@ player_prefab :: () -> Karakuri.Entity_Params {
     return .{
         name = "player",
         transform = .{
-            position = .{0, -200},
-            scale = .{48, 58},
+            position = .{0, -2},
+            scale = .{1, 1},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
@@ -28,7 +28,7 @@ player_prefab :: () -> Karakuri.Entity_Params {
 Player :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 500;
+    speed := 3;
 }
 
 #scope_file
@@ -43,7 +43,8 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
     if other.tags.count > 0 && other.tags[0] == "enemy" {
-        Karakuri.despawn_entity(self);
+        // Karakuri.despawn_entity(self);
+        print("colliding");
     }
 }
 

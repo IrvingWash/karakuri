@@ -15,7 +15,7 @@ init :: (config: Engine_Config) {
 
     Input_Manager.init();
 
-    Sprite_Renderer.init(window, config.clear_color);
+    Sprite_Renderer.init(window, config.clear_color, PIXELS_PER_UNIT);
 
     engine = .{
         scenes = config.scenes,
@@ -64,6 +64,8 @@ deinit :: () {
 
 Input_Manager :: #import "Input_Manager";
 Sprite_Renderer :: #import "Sprite_Renderer";
+
+PIXELS_PER_UNIT :: 100;
 
 #scope_file
 
@@ -121,6 +123,7 @@ render :: () {
             entity.transform.rotation,
             sprite.origin,
             sprite.color,
+            sprite.pixels_per_unit,
             sprite.texture,
             sprite.flip,
         );
