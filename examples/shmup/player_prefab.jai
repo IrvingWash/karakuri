@@ -48,7 +48,7 @@ on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
 }
 
 shoot :: (self: *Karakuri.Entity) {
-    if Karakuri.is_key_start(.SPACE) {
+    if Karakuri.is_key_start(.Space) {
         Karakuri.spawn_entity(projectile_prefab(self.transform.position));
     }
 
@@ -64,16 +64,16 @@ shoot :: (self: *Karakuri.Entity) {
 move :: (self: *Karakuri.Entity, player: *Player, dt: float) {
     using self.transform;
 
-    if Karakuri.is_key_pressed(.D) {
+    if Karakuri.is_key_pressed(.D) || Karakuri.is_key_pressed(.Arrow_Right) {
         position.x += player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.A) {
+    if Karakuri.is_key_pressed(.A) || Karakuri.is_key_pressed(.Arrow_Left) {
         position.x -= player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.W) {
+    if Karakuri.is_key_pressed(.W) || Karakuri.is_key_pressed(.Arrow_Up) {
         position.y += player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.S) {
+    if Karakuri.is_key_pressed(.S) || Karakuri.is_key_pressed(.Arrow_Down) {
         position.y -= player.speed * dt;
     }
 }
