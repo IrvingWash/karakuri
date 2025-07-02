@@ -1,4 +1,4 @@
-enemy_prefab :: () -> Karakuri.Entity_Params {
+enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
     tags: [..]string;
     array_add(
         *tags,
@@ -8,7 +8,7 @@ enemy_prefab :: () -> Karakuri.Entity_Params {
     return .{
         tags = tags,
         transform = .{
-            position = .{0, 200},
+            position = position,
             scale = .{48, 48},
         },
         sprite_component = Karakuri.Maybe.some(Karakuri.Sprite_Component.{
