@@ -39,9 +39,10 @@ on_update :: (self: *Karakuri.Camera, dt: float) {
 
     if camera.is_targeting {
         ok =, player := Karakuri.get_entity_with_token(camera.player_token);
-        assert(ok);
+        if ok {
+            self.position = player.transform.position;
+        }
 
-        self.position = player.transform.position;
         self.size = 0.7;
     }
 }

@@ -51,8 +51,8 @@ destroy_camera :: (camera: *Camera) {
 
 make_view_matrix :: (camera: Camera) -> Matrix4 {
     position := Vector3.{
-        camera.position.x,
-        camera.position.y,
+        camera.position.x * PIXELS_PER_UNIT,
+        camera.position.y * PIXELS_PER_UNIT,
         0,
     };
 

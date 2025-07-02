@@ -45,8 +45,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
     if other.tags.count > 0 && other.tags[0] == "enemy" {
-        // Karakuri.despawn_entity(self);
-        print("colliding");
+        Karakuri.despawn_entity(self);
     }
 }
 
