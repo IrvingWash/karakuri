@@ -1,4 +1,5 @@
-#import "Basic";
+using Basic :: #import "Basic";
+#poke_name Basic operator ==;
 
 init :: (config: Engine_Config) {
     FPS_Manager.init(config.target_fps);

@@ -174,7 +174,7 @@ world_spawn_entity :: (entity: Entity_Params) {
 }
 
 world_despawn_entity :: (entity: Entity) {
-    array_add(*world.entities_to_despawn, entity.token);
+    array_add_if_unique(*world.entities_to_despawn, entity.token);
 }
 
 update_world :: (dt: float) {
