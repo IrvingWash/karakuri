@@ -4,7 +4,8 @@ player_prefab :: () -> Karakuri.Entity_Params {
     return .{
         name = "player",
         transform = .{
-            scale = .{48, 58},
+            position = .{0, -2},
+            scale = .{1, 1},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
@@ -12,18 +13,24 @@ player_prefab :: () -> Karakuri.Entity_Params {
                 origin = .{0, 0},
             }
         ),
+        box_collider_component = Karakuri.Maybe.some(
+            Karakuri.Box_Collider_Component.{
+                size = .{0.48, 0.58}
+            }
+        ),
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Player.{})
         ),
 
         on_update = on_update,
+        on_collision = on_collision,
     };
 }
 
 Player :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 500;
+    speed := 3;
 }
 
 #scope_file
@@ -36,8 +43,15 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     shoot(self);
 }
 
+on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
+    if other.tags.count > 0 && other.tags[0] == "enemy" {
+        // Karakuri.despawn_entity(self);
+        print("colliding");
+    }
+}
+
 shoot :: (self: *Karakuri.Entity) {
-    if Karakuri.is_key_start(.SPACE) {
+    if Karakuri.is_key_start(.Space) {
         Karakuri.spawn_entity(projectile_prefab(self.transform.position));
     }
 
@@ -53,16 +67,16 @@ shoot :: (self: *Karakuri.Entity) {
 move :: (self: *Karakuri.Entity, player: *Player, dt: float) {
     using self.transform;
 
-    if Karakuri.is_key_pressed(.D) {
+    if Karakuri.is_key_pressed(.D) || Karakuri.is_key_pressed(.Arrow_Right) {
         position.x += player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.A) {
+    if Karakuri.is_key_pressed(.A) || Karakuri.is_key_pressed(.Arrow_Left) {
         position.x -= player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.W) {
+    if Karakuri.is_key_pressed(.W) || Karakuri.is_key_pressed(.Arrow_Up) {
         position.y += player.speed * dt;
     }
-    if Karakuri.is_key_pressed(.S) {
+    if Karakuri.is_key_pressed(.S) || Karakuri.is_key_pressed(.Arrow_Down) {
         position.y -= player.speed * dt;
     }
 }

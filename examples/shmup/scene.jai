@@ -13,7 +13,9 @@ load_scene :: () -> [..]Karakuri.Entity_Params {
     array_add(
         *result,
         player_prefab(),
-        enemy_prefab(),
+        enemy_prefab(.{-2, 2}),
+        enemy_prefab(.{0, 2.5}),
+        enemy_prefab(.{2, 2}),
     );
 
     return result;

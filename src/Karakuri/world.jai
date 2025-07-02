@@ -24,6 +24,7 @@ deinit_world :: () {
     array_reset(*world.entities);
     array_reset(*world.free_tokens);
     array_reset(*world.sprite_components);
+    array_reset(*world.box_collider_components);
     array_reset(*world.behavior_components);
 }
 
@@ -96,6 +97,9 @@ world_get_component :: (entity: Entity, $Component: Type) -> ok: bool, *Componen
 
     #if Component == Sprite_Component {
         return true, *world.sprite_components[entity.id];
+    }
+    #if Component == Box_Collider_Component {
+        return true, *world.box_collider_components[entity.id];
     }
     #if Component == Behavior_Component {
         return true, world.behavior_components[entity.id];
@@ -179,6 +183,8 @@ update_world :: (dt: float) {
         ok, entity := world_get_entity_with_token(token);
         assert(ok);
 
+        array_add(*world.free_tokens, entity.token);
+
         // @Todo entities destroyed one by one. If one of them wants to the something with the other in on_destroy the things will go badly
         destroy_entity(entity);
 
@@ -230,6 +236,7 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 
         array_add(*world.sprite_components);
         array_add(*world.behavior_components);
+        array_add(*world.box_collider_components);
     }
 
     ok, entity := world_get_entity_with_token(token);
@@ -246,6 +253,11 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 
         world.sprite_components[token.id] = sprite;
     }
+    if Maybe.is_some(params.box_collider_component) {
+        signature_set_component(*entity.signature, Box_Collider_Component);
+
+        world.box_collider_components[token.id] = params.box_collider_component.some;
+    }
     if Maybe.is_some(params.behavior_component) {
         signature_set_component(*entity.signature, Behavior_Component);
         world.behavior_components[token.id] = params.behavior_component.some;
@@ -261,6 +273,7 @@ World :: struct {
     entities_to_despawn: [..]Entity_Token;
 
     sprite_components: [..]Sprite_Component;
+    box_collider_components: [..]Box_Collider_Component;
     behavior_components: [..]*Behavior_Component;
 
     camera: Camera;

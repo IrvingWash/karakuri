@@ -13,11 +13,16 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         tags = tags,
         transform = .{
             position = position,
-            scale = .{9, 34},
+            scale = .{1, 1},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
                 texture_path = "examples/shmup/assets/projectile_1.png",
+            }
+        ),
+        box_collider_component = Karakuri.Maybe.some(
+            Karakuri.Box_Collider_Component.{
+                size = .{ 0.09, 0.34},
             }
         ),
         behavior_component = Karakuri.Maybe.some(
@@ -26,6 +31,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 
         on_start = on_start,
         on_update = on_update,
+        on_collision = on_collision,
         on_destroy = on_destroy,
     };
 }
@@ -33,7 +39,7 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 Projectile :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 800;
+    speed := 8;
 }
 
 #scope_file
@@ -45,6 +51,16 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     assert(ok);
 
     move(self, projectile, dt);
+}
+
+on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
+    if other.name == "player"
+    || (other.tags.count > 0 && other.tags[0] == "projectile")
+    {
+        return;
+    }
+
+    Karakuri.despawn_entity(self);
 }
 
 on_destroy :: (self: *Karakuri.Entity) {}

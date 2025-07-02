@@ -7,10 +7,11 @@ Simp :: #import "Simp";
 #import "Math";
 
 // Initializes the sprite renderer
-init :: (window: Window_Type, clear_color: Vector4) {
+init :: (window: Window_Type, clear_color: Vector4, pixels_per_unit: u32) {
     renderer = .{
         window = window,
         clear_color = clear_color,
+        pixels_per_unit = pixels_per_unit,
     };
 
     Simp.set_render_target(renderer.window);
@@ -53,6 +54,7 @@ draw :: (
     rotation: float,
     origin: Vector2,
     color: Vector4,
+    pixels_per_unit: u32,
     texture: Texture,
     flip: $T/interface struct {
         x: bool;
@@ -64,17 +66,25 @@ draw :: (
 
     origin_translation_matrix := make_translation_matrix4(
         Vector3.{
-            clamp(origin.x, 0, 1),
-            clamp(origin.y, 0, 1),
+            clamp(origin.x, -1, 1), // @Todo this is kind of confusing, 1 is the bottom, though -1 one is more intuitive
+            clamp(origin.y, -1, 1),
             0
         }
     );
 
-    translation_matrix := make_translation_matrix4(Vector3.{position.x, position.y, 0});
+    width, height := get_render_dimensions();
+    translation_matrix := make_translation_matrix4(
+        Vector3.{
+            position.x * renderer.pixels_per_unit,
+            position.y * renderer.pixels_per_unit,
+            0
+        }
+    );
 
+    // @Todo maybe move some computations into the shader
     scale_matrix := make_scale_matrix4(Vector3.{
-        scale.x * ifx flip.x then -1 else 1,
-        scale.y * ifx flip.y then -1 else 1,
+        scale.x * (texture.width * pixels_per_unit / renderer.pixels_per_unit) * ifx flip.x then -1 else 1,
+        scale.y * (texture.height * pixels_per_unit / renderer.pixels_per_unit) * ifx flip.y then -1 else 1,
         1
     });
 
@@ -124,6 +134,7 @@ get_render_dimensions :: () -> u32, u32 {
 Sprite_Renderer :: struct {
     window: Window_Type;
     clear_color: Vector4;
+    pixels_per_unit: u32;
     projection_matrix: Matrix4;
     shader: Shader;
     mesh: Quad_Mesh;

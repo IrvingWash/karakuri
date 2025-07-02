@@ -17,6 +17,12 @@ Sprite_Component :: struct {
         x: bool;
         y: bool;
     };
+    pixels_per_unit: u32 = 100;
+}
+
+Box_Collider_Component :: struct {
+    size: Vector2 = .{1, 1};
+    offset: Vector2;
 }
 
 // Represents a behavior where all the specific data can be placed

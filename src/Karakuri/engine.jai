@@ -15,7 +15,7 @@ init :: (config: Engine_Config) {
 
     Input_Manager.init();
 
-    Sprite_Renderer.init(window, config.clear_color);
+    Sprite_Renderer.init(window, config.clear_color, PIXELS_PER_UNIT);
 
     engine = .{
         scenes = config.scenes,
@@ -65,6 +65,8 @@ deinit :: () {
 Input_Manager :: #import "Input_Manager";
 Sprite_Renderer :: #import "Sprite_Renderer";
 
+PIXELS_PER_UNIT :: 100;
+
 #scope_file
 
 set_scene :: (scene: Scene) {
@@ -73,6 +75,10 @@ set_scene :: (scene: Scene) {
 
     Asset_Manager.init();
     init_world();
+
+    #if DEBUG {
+        Asset_Manager.add_texture("src/Karakuri/assets/textures/square.png");
+    }
 
     world_set_entities(scene);
 }
@@ -90,6 +96,8 @@ process_input :: () {
 }
 
 update :: (dt: float) {
+    physics_system();
+
     update_world(dt);
 }
 
@@ -119,9 +127,42 @@ render :: () {
             entity.transform.rotation,
             sprite.origin,
             sprite.color,
+            sprite.pixels_per_unit,
             sprite.texture,
             sprite.flip,
         );
+    }
+
+    #if DEBUG {
+        // @Todo do something with this flip
+        Flip :: struct {x: bool; y: bool;};
+        flip :: Flip.{};
+        ok, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
+        assert(ok);
+        entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
+        for entity: entities_with_sprite {
+            ok, box_collider := world_get_component(entity, Box_Collider_Component);
+            if !ok {
+                log_error(
+                    "Component % for entity $ was not found though it should have been",
+                    Box_Collider_Component,
+                    entity.token,
+                );
+
+                continue;
+            }
+
+            Sprite_Renderer.draw(
+                entity.transform.position,
+                entity.transform.scale * box_collider.size,
+                entity.transform.rotation,
+                box_collider.offset,
+                .{0, 1, 0, 0.3},
+                PIXELS_PER_UNIT,
+                collider_texture,
+                flip,
+            );
+        }
     }
 
     Sprite_Renderer.finish_drawing();
@@ -148,3 +189,4 @@ Engine_Config :: struct {
 
 FPS_Manager :: #import "FPS_Manager";
 Window_Manager :: #import "Window_Manager";
+#load "systems/physics_system.jai";

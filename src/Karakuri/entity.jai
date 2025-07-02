@@ -9,6 +9,7 @@ Entity :: struct {
 
     on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
+    on_collision: (self: *Entity, other: *Entity);
     on_destroy: (self: *Entity);
 }
 
@@ -22,12 +23,14 @@ Entity_Params :: struct {
     tags: [..]string;
     transform: Transform_Component;
 
-    on_start: (self: *Entity); // @Todo `Code` instead of these?
+    on_start: (self: *Entity);
     on_update: (self: *Entity, dt: float);
+    on_collision: (self: *Entity, other: *Entity);
     on_destroy: (self: *Entity);
 
     sprite_component: Maybe.Maybe(Sprite_Component);
-    behavior_component: Maybe.Maybe(*Behavior_Component); // @Todo `Code` instead of behavior component?
+    behavior_component: Maybe.Maybe(*Behavior_Component);
+    box_collider_component: Maybe.Maybe(Box_Collider_Component);
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
@@ -49,6 +52,7 @@ create_entity :: (
 
         on_start = params.on_start,
         on_update = params.on_update,
+        on_collision = params.on_collision,
         on_destroy = params.on_destroy,
     };
 }
@@ -78,6 +82,7 @@ destroy_entity :: (entity: *Entity) {
     entity.signature = 0;
 
     entity.on_start = null;
+    entity.on_update = null;
     entity.on_update = null;
     entity.on_destroy = null;
 

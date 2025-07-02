@@ -4,15 +4,17 @@
 
 Texture :: struct {
     id: u32;
+    width: u32;
+    height: u32;
 }
 
 create_texture :: (image_path: string, flip := false) -> Texture {
     texture: Texture;
 
-    width, height, channels: s32;
+    channels: s32;
     c_image_path := temp_c_string(image_path);
     stbi_set_flip_vertically_on_load(xx flip);
-    data := stbi_load(c_image_path, *width, *height, *channels, 0);
+    data := stbi_load(c_image_path, xx *texture.width, xx *texture.height, *channels, 0);
     defer stbi_image_free(data);
     if !data {
         log_error("Failed to load image: %\n", image_path);
@@ -36,8 +38,8 @@ create_texture :: (image_path: string, flip := false) -> Texture {
         GL_TEXTURE_2D,
         0, // The mipmap level for which we are generating a texture
         xx format, // internal format
-        xx width,
-        xx height,
+        xx texture.width,
+        xx texture.height,
         0, // always 0
         xx format, // format
         GL_UNSIGNED_BYTE, // data type
