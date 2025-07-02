@@ -30,7 +30,7 @@ player_prefab :: () -> Karakuri.Entity_Params {
 Player :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 3;
+    speed := 5;
 }
 
 #scope_file
