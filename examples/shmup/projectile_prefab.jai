@@ -40,6 +40,7 @@ Projectile :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
     speed := 8;
+    destroyed: bool;
 }
 
 #scope_file
@@ -54,13 +55,19 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
+    ok, projectile := Karakuri.get_behavior(self, Projectile);
+    assert(ok);
+
     if other.name == "player"
     || (other.tags.count > 0 && other.tags[0] == "projectile")
     {
         return;
     }
 
-    Karakuri.despawn_entity(self);
+    if !projectile.destroyed {
+        Karakuri.despawn_entity(self);
+        projectile.destroyed = true;
+    }
 }
 
 on_destroy :: (self: *Karakuri.Entity) {}
