@@ -1,5 +1,4 @@
 #scope_module
-#import "Basic";
 
 physics_system :: () {
     entities := world_find_entities_with_components(Box_Collider_Component);
