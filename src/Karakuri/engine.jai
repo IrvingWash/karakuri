@@ -59,21 +59,25 @@ deinit :: () {
     deinit_world();
     Asset_Manager.deinit();
     Sprite_Renderer.deinit();
+    Timer.deinit();
 }
 
 #scope_module
 
 Input_Manager :: #import "Input_Manager";
 Sprite_Renderer :: #import "Sprite_Renderer";
+Timer :: #import "Timer";
 
 PIXELS_PER_UNIT :: 100;
 
 #scope_file
 
 set_scene :: (scene: Scene) {
+    Timer.deinit();
     Asset_Manager.deinit();
     deinit_world();
 
+    Timer.init();
     Asset_Manager.init();
     init_world();
 
@@ -97,6 +101,8 @@ process_input :: () {
 }
 
 update :: (dt: float) {
+    Timer.update(seconds_since_init() * 1000);
+
     physics_system();
 
     update_world(dt);

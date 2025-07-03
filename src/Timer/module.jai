@@ -7,7 +7,7 @@ deinit :: () {
     deinit(*timer.intervals);
 }
 
-set_timeout :: (duration: float, proc: ()) -> u32 {
+set_timeout :: (duration: float64, proc: ()) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -28,7 +28,7 @@ clear_timeout :: (id: u32) {
     table_remove(*timer.timeouts, id);
 }
 
-set_interval :: (duration: float, proc: ()) -> u32 {
+set_interval :: (duration: float64, proc: ()) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -49,7 +49,7 @@ clear_interval :: (id: u32) {
     table_remove(*timer.intervals, id);
 }
 
-update :: (time: float) {
+update :: (time: float64) {
     timer.current_time = time;
 
     timeout_ids_to_delete: [..]u32;
@@ -77,7 +77,7 @@ update :: (time: float) {
 #scope_file
 
 Timer :: struct {
-    current_time: float;
+    current_time: float64;
     next_id: u32;
     timeouts: Table(u32, Timer_Data);
     intervals: Table(u32, Timer_Data);
@@ -85,8 +85,8 @@ Timer :: struct {
 
 Timer_Data :: struct {
     id: u32;
-    start_time: float;
-    duration: float;
+    start_time: float64;
+    duration: float64;
     proc: ();
 }
 

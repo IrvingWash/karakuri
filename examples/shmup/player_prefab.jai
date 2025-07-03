@@ -22,8 +22,10 @@ player_prefab :: () -> Karakuri.Entity_Params {
             Karakuri.instantiate_behavior(Player.{})
         ),
 
+        on_start = on_start,
         on_update = on_update,
         on_collision = on_collision,
+        on_destroy = on_destroy,
     };
 }
 
@@ -31,9 +33,22 @@ Player :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
     speed := 5;
+    shoot_interval: u32;
 }
 
 #scope_file
+
+on_start :: (self: *Karakuri.Entity) {
+    ok, player := Karakuri.get_behavior(self, Player);
+    assert(ok);
+
+    player.shoot_interval = Karakuri.set_interval(
+        1000,
+        () {
+            print("Every second\n");
+        }
+    );
+}
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
     ok, player := Karakuri.get_behavior(self, Player);
@@ -41,6 +56,13 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 
     move(self, player, dt);
     shoot(self);
+}
+
+on_destroy :: (self: *Karakuri.Entity) {
+    ok, player := Karakuri.get_behavior(self, Player);
+    assert(ok);
+
+    Karakuri.clear_interval(player.shoot_interval);
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
