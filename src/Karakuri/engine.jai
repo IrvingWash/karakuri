@@ -104,7 +104,7 @@ update :: (dt: float) {
 
 render :: () {
     entities_with_camera := world_find_entities_with_components(Camera_Component);
-    ok, camera := world_get_component(entities_with_camera[0], Camera_Component);
+    ok, camera := world_get_component(entities_with_camera[0], Camera_Component); // @Todo currently using only the first camera
     assert(ok);
     Sprite_Renderer.start_drawing(
         make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
