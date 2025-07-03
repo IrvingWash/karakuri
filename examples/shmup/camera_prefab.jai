@@ -1,6 +1,5 @@
 camera_prefab :: () -> Karakuri.Entity_Params {
     return .{
-        name = "camera",
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Camera.{}),
         ),
