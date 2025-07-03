@@ -47,7 +47,7 @@ Projectile :: struct {
 on_start :: (self: *Karakuri.Entity) {}
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    ok, projectile := Karakuri.get_behavior(self.*, Projectile);
+    ok, projectile := Karakuri.get_behavior(self, Projectile);
     assert(ok);
 
     move(self, projectile, dt);

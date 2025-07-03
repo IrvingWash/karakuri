@@ -22,7 +22,7 @@ Camera :: struct {
 }
 
 on_start :: (self: *Karakuri.Entity) {
-    ok, camera := Karakuri.get_behavior(self.*, Camera);
+    ok, camera := Karakuri.get_behavior(self, Camera);
     assert(ok);
 
     ok =, player := Karakuri.find_entity_with_name("player");
@@ -32,7 +32,7 @@ on_start :: (self: *Karakuri.Entity) {
 }
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    ok, camera := Karakuri.get_behavior(self.*, Camera);
+    ok, camera := Karakuri.get_behavior(self, Camera);
     assert(ok);
 
     ok =, camera_component := Karakuri.get_component(self, Karakuri.Camera_Component);

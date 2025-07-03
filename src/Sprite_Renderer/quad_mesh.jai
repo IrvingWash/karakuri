@@ -28,7 +28,7 @@ create_mesh :: () -> Quad_Mesh {
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
     glBufferData(
         GL_ARRAY_BUFFER,
-        size_of(type_of(mesh.vertices.data.*)) * mesh.vertices.count,
+        size_of(type_of(mesh.vertices.data)) * mesh.vertices.count,
         mesh.vertices.data,
         GL_STATIC_DRAW,
     );
@@ -36,7 +36,7 @@ create_mesh :: () -> Quad_Mesh {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        size_of(type_of(mesh.indices.data.*)) * mesh.indices.count,
+        size_of(type_of(mesh.indices.data)) * mesh.indices.count,
         mesh.indices.data,
         GL_STATIC_DRAW,
     );
