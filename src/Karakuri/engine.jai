@@ -103,15 +103,17 @@ update :: (dt: float) {
 }
 
 render :: () {
-    camera := world_get_camera();
+    entities_with_camera := world_find_entities_with_components(Camera_Component);
+    ok, camera := world_get_component(entities_with_camera[0], Camera_Component);
+    assert(ok);
     Sprite_Renderer.start_drawing(
         make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
-        * make_view_matrix(camera.*),
+        * make_view_matrix(entities_with_camera[0].transform, camera),
     );
 
     entities_with_sprite := world_find_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
-        ok, sprite := world_get_component(entity, Sprite_Component);
+        ok =, sprite := world_get_component(entity, Sprite_Component);
         if !ok {
             log_error(
                 "Component % for entity $ was not found though it should have been",
@@ -139,11 +141,11 @@ render :: () {
         Flip :: struct {x: bool; y: bool;};
         flip :: Flip.{};
         GREEN :: Vector4.{0, 1, 0, 0.2};
-        ok, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
+        ok =, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
         assert(ok);
         entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
         for entity: entities_with_sprite {
-            ok, box_collider := world_get_component(entity, Box_Collider_Component);
+            ok =, box_collider := world_get_component(entity, Box_Collider_Component);
             if !ok {
                 log_error(
                     "Component % for entity $ was not found though it should have been",

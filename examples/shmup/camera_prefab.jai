@@ -1,7 +1,15 @@
-camera_prefab :: () -> Karakuri.Camera_Params {
+camera_prefab :: () -> Karakuri.Entity_Params {
     return .{
-        size = 1,
-        behavior = Karakuri.instantiate_behavior(Camera.{}),
+        name = "camera",
+        behavior_component = Karakuri.Maybe.some(
+            Karakuri.instantiate_behavior(Camera.{}),
+        ),
+        camera_component = Karakuri.Maybe.some(
+            Karakuri.Camera_Component.{
+                size = 1,
+            }
+        ),
+
         on_start = on_start,
         on_update = on_update,
     };
@@ -14,7 +22,7 @@ Camera :: struct {
     is_targeting := false;
 }
 
-on_start :: (self: *Karakuri.Camera) {
+on_start :: (self: *Karakuri.Entity) {
     ok, camera := Karakuri.get_behavior(self.*, Camera);
     assert(ok);
 
@@ -24,25 +32,28 @@ on_start :: (self: *Karakuri.Camera) {
     camera.player_token = player.token;
 }
 
-on_update :: (self: *Karakuri.Camera, dt: float) {
+on_update :: (self: *Karakuri.Entity, dt: float) {
     ok, camera := Karakuri.get_behavior(self.*, Camera);
+    assert(ok);
+
+    ok =, camera_component := Karakuri.get_component(self, Karakuri.Camera_Component);
     assert(ok);
 
     if Karakuri.is_key_start(.P) {
         camera.is_targeting = !camera.is_targeting;
 
         if !camera.is_targeting {
-            self.position = .{};
-            self.size = 1;
+            self.transform.position = .{};
+            camera_component.size = 1;
         }
     }
 
     if camera.is_targeting {
         ok =, player := Karakuri.get_entity_with_token(camera.player_token);
         if ok {
-            self.position = player.transform.position;
+            self.transform.position = player.transform.position;
         }
 
-        self.size = 0.7;
+        camera_component.size = 0.7;
     }
 }

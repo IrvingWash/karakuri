@@ -5,8 +5,6 @@ init_world :: () {
 }
 
 deinit_world :: () {
-    destroy_camera(*world.camera);
-
     for *entity: world.entities {
         if Maybe.is_none(entity) {
             continue;
@@ -25,6 +23,7 @@ deinit_world :: () {
     array_reset(*world.free_tokens);
     array_reset(*world.sprite_components);
     array_reset(*world.box_collider_components);
+    array_reset(*world.camera_components);
     array_reset(*world.behavior_components);
 }
 
@@ -36,22 +35,12 @@ world_set_entities :: (scene: Scene) {
         log("Entities loader is not provided in the Scene", flags = .WARNING);
     }
 
-    if !scene.load_camera {
-        log("Camera loader is not provided in the Scene", flags = .VERBOSE_ONLY);
-    } else {
-        world.camera = create_camera(scene.load_camera());
-    }
-
     for entity: entities {
         add_entity(entity);
     }
 
     for *entity: world.entities {
         start_entity(*entity.some);
-    }
-
-    if world.camera.on_start {
-        start_camera(*world.camera);
     }
 
     array_free(entities);
@@ -100,6 +89,9 @@ world_get_component :: (entity: Entity, $Component: Type) -> ok: bool, *Componen
     }
     #if Component == Box_Collider_Component {
         return true, *world.box_collider_components[entity.id];
+    }
+    #if Component == Camera_Component {
+        return true, *world.camera_components[entity.id];
     }
     #if Component == Behavior_Component {
         return true, world.behavior_components[entity.id];
@@ -165,10 +157,6 @@ world_find_entities_with_tags :: (tags: ..string) -> []*Entity {
     return result;
 }
 
-world_get_camera :: () -> *Camera {
-    return *world.camera;
-}
-
 world_spawn_entity :: (entity: Entity_Params) {
     array_add(*world.entities_to_spawn, entity);
 }
@@ -216,8 +204,6 @@ update_world :: (dt: float) {
 
         update_entity(*entity.some, dt);
     }
-
-    update_camera(*world.camera, dt);
 }
 
 #scope_file
@@ -236,6 +222,7 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 
         array_add(*world.sprite_components);
         array_add(*world.behavior_components);
+        array_add(*world.camera_components);
         array_add(*world.box_collider_components);
     }
 
@@ -258,6 +245,11 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 
         world.box_collider_components[token.id] = params.box_collider_component.some;
     }
+    if Maybe.is_some(params.camera_component) {
+        signature_set_component(*entity.signature, Camera_Component);
+
+        world.camera_components[token.id] = params.camera_component.some;
+    }
     if Maybe.is_some(params.behavior_component) {
         signature_set_component(*entity.signature, Behavior_Component);
         world.behavior_components[token.id] = params.behavior_component.some;
@@ -274,9 +266,8 @@ World :: struct {
 
     sprite_components: [..]Sprite_Component;
     box_collider_components: [..]Box_Collider_Component;
+    camera_components: [..]Camera_Component;
     behavior_components: [..]*Behavior_Component;
-
-    camera: Camera;
 }
 
 world: World = ---;
