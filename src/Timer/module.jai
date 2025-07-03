@@ -1,3 +1,5 @@
+// @Todo change these to not accept procs as we can't pass anything meaningful inside them
+
 init :: () {
     timer = .{};
 }
