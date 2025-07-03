@@ -9,7 +9,7 @@ deinit :: () {
     deinit(*timer.intervals);
 }
 
-set_timeout :: (duration: float64, proc: ()) -> u32 {
+set_timeout :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -20,6 +20,7 @@ set_timeout :: (duration: float64, proc: ()) -> u32 {
             start_time = timer.current_time,
             duration = duration,
             proc = proc,
+            data = data,
         }
     );
 
@@ -30,7 +31,7 @@ clear_timeout :: (id: u32) {
     table_remove(*timer.timeouts, id);
 }
 
-set_interval :: (duration: float64, proc: ()) -> u32 {
+set_interval :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -41,6 +42,7 @@ set_interval :: (duration: float64, proc: ()) -> u32 {
             start_time = timer.current_time,
             duration = duration,
             proc = proc,
+            data = data,
         }
     );
 
@@ -58,7 +60,7 @@ update :: (time: float64) {
     timeout_ids_to_delete.allocator = temp;
     for *timeout: timer.timeouts {
         if timeout.start_time + timeout.duration <= timer.current_time {
-            timeout.proc();
+            timeout.proc(timeout.data);
 
             array_add(*timeout_ids_to_delete, timeout.id);
         }
@@ -69,7 +71,7 @@ update :: (time: float64) {
 
     for *interval: timer.intervals {
         if interval.start_time + interval.duration <= timer.current_time {
-            interval.proc();
+            interval.proc(interval.data);
 
             interval.start_time = timer.current_time;
         }
@@ -89,7 +91,8 @@ Timer_Data :: struct {
     id: u32;
     start_time: float64;
     duration: float64;
-    proc: ();
+    proc: (data: *void);
+    data: *void;
 }
 
 timer: Timer = ---;

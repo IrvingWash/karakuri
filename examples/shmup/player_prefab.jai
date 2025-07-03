@@ -44,9 +44,13 @@ on_start :: (self: *Karakuri.Entity) {
 
     player.shoot_interval = Karakuri.set_interval(
         1000,
-        () {
-            Karakuri.spawn_entity(projectile_prefab(.{}));
-        }
+        (data: *void) {
+            ok, self := Karakuri.get_entity_with_token(cast(*Karakuri.Entity_Token) data);
+            assert(ok);
+
+            Karakuri.spawn_entity(projectile_prefab(self.transform.position));
+        },
+        *self.token,
     );
 }
 
