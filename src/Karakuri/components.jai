@@ -56,16 +56,6 @@ Component_Type :: enum_flags u64 {
     Behavior;
 }
 
-make_view_matrix :: (transform: Transform_Component, camera: Camera_Component) -> Matrix4 {
-    position := Vector3.{
-        transform.position.x * PIXELS_PER_UNIT,
-        transform.position.y * PIXELS_PER_UNIT,
-        0,
-    };
-
-    return make_look_at_matrix(position, position + camera.front, camera.up, false);
-}
-
 component_to_component_type :: inline ($$Component: Type) -> Component_Type {
     if Component == {
         case Transform_Component;
