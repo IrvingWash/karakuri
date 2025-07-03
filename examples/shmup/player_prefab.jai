@@ -36,7 +36,7 @@ Player :: struct {
 #scope_file
 
 on_update :: (self: *Karakuri.Entity, dt: float) {
-    ok, player := Karakuri.get_behavior(self.*, Player);
+    ok, player := Karakuri.get_behavior(self, Player);
     assert(ok);
 
     move(self, player, dt);
