@@ -7,13 +7,10 @@ Maybe :: #import "Maybe";
 #load "entity.jai";
 #load "scene.jai";
 #load "math.jai";
-#load "camera.jai";
 
 get_component :: world_get_component;
-get_behavior :: camera_get_behavior;
 get_behavior :: world_get_behavior;
 get_entity_with_token :: world_get_entity_with_token;
-get_camera :: world_get_camera;
 find_entity_with_name :: world_find_entity_with_name;
 find_entities_with_tags :: world_find_entities_with_tags;
 spawn_entity :: world_spawn_entity;

@@ -25,6 +25,14 @@ Box_Collider_Component :: struct {
     offset: Vector2;
 }
 
+Camera_Component :: struct {
+    size: float = 1;
+
+    front :: Vector3.{0, 0, -1};
+    up :: Vector3.{0, 1, 0};
+    right :: Vector3.{1, 1, 0};
+}
+
 // Represents a behavior where all the specific data can be placed
 Behavior_Component :: struct {}
 
@@ -43,16 +51,23 @@ Component_Type :: enum_flags u64 {
     Unknown;
     Transform;
     Sprite;
+    Box_Collider;
+    Camera;
     Behavior;
 }
 
 component_to_component_type :: inline ($$Component: Type) -> Component_Type {
-    if Component == Transform_Component {
-        return .Transform;
-    } else if Component == Sprite_Component {
-        return .Sprite;
-    } else if Component == Behavior_Component {
-        return .Behavior;
+    if Component == {
+        case Transform_Component;
+            return .Transform;
+        case Sprite_Component;
+            return .Sprite;
+        case Box_Collider_Component;
+            return .Box_Collider;
+        case Camera_Component;
+            return .Camera;
+        case Behavior_Component;
+            return .Behavior;
     }
 
     return .Unknown;

@@ -31,6 +31,7 @@ Entity_Params :: struct {
     sprite_component: Maybe.Maybe(Sprite_Component);
     behavior_component: Maybe.Maybe(*Behavior_Component);
     box_collider_component: Maybe.Maybe(Box_Collider_Component);
+    camera_component: Maybe.Maybe(Camera_Component);
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {

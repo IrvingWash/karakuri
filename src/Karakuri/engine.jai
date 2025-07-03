@@ -103,15 +103,17 @@ update :: (dt: float) {
 }
 
 render :: () {
-    camera := world_get_camera();
+    entities_with_camera := world_find_entities_with_components(Camera_Component);
+    ok, camera := world_get_component(entities_with_camera[0], Camera_Component); // @Todo currently using only the first camera
+    assert(ok);
     Sprite_Renderer.start_drawing(
         make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
-        * make_view_matrix(camera.*),
+        * make_view_matrix(entities_with_camera[0].transform, camera),
     );
 
     entities_with_sprite := world_find_entities_with_components(Sprite_Component);
     for entity: entities_with_sprite {
-        ok, sprite := world_get_component(entity, Sprite_Component);
+        ok =, sprite := world_get_component(entity, Sprite_Component);
         if !ok {
             log_error(
                 "Component % for entity $ was not found though it should have been",
@@ -139,11 +141,11 @@ render :: () {
         Flip :: struct {x: bool; y: bool;};
         flip :: Flip.{};
         GREEN :: Vector4.{0, 1, 0, 0.2};
-        ok, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
+        ok =, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
         assert(ok);
         entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
         for entity: entities_with_sprite {
-            ok, box_collider := world_get_component(entity, Box_Collider_Component);
+            ok =, box_collider := world_get_component(entity, Box_Collider_Component);
             if !ok {
                 log_error(
                     "Component % for entity $ was not found though it should have been",
@@ -187,6 +189,16 @@ Engine_Config :: struct {
     scenes: []Scene;
     initial_scene_id: u32;
     clear_color: Vector4;
+}
+
+make_view_matrix :: (transform: Transform_Component, camera: Camera_Component) -> Matrix4 {
+    position := Vector3.{
+        transform.position.x * PIXELS_PER_UNIT,
+        transform.position.y * PIXELS_PER_UNIT,
+        0,
+    };
+
+    return make_look_at_matrix(position, position + camera.front, camera.up, false);
 }
 
 FPS_Manager :: #import "FPS_Manager";

@@ -4,7 +4,6 @@
 
 SCENE :: Karakuri.Scene.{
     load_entities = load_scene,
-    load_camera = camera_prefab,
 };
 
 load_scene :: () -> [..]Karakuri.Entity_Params {
@@ -12,6 +11,7 @@ load_scene :: () -> [..]Karakuri.Entity_Params {
 
     array_add(
         *result,
+        camera_prefab(),
         player_prefab(),
         enemy_prefab(.{-2, 2}),
         enemy_prefab(.{0, 2.5}),
