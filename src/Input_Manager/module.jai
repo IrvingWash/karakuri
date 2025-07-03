@@ -17,6 +17,7 @@ Key :: enum {
     Space :: #run #char " ";
     A :: #run #char "A";
     D :: #run #char "D";
+    C :: #run #char "C";
     P :: #run #char "P";
     S :: #run #char "S";
     W :: #run #char "W";

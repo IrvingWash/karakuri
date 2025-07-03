@@ -38,7 +38,7 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
     ok =, camera_component := Karakuri.get_component(self, Karakuri.Camera_Component);
     assert(ok);
 
-    if Karakuri.is_key_start(.P) {
+    if Karakuri.is_key_start(.C) {
         camera.is_targeting = !camera.is_targeting;
 
         if !camera.is_targeting {

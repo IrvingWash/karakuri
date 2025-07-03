@@ -45,7 +45,7 @@ on_start :: (self: *Karakuri.Entity) {
     player.shoot_interval = Karakuri.set_interval(
         1000,
         () {
-            print("Every second\n");
+            Karakuri.spawn_entity(projectile_prefab(.{}));
         }
     );
 }
@@ -74,14 +74,6 @@ on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
 shoot :: (self: *Karakuri.Entity) {
     if Karakuri.is_key_start(.Space) {
         Karakuri.spawn_entity(projectile_prefab(self.transform.position));
-    }
-
-    if Karakuri.is_key_start(.P) {
-        projectiles := Karakuri.find_entities_with_tags("projectile");
-
-        for projectile: projectiles {
-            Karakuri.despawn_entity(projectile);
-        }
     }
 }
 
