@@ -38,6 +38,12 @@ world_set_entities :: (scene: Scene) {
     for entity: entities {
         add_entity(entity);
     }
+    camera_entities := world_find_entities_with_components(Camera_Component);
+    if camera_entities.count == 0 {
+        log("Camera is not provided in scene %, using the default camera", scene.id, flags = .WARNING);
+
+        add_entity(.{camera_component = Maybe.some(Camera_Component.{})});
+    }
 
     for *entity: world.entities {
         start_entity(*entity.some);
