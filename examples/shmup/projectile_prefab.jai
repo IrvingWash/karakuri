@@ -1,6 +1,11 @@
 #import "Math";
 
-projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
+Projectile_Emitter :: enum {
+    Player;
+    Enemy;
+}
+
+projectile_prefab :: (position: Vector2, $emitter: Projectile_Emitter) -> Karakuri.Entity_Params {
     width, height := Karakuri.get_render_size();
 
     tags: [..]string;
@@ -8,6 +13,16 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         *tags,
         "projectile",
     );
+
+    speed := 8;
+
+    #if emitter == {
+        case .Player;
+            array_add(*tags, "player");
+        case .Enemy;
+            array_add(*tags, "enemy");
+            speed *= -1;
+    }
 
     return .{
         tags = tags,
@@ -26,7 +41,10 @@ projectile_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
             }
         ),
         behavior_component = Karakuri.Maybe.some(
-            Karakuri.instantiate_behavior(Projectile.{})
+            Karakuri.instantiate_behavior(Projectile.{
+                emitter = emitter,
+                speed = speed
+            })
         ),
 
         on_start = on_start,
@@ -40,6 +58,7 @@ Projectile :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
     speed := 8;
+    emitter: Projectile_Emitter;
 }
 
 #scope_file
@@ -54,10 +73,22 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
-    if other.name == "player"
-    || (other.tags.count > 0 && other.tags[0] == "projectile")
-    {
+    if Karakuri.entity_has_tags(other, "projectile") {
         return;
+    }
+
+    ok, projectile := Karakuri.get_behavior(self, Projectile);
+    assert(ok);
+
+    if projectile.emitter == {
+        case .Player;
+            if other.name == "player" {
+                return;
+            }
+        case .Enemy;
+            if Karakuri.entity_has_tags(other, "enemy") {
+                return;
+            }
     }
 
     Karakuri.despawn_entity(self);

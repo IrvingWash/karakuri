@@ -38,6 +38,20 @@ operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
     return a.id == b.id && a.generation == b.generation;
 }
 
+entity_has_tags :: (entity: Entity, tags: ..string) -> bool {
+    has_all_tags := true;
+
+    for tag: tags {
+        if !array_find(entity.tags, tag) {
+            has_all_tags = false;
+
+            break;
+        }
+    }
+
+    return has_all_tags;
+}
+
 #scope_module
 
 create_entity :: (

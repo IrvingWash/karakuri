@@ -1,4 +1,4 @@
-// @Todo change these to not accept procs as we can't pass anything meaningful inside them
+// @Todo How can we avoid void pointers?
 
 init :: () {
     timer = .{};

@@ -53,6 +53,6 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
             self.transform.position = player.transform.position;
         }
 
-        camera_component.size = 0.7;
+        camera_component.size = 0.9;
     }
 }
