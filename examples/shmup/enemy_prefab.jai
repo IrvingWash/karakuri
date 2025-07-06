@@ -32,6 +32,7 @@ enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
 Enemy :: struct {
     using #as behavior: Karakuri.Behavior_Component;
     shoot_interval: u32;
+    shoot_interval_data: *Karakuri.Entity_Token;
 }
 
 #scope_file
@@ -41,8 +42,8 @@ on_start :: (self: *Karakuri.Entity) {
     assert(ok);
 
     // @Todo this sucks. MAX_ENTITIES?
-    token := New(Karakuri.Entity_Token);
-    token.* = self.token;
+    enemy.shoot_interval_data = New(Karakuri.Entity_Token);
+    enemy.shoot_interval_data.* = self.token;
     enemy.shoot_interval = Karakuri.set_interval(
         1000,
         (data: *void) {
@@ -51,7 +52,7 @@ on_start :: (self: *Karakuri.Entity) {
 
             Karakuri.spawn_entity(projectile_prefab(self.transform.position, .Enemy));
         },
-        token,
+        enemy.shoot_interval_data,
     );
 }
 
@@ -65,5 +66,6 @@ on_destroy :: (self: *Karakuri.Entity) {
     ok, enemy := Karakuri.get_behavior(self, Enemy);
     assert(ok);
 
+    free(enemy.shoot_interval_data);
     Karakuri.clear_interval(enemy.shoot_interval);
 }
