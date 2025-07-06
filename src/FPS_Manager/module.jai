@@ -4,7 +4,7 @@
 
 init :: (target_fps: u32) {
     target_delta_time: float64 = 1.0 / target_fps;
-    max_delta_time: float64 = target_delta_time * 2.0;
+    max_delta_time:    float64 = target_delta_time * 2.0;
 
     manager = .{
         target_delta_time = target_delta_time,
@@ -21,7 +21,7 @@ cap_frame_rate :: () -> float {
     }
 
     now := seconds_since_init();
-    dt := now - manager.last_time;
+    dt  := now - manager.last_time;
     if dt > manager.max_delta_time {
         dt = manager.max_delta_time;
     }
@@ -35,8 +35,8 @@ cap_frame_rate :: () -> float {
 
 FPS_Manager :: struct {
     target_delta_time: float64;
-    last_time: float64;
-    max_delta_time: float64;
+    last_time:         float64;
+    max_delta_time:    float64;
 }
 
 manager: FPS_Manager = ---;

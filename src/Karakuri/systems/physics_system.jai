@@ -39,10 +39,10 @@ physics_system :: () {
 check_aabb :: (
     a_position: Vector2,
     b_position: Vector2,
-    a_size: Vector2,
-    b_size: Vector2,
-    a_origin: Vector2,
-    b_origin: Vector2
+    a_size:     Vector2,
+    b_size:     Vector2,
+    a_origin:   Vector2,
+    b_origin:   Vector2
 ) -> bool {
     // @Todo why x 2?
     a_x0, a_y0, a_x1, a_y1 := get_aabb(a_position, a_size * 2, a_origin);
@@ -58,8 +58,8 @@ check_aabb :: (
 
 get_aabb :: (
     position: Vector2,
-    size: Vector2,
-    origin: Vector2
+    size:     Vector2,
+    origin:   Vector2
 ) -> x0: float, y0: float, x1: float, y1: float {
     // @Todo try to do this once per entity per frame when generating box colliders
     x0 := position.x - size.x * 0.5 * (1 - origin.x);

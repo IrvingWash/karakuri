@@ -25,11 +25,11 @@ set_timeout :: (duration: float64, proc: (data: $T), data: T, should_cleanup := 
         *timer.timeouts,
         timer.next_id,
         .{
-            id = timer.next_id,
-            start_time = timer.current_time,
-            duration = duration,
-            proc = cast(*void) proc,
-            data = cast(*void) data,
+            id             = timer.next_id,
+            start_time     = timer.current_time,
+            duration       = duration,
+            proc           = cast(*void) proc,
+            data           = cast(*void) data,
             should_cleanup = should_cleanup,
         }
     );
@@ -57,11 +57,11 @@ set_interval :: (duration: float64, proc: (data: $T), data: T, should_cleanup :=
         *timer.intervals,
         timer.next_id,
         .{
-            id = timer.next_id,
-            start_time = timer.current_time,
-            duration = duration,
-            proc = cast(*void) proc,
-            data = cast(*void) data,
+            id             = timer.next_id,
+            start_time     = timer.current_time,
+            duration       = duration,
+            proc           = cast(*void) proc,
+            data           = cast(*void) data,
             should_cleanup = should_cleanup,
         }
     );
@@ -105,17 +105,17 @@ update :: (time: float64) {
 
 Timer :: struct {
     current_time: float64;
-    next_id: u32;
-    timeouts: Table(u32, Timer_Data);
-    intervals: Table(u32, Timer_Data);
+    next_id:      u32;
+    timeouts:     Table(u32, Timer_Data);
+    intervals:    Table(u32, Timer_Data);
 }
 
 Timer_Data :: struct {
-    id: u32;
-    start_time: float64;
-    duration: float64;
-    proc: (data: *void);
-    data: *void;
+    id:             u32;
+    start_time:     float64;
+    duration:       float64;
+    proc:           (data: *void);
+    data:           *void;
     should_cleanup: bool;
 }
 

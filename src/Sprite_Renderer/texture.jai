@@ -3,8 +3,8 @@
 #import "stb_image";
 
 Texture :: struct {
-    id: u32;
-    width: u32;
+    id:     u32;
+    width:  u32;
     height: u32;
 }
 

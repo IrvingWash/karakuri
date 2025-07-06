@@ -1,37 +1,37 @@
 Entity :: struct {
-    using token: Entity_Token;
+    using token:  Entity_Token;
 
-    signature: Signature;
+    signature:    Signature;
 
-    name: string;
-    tags: [..]string;
-    transform: Transform_Component;
+    name:         string;
+    tags:         [..]string;
+    transform:    Transform_Component;
 
-    on_start: (self: *Entity);
-    on_update: (self: *Entity, dt: float);
+    on_start:     (self: *Entity);
+    on_update:    (self: *Entity, dt: float);
     on_collision: (self: *Entity, other: *Entity);
-    on_destroy: (self: *Entity);
+    on_destroy:   (self: *Entity);
 }
 
 Entity_Token :: struct {
-    id: u32;
+    id:         u32;
     generation: u32;
 }
 
 Entity_Params :: struct {
-    name: string;
-    tags: [..]string;
-    transform: Transform_Component;
+    name:                   string;
+    tags:                   [..]string;
+    transform:              Transform_Component;
 
-    on_start: (self: *Entity);
-    on_update: (self: *Entity, dt: float);
-    on_collision: (self: *Entity, other: *Entity);
-    on_destroy: (self: *Entity);
+    on_start:               (self: *Entity);
+    on_update:              (self: *Entity, dt: float);
+    on_collision:           (self: *Entity, other: *Entity);
+    on_destroy:             (self: *Entity);
 
-    sprite_component: Maybe.Maybe(Sprite_Component);
-    behavior_component: Maybe.Maybe(*Behavior_Component);
+    sprite_component:       Maybe.Maybe(Sprite_Component);
+    behavior_component:     Maybe.Maybe(*Behavior_Component);
     box_collider_component: Maybe.Maybe(Box_Collider_Component);
-    camera_component: Maybe.Maybe(Camera_Component);
+    camera_component:       Maybe.Maybe(Camera_Component);
 }
 
 operator == :: (a: Entity_Token, b: Entity_Token) -> bool {
@@ -55,7 +55,7 @@ entity_has_tags :: (entity: Entity, tags: ..string) -> bool {
 #scope_module
 
 create_entity :: (
-    token: Entity_Token,
+    token:  Entity_Token,
     params: Entity_Params
 ) -> Entity {
     return .{
@@ -96,9 +96,9 @@ destroy_entity :: (entity: *Entity) {
 
     entity.signature = 0;
 
-    entity.on_start = null;
-    entity.on_update = null;
-    entity.on_update = null;
+    entity.on_start   = null;
+    entity.on_update  = null;
+    entity.on_collision  = null;
     entity.on_destroy = null;
 
     array_free(entity.tags);

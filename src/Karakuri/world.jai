@@ -265,15 +265,15 @@ add_entity :: (params: Entity_Params) -> Entity_Token {
 }
 
 World :: struct {
-    entities: [..]Maybe.Maybe(Entity);
-    free_tokens: [..]Entity_Token;
-    entities_to_spawn: [..]Entity_Params;
-    entities_to_despawn: [..]Entity_Token;
+    entities:                [..]Maybe.Maybe(Entity);
+    free_tokens:             [..]Entity_Token;
+    entities_to_spawn:       [..]Entity_Params;
+    entities_to_despawn:     [..]Entity_Token;
 
-    sprite_components: [..]Sprite_Component;
+    sprite_components:       [..]Sprite_Component;
     box_collider_components: [..]Box_Collider_Component;
-    camera_components: [..]Camera_Component;
-    behavior_components: [..]*Behavior_Component;
+    camera_components:       [..]Camera_Component;
+    behavior_components:     [..]*Behavior_Component;
 }
 
 world: World = ---;

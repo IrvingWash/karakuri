@@ -9,8 +9,8 @@ Simp :: #import "Simp";
 // Initializes the sprite renderer
 init :: (window: Window_Type, clear_color: Vector4, pixels_per_unit: u32) {
     renderer = .{
-        window = window,
-        clear_color = clear_color,
+        window          = window,
+        clear_color     = clear_color,
         pixels_per_unit = pixels_per_unit,
     };
 
@@ -49,16 +49,16 @@ start_drawing :: (view_matrix: Matrix4) {
 
 // Draws a sprite
 draw :: (
-    position: Vector2,
-    scale: Vector2,
-    rotation: float,
-    origin: Vector2,
-    color: Vector4,
+    position:        Vector2,
+    scale:           Vector2,
+    rotation:        float,
+    origin:          Vector2,
+    color:           Vector4,
     pixels_per_unit: u32,
-    texture: Texture,
-    flip: $T/interface struct {
-        x: bool;
-        y: bool;
+    texture:         Texture,
+    flip:            $T/interface struct {
+        x:           bool;
+        y:           bool;
     }
 ) {
     glActiveTexture(GL_TEXTURE0);
@@ -132,12 +132,12 @@ get_render_dimensions :: () -> u32, u32 {
 #scope_file
 
 Sprite_Renderer :: struct {
-    window: Window_Type;
-    clear_color: Vector4;
-    pixels_per_unit: u32;
+    window:            Window_Type;
+    clear_color:       Vector4;
+    pixels_per_unit:   u32;
     projection_matrix: Matrix4;
-    shader: Shader;
-    mesh: Quad_Mesh;
+    shader:            Shader;
+    mesh:              Quad_Mesh;
 }
 
 renderer: Sprite_Renderer = ---;

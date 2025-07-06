@@ -7,13 +7,13 @@ Quad_Mesh :: struct {
         -1, -1,     0, 0,
         -1,  1,     0, 1,
     ];
-    indices: [6]u32 : .[
+    indices:  [6]u32 : .[
         0, 1, 3,
         1, 2, 3,
     ];
-    vao: u32;
-    vbo: u32;
-    ebo: u32;
+    vao:      u32;
+    vbo:      u32;
+    ebo:      u32;
 }
 
 create_mesh :: () -> Quad_Mesh {

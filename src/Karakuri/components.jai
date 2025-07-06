@@ -3,34 +3,34 @@
 // Represents transformations of an object
 Transform_Component :: struct {
     position: Vector2;
-    scale: Vector2 = .{1, 1};
+    scale:    Vector2 = .{1, 1};
     rotation: float;
 }
 
 // Represents a sprite
 Sprite_Component :: struct {
-    texture_path: string;
-    color: Vector4 = .{1, 1, 1, 1};
-    origin: Vector2;
-    texture: Sprite_Renderer.Texture = ---;
-    flip: struct {
-        x: bool;
-        y: bool;
+    texture_path:    string;
+    color:           Vector4 = .{1, 1, 1, 1};
+    origin:          Vector2;
+    texture:         Sprite_Renderer.Texture = ---;
+    flip:            struct {
+        x:           bool;
+        y:           bool;
     };
     pixels_per_unit: u32 = 100;
 }
 
 Box_Collider_Component :: struct {
-    size: Vector2 = .{1, 1};
+    size:   Vector2 = .{1, 1};
     offset: Vector2;
 }
 
 Camera_Component :: struct {
-    size: float = 1;
+    size:  float = 1;
 
-    front :: Vector3.{0, 0, -1};
-    up :: Vector3.{0, 1, 0};
-    right :: Vector3.{1, 1, 0};
+    front: : Vector3.{0, 0, -1};
+    up:    : Vector3.{0, 1, 0};
+    right: : Vector3.{1, 1, 0};
 }
 
 // Represents a behavior where all the specific data can be placed

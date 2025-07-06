@@ -64,9 +64,9 @@ deinit :: () {
 
 #scope_module
 
-Input_Manager :: #import "Input_Manager";
-Sprite_Renderer :: #import "Sprite_Renderer";
-Timer :: #import "Timer";
+Input_Manager:   : #import "Input_Manager";
+Sprite_Renderer: : #import "Sprite_Renderer";
+Timer:           : #import "Timer";
 
 PIXELS_PER_UNIT :: 100;
 
@@ -110,7 +110,7 @@ update :: (dt: float) {
 
 render :: () {
     entities_with_camera := world_find_entities_with_components(Camera_Component);
-    ok, camera := world_get_component(entities_with_camera[0], Camera_Component); // @Todo currently using only the first camera
+    ok, camera           := world_get_component(entities_with_camera[0], Camera_Component); // @Todo currently using only the first camera
     assert(ok);
     Sprite_Renderer.start_drawing(
         make_scale_matrix4(Vector3.{camera.size, camera.size, 1})
@@ -144,12 +144,12 @@ render :: () {
 
     #if DEBUG {
         // @Todo do something with this flip
-        Flip :: struct {x: bool; y: bool;};
-        flip :: Flip.{};
-        GREEN :: Vector4.{0, 1, 0, 0.2};
-        ok =, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
+        Flip:                       : struct {x: bool; y: bool;};
+        flip:                       : Flip.{};
+        GREEN:                      : Vector4.{0, 1, 0, 0.2};
+        ok =, collider_texture:     = Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
         assert(ok);
-        entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
+        entities_with_box_collider: = world_find_entities_with_components(Box_Collider_Component);
         for entity: entities_with_box_collider {
             ok =, box_collider := world_get_component(entity, Box_Collider_Component);
             if !ok {
@@ -181,20 +181,20 @@ render :: () {
 engine: Engine = ---;
 
 Engine :: struct {
-    scenes: []Scene;
+    scenes:           []Scene;
     should_terminate: bool;
 }
 
 Engine_Config :: struct {
-    name: string;
-    target_fps: u32 = 60;
-    window_size: struct {
-        width: u32 = 800;
-        height: u32 = 600;
+    name:             string;
+    target_fps:       u32 = 60;
+    window_size:      struct {
+        width:        u32 = 800;
+        height:       u32 = 600;
     };
-    scenes: []Scene;
+    scenes:           []Scene;
     initial_scene_id: u32;
-    clear_color: Vector4;
+    clear_color:      Vector4;
 }
 
 make_view_matrix :: (transform: Transform_Component, camera: Camera_Component) -> Matrix4 {
@@ -207,6 +207,6 @@ make_view_matrix :: (transform: Transform_Component, camera: Camera_Component) -
     return make_look_at_matrix(position, position + camera.front, camera.up, false);
 }
 
-FPS_Manager :: #import "FPS_Manager";
-Window_Manager :: #import "Window_Manager";
+FPS_Manager:    : #import "FPS_Manager";
+Window_Manager: : #import "Window_Manager";
 #load "systems/physics_system.jai";

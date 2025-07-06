@@ -10,7 +10,7 @@ Shader :: struct {
 }
 
 create_shader :: (vertex_src: string, fragment_src: string) -> Shader {
-    c_vertex_src := temp_c_string(vertex_src);
+    c_vertex_src   := temp_c_string(vertex_src);
     c_fragment_src := temp_c_string(fragment_src);
 
     vertex := glCreateShader(GL_VERTEX_SHADER);
@@ -43,7 +43,7 @@ set_uniform :: (shader: Shader, name: string, values: ..$T)
     return IsScalar(T) || T == Matrix4;
 }
 {
-    c_name := temp_c_string(name);
+    c_name   := temp_c_string(name);
     location := glGetUniformLocation(shader.program_id, c_name);
 
     if location == -1 {

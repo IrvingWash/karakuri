@@ -14,17 +14,17 @@ Events :: struct {
 }
 
 Key :: enum {
-    Space :: #run #char " ";
-    A :: #run #char "A";
-    D :: #run #char "D";
-    C :: #run #char "C";
-    P :: #run #char "P";
-    S :: #run #char "S";
-    W :: #run #char "W";
-    Arrow_Up :: 128;
-    Arrow_Down :: 129;
-    Arrow_Left :: 130;
-    Arrow_Right :: 131;
+    Space:       : #run #char " ";
+    A:           : #run #char "A";
+    D:           : #run #char "D";
+    C:           : #run #char "C";
+    P:           : #run #char "P";
+    S:           : #run #char "S";
+    W:           : #run #char "W";
+    Arrow_Up:    : 128;
+    Arrow_Down:  : 129;
+    Arrow_Left:  : 130;
+    Arrow_Right: : 131;
 }
 
 is_key_pressed :: (key: Key) -> bool {
