@@ -32,7 +32,7 @@ on_start :: (self: *Karakuri.Entity) {
             Karakuri.spawn_entity(
                 enemy_prefab(.{
                     Karakuri.random_in_range(-5, 5),
-                    Karakuri.random_in_range(2, 5)
+                    Karakuri.random_in_range(3, 6)
                 })
             );
         },

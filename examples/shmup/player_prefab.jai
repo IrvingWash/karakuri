@@ -4,8 +4,8 @@ player_prefab :: () -> Karakuri.Entity_Params {
     return .{
         name = "player",
         transform = .{
-            position = .{0, -2},
-            scale = .{1, 1},
+            position = .{0, -4},
+            scale = .{2, 2},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{

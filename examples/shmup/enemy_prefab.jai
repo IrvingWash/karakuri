@@ -9,7 +9,7 @@ enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
         tags = tags,
         transform = .{
             position = position,
-            scale = .{1, 1},
+            scale    = .{2, 2},
         },
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Enemy.{}),
@@ -23,9 +23,9 @@ enemy_prefab :: (position: Vector2) -> Karakuri.Entity_Params {
             }
         ),
 
-        on_start = on_start,
+        on_start     = on_start,
         on_collision = on_collision,
-        on_destroy = on_destroy,
+        on_destroy   = on_destroy,
     };
 }
 

@@ -28,7 +28,7 @@ projectile_prefab :: (position: Vector2, $emitter: Projectile_Emitter) -> Karaku
         tags = tags,
         transform = .{
             position = position,
-            scale = .{1, 1},
+            scale = .{2, 2},
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
