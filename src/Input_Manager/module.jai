@@ -21,6 +21,7 @@ Key :: enum {
     P:           : #run #char "P";
     S:           : #run #char "S";
     W:           : #run #char "W";
+    Enter:       : 13;
     Arrow_Up:    : 128;
     Arrow_Down:  : 129;
     Arrow_Left:  : 130;

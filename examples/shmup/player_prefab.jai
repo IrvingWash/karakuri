@@ -59,7 +59,7 @@ on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
 }
 
 shoot :: (self: *Karakuri.Entity) {
-    if Karakuri.is_key_start(.Space) {
+    if Karakuri.is_key_start(.Space) || Karakuri.is_key_start(.Enter) {
         Karakuri.spawn_entity(projectile_prefab(self.transform.position, .Player));
     }
 }
