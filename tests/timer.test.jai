@@ -3,7 +3,7 @@
 
 test_proc_call_count: u32;
 
-test_proc ::() {
+test_proc :: (data: *void) {
     test_proc_call_count += 1;
 };
 
@@ -13,7 +13,7 @@ test_set_timeout :: () {
     init();
     defer deinit();
 
-    first_id := set_timeout(1, test_proc);
+    first_id := set_timeout(1, test_proc, null);
     assert(first_id == 0);
 
     update(0.5);
@@ -22,7 +22,7 @@ test_set_timeout :: () {
     update(1);
     assert(test_proc_call_count == 1);
 
-    second_id := set_timeout(3, test_proc);
+    second_id := set_timeout(3, test_proc, null);
     assert(second_id == 1);
 
     update(2.9);
@@ -40,7 +40,7 @@ test_set_interval :: () {
     init();
     defer deinit();
 
-    first_id := set_interval(1, test_proc);
+    first_id := set_interval(1, test_proc, null);
     assert(first_id == 0);
 
     update(0.5);
