@@ -49,7 +49,9 @@ projectile_prefab :: (position: Vector2, $emitter: Projectile_Emitter) -> Karaku
         behavior_component = Karakuri.Maybe.some(
             Karakuri.instantiate_behavior(Projectile.{
                 emitter = emitter,
-                speed = speed
+                speed = speed  / ifx emitter == .Player
+                    then 1.0
+                    else 2.0
             })
         ),
 
@@ -63,8 +65,8 @@ projectile_prefab :: (position: Vector2, $emitter: Projectile_Emitter) -> Karaku
 Projectile :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
-    speed := 8;
-    emitter: Projectile_Emitter;
+    speed:              float = 8;
+    emitter:            Projectile_Emitter;
 }
 
 #scope_file

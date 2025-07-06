@@ -11,8 +11,8 @@ enemy_spawner_prefab :: () -> Karakuri.Entity_Params {
 
 Enemy_Spawner :: struct {
     using #as behavior: Karakuri.Behavior_Component;
-    spawn_interval: float64 = 1000;
-    spawn_interval_id: u32;
+    spawn_interval:     float64 = 2000;
+    spawn_interval_id:  u32;
 }
 
 #scope_file
