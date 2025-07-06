@@ -46,8 +46,8 @@ on_start :: (self: *Karakuri.Entity) {
     enemy.shoot_interval_data.* = self.token;
     enemy.shoot_interval = Karakuri.set_interval(
         1000,
-        (data: *void) {
-            ok, self := Karakuri.get_entity_with_token(cast(*Karakuri.Entity_Token) data);
+        (token: *Karakuri.Entity_Token) {
+            ok, self := Karakuri.get_entity_with_token(token);
             assert(ok);
 
             Karakuri.spawn_entity(projectile_prefab(self.transform.position, .Enemy));

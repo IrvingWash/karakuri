@@ -9,7 +9,7 @@ deinit :: () {
     deinit(*timer.intervals);
 }
 
-set_timeout :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
+set_timeout :: (duration: float64, proc: (data: $T), data: T) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -19,8 +19,8 @@ set_timeout :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
             id = timer.next_id,
             start_time = timer.current_time,
             duration = duration,
-            proc = proc,
-            data = data,
+            proc = cast(*void) proc,
+            data = cast(*void) data,
         }
     );
 
@@ -31,7 +31,13 @@ clear_timeout :: (id: u32) {
     table_remove(*timer.timeouts, id);
 }
 
-set_interval :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
+set_interval :: (duration: float64, proc: (data: $T), data: T) -> u32
+#modify {
+    ti := cast(*Type_Info) T;
+
+    return ti.type == .POINTER, "Only pointers can be used as the data type";
+}
+{
     defer timer.next_id += 1;
 
     table_set(
@@ -41,8 +47,8 @@ set_interval :: (duration: float64, proc: (data: *void), data: *void) -> u32 {
             id = timer.next_id,
             start_time = timer.current_time,
             duration = duration,
-            proc = proc,
-            data = data,
+            proc = cast(*void) proc,
+            data = cast(*void) data,
         }
     );
 
