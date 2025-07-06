@@ -15,10 +15,10 @@ create_texture :: (image_path: string, flip := false) -> Texture {
     c_image_path := temp_c_string(image_path);
     stbi_set_flip_vertically_on_load(xx flip);
     data := stbi_load(c_image_path, xx *texture.width, xx *texture.height, *channels, 0);
-    defer stbi_image_free(data);
     if !data {
         log_error("Failed to load image: %\n", image_path);
     }
+    defer stbi_image_free(data);
 
     glGenTextures(1, *texture.id);
 

@@ -24,6 +24,11 @@ is_key_up :: Input_Manager.is_key_up;
 
 get_render_size :: Sprite_Renderer.get_render_dimensions;
 
+set_timeout :: Timer.set_timeout;
+clear_interval :: Timer.clear_interval;
+set_interval :: Timer.set_interval;
+clear_interval :: Timer.clear_interval;
+
 #scope_module
 
 Asset_Manager :: #import "Asset_Manager";

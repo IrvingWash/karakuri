@@ -44,22 +44,14 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
-    if other.tags.count > 0 && other.tags[0] == "enemy" {
+    if Karakuri.entity_has_tags(other, "enemy") {
         Karakuri.despawn_entity(self);
     }
 }
 
 shoot :: (self: *Karakuri.Entity) {
     if Karakuri.is_key_start(.Space) {
-        Karakuri.spawn_entity(projectile_prefab(self.transform.position));
-    }
-
-    if Karakuri.is_key_start(.P) {
-        projectiles := Karakuri.find_entities_with_tags("projectile");
-
-        for projectile: projectiles {
-            Karakuri.despawn_entity(projectile);
-        }
+        Karakuri.spawn_entity(projectile_prefab(self.transform.position, .Player));
     }
 }
 
