@@ -150,7 +150,7 @@ render :: () {
         ok =, collider_texture := Asset_Manager.get_texture("src/Karakuri/assets/textures/square.png");
         assert(ok);
         entities_with_box_collider := world_find_entities_with_components(Box_Collider_Component);
-        for entity: entities_with_sprite {
+        for entity: entities_with_box_collider {
             ok =, box_collider := world_get_component(entity, Box_Collider_Component);
             if !ok {
                 log_error(
