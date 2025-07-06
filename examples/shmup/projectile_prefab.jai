@@ -32,12 +32,18 @@ projectile_prefab :: (position: Vector2, $emitter: Projectile_Emitter) -> Karaku
         },
         sprite_component = Karakuri.Maybe.some(
             Karakuri.Sprite_Component.{
-                texture_path = "examples/shmup/assets/projectile_1.png",
+                texture_path = "examples/shmup/assets/projectile_2.png",
+                flip = .{
+                    y = emitter == .Enemy,
+                },
+                color = ifx emitter == .Player
+                    then Vector4.{1, 1, 1, 1}
+                    else Vector4.{1, 0.7, 0.3, 1},
             }
         ),
         box_collider_component = Karakuri.Maybe.some(
             Karakuri.Box_Collider_Component.{
-                size = .{ 0.09, 0.34},
+                size = .{ 0.17, 0.1},
             }
         ),
         behavior_component = Karakuri.Maybe.some(
