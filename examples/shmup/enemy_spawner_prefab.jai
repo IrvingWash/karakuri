@@ -5,12 +5,14 @@ enemy_spawner_prefab :: () -> Karakuri.Entity_Params {
         ),
 
         on_start = on_start,
+        on_destroy = on_destroy,
     };
 }
 
 Enemy_Spawner :: struct {
     using #as behavior: Karakuri.Behavior_Component;
     spawn_interval: float64 = 1000;
+    spawn_interval_id: u32;
 }
 
 #scope_file
@@ -21,7 +23,7 @@ on_start :: (self: *Karakuri.Entity) {
 
     interval_data := New(Karakuri.Entity_Token);
     interval_data.* = self.token;
-    Karakuri.set_interval(
+    spawner.spawn_interval_id = Karakuri.set_interval(
         spawner.spawn_interval,
         (token: *Karakuri.Entity_Token) {
             ok, self := Karakuri.get_entity_with_token(token);
@@ -37,4 +39,11 @@ on_start :: (self: *Karakuri.Entity) {
         interval_data,
         should_cleanup = true
     );
+}
+
+on_destroy :: (self: *Karakuri.Entity) {
+    ok, spawner := Karakuri.get_behavior(self, Enemy_Spawner);
+    assert(ok);
+
+    Karakuri.clear_interval(spawner.spawn_interval_id);
 }
