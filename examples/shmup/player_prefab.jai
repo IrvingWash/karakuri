@@ -31,6 +31,7 @@ Player :: struct {
     using #as behavior: Karakuri.Behavior_Component;
 
     speed := 5;
+    lives := 3;
 }
 
 #scope_file
@@ -44,7 +45,15 @@ on_update :: (self: *Karakuri.Entity, dt: float) {
 }
 
 on_collision :: (self: *Karakuri.Entity, other: *Karakuri.Entity) {
-    if Karakuri.entity_has_tags(other, "enemy") {
+    if !Karakuri.entity_has_tags(other, "enemy") {
+        return;
+    }
+
+    ok, player := Karakuri.get_behavior(self, Player);
+
+    if player.lives > 1 {
+        player.lives -= 1;
+    } else {
         Karakuri.despawn_entity(self);
     }
 }
