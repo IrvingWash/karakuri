@@ -1,15 +1,24 @@
-// @Todo How can we avoid void pointers?
-
 init :: () {
     timer = .{};
 }
 
 deinit :: () {
+    for timeout: timer.timeouts {
+        if timeout.should_cleanup && timeout.data {
+            free(timeout.data);
+        }
+    }
+    for interval: timer.intervals {
+        if interval.should_cleanup && interval.data {
+            free(interval.data);
+        }
+    }
+
     deinit(*timer.timeouts);
     deinit(*timer.intervals);
 }
 
-set_timeout :: (duration: float64, proc: (data: $T), data: T) -> u32 {
+set_timeout :: (duration: float64, proc: (data: $T), data: T, should_cleanup := false) -> u32 {
     defer timer.next_id += 1;
 
     table_set(
@@ -21,6 +30,7 @@ set_timeout :: (duration: float64, proc: (data: $T), data: T) -> u32 {
             duration = duration,
             proc = cast(*void) proc,
             data = cast(*void) data,
+            should_cleanup = should_cleanup,
         }
     );
 
@@ -28,10 +38,13 @@ set_timeout :: (duration: float64, proc: (data: $T), data: T) -> u32 {
 }
 
 clear_timeout :: (id: u32) {
-    table_remove(*timer.timeouts, id);
+    ok, timeout := table_remove(*timer.timeouts, id);
+    if ok && timeout.should_cleanup && timeout.data {
+        free(timeout.data);
+    }
 }
 
-set_interval :: (duration: float64, proc: (data: $T), data: T) -> u32
+set_interval :: (duration: float64, proc: (data: $T), data: T, should_cleanup := false) -> u32
 #modify {
     ti := cast(*Type_Info) T;
 
@@ -49,6 +62,7 @@ set_interval :: (duration: float64, proc: (data: $T), data: T) -> u32
             duration = duration,
             proc = cast(*void) proc,
             data = cast(*void) data,
+            should_cleanup = should_cleanup,
         }
     );
 
@@ -56,7 +70,10 @@ set_interval :: (duration: float64, proc: (data: $T), data: T) -> u32
 }
 
 clear_interval :: (id: u32) {
-    table_remove(*timer.intervals, id);
+    ok, interval := table_remove(*timer.intervals, id);
+    if ok && interval.should_cleanup && interval.data {
+        free(interval.data);
+    }
 }
 
 update :: (time: float64) {
@@ -99,6 +116,7 @@ Timer_Data :: struct {
     duration: float64;
     proc: (data: *void);
     data: *void;
+    should_cleanup: bool;
 }
 
 timer: Timer = ---;
